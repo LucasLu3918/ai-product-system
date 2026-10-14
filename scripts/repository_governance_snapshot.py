@@ -54,8 +54,10 @@ def parse_gh_response(endpoint: str, returncode: int, output: str, stderr: str =
     status_match = _HTTP_STATUS.search(output or "")
     http_status = int(status_match.group(1)) if status_match else None
     body = output or ""
+    headers = ""
     if status_match:
         pieces = re.split(r"\r?\n\r?\n", body, maxsplit=1)
+        headers = pieces[0] if pieces else ""
         body = pieces[1] if len(pieces) == 2 else ""
         # A paginated response can contain another status line after a body.
         body = re.split(r"\r?\nHTTP/\S+\s+\d{3}\b", body, maxsplit=1)[0]
@@ -67,8 +69,14 @@ def parse_gh_response(endpoint: str, returncode: int, output: str, stderr: str =
         return {"returncode": 0, "http_status": http_status, "payload": payload,
                 "endpoint": endpoint, "error_class": None, "error_message": None}
     message = payload.get("message") if isinstance(payload, dict) else None
-    if http_status in (401, 403):
-        error_class = "PERMISSION_OR_AUTHENTICATION"
+    if http_status == 401:
+        error_class = "AUTHENTICATION"
+    elif http_status == 403 and ("x-ratelimit-remaining: 0" in headers.lower() or
+                                 "retry-after:" in headers.lower() or
+                                 isinstance(message, str) and "rate limit" in message.lower()):
+        error_class = "RATE_LIMITED"
+    elif http_status == 403:
+        error_class = "PERMISSION"
     elif http_status == 404:
         error_class = "NOT_FOUND"
     elif http_status == 429:
@@ -79,9 +87,19 @@ def parse_gh_response(endpoint: str, returncode: int, output: str, stderr: str =
         error_class = "GITHUB_API_ERROR"
     else:
         error_class = "NETWORK_OR_CLI_ERROR"
-        # stderr is not copied; only a short, non-sensitive class hint is retained.
-        if stderr and "auth" in stderr.lower():
+        # stderr is not copied; only allowlisted classes are retained.
+        hint = (stderr or "").lower()
+        if any(term in hint for term in ("timed out", "timeout", "could not resolve",
+                                         "connection refused", "connection reset",
+                                         "temporary failure in name resolution")):
+            error_class = "NETWORK"
+        elif "http 401" in hint or "auth" in hint or "not logged" in hint:
+            error_class = "AUTHENTICATION"
             message = "GitHub CLI authentication failed."
+        elif "http 403" in hint or "forbidden" in hint or "resource not accessible" in hint:
+            error_class = "PERMISSION"
+        elif "http 404" in hint or "not found" in hint:
+            error_class = "NOT_FOUND"
     return {"returncode": returncode, "http_status": http_status, "payload": None,
             "endpoint": endpoint, "error_class": error_class,
             "error_message": _safe_message(message)}
@@ -153,6 +171,8 @@ def build_snapshot(
     protection = payloads.get("branch_protection")
     effective_rules = payloads.get("effective_rules")
     complete = branch_exists and isinstance(effective_rules, list)
+    classic_protection_configured = isinstance(protection, dict) and bool(protection)
+    active_policy = bool(effective_rules) or classic_protection_configured
     bypass_actor_map = {
         json.dumps(actor, sort_keys=True, ensure_ascii=False): actor
         for ruleset in (rulesets or []) if isinstance(ruleset, dict)
@@ -172,7 +192,8 @@ def build_snapshot(
         "rulesets": rulesets or [],
         "effective_rules": effective_rules or [],
         "branch_exists": branch_exists,
-        "protection_state": ("PROTECTED" if effective_rules else "UNPROTECTED") if complete else "UNKNOWN",
+        "classic_protection_configured": classic_protection_configured,
+        "protection_state": ("PROTECTED" if active_policy else "UNPROTECTED") if complete else "UNKNOWN",
         "evidence_level": "EFFECTIVE_RULES_CONFIRMED" if complete else "INCOMPLETE",
         "bypass_actors": [bypass_actor_map[key] for key in sorted(bypass_actor_map)],
         "source_complete": complete,
@@ -187,7 +208,7 @@ def build_snapshot(
 def query_github_api(root: Path, endpoint: str) -> dict[str, Any]:
     """Observe one GitHub API endpoint and paginate ruleset lists without retaining headers."""
     result = subprocess.run(["gh", "api", "--include", endpoint], cwd=root,
-                            capture_output=True, text=True, check=False)
+                            capture_output=True, text=True, timeout=20, check=False)
     observed = parse_gh_response(endpoint, result.returncode, result.stdout, result.stderr)
     if "/rulesets?" not in endpoint or not isinstance(observed.get("payload"), list):
         return observed
@@ -197,7 +218,7 @@ def query_github_api(root: Path, endpoint: str) -> dict[str, Any]:
         page += 1
         paged_endpoint = endpoint + f"&page={page}"
         page_result = subprocess.run(["gh", "api", "--include", paged_endpoint], cwd=root,
-                                     capture_output=True, text=True, check=False)
+                                     capture_output=True, text=True, timeout=20, check=False)
         page_observed = parse_gh_response(paged_endpoint, page_result.returncode,
                                           page_result.stdout, page_result.stderr)
         if page_observed.get("returncode") != 0 or not isinstance(page_observed.get("payload"), list):

@@ -213,6 +213,8 @@ Review actual:
 
 ## Release Security Gate
 
+Read-only publication diagnosis distinguishes authentication, permission, missing-resource, rate-limit, service and network evidence; unavailable policy evidence blocks, and retry never runs push, PR or merge actions.
+
 Specific protected-publication reason codes expose only sanitized underlying categories. Missing Required Checks policy evidence blocks; Host denial, recovery suggestions and green CI do not replace signed grants or per-call Human confirmation.
 
 Publication diagnostics 只輸出固定 reason code 與安全修復指引。`prepare` 不簽發、消耗 Grant 或執行發布；high-assurance 保留外部單次 Grant，Host 拒絕不得以其他命令重試。
@@ -442,6 +444,8 @@ The Parallel Run Dashboard is loopback-only and read-only. Its projection cannot
 AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned content is persisted or before candidate publication content is approved. Secrets are redacted from diagnostic sinks and blocked from durable/public sinks; deterministic PII is context- and sink-aware; external content is marked with provenance and prompt injection is reported as a signal. This boundary does not replace Human Authority, Publish Approval, native runtime hooks or repository-side secret protection.
 
 ## Runtime Policy Enforcement
+
+Publication Doctor reports only observed HTTP status and safe endpoint identity. Authentication, permission, missing resource, rate limit, service and network failures remain distinct; unknown policy evidence blocks, and diagnostic retries never run push, PR or merge actions.
 
 Personal PR merge accepts `gh pr merge --auto` only with an exact candidate/head binding and a non-empty set of passing required checks. For an explicitly task-authorized merge, Claude Code may enable GitHub auto-merge without a second Claude prompt; Gemini retains native `ask_user`. GitHub still enforces required checks and repository rules. This option does not issue a Human grant or bypass repository policy.
 

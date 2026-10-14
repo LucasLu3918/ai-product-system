@@ -55,6 +55,8 @@ Material visual artifacts use `visual-quality-review`. Review against the approv
 
 ## Local character artwork
 
+Publication diagnostics for an image-asset change remain evidence only; they do not imply permission to publish the asset or merge its PR.
+
 Creative output approval is distinct from Git publication authorization. Recovery observations never imply permission to publish image assets or merge their PR.
 
 Writing Fragments → Beats → Shape is a separate opt-in workflow. It is used only when a user explicitly requests the staged writing method and does not change creative asset generation or review authority.

@@ -4,6 +4,8 @@
 
 ## Inputs
 
+Read-only publication policy evidence uses the remote default branch unless an explicit target branch is supplied; it reports authentication, permission, contextual not-found, rate-limit, server and network failures separately.
+
 Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
 
 Plan29 #6 publishes through the ordinary exact-candidate PR path after its repository check and scoped Change Impact evidence pass.

@@ -269,6 +269,10 @@ def recovery_guidance(result: dict[str, Any]) -> dict[str, Any]:
         state, human, retry = 'HUMAN_CONFIRMATION_REQUIRED', True, False
     elif 'REQUIRED_CHECKS_PENDING' in codes:
         state, human, retry = 'CHECKS_PENDING', False, True
+    elif any(isinstance(item, dict) and item.get('retryable') is True and
+             item.get('category') in {'NETWORK', 'RATE_LIMITED', 'GITHUB_SERVER_ERROR'}
+             for item in diagnostics):
+        state, human, retry = 'READ_OBSERVATION_RETRYABLE', False, True
     elif status == 'BLOCKED':
         state, human, retry = 'REPAIR_REQUIRED', False, False
     elif next_step == 'CHECKS_AND_MERGE_INTENT':

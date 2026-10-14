@@ -156,15 +156,18 @@ def doctor(root: Path, *, pr_number: int | None = None, branch: str | None = Non
         result["merge_methods"] = sorted(name for name, key in
             (("merge", "allow_merge_commit"), ("squash", "allow_squash_merge"),
              ("rebase", "allow_rebase_merge")) if metadata.get(key) is True)
-        branch = branch or authority.git(root, "branch", "--show-current") or "main"
-        def read_api(endpoint: str) -> tuple[int, str]:
-            argv = [gh, "api", endpoint]
-            if "/rulesets?" in endpoint:
-                argv[2:2] = ["--paginate", "--slurp"]
-            response = subprocess.run(argv, cwd=root, capture_output=True,
-                                      text=True, timeout=20, check=False)
-            return response.returncode, response.stdout
-        snapshot = build_snapshot(repo, branch, read_api)
+        candidate_branch = result["worktree"].get("branch")
+        policy_branch = branch or authority._remote_default_branch(root, remote)
+        result["candidate_branch"] = candidate_branch
+        result["policy_branch"] = policy_branch
+        from repository_governance_snapshot import query_github_api
+        def read_api(endpoint: str) -> dict[str, Any]:
+            try:
+                return query_github_api(root, endpoint)
+            except subprocess.TimeoutExpired:
+                return {"returncode": 1, "http_status": None, "payload": None,
+                        "endpoint": endpoint, "error_class": "NETWORK", "error_message": None}
+        snapshot = build_snapshot(repo, policy_branch, read_api)
         policy = snapshot.get("branch_protection") or {}
         required = policy.get("required_checks") if snapshot.get("source_complete") else None
         ruleset_required = sorted({str(check.get("context"))
@@ -180,16 +183,29 @@ def doctor(root: Path, *, pr_number: int | None = None, branch: str | None = Non
                                  "evidence_level": snapshot.get("evidence_level"),
                                  "blocking": not snapshot.get("source_complete")})
         result["policy"] = {"status": "AVAILABLE" if snapshot.get("source_complete") else "UNAVAILABLE",
-                             "branch": branch, "required_checks": required or [],
+                             "branch": policy_branch, "required_checks": required or [],
                              "ruleset_required_checks": ruleset_required,
                              "source_complete": snapshot.get("source_complete") is True,
                              "api_write_performed": False}
         if not snapshot.get("source_complete"):
             result["blockers"].append("protection_evidence_unavailable")
-            result["diagnostics"].append({"reason_code": "PROTECTION_EVIDENCE_UNAVAILABLE",
-                "phase": "policy", "category": "PERMISSION_OR_API", "detail":
-                "Branch protection or ruleset visibility is incomplete.", "next_step":
-                "Ask a repository administrator to verify policy visibility; do not infer that protection is absent."})
+            item = authority.PublicationError("branch protection evidence unavailable",
+                "PROTECTION_EVIDENCE_UNAVAILABLE", phase="protection_policy_evidence").diagnostic()
+            sources = snapshot.get("sources", {})
+            transient = any(isinstance(source, dict) and source.get("error_class") in
+                            {"NETWORK", "RATE_LIMITED", "GITHUB_SERVER_ERROR"}
+                            for source in sources.values())
+            observed_errors = [source.get("error_class") for source in sources.values()
+                               if isinstance(source, dict) and source.get("error_class")]
+            if transient:
+                item["category"] = next(code for code in observed_errors
+                    if code in {"NETWORK", "RATE_LIMITED", "GITHUB_SERVER_ERROR"})
+            elif observed_errors:
+                item["category"] = observed_errors[0]
+            item["retryable"] = transient
+            item["recovery_mode"] = "SAFE_OBSERVATION" if transient else "MANUAL_REVIEW"
+            item["api_sources"] = sources
+            result["diagnostics"].append(item)
         elif not required:
             result["blockers"].append("required_checks_unconfigured")
             result["diagnostics"].append({"reason_code": "REQUIRED_CHECKS_UNCONFIGURED", "phase": "policy",

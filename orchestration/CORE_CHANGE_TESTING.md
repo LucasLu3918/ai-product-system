@@ -24,6 +24,8 @@ When a shared module-extraction lifecycle gains another facade, retain identity 
 
 ## Impact-derived Test Matrix
 
+Publication diagnostics matrices must separately cover candidate/source identity, target policy evidence, status/error provenance, safe Hook payloads and recovery retryability; attach each result to the exact base/head before the complete Integration Gate.
+
 Creative repair Core candidates cover fresh same-session recreation grants, negation/read-only intent, native prompt replay/concurrency, per-criterion evidence, source/hash drift, versioned lineage and comparisons, shared deadlines and finite/repeated-defect stops. Synthetic tests do not satisfy real local image/vision accuracy or exact-host acceptance.
 
 Creative authorization candidates include positive style-selection continuation and negative cancellation, unrelated-task, session/root drift, scope-expansion and output-cap cases; the matrix separately records native-host acceptance and real inference when unavailable.

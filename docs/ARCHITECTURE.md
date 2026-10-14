@@ -4,6 +4,8 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ## Runtime flow
 
+The publication Doctor uses the shared safe API observation path and keeps the candidate branch distinct from remote target-branch policy evidence.
+
 Publication root-cause reports originate from the existing AIPS authority and read-only diagnostic modules; Claude Host denial and GitHub required-check policy are independent observations, never a new approval service.
 
 Human 可透過生成式 Skill Explorer 瀏覽 Registry；此唯讀文件視圖不介入 Agent 的 Skill routing、執行授權或 Git 發布權限。
@@ -285,6 +287,8 @@ flowchart LR
 The alias candidate is deterministic and transparent. It is not an embedding provider and does not change `semantic.status=NOT_CONFIGURED`. The committed Trial follows the FAIL → KEEP branch: required regressions and no synonym-recall improvement produce recommendation `HOLD`. Normal Turn Context retrieval therefore does not enable the alias lane.
 
 ## Maintenance and publication evidence
+
+The read-only Doctor now labels the candidate/source branch separately from the remote default policy branch and preserves safe GitHub endpoint and HTTP evidence; these observations never authorize publication.
 
 Exact PR merges remain SHA-bound and Human-controlled; an advisory recovery state never performs a GitHub mutation or consumes a publication grant.
 

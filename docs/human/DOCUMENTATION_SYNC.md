@@ -28,6 +28,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+Publication troubleshooting belongs in the canonical User Guide and Security Assurance topics, with adapter contracts in Harness and scenario evidence in Conformance.
+
 Publication recovery documentation must be updated within existing canonical H2 topics and retain the required Human/Harness/Orchestrator synchronization; ad-hoc topic append is not a substitute for the placement policy.
 
 Publication diagnostics and Doctor are one shared behavior across Human guidance and Claude Code, Codex and OpenCode adapters. Keep Required Checks state names, redaction, read-only behavior, and the no-policy-mutation/no-merge-authority boundary aligned with Scenario 260.
@@ -225,6 +227,8 @@ Canonical source 是 docs/human/TECHNOLOGY_GUIDE.md。舊 HTML 只保留 backwar
 Getting Started / Installation / User Guide 以 task-oriented方式導覽；Architecture / Technology Guide 負責 explanation；Conformance 負責 reference/evidence history；Maintenance 文件給 maintainer。
 
 ## Deterministic protection
+
+Publication diagnostics document candidate identity, target policy identity, observed API status, safe recovery classification and native Hook output together across the mapped Human and Agent topics.
 
 Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
 

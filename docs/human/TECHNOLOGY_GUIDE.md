@@ -8,6 +8,8 @@ Retrieval relation candidates are built by a small standard-library module behin
 
 ## Runtime & Integration
 
+The publication Doctor shares the structured API observer and labels the candidate branch independently from target policy, retaining bounded, sanitized endpoint and status evidence.
+
 OpenCode's optional native acceptance records host version, platform, plugin digest and conservative runtime-source digest. It marks arbitrary Shell process effects, MCP/custom-tool effects and out-of-process writes UNSUPPORTED; missing fields in older reports remain UNVERIFIED.
 
 The OpenCode creative adapter exposes the shared Z-Image Turbo profile and component filenames. Discovery and failure recovery remain local-only; command, runtime, model inventory, preflight and inference readiness are distinct evidence.
@@ -36,6 +38,8 @@ Role、Skill、Protocol 與 Project evidence 只在 task relevant 時載入，�
 Canonical AIPS Skills 可從 MCP Resource 按需載入，也可由 `aips skills install` 投影成 Codex、Claude Code、Gemini CLI 原生 Skills；Portable Commands 可用同一 ownership manifest 提供 Host 原生命令入口。安裝記錄 Host、scope、來源與逐檔 SHA-256；重複安裝不建立副本，移除只刪除仍吻合摘要的 AIPS-owned 檔案。投影契約與 lifecycle 測試驗證目錄、格式及所有權，不宣稱已驗證各 Host 實際載入。
 
 ## Project Understanding
+
+Publication diagnostics remain tied to the exact Change Impact candidate, while transient recovery repeats read-only evidence collection only.
 
 `aips project diagnose` 的 `recovery_plan` 列出原因、步驟相依、操作種類與所需授權，保持唯讀。`aips intelligence impact-candidates --max-depth 3` 提供最多三層候選關係；同目錄 import 可解析，但動態呼叫及全域 coverage 限制仍需人工覆核。
 
@@ -73,6 +77,8 @@ Local hybrid retrieval 組合 lexical、symbols、structural relation、tests、
 Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEMENTATION_APPROVED` 進入核准範圍；實作後對帳 actual diff 與 declared impact，只有完整記錄 reconciliation evidence 才能標記 `READY`。
 
 ## Execution
+
+Claude Code publication denials use the native Hook response with allowlisted diagnostic fields; command input and credential-bearing provider output are excluded.
 
 Publication recovery re-observes the exact PR HEAD and base before mutations, and never upgrades a read-only plan into authority.
 
@@ -212,6 +218,8 @@ Plan36 publication diagnostics preserve this topic's existing behavior and autho
 
 ## Security & Governance
 
+The read-only `aips publish doctor` uses the shared structured GitHub API observer, distinguishes candidate/source and target policy branches, and reports bounded sanitized response metadata. `governance_guard` returns safe diagnostic identifiers and fields in Claude Code PreToolUse denials.
+
 Git publication 使用 bashlex shell AST 與 cryptography Ed25519。預設 personal mode 以共用 Hook 驗證內容、乾淨候選、工程分支與明確操作；一般 PR merge 要求 Claude 原生 `ask` 或 Gemini interactive `ask_user`、精確 head SHA、預設 base 與 passing required checks。明確 task-authorized 的 `gh pr merge --auto` 經相同候選驗證後可由 Claude 啟用 GitHub auto-merge，不再要求第二次 Claude 確認；Gemini 仍要求 `ask_user`，GitHub 仍套用 checks 與 repository policy。Gemini policy 涵蓋 default/autoEdit/yolo；Codex hook 維持 ADVISORY 且不能保證攔截直接 merge。安裝固定的 root-owned trust config 會啟用 high-assurance mode，並要求外部 HTTPS issuer 與 transactional single-use ledger。fixture 簽章只驗證高保證協定。Git push 的 server lease 與 GH head pin/base preexecution observation 分別記錄於 scope。
 
 `feat/` is an accepted engineering branch prefix. `--auto-merge` requests GitHub auto-merge only after AIPS confirms a non-empty passing required-check set; exact head binding and native Human authorization remain required.
@@ -248,6 +256,8 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+The exact-candidate matrix checks policy-branch selection, HTTP error classes, safe Hook diagnostics and read-only retry classification.
 
 Required Checks classify an empty result as UNCONFIGURED only when protection is independently confirmed empty; an unknown policy stays blocked and cannot be inferred from passing optional CI.
 
@@ -438,6 +448,8 @@ The observation collector reports readiness separately from collection health: `
 The publication doctor normalizes branch existence, effective GitHub rules, classic protection, ruleset, and worktree evidence into phase-specific diagnostics. Its JSON remains observational and keeps Human and native-host authority outside the diagnostic result.
 
 ## Product Delivery
+
+Publication guidance separates target policy evidence from candidate identity and never treats diagnostic recovery as authorization to publish.
 
 Product Delivery 把 requirement、planning、implementation、security、quality、release readiness、staging / production verification串成可追蹤生命週期，但 Production Enablement 仍需要 Human authority。
 

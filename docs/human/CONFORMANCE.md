@@ -1786,6 +1786,8 @@ The cross-profile quality evidence extension is covered by Scenario 258; this cr
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+The publication recovery contract remains a native, non-authorizing diagnostic path and does not change canonical Skill discovery or routing behavior.
+
 Scenario 259 also checks `aips skills list --include-upstream` inventory and filtering without changing the canonical-only default; installation and removal remain separate explicit operations.
 
 The generated Skill Explorer presents all 49 canonical AIPS Skills and the 38 vendored upstream Skills pinned to the reviewed commit, with local source paths and SHA-256 digests. Overlapping pending skills are experimental/optional; distinct repo/tool workflows auto-route on matching requests. `$grill-with-docs` is a separate explicit-only Skill whose native projection preserves `allow_implicit_invocation: false`. Writing workflow Skills remain explicit-request-only. Other MCP Hosts load Skills from canonical Resources on demand; native projections are AIPS-owned and removal preserves pre-existing, unowned or modified files. Deterministic inventory and output contracts are checked by `tests/validation/skill_catalog_contracts.py`; semantic routing acceptance remains manual.
@@ -1820,6 +1822,8 @@ The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies c
 
 
 ## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance
+
+Publication diagnostics observe policy on the remote default branch independently from the candidate; structured HTTP evidence is sanitized, and transient recovery is read-only.
 
 
 ### Scenario 261 — Publication Diagnostics and Safe Recovery
@@ -1864,6 +1868,10 @@ Declared behavior dependencies select potentially stale Eval cases for review. T
 Current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md).
 
 ## Scenario 260 — Publication diagnostics and Doctor
+
+Scenario 260 verifies that native Hook denials expose only safe diagnostic metadata and that the candidate branch is separate from target policy.
+
+Scenario 260 also checks that Doctor observes target-branch policy independently of the candidate branch, classifies 401/403 and contextual 404 evidence, and includes safe structured Claude Hook denial metadata without command input. Scenario 261 keeps transient recovery read-only and non-authorizing.
 
 The publication diagnostic contract distinguishes missing/stale pinned merge SHA, forbidden flags, verified Required Checks configuration, unavailable policy evidence, and non-authorizing Host recovery guidance.
 

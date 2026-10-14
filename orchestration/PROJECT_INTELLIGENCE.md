@@ -651,6 +651,8 @@ The CLI commands are deterministic building blocks used by the Agent/Harness and
 
 ## Retrieval relationships and impact traversal
 
+Use the exact-diff reconciliation and direct consumer review to complement bounded relationship traversal; unresolved repository-wide API, data, event or consumer dimensions remain partial/unknown.
+
 Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
 
 Plan29 #6 records the creative profile seed, its CLI and test consumers, and the accepted limit on repository-wide graph coverage.

@@ -230,8 +230,7 @@ def _reason_for_message(message: str) -> str:
     return 'PUBLICATION_REJECTED'
 
 
-RETRYABLE_REASONS = {'REMOTE_OBSERVATION_FAILED', 'REMOTE_BRANCH_UNAVAILABLE',
-                     'REQUIRED_CHECKS_UNAVAILABLE', 'BASE_OBJECT_MISSING'}
+RETRYABLE_REASONS = {'REQUIRED_CHECKS_PENDING'}
 
 
 def _phase_for_code(code: str) -> str:
