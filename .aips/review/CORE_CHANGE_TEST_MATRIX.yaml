@@ -35,7 +35,7 @@ matrix:
     security: {applicable: true, evidence: "authorization/profile source distinction and diagnostic credential/path/body redaction cases; exact-candidate secret scan"}
     migration_recovery: {applicable: false, na_reason: No persisted diagnostic history or migration is introduced.}
     cli_harness: {applicable: true, evidence: "Runtime Policy native Hook lifecycle and CLI output checks"}
-    docs_schema: {applicable: true, evidence: "runtime-action.yaml, Runtime Policy human docs, Scenario 262 and generated Conformance summary validation"}
+    docs_schema: {applicable: true, evidence: "runtime-action.yaml, Runtime Policy human docs, Scenario 262 and generated Conformance summary and history index validation"}
 - boundary: Local ComfyUI read-only discovery and network boundary
   reason: Only the fixed loopback service on port 8188 and fixed GET paths may be probed; redirects and arbitrary destinations remain blocked.
   checks:
@@ -47,7 +47,7 @@ matrix:
     security: {applicable: true, evidence: "loopback/port/method/path, redirect, external destination, HTTP 4xx/5xx and redaction fixtures; no generation/download"}
     migration_recovery: {applicable: false, na_reason: Read-only discovery adds no stored state.}
     cli_harness: {applicable: true, evidence: "native creative tool callback fixture plus read-only discovery/preflight CLI paths"}
-    docs_schema: {applicable: true, evidence: "CREATIVE_ASSET_PRESETS.yaml, Bundle/Manifest, Scenario 262 and generated Conformance summary validation"}
+    docs_schema: {applicable: true, evidence: "CREATIVE_ASSET_PRESETS.yaml, Bundle/Manifest, Scenario 262 and generated Conformance summary and history index validation"}
 - boundary: Creative presets and Apple Silicon/model compatibility evidence
   reason: Presets must retain existing explicit generation controls; static dtype observations must not imply verified MPS inference.
   checks:
@@ -59,7 +59,7 @@ matrix:
     security: {applicable: true, evidence: "loopback/port/method/path, redirect, external destination, HTTP 4xx/5xx and redaction fixtures; no generation/download"}
     migration_recovery: {applicable: false, na_reason: Existing Bundle/Manifest additions remain additive with backward-compatible defaults.}
     cli_harness: {applicable: true, evidence: "native creative tool callback fixture plus read-only discovery/preflight CLI paths"}
-    docs_schema: {applicable: true, evidence: "CREATIVE_ASSET_PRESETS.yaml, Bundle/Manifest, Scenario 262 and generated Conformance summary validation"}
+    docs_schema: {applicable: true, evidence: "CREATIVE_ASSET_PRESETS.yaml, Bundle/Manifest, Scenario 262 and generated Conformance summary and history index validation"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
@@ -68,4 +68,4 @@ review_evidence:
   required: false
 candidate:
   base_sha: f93c43149175ed5a6394d68a6e72742e83256a44
-  changed_files_hash: 8880f4cb9ca498209336e73f65e08fd879726f77904ea29cdf76e85429f8ffcd
+  changed_files_hash: f2ecbc70553274928a87b4ebe2c544bccb64d4292c72563700cdc94161d16b37
