@@ -10,6 +10,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+Publication diagnostics are documented at the canonical Human and Agent topics, including safe native-hook output and read-only recovery behavior.
+
 Cross-document publication diagnostics changes must keep the Human, Agent adapter and CLI guidance aligned, then close the required documentation impact set before publication. Do not interpret an absent gh required-check result as PENDING without independent policy evidence; unavailable policy is fail-closed. Extend stable reason codes without leaking exception text, and keep Host-denial observations separate from native permission proof.
 
 新增 Skill 或改動 routing 時，同步更新 generated Skill Explorer、文件 placement/sync 規則、Scenario 259 與相關 Human/Agent 章節；使用 `scripts/skill_catalog.py` 重建頁面。
@@ -494,6 +496,8 @@ When public repository hardening changes, review together:
 Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功，再分別模擬 loopback 與 browser 失敗，確保環境阻擋診斷不受 optional module availability 干擾；這不變更 runtime 行為。
 
 ## Validation architecture consistency
+
+The publication validation matrix records the exact candidate, endpoint-status classifications and the no-mutation recovery invariant.
 
 Publication Scenario 260 requires tests for exact merge flags, SHA pinning, Required Checks missing/unconfigured/unknown, privacy redaction and advisory-only Host recovery.
 

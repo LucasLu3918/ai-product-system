@@ -22,6 +22,8 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 ## 文件角色
 
+The User Guide remains the Human entry point for publication troubleshooting, while this map preserves canonical Skill Explorer and adapter-document ownership.
+
 The Human User Guide describes publication recovery and retains the canonical Skill and Harness documentation links.
 
 上游 Skill 安裝／解除安裝的操作流程以 `docs/human/USER_GUIDE.md` 為準；Host discovery 與來源邊界見 `docs/human/HARNESS.md`，維護驗證見本文件的 `Validation architecture consistency` 對應章節與 `docs/human/CONFORMANCE.md` Scenario 259。
@@ -102,6 +104,8 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 Plan36 publication diagnostics preserve this topic's existing behavior and authority boundaries.
 
 ## Agent / machine canonical 文件
+
+Publication diagnosis is defined by the shared read-only contract, with native adapter behavior and recovery scenarios linked from canonical Human guidance.
 
 Publication root-cause contract is implemented in scripts/publication_authority.py, scripts/publication_diagnostics.py and scripts/publication_planning.py; Claude Code agents consume this contract without creating a second permission gate.
 

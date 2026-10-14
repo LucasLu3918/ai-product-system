@@ -72,6 +72,8 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+The OpenCode publication adapter reports the same bounded, safe recovery guidance as the shared diagnostic contract.
+
 Creative grants never confer Git merge authority; publication recovery diagnostics must remain separate from creative quality and asset acceptance.
 
 Creative generation and asset import retain their existing grants; a later Git publication uses the separate read-only repository diagnosis and approval flow described under Git Publication 與 Release.
@@ -183,6 +185,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
+Native runtime publication denials return allowlisted diagnostic metadata only; they do not execute a publication command or grant authority.
+
 Claude Host Auto Mode classifier denial and AIPS PreToolUse rejection are different failure sources; the read-only publication recovery report cannot resolve native permissions.
 
 Native adapters may report Publication Doctor findings and safe next steps, but those observations do not grant Git publication, merge or policy-change authority.
@@ -239,6 +243,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 詳細請看 [Global Harness 與 MCP](HARNESS.md)。
 
 ## Roles、Skills 與重用
+
+Publication Doctor uses the existing runtime adapter boundary and does not alter Skill discovery or routing.
 
 Optional Skills and Human Skill Explorer are independent of PR publication diagnostics; no Skill installation may silently change merge authority.
 

@@ -6,6 +6,8 @@ AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前�
 
 ## Runtime 與接入層
 
+Publication Doctor uses the shared runtime API observer to identify the candidate branch separately from target policy and retain only safe endpoint/status evidence.
+
 OpenCode 安裝、Host 能力發現與版本綁定的原生驗收是不同證據。驗收報告明確列出任意 Shell 子程序、MCP／自訂工具及程式外寫入不受 guard 支援；整體治理仍為 ADVISORY。
 
 Creative prompt compiler 與共用錯誤類別屬於既有 Python executor 的內部模組；`creative_execution` 相容 facade 保留原有呼叫與輸出，不新增 OpenCode 權限或工具簽名。
@@ -54,6 +56,8 @@ Skill 跨 Host 載入可透過 MCP Resource `aips://catalog/skills` 查目錄並
 OpenCode V2 的 managed plugin 在 primary model dispatch 前注入精簡 Turn Context，並在 permission evaluation 階段檢查支援的直接檔案操作。L1 僅允許非 Git workspace 中受限路徑的新創意資產；L2 需要 Project Intelligence READY、freshness CURRENT 與無待解權威衝突；L3 外部效果沿用既有 Human approval gate。Shell 僅保留有限唯讀命令，並額外提供固定參數的 AIPS 診斷。`creative_execution` 是唯一有界自訂工具：它綁定當前 EPHEMERAL Session，可建立不覆寫的角色／風格 Profile 與未設定引擎的 Creative Bundle，也可對既有 Bundle 執行唯讀預檢及明確要求的本機生成。其他 MCP/custom tools 和繞過 OpenCode 的寫入仍不在 guard 範圍。Plugin 安裝與 hook discovery 不足以證明執行防護；完成 runtime permission acceptance 前，治理保持 ADVISORY。
 
 ## Project Intelligence 與 Retrieval
+
+Publication Change Impact records the exact candidate and changed-path evidence before remote publication; diagnostic recovery remains read-only.
 
 Discovery 與 Query Terms 拆為內部模組，原 Facade 保留相同函式物件。最多三層的 lexical candidate 探索不升格 Canonical Graph；有序 Recovery Plan 不修改 Intelligence。
 
@@ -121,6 +125,8 @@ repository_id
 EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才使用 project-local .ai/。
 
 ## Creative Workflow
+
+The OpenCode publication denial adapter emits only allowlisted diagnostic identifiers and safe recovery metadata through the native Hook response.
 
 Creative asset approval remains independent from the Git publish approval and its error-recovery observations.
 
@@ -410,6 +416,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 
 ## Maintenance governance
+
+The publication test matrix binds branch-policy observation, HTTP failure classification, safe Hook denials and transient read-only recovery to the exact candidate.
 
 Publication planning 按需擴充既有 preflight：觀察 worktree identity、精確候選、live base 與 PR，再交回原生工具。Claude/Gemini 保留 native per-call merge confirmation；Codex 仍為 ADVISORY，OpenCode 不宣稱支援通用 Shell 發布攔截。
 

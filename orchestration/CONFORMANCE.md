@@ -1051,6 +1051,8 @@ Scenario 210 is lifecycle-covered by `tests/evidence/install_preflight_lifecycle
 
 ## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance
 
+Scenario 237 includes publication policy observation on the remote default branch, safe structured HTTP status evidence and transient read-only recovery.
+
 Scenario 240 covers the personal publication default and high-assurance opt-in, including PR/merge separation and the accepted current-origin trust boundary.
 
 The governance validator executes signed publication lifecycle regressions in `tests/test_publication_authority.py`, including actual Hook deny envelopes and SQLite concurrent single-use consumption. Fixture keys never establish an external production issuer.
@@ -1072,6 +1074,8 @@ The branch lifecycle report classifies remote branches using current exact-SHA P
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+Publication denial metadata is limited to the native diagnostic contract and does not affect Skill catalog behavior.
+
 Optional upstream Skills retain their independently reviewed installation lifecycle; publication recovery does not grant new Skill or Git authority. `aips skills list --include-upstream` reports the complete source inventory and filtering while ordinary listing stays canonical-only.
 
 All non-canonical upstream Skill IDs are user-installable regardless of AIPS disposition; seven exact canonical ID matches use the AIPS Skill. Native Codex and Claude Code projections require explicit invocation; Gemini retains activation consent.
@@ -1081,8 +1085,6 @@ The canonical Skill registry contains 49 AIPS Skills; the pinned 38-item upstrea
 `tests/evidence/skills_cli_lifecycle.py` also verifies upstream batch/selected install, optional-only eligibility, canonical duplicate skips, source-scoped ownership and uninstall across Codex, Claude, and Gemini; modified, unowned, and Portable Command files remain intact. Live Agent discovery is outside this fixture's evidence.
 
 ## Scenario 260 — Publication diagnostics and Doctor
-
-Scenario 260 binds policy observation to the remote default target branch independently of the candidate branch and verifies sanitized HTTP evidence plus structured safe Hook denials. Scenario 261 checks recovery retryability against actual reason categories and proves no publication action occurs during re-observation.
 
 Scenario 260 verifies the read-only `aips publish doctor`, Required Checks classification, literal merge diagnosis without execution or grant consumption, sanitized error output, and consistent runtime guidance. Missing/permission-limited policy evidence remains blocking; no repository policy mutation or merge bypass is introduced. Scenario 261 adds grouped dirty-path evidence and phase attribution through push, PR, checks, and exact-head merged recovery; diagnostics remain non-authorizing. Scenario 233 covers upstream Skill inventory and filtering without changing the canonical-only listing default.
 

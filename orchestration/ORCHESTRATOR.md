@@ -373,6 +373,8 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 
 ## Change-class handoff to Integration Gate
 
+The exact-candidate Integration Gate verifies deterministic publication diagnostics, target policy evidence, safe native Hook output and read-only transient recovery before remote publication.
+
 A blocked publication must re-observe PR/head/base/checks and distinguish Host, AIPS and GitHub errors; successful Gate evidence alone does not authorize native merge.
 
 For publication, reuse `aips publish prepare --worktree <candidate-root> --title <title> --body-file <file>`; execute the returned standalone command through the native tool with that exact cwd. `--auto-merge` requires explicit task merge intent and non-empty passing required checks; Claude may omit a second native prompt only for this validated task-authorized path, while Gemini retains `ask_user`. Re-observe after every step or fingerprint change. PLANNED never supplies quality evidence, Human approval or host permission.

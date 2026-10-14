@@ -213,6 +213,8 @@ Review actual:
 
 ## Release Security Gate
 
+Read-only publication diagnosis distinguishes authentication, permission, missing-resource, rate-limit, service and network evidence; unavailable policy evidence blocks, and retry never runs push, PR or merge actions.
+
 Specific protected-publication reason codes expose only sanitized underlying categories. Missing Required Checks policy evidence blocks; Host denial, recovery suggestions and green CI do not replace signed grants or per-call Human confirmation.
 
 Publication diagnostics 只輸出固定 reason code 與安全修復指引。`prepare` 不簽發、消耗 Grant 或執行發布；high-assurance 保留外部單次 Grant，Host 拒絕不得以其他命令重試。
