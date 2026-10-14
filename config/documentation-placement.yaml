@@ -94,6 +94,12 @@ placement_rules:
       docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
       docs/human/CONFORMANCE.md: [Scenario 229 — Agent Eval Freshness Selection]
 
+  - id: resource-authorized-anomaly-evidence
+    triggers: [scripts/agent_anomaly_evaluation.py, tests/evidence/agent_anomaly_evaluation_lifecycle.py, tests/evidence/gemini_observable_event_capture_lifecycle.py]
+    placements:
+      docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
+      docs/human/CONFORMANCE.md: [Scenario 139 — Out-of-Band Agent Anomaly Evidence Evaluation]
+
   - id: quality-ratchet
     triggers: [config/quality-ratchet.yaml, scripts/quality_ratchet.py, orchestration/QUALITY_PLANNING.md, tests/validation/quality_ratchet_contracts.py, tests/evidence/quality_ratchet_lifecycle.py, tests/scenarios/228-progressive-quality-ratchet.md]
     placements:

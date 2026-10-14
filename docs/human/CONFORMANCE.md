@@ -915,6 +915,8 @@ Scenario 139 新增一條**離線、deterministic、evidence-only** 的 anomaly 
 
 Lifecycle 另外驗證 private reasoning / secret-like input 會 BLOCKED，且故意製造錯誤 expected label 時 benchmark 必須 FAIL。
 
+舊版觀測事件未攜帶 kind / selector 時，離線 evaluator 會使用已命中的 Profile Grant 中繼資料補足；事件明確提供的授權上下文會優先接受完整比對。這只維持歷史 evidence 的可分析性，不改變執行期 default-deny 或授權結果。
+
 輸出固定為 `POST_EXECUTION_EVIDENCE`、`runtime_enforced=false`、`critical_path=false`、`automatic_remediation=false`。PASS 只回傳 `HUMAN_REVIEW_TRIAL_EVIDENCE`，不代表 ADOPT 或 runtime integration approval。
 
 目前 Scenario inventory 為 **139**：22 deterministic + 63 lifecycle + 54 agent_eval，**139 / 139 automated、0 manual、0 uncovered**。
