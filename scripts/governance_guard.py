@@ -416,7 +416,7 @@ def _record_publication_diagnostic(diagnostic: dict[str, Any], runtime: str) -> 
         if status == 'FAILED':
             logger.warning('Optional publication diagnostic trace failed')
         return status
-    except Exception:
+    except Exception:  # noqa: BLE001 - optional audit must never change the Hook decision.
         logger.warning('Optional publication diagnostic trace failed')
         return 'FAILED'
 
@@ -443,7 +443,7 @@ def _hook_binding(cwd: Path, command: str, mode: str) -> dict[str, str] | None:
                               capture_output=True, text=True, timeout=5, check=True).stdout.strip()
         from publication_authority import runtime_binding
         return runtime_binding(cwd, candidate_sha=head, target_ref=target_ref, mode=mode)
-    except Exception:
+    except Exception:  # noqa: BLE001 - binding is optional evidence; never crash the Hook.
         return None
 
 

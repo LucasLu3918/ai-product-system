@@ -11,11 +11,11 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
-import governance_guard
-import publication_diagnostics as diagnostics
-import publication_authority as authority
-import repository_governance_snapshot as governance_snapshot
 import governance_audit
+import governance_guard
+import publication_authority as authority
+import publication_diagnostics as diagnostics
+import repository_governance_snapshot as governance_snapshot
 
 
 class PublicationDiagnosticsTest(unittest.TestCase):
@@ -224,10 +224,12 @@ class PublicationDiagnosticsTest(unittest.TestCase):
         from io import StringIO
 
         output = StringIO()
-        with patch.dict(os.environ, {'AIPS_GOVERNANCE_AUDIT_LEDGER': '/unwritable/ledger.jsonl'}), \
-                patch('governance_audit.append_event', side_effect=OSError('private path')):
-            with redirect_stdout(output):
-                governance_guard.deny_hook_input('claude-code', 'REMOTE_OBSERVATION_FAILED')
+        with (
+            patch.dict(os.environ, {'AIPS_GOVERNANCE_AUDIT_LEDGER': '/unwritable/ledger.jsonl'}),
+            patch('governance_audit.append_event', side_effect=OSError('private path')),
+            redirect_stdout(output),
+        ):
+            governance_guard.deny_hook_input('claude-code', 'REMOTE_OBSERVATION_FAILED')
         payload = json.loads(output.getvalue())['hookSpecificOutput']
         self.assertEqual(payload['permissionDecision'], 'deny')
         self.assertIn('"trace_status":"FAILED"', payload['additionalContext'])
@@ -251,16 +253,18 @@ class PublicationDiagnosticsTest(unittest.TestCase):
         for key in list(hook_env):
             if key.startswith('GIT_CONFIG_') or key in {'GIT_DIR', 'GIT_WORK_TREE', 'GIT_INDEX_FILE'}:
                 hook_env.pop(key, None)
-        with patch('sys.stdin', StringIO(json.dumps(payload))), \
-                patch.dict(os.environ, hook_env, clear=True), \
-                patch.dict(os.environ, {'AIPS_GOVERNANCE_AUDIT_LEDGER': ''}), \
-                patch('publication_authority.publication_mode', return_value='personal'), \
-                patch('publication_authority.validate_personal_action', side_effect=
-                      authority.PublicationError(
-                          'personal mode permits only the current engineering branch',
-                          'PUSH_TARGET_BRANCH_MISMATCH', phase='push_validation')):
-            with redirect_stdout(output):
-                governance_guard.hook('claude-code')
+        with (
+            patch('sys.stdin', StringIO(json.dumps(payload))),
+            patch.dict(os.environ, hook_env, clear=True),
+            patch.dict(os.environ, {'AIPS_GOVERNANCE_AUDIT_LEDGER': ''}),
+            patch('publication_authority.publication_mode', return_value='personal'),
+            patch('publication_authority.validate_personal_action', side_effect=
+                  authority.PublicationError(
+                      'personal mode permits only the current engineering branch',
+                      'PUSH_TARGET_BRANCH_MISMATCH', phase='push_validation')),
+            redirect_stdout(output),
+        ):
+            governance_guard.hook('claude-code')
         hook = json.loads(output.getvalue())['hookSpecificOutput']
         self.assertEqual(hook['permissionDecision'], 'deny')
         self.assertIn('PUSH_TARGET_BRANCH_MISMATCH', hook['permissionDecisionReason'])

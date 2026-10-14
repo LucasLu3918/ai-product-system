@@ -872,9 +872,11 @@ def main() -> int:
             if args.summary_file:
                 with Path(args.summary_file).open("a", encoding="utf-8") as summary:
                     summary.write("Documentation impact: " + ("PASS" if impact["complete"] else "FAIL") + "\n")
-                    for path in impact["required_additions"][:40]:
-                        # Repository-controlled paths are rendered as plain text.
-                        summary.write("- Required: " + str(path).replace("\n", " ").replace("\r", " ") + "\n")
+                    # Repository-controlled paths are rendered as plain text.
+                    summary.writelines(
+                        "- Required: " + str(path).replace("\n", " ").replace("\r", " ") + "\n"
+                        for path in impact["required_additions"][:40]
+                    )
                     if len(impact["required_additions"]) > 40:
                         summary.write("- Additional paths omitted; inspect the full precheck report.\n")
             return 0 if impact["complete"] or not args.require_complete else 1

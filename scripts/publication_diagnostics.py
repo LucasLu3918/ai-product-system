@@ -2,10 +2,10 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import shutil
 import subprocess
-import os
 from pathlib import Path
 from typing import Any
 
@@ -31,7 +31,7 @@ def lookup_diagnostic(diagnostic_id: str, ledger: str | None = None) -> dict[str
         return {'status': 'BLOCKED', 'reason_code': 'DIAGNOSTIC_ID_INVALID',
                 'diagnostic_id': None, 'event': None, 'integrity': None,
                 'next_step_zh': '請提供完整 UUID 格式的 Diagnostic ID。'}
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001 - return a bounded unavailable diagnostic for all ledger failures.
         return {'status': 'UNAVAILABLE', 'reason_code': 'DIAGNOSTIC_LOOKUP_FAILED',
                 'error_class': type(exc).__name__, 'diagnostic_id': diagnostic_id,
                 'event': None, 'integrity': None,
@@ -46,6 +46,7 @@ def record_diagnostic(diagnostic: dict[str, Any], runtime: str,
         return 'NOT_CONFIGURED'
     try:
         from datetime import UTC, datetime
+
         from governance_audit import append_event
 
         raw_binding = binding or diagnostic.get('binding') or {}
@@ -82,7 +83,7 @@ def record_diagnostic(diagnostic: dict[str, Any], runtime: str,
         }
         append_event(Path(ledger).expanduser().resolve(), event)
         return 'RECORDED'
-    except Exception:
+    except Exception:  # noqa: BLE001 - audit is best effort and must not alter publication decisions.
         # Do not surface a ledger path or change the original allow/deny outcome.
         return 'FAILED'
 

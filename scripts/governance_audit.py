@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import argparse, base64, hashlib, hmac, json, os, re, shutil, subprocess, tempfile
+import argparse, base64, binascii, hashlib, hmac, json, os, re, shutil, subprocess, tempfile
 from pathlib import Path
 from typing import Any
 import yaml
@@ -123,7 +123,7 @@ def sign_checkpoint(private_key: Path, chain: str) -> str:
         message.write(chain.encode("utf-8")); message.flush()
         result = subprocess.run([_openssl(), "pkeyutl", "-sign", "-rawin", "-inkey", str(private_key),
                                  "-in", message.name, "-out", signature.name],
-                                capture_output=True, text=True, timeout=15)
+                                capture_output=True, text=True, timeout=15, check=False)
         if result.returncode != 0:
             raise RuntimeError("Ed25519 checkpoint signing failed: " + (result.stderr.strip() or result.stdout.strip()))
         return base64.b64encode(Path(signature.name).read_bytes()).decode("ascii")
@@ -131,14 +131,14 @@ def sign_checkpoint(private_key: Path, chain: str) -> str:
 def verify_checkpoint(public_key: Path, chain: str, signature_b64: str) -> bool:
     try:
         signature = base64.b64decode(signature_b64, validate=True)
-    except Exception:
+    except (binascii.Error, ValueError):
         return False
     with tempfile.NamedTemporaryFile() as message, tempfile.NamedTemporaryFile() as sig:
         message.write(chain.encode("utf-8")); message.flush()
         sig.write(signature); sig.flush()
         result = subprocess.run([_openssl(), "pkeyutl", "-verify", "-rawin", "-pubin", "-inkey", str(public_key),
                                  "-in", message.name, "-sigfile", sig.name],
-                                capture_output=True, text=True, timeout=15)
+                                capture_output=True, text=True, timeout=15, check=False)
         return result.returncode == 0
 
 def normalize_event_input(raw: dict[str, Any], sequence: int) -> dict[str, Any]:
@@ -354,7 +354,7 @@ def load_json_mapping(path: Path, label: str) -> dict[str, Any]:
     except json.JSONDecodeError as exc:
         raise ValueError(f"{label} is not valid JSON: {exc}") from exc
     if not isinstance(value, dict):
-        raise ValueError(f"{label} must be a JSON object")
+        raise TypeError(f"{label} must be a JSON object")
     return value
 
 def write_canonical_json(path: Path, value: dict[str, Any]) -> None:
