@@ -43,7 +43,7 @@ class PublicationDiagnosticsTest(unittest.TestCase):
             elif endpoint.endswith("/rules/branches/main"):
                 data = []
             elif endpoint.endswith("/branches/main"):
-                data = {"name": "main"}
+                data = {"name": "main", "protected": True}
             elif endpoint.endswith("/rulesets?includes_parents=true&per_page=100"):
                 data = []
             elif endpoint.endswith("/branches/main/protection"):
@@ -82,7 +82,7 @@ class PublicationDiagnosticsTest(unittest.TestCase):
             if "branches/main" in argv[-1] and "protection" not in argv[-1]:
                 if "/rules/branches/" in argv[-1]:
                     return subprocess.CompletedProcess(argv, 1, "", "HTTP 403 private detail")
-                return subprocess.CompletedProcess(argv, 0, json.dumps({"name": "main"}), "")
+                return subprocess.CompletedProcess(argv, 0, json.dumps({"name": "main", "protected": True}), "")
             if "rulesets?" in argv[-1]:
                 return subprocess.CompletedProcess(argv, 0, "[]", "")
             return subprocess.CompletedProcess(argv, 1, "", "HTTP 403 private detail")
@@ -94,11 +94,29 @@ class PublicationDiagnosticsTest(unittest.TestCase):
         self.assertEqual(result["status"], "BLOCKED")
         self.assertEqual(result["policy"]["status"], "UNAVAILABLE")
         diagnosis = next(item for item in result["diagnostics"]
-                         if item["reason_code"] == "PROTECTION_EVIDENCE_UNAVAILABLE")
+                         if item["reason_code"] == "REQUIRED_CHECKS_POLICY_PERMISSION")
         self.assertFalse(diagnosis["retryable"])
         self.assertEqual(diagnosis["category"], "PERMISSION")
         self.assertEqual(result["next_steps"], [item["next_step"] for item in result["diagnostics"]])
         self.assertNotIn("private detail", str(result))
+
+    def test_policy_permission_and_transient_failures_keep_distinct_safe_categories(self):
+        base = {"source_complete": False, "sources": {"branch_protection": {
+            "status": "UNKNOWN_PERMISSION", "endpoint": "repos/fixture/repo/branches/main/protection",
+            "http_status": 403, "error_class": "PERMISSION", "error_message": "private"}},
+            "branch_protection": {}, "rulesets": []}
+        permission = diagnostics.required_checks_policy(base)
+        self.assertEqual((permission["status"], permission["category"], permission["retryable"]),
+                         ("UNKNOWN_PERMISSION", "PERMISSION", False))
+        for category in ("NETWORK", "RATE_LIMITED", "GITHUB_SERVER_ERROR"):
+            snapshot = {**base, "sources": {"branch_protection": {
+                "status": "UNKNOWN", "endpoint": "repos/fixture/repo/branches/main/protection",
+                "http_status": None, "error_class": category}}}
+            observed = diagnostics.required_checks_policy(snapshot)
+            self.assertEqual(observed["category"], category)
+            self.assertTrue(observed["retryable"])
+        self.assertEqual(diagnostics.remote_failure("HTTP 429 secondary rate limit"), "RATE_LIMITED")
+        self.assertEqual(diagnostics.remote_failure("HTTP 503 service unavailable"), "GITHUB_SERVER_ERROR")
 
     def test_doctor_observes_remote_default_policy_branch_separately(self):
         subprocess.run(["git", "checkout", "-b", "codex/source"], cwd=self.root, check=True,
@@ -116,7 +134,7 @@ class PublicationDiagnosticsTest(unittest.TestCase):
 
         payloads = {
             "rules/branches/main": [],
-            "branches/main": {"name": "main"},
+            "branches/main": {"name": "main", "protected": True},
             "rulesets?includes_parents=true&per_page=100": [],
             "branches/main/protection": {"required_status_checks": {"contexts": ["ci"]}},
         }
@@ -196,6 +214,44 @@ class PublicationDiagnosticsTest(unittest.TestCase):
         self.assertIn('"authorized":false', context)
         self.assertIn('"executed":false', context)
         self.assertNotIn("command", context)
+
+    def test_claude_hook_runs_one_read_only_doctor_only_for_retryable_remote_failure(self):
+        from contextlib import redirect_stdout
+        from io import StringIO
+
+        from publication_authority import PublicationError
+
+        command = "gh pr merge 7 --repo fixture/repo --squash --match-head-commit " + "a" * 40
+        doctor_payload = {"status": "BLOCKED", "read_only": True,
+                          "policy": {"required_check_state": "UNAVAILABLE"},
+                          "diagnostics": [{"reason_code": "REQUIRED_CHECKS_POLICY_NETWORK",
+                              "phase": "protection_policy_evidence", "category": "NETWORK",
+                              "retryable": True, "next_step": "Retry safely."}],
+                          "authorized": False, "executed": False, "api_write_performed": False}
+        calls = []
+        def run(argv, **kwargs):
+            calls.append(argv)
+            return subprocess.CompletedProcess(argv, 2, json.dumps(doctor_payload), "sensitive raw output")
+
+        output = StringIO()
+        with patch.object(governance_guard, "operations_for", return_value=["gh_pr_merge"]), \
+                patch.object(governance_guard, "safe_emit", return_value={"decision": "ALLOW"}), \
+                patch("publication_authority.publication_mode", return_value="personal"), \
+                patch("publication_commands.shell_commands", return_value=[["gh", "pr", "merge", "7"]]), \
+                patch("publication_authority.validate_personal_action", side_effect=PublicationError(
+                    "private details", "REQUIRED_CHECKS_POLICY_NETWORK", phase="protection_policy_evidence")), \
+                patch.object(governance_guard.subprocess, "run", side_effect=run), \
+                patch.object(governance_guard.sys, "stdin", StringIO(json.dumps({"cwd": str(self.root),
+                    "tool_input": {"command": command}}))), \
+                redirect_stdout(output):
+            self.assertEqual(governance_guard.hook("claude-code"), 0)
+        self.assertEqual(len(calls), 1)
+        self.assertIn("doctor", calls[0])
+        payload = json.loads(output.getvalue())["hookSpecificOutput"]
+        self.assertEqual(payload["permissionDecision"], "deny")
+        self.assertIn('"doctor_observation"', payload["additionalContext"])
+        self.assertNotIn("sensitive raw output", output.getvalue())
+        self.assertIn('"authorized":false', payload["additionalContext"])
 
     def test_aips_cli_routes_doctor_to_non_aips_git_project(self):
         project = self.root / "customer-project"

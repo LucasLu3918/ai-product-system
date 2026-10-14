@@ -63,6 +63,11 @@ class PublicationError(ValueError):
         worktree = self.context.get('worktree')
         if code == 'WORKTREE_DIRTY' and isinstance(worktree, Path):
             result['worktree_details'] = worktree_dirty_details(worktree)
+        policy_sources = self.context.get('policy_sources')
+        if isinstance(policy_sources, dict):
+            result['api_sources'] = {name: {key: item.get(key) for key in
+                ('status', 'endpoint', 'http_status', 'error_class')}
+                for name, item in policy_sources.items() if isinstance(item, dict)}
         return result
 
 
@@ -103,6 +108,10 @@ PUBLICATION_DIAGNOSTICS = {
     'REQUIRED_CHECKS_PERMISSION': ('GitHub did not allow required-check evidence to be read.', 'Resolve repository access with an administrator; do not treat unavailable checks as passing.', 'checks', 'PERMISSION'),
     'REQUIRED_CHECKS_AUTHENTICATION': ('GitHub authentication is unavailable for required-check inspection.', 'Resolve the existing GitHub CLI login locally, then rerun diagnosis.', 'checks', 'AUTHENTICATION'),
     'REQUIRED_CHECKS_NETWORK': ('GitHub required-check evidence could not be reached.', 'Check connectivity and retry the read-only diagnosis.', 'checks', 'NETWORK'),
+    'REQUIRED_CHECKS_POLICY_PERMISSION': ('Required Checks policy is hidden by GitHub permissions.', 'Ask a repository administrator to confirm policy visibility; do not treat hidden policy as unconfigured.', 'checks', 'PERMISSION'),
+    'REQUIRED_CHECKS_POLICY_NETWORK': ('Required Checks policy could not be reached because of a network failure.', 'Check connectivity, then retry the read-only diagnosis.', 'checks', 'NETWORK'),
+    'REQUIRED_CHECKS_POLICY_RATE_LIMITED': ('GitHub rate limited the Required Checks policy observation.', 'Wait for the rate limit to clear, then retry the read-only diagnosis.', 'checks', 'RATE_LIMITED'),
+    'REQUIRED_CHECKS_POLICY_GITHUB_SERVER_ERROR': ('GitHub could not complete the Required Checks policy observation.', 'Retry the read-only diagnosis after GitHub service recovers.', 'checks', 'GITHUB_SERVER_ERROR'),
     'REQUIRED_CHECKS_API_UNAVAILABLE': ('GitHub required-check evidence is unavailable.', 'Check GitHub API availability and repository access, then retry.', 'checks', 'API_UNAVAILABLE'),
     'REQUIRED_CHECKS_INVALID': ('GitHub returned an invalid required-check response.', 'Inspect GitHub CLI compatibility and retry without bypassing the merge guard.', 'checks', 'INVALID_RESPONSE'),
 
@@ -230,7 +239,9 @@ def _reason_for_message(message: str) -> str:
     return 'PUBLICATION_REJECTED'
 
 
-RETRYABLE_REASONS = {'REQUIRED_CHECKS_PENDING'}
+RETRYABLE_REASONS = {'REQUIRED_CHECKS_PENDING', 'REQUIRED_CHECKS_POLICY_NETWORK',
+                     'REQUIRED_CHECKS_POLICY_RATE_LIMITED',
+                     'REQUIRED_CHECKS_POLICY_GITHUB_SERVER_ERROR'}
 
 
 def _phase_for_code(code: str) -> str:
@@ -577,6 +588,26 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
             target = _ref(root, 'refs/heads/' + pr['baseRefName'])
             if pr['baseRefName'] != _remote_default_branch(root, url):
                 raise PublicationError('personal PR merge must target the remote default branch')
+            from publication_diagnostics import (
+                classify_required_checks,
+                required_checks_policy,
+            )
+            from repository_governance_snapshot import build_snapshot, query_github_api
+
+            def read_policy_api(endpoint: str) -> dict[str, Any]:
+                try:
+                    return query_github_api(root, endpoint)
+                except subprocess.TimeoutExpired:
+                    return {'returncode': 1, 'http_status': None, 'payload': None,
+                            'endpoint': endpoint, 'error_class': 'NETWORK', 'error_message': None}
+            policy_snapshot = build_snapshot(repo, pr['baseRefName'], read_policy_api)
+            policy_observation = required_checks_policy(policy_snapshot)
+            if policy_observation['status'] != 'CONFIGURED':
+                reason_code = policy_observation['reason_code'] or 'REQUIRED_CHECKS_POLICY_UNVERIFIED'
+                error = PublicationError('Required Checks policy is not verifiably configured', reason_code,
+                                         phase='protection_policy_evidence')
+                error.context.update({'policy_sources': policy_observation.get('sources', {})})
+                raise error
             checks = subprocess.run(
                 ['gh', 'pr', 'checks', argv[3], '--repo', repo, '--required', '--json', 'bucket,name'],
                 cwd=root, capture_output=True, text=True, timeout=30, check=False,
@@ -585,9 +616,9 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
                 required_checks = json.loads(checks.stdout) if checks.returncode in {0, 8} else None
             except json.JSONDecodeError:
                 required_checks = None
-            from publication_diagnostics import classify_required_checks
             check_observation = classify_required_checks(required_checks, returncode=checks.returncode,
-                                                          stderr=checks.stderr)
+                                                          stderr=checks.stderr,
+                                                          required_policy=policy_observation['checks'])
             if check_observation['status'] != 'PASS':
                 raise PublicationError('required PR checks are missing or not all passing',
                                         check_observation['reason_code'] or 'REQUIRED_CHECKS_INVALID')

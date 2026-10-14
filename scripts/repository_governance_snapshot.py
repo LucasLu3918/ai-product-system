@@ -160,7 +160,9 @@ def build_snapshot(
         if readable:
             payloads[name] = payload
 
-    branch_exists = isinstance(payloads.get("branch"), dict)
+    branch_payload = payloads.get("branch")
+    branch_exists = isinstance(branch_payload, dict)
+    branch_protected = branch_payload.get("protected") if branch_exists else None
     if not branch_exists:
         for name in ("branch_protection", "effective_rules"):
             source = sources[name]
@@ -170,7 +172,22 @@ def build_snapshot(
     rulesets = payloads.get("rulesets")
     protection = payloads.get("branch_protection")
     effective_rules = payloads.get("effective_rules")
-    complete = branch_exists and isinstance(effective_rules, list)
+    # `protected` is GitHub's aggregate signal across classic protection and
+    # rulesets. If it says the branch is protected, an unreadable classic
+    # endpoint leaves the effective policy unknown even when the rules endpoint
+    # is readable. A readable false signal is useful cross-check evidence.
+    classic_state = sources["branch_protection"]["status"]
+    protection_observable = classic_state in {"READABLE", "NOT_CONFIGURED"}
+    if branch_protected is False:
+        protection_observable = True
+    elif branch_protected is True and classic_state == "NOT_CONFIGURED" and not effective_rules:
+        # The aggregate branch bit says protection is active, but neither
+        # classic policy nor any effective rules explain it.
+        protection_observable = False
+    complete = (branch_exists and type(branch_protected) is bool and
+                isinstance(effective_rules, list) and protection_observable)
+    if branch_protected is True and not protection_observable:
+        sources["branch_protection"]["status"] = "UNKNOWN_PERMISSION" if sources["branch_protection"].get("error_class") == "PERMISSION" else "UNKNOWN"
     classic_protection_configured = isinstance(protection, dict) and bool(protection)
     active_policy = bool(effective_rules) or classic_protection_configured
     bypass_actor_map = {
@@ -192,6 +209,7 @@ def build_snapshot(
         "rulesets": rulesets or [],
         "effective_rules": effective_rules or [],
         "branch_exists": branch_exists,
+        "branch_protected": branch_protected,
         "classic_protection_configured": classic_protection_configured,
         "protection_state": ("PROTECTED" if active_policy else "UNPROTECTED") if complete else "UNKNOWN",
         "evidence_level": "EFFECTIVE_RULES_CONFIRMED" if complete else "INCOMPLETE",

@@ -10,6 +10,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+Core publication changes close recursive Human and Agent documentation placement before the exact-candidate Gate.
+
 Publication diagnostics are documented at the canonical Human and Agent topics, including safe native-hook output and read-only recovery behavior.
 
 Cross-document publication diagnostics changes must keep the Human, Agent adapter and CLI guidance aligned, then close the required documentation impact set before publication. Do not interpret an absent gh required-check result as PENDING without independent policy evidence; unavailable policy is fail-closed. Extend stable reason codes without leaking exception text, and keep Host-denial observations separate from native permission proof.
@@ -149,6 +151,8 @@ Multi-file changes should normally be assembled into one coherent remote branch 
 
 ## Versioning
 
+The 0.83.0 candidate records shared Required Checks policy evidence and bounded Claude Code publication diagnostics.
+
 Plan29 #6 is validated as an exact Core Change candidate with its own matrix and required repository check.
 
 
@@ -282,6 +286,8 @@ Focused Intelligence context evidence must distinguish storage deduplication fro
 
 ## Impact-derived regression testing
 
+Publication policy changes test branch protection visibility, exact target policy, check-state classification and Hook no-write behavior.
+
 The publication matrix covers candidate-versus-policy branch selection, HTTP error classes, safe Hook diagnostics and read-only retry classification on the exact candidate.
 
 The publication matrix binds the exact changed-path set and records denied, unavailable, stale and no-mutation evidence before the Integration Gate.
@@ -414,6 +420,8 @@ High-risk external runtime actions also require an exact, unexpired Approval Rec
 
 ## Public repository / CI consistency
 
+The lucas-lab target requires PRs and the `verify` and `visual-audit` checks; force pushes and branch deletion are disabled with zero required approvals.
+
 創作品質維護分開觀察必要條件漏判、生成／修正次數、重複缺陷與耗時。缺陷回饋、修正版 Profile／Bundle、比較報告保留 hash 關聯；既有 Profile 不原地修改。合成 lifecycle 只驗證流程，真實 vision 正確率需獨立實測。
 
 
@@ -496,6 +504,8 @@ When public repository hardening changes, review together:
 Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功，再分別模擬 loopback 與 browser 失敗，確保環境阻擋診斷不受 optional module availability 干擾；這不變更 runtime 行為。
 
 ## Validation architecture consistency
+
+Scenario 260/261 lifecycle, focused publication tests and the exact-candidate Integration Gate cover the new policy observation boundary.
 
 The publication validation matrix records the exact candidate, endpoint-status classifications and the no-mutation recovery invariant.
 

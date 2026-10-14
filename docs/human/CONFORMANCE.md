@@ -1719,6 +1719,8 @@ Diagnostic recommendations remain read-only and conditional.
 
 ## Scenario 233 — Public CLI Help and Error Contracts
 
+The publication Doctor command keeps its structured JSON status and safe reason-code contract while policy visibility now distinguishes permission-hidden state.
+
 The Doctor command adds repository readiness output without changing existing CLI error or permission semantics; Scenario 260 covers its full diagnostics and redaction contract.
 
 The public Project Intelligence facade retains its existing command and symbol contract.
@@ -1786,6 +1788,8 @@ The cross-profile quality evidence extension is covered by Scenario 258; this cr
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+The read-only Skill Explorer and upstream Skill routing are unchanged by the publication diagnostics release.
+
 The publication recovery contract remains a native, non-authorizing diagnostic path and does not change canonical Skill discovery or routing behavior.
 
 Scenario 259 also checks `aips skills list --include-upstream` inventory and filtering without changing the canonical-only default; installation and removal remain separate explicit operations.
@@ -1828,9 +1832,11 @@ Publication diagnostics observe policy on the remote default branch independentl
 
 ### Scenario 261 — Publication Diagnostics and Safe Recovery
 
-The read-only publication doctor preserves branch/effective-rule evidence and sanitized HTTP failures, groups dirty paths without reading contents, attributes push/PR/check/merge blockers to their phase, and recognizes exact-head `ALREADY_MERGED` recovery. Diagnostics never grant authority. Evidence: `tests/scenarios/261-publication-diagnostics-and-safe-recovery.md` and the linked lifecycle/validation tests.
+The read-only publication doctor cross-checks `branch.protected` with classic protection/effective rules, distinguishes permission-hidden policy, and preserves sanitized transient HTTP causes. Claude Code Hook runs one bounded Doctor for retryable network, rate-limit and server failures; skipped checks retain GitHub's successful provider outcome while AIPS remains fail-closed. Diagnostics never grant authority. Evidence: `tests/scenarios/261-publication-diagnostics-and-safe-recovery.md` and the linked lifecycle/validation tests.
 
 ## Scenario 240 — Personal Publication Default and High-Assurance Opt-In
+
+Merge readiness now consumes fresh Required Checks policy from the same target-branch observer as Doctor; native confirmation and exact candidate binding remain required.
 
 Scenario 240 的 `tests/test_publication_planning.py` 覆蓋 worktree 綁定、精確 SHA/ref、舊指紋拒絕、Host denial、PR 重用與 squash merge 恢復；fixture 不等於真實 Host 或 REST 驗收。
 

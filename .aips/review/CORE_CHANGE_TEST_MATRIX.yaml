@@ -1,13 +1,15 @@
 version: 1
 change:
-  id: publication-diagnostics-recovery-20261014
-  summary: Separate publication candidate and target-policy evidence; retain safe GitHub error provenance; align
-    recovery retryability; show structured Claude Code Hook diagnostics while preserving authority gates.
+  id: plan38-required-checks-policy
+  summary: Share fresh target-branch Required Checks evidence across Doctor and Merge Authority; distinguish
+    policy permissions and provider outcomes; perform one read-only Claude Hook Doctor on retryable remote errors.
   boundary:
-  - Candidate and target policy branch evidence
-  - GitHub response provenance and redaction
-  - Recovery classification and publication phase boundaries
-  - Claude Code denial and canonical documentation closure
+  - Shared fresh policy evidence for Doctor and Merge Authority
+  - Classic protection, aggregate branch state and effective-rule consistency
+  - Required Checks status, sanitized API error provenance and provider outcomes
+  - Claude Code one-shot read-only recovery and preserved Human/Host authority
+  - lucas-lab/main PR, required-check and branch safety settings
+  - Canonical documentation closure and exact-candidate validation
 matrix:
 - boundary: Candidate and target policy branch evidence
   reason: Policy decisions must observe the selected/default remote target independently of the local candidate,
@@ -15,17 +17,17 @@ matrix:
   checks:
     static_lint:
       applicable: true
-      evidence: 'PENDING: Ruff and repository validation on the exact candidate.'
+      evidence: 'PASS: Ruff found no new candidate lint findings; governance_guard has the same three baseline findings as origin/main.'
     unit:
       applicable: true
       evidence: 'PASS: focused doctor tests cover source/default-target branch separation, explicit target, and
         incomplete policy remains UNKNOWN.'
     integration:
       applicable: true
-      evidence: 'PENDING: snapshot lifecycle covers confirmed branch existence and contextual 404 behavior.'
+      evidence: 'PASS: repository governance snapshot lifecycle verifies branch.protected cross-check, permission-hidden classic policy, inconsistent protection evidence and contextual 404 behavior.'
     contract:
       applicable: true
-      evidence: 'PASS: doctor response contract asserts separate candidate_branch and policy_branch fields.'
+      evidence: 'PASS: focused authority/doctor tests verify one shared fresh target-branch policy observation and separate candidate/policy branch fields.'
     e2e:
       applicable: false
       na_reason: No deployed user interface; the read-only CLI and deterministic remote API fixtures exercise the
@@ -42,21 +44,21 @@ matrix:
         tests.'
     docs_schema:
       applicable: true
-      evidence: 'PENDING: close documentation impact and run placement/sync/build validators.'
+      evidence: 'PASS: recursive documentation impact has zero pending additions and documentation placement has zero errors; full exact-candidate Gate remains required.'
 - boundary: GitHub response provenance and redaction
   reason: HTTP and CLI response categories affect policy observability; raw credentials, headers and unrestricted
     errors must never escape.
   checks:
     static_lint:
       applicable: true
-      evidence: 'PENDING: Ruff and repository validation on the exact candidate.'
+      evidence: 'PASS: Ruff found no new candidate lint findings; governance_guard has the same three baseline findings as origin/main.'
     unit:
       applicable: true
       evidence: 'PASS: parser tests distinguish 401 authentication, 403 permission, rate limiting and safe token
         redaction.'
     integration:
       applicable: true
-      evidence: 'PENDING: governance snapshot lifecycle and contract validations.'
+      evidence: 'PASS: repository governance snapshot lifecycle and contract validation cover the new policy states.'
     contract:
       applicable: true
       evidence: 'PASS: stable source endpoint/status/error-class fields remain additive and bounded.'
@@ -74,21 +76,21 @@ matrix:
       evidence: 'PASS: doctor exposes structured safe API source evidence without writes.'
     docs_schema:
       applicable: true
-      evidence: 'PENDING: validate synchronized troubleshooting and security guidance.'
+      evidence: 'PASS: User Guide, Security Assurance, Technology Guide, Harness, Conformance, and orchestration policy guidance are synchronized.'
 - boundary: Recovery classification and publication phase boundaries
   reason: Retry metadata must agree with actual retry guidance; retries can only re-observe transient evidence and
     cannot publish.
   checks:
     static_lint:
       applicable: true
-      evidence: 'PENDING: Ruff and repository validation on the exact candidate.'
+      evidence: 'PASS: Ruff found no new candidate lint findings; governance_guard has the same three baseline findings as origin/main.'
     unit:
       applicable: true
       evidence: 'PASS: recovery tests distinguish transient network evidence, pending checks, generic unavailable,
         permission and Human/Host denials.'
     integration:
       applicable: true
-      evidence: 'PENDING: publication planning and already-merged lifecycle fixtures.'
+      evidence: 'PASS: 76 focused publication authority, Doctor, recovery and planning tests; exact-head merged recovery remains covered.'
     contract:
       applicable: true
       evidence: 'PASS: recovery output is non-authorizing and preserves reason/phase contracts.'
@@ -106,21 +108,21 @@ matrix:
       evidence: 'PASS: standalone/compound command and publication phase tests remain in the focused suites.'
     docs_schema:
       applicable: true
-      evidence: 'PENDING: validate Scenario 260/261 and adapter guidance.'
+      evidence: 'PASS: Scenario 260/261 and Claude Code Hook guidance specify transient-only one-shot Doctor behavior.'
 - boundary: Claude Code denial and canonical documentation closure
   reason: Native Hook denials need visible structured safe identifiers while preserving the documented native envelope
     and all publication authorization boundaries.
   checks:
     static_lint:
       applicable: true
-      evidence: 'PENDING: Markdown, Python and repository validators on the exact candidate.'
+      evidence: 'PASS: documentation placement and recursive impact checks pass; focused Python tests cover the native Hook envelope.'
     unit:
       applicable: true
       evidence: 'PASS: hook test asserts denial, diagnostic identifier/phase, allowlisted context and no command
         input.'
     integration:
       applicable: true
-      evidence: 'PENDING: Hook envelope lifecycle and runtime adapter conformance.'
+      evidence: 'PASS: Claude Hook lifecycle asserts exactly one Doctor call for a retryable network error and no raw-output leakage.'
     contract:
       applicable: true
       evidence: 'PASS: Claude Code PreToolUse envelope remains native and denied actions stay denied.'
@@ -138,7 +140,37 @@ matrix:
       evidence: 'PASS: native Hook denial contract and user-facing reason are covered by focused tests.'
     docs_schema:
       applicable: true
-      evidence: 'PENDING: close exact docs impact, placement, sync, VitePress, and Scenario 260/261.'
+      evidence: 'PASS: recursive documentation impact has zero pending additions, placement has zero errors, and Scenario 260/261 plus adapter guidance are updated.'
+- boundary: lucas-lab main protection configuration
+  reason: The user approved a protected pull-request path with named Required Checks while keeping force pushes, deletion and reviewer count explicit.
+  checks:
+    static_lint:
+      applicable: false
+      na_reason: GitHub repository settings are configured externally and are not source code.
+    unit:
+      applicable: false
+      na_reason: The settings are verified by live read-back rather than an application unit test.
+    integration:
+      applicable: true
+      evidence: 'PASS: GitHub read-back confirmed main requires PRs, verify and visual-audit, admin enforcement, no force pushes/deletion, and zero required approvals.'
+    contract:
+      applicable: true
+      evidence: 'PASS: GitHub branch protection API read-back matched every approved setting.'
+    e2e:
+      applicable: false
+      na_reason: No application UI or deployed runtime is changed by repository branch protection.
+    security:
+      applicable: true
+      evidence: 'PASS: bypass is not enabled; force push/deletion are disabled; required reviewer count remains zero as approved.'
+    migration_recovery:
+      applicable: false
+      na_reason: The GitHub settings update does not migrate repository data.
+    cli_harness:
+      applicable: false
+      na_reason: No CLI or runtime adapter change is needed to apply repository settings.
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: the protected-branch requirements are documented in the maintenance, technology and publication guidance.'
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
@@ -146,5 +178,5 @@ status: READY
 review_evidence:
   required: false
 candidate:
-  base_sha: c12e5b41932679ef6be132776fb5bf8e850210f2
-  changed_files_hash: d0f1998ddde60c5f55ad6a069b00be0a5b54503b7d0734bc8e6b5b2211f816c4
+  base_sha: 436ede5c44c0cfd51b49fa7e2c61db8c2bc4b498
+  changed_files_hash: 8617cb58bbb2c860d70b6f3380a02eabed70d28bb7475d0551af30ab0d369f57

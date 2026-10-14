@@ -24,6 +24,8 @@ The Gate is deterministic code. It has no Human approval, merge or release autho
 
 ## Exact-candidate binding
 
+Publication diagnostics changes require the Core Change Matrix to bind the exact source, tests, scenario and documentation file set before the local Gate runs.
+
 The policy branch observed by publication Doctor is the remote default target branch; the local candidate branch/SHA remain distinct and both must be re-observed before any separately authorized native action.
 
 Read-only publication prepare/diagnose results do not replace this exact-candidate Gate. Native execution revalidates authority; required PR/main checks and task merge intent remain separate from planning fingerprints.

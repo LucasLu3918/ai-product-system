@@ -111,6 +111,8 @@ The Security Engineer records the floor and rationale.
 
 ## Product baseline vs change impact
 
+Plan38 treats incomplete target-branch policy evidence as a security boundary and validates the exact candidate before publication.
+
 創作可靠性 Core candidate 保留完整 Gate、媒材拒絕及取消授權回歸。損壞 PNG fixture 必須失敗；合成測試不能替代真實模型與人工品質驗收。
 
 OpenCode local file admission is limited to directly intercepted native operations and confined resources. Readiness checks do not provide OS sandboxing and do not cover MCP/custom tools or out-of-process writes.
@@ -212,6 +214,8 @@ Review actual:
 - tests and failure paths.
 
 ## Release Security Gate
+
+Publication diagnostics remain read-only: a retryable Doctor observation cannot change policy, run workflows or authorize a merge.
 
 Read-only publication diagnosis distinguishes authentication, permission, missing-resource, rate-limit, service and network evidence; unavailable policy evidence blocks, and retry never runs push, PR or merge actions.
 
@@ -331,6 +335,8 @@ Privacy, complexity, tools, context and total task cost remain part of model rou
 
 ## Secret and credential safety
 
+The Hook Doctor envelope retains only allowlisted reason, phase, category and safe next-step fields; provider response bodies and credentials stay excluded.
+
 
 LLM prompts and outputs are untrusted input; apply data minimization, secret handling, and risk-appropriate human review. Product research and playtests require informed consent and retain only evidence needed for the decision.
 
@@ -444,6 +450,8 @@ The Parallel Run Dashboard is loopback-only and read-only. Its projection cannot
 AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned content is persisted or before candidate publication content is approved. Secrets are redacted from diagnostic sinks and blocked from durable/public sinks; deterministic PII is context- and sink-aware; external content is marked with provenance and prompt injection is reported as a signal. This boundary does not replace Human Authority, Publish Approval, native runtime hooks or repository-side secret protection.
 
 ## Runtime Policy Enforcement
+
+Claude Code runs one bounded Doctor only for retryable network, rate-limit or GitHub server errors; native Host confirmation and merge authority remain required.
 
 Publication Doctor reports only observed HTTP status and safe endpoint identity. Authentication, permission, missing resource, rate limit, service and network failures remain distinct; unknown policy evidence blocks, and diagnostic retries never run push, PR or merge actions.
 

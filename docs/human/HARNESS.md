@@ -54,6 +54,8 @@ AIPS Core
 
 ## Native Runtime Adapters
 
+Claude Code's publication Hook runs one bounded read-only Doctor after explicitly retryable network, rate-limit or GitHub server failures; OpenCode and Codex do not claim this automatic behavior.
+
 Claude Code PreToolUse denials may include a bounded diagnostic ID, reason code, phase, category, retry state and next step in additional context; raw command text, arguments and credentials are excluded.
 
 Claude Code may reject a Bash merge as Merge Without Review independently of AIPS PreToolUse; preserve exact Host-versus-AIPS provenance and route confirmation through native permissions rather than rewrites.

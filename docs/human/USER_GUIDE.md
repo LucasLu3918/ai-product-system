@@ -72,6 +72,8 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+Publication Doctor recovery is separate from Creative Direction, asset generation and visual-review decisions.
+
 The OpenCode publication adapter reports the same bounded, safe recovery guidance as the shared diagnostic contract.
 
 Creative grants never confer Git merge authority; publication recovery diagnostics must remain separate from creative quality and asset acceptance.
@@ -185,6 +187,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
+The Claude Code Hook performs one read-only Publication Doctor check for explicitly retryable remote errors; Codex and OpenCode retain their existing observation behavior.
+
 Native runtime publication denials return allowlisted diagnostic metadata only; they do not execute a publication command or grant authority.
 
 Claude Host Auto Mode classifier denial and AIPS PreToolUse rejection are different failure sources; the read-only publication recovery report cannot resolve native permissions.
@@ -243,6 +247,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 詳細請看 [Global Harness 與 MCP](HARNESS.md)。
 
 ## Roles、Skills 與重用
+
+The Skill Explorer remains a read-only catalog; publication Doctor changes do not alter Skill discovery, selection or installation.
 
 Publication Doctor uses the existing runtime adapter boundary and does not alter Skill discovery or routing.
 
@@ -362,6 +368,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 詳見 [Security Assurance](SECURITY_ASSURANCE.md)。
 
 ## Quality 與 Review
+
+Publication authority tests cover the shared target-policy observation and the Claude-only bounded recovery path; they do not imply a change to Skill evaluation.
 
 Skill Explorer 可搜尋可用的 AIPS 任務方法；上游方法的採納狀態與選用條件以卡片標示，Writing workflow 仍須明確指定。
 
@@ -603,9 +611,9 @@ Personal Mode 的逐次合併確認和 High-Assurance Mode 的外部 signed gran
 
 `aips publish diagnose --worktree <candidate-root> --command '<literal-command>'` 可辨識 `PUSH_SOURCE_NOT_EXACT_SHA`、`INVALID_TARGET_REF`、`WORKTREE_DIRTY`、`BASE_NOT_ANCESTOR`、`CONTENT_SCAN_BLOCKED` 與 metadata 問題。`prepare` 的高保證流程輸出精確 lease 命令與 `AUTHORITY_REQUIRED`，仍須由外部 issuer 核准；模式設定存在但無效時不降級。`--merge-intent` 僅記錄當次任務意圖，不能取代使用者或 Host 授權。
 
-首次設定或 PR 卡住時，可執行 `aips publish doctor --project-root <repo> [--pr <number>] --format yaml`。Doctor 只讀檢查 GitHub CLI 登入、repository merge methods、branch protection/ruleset 可見性、Required Checks 與指定 PR/head/checks，並列出安全的下一步。Required Checks 會明確回報未設定、失敗、執行中、缺少／跳過、取消、PR head/base 過期或 GitHub 權限／API 不可用；任何空白或不可見證據都會阻擋，不會自動調整保護規則。`aips publish diagnose` 也接受 literal `gh pr merge`，但只驗證 PR、完整 head SHA、base、merge method 與即時 checks；輸出 `authorized: false`、`executed: false`，不執行 merge、不消耗 grant。Codex/OpenCode 的診斷仍不取代原生工具權限或 GitHub 保護。
+首次設定或 PR 卡住時，可執行 `aips publish doctor --project-root <repo> [--pr <number>] --format yaml`。Doctor 只讀檢查 GitHub CLI 登入、repository merge methods、branch protection/ruleset 可見性、Required Checks 與指定 PR/head/checks，並列出安全的下一步。Required Checks 會明確回報未設定、權限未知、失敗、執行中、缺少／跳過、取消、PR head/base 過期或 GitHub 網路／限流／伺服器錯誤；任何空白或不可見證據都會阻擋，不會自動調整保護規則。GitHub 對 skipped check 的結果保留為 provider 成功，AIPS 仍以 `MISSING` 阻擋發布。Claude Code Hook 只會在可重試的網路、限流或伺服器錯誤時自動執行一次唯讀 Doctor。`aips publish diagnose` 也接受 literal `gh pr merge`，但只驗證 PR、完整 head SHA、base、merge method 與即時 checks；輸出 `authorized: false`、`executed: false`，不執行 merge、不消耗 grant。Codex/OpenCode 的診斷仍不取代原生工具權限或 GitHub 保護。
 
-`aips publish doctor --worktree <candidate-root> --worktree-details` 是唯讀診斷，可選擇 `--branch <name>` 與 `--pr <number>`，輸出分階段證據、穩定原因碼、HTTP status、端點及已遮蔽的錯誤摘要。dirty 明細只列 repo-relative staged／modified／deleted／untracked 路徑與處理建議，不讀檔案內容、不會 stash、刪除或忽略檔案。HTTP 404 只有在分支存在且 effective-rules 證據完整時，才可判定沒有作用中的分支規則；未知或無權限證據維持 UNKNOWN。`ALREADY_MERGED` 會導向 exact-head post-merge reconciliation，不會再次規劃 push、建 PR 或 merge。診斷與 `retryable` 欄位都不授予發布權限；主機拒絕、Human approval 或 required checks 仍依原流程處理。
+`aips publish doctor --worktree <candidate-root> --worktree-details` 是唯讀診斷，可選擇 `--branch <name>` 與 `--pr <number>`，輸出分階段證據、穩定原因碼、HTTP status、端點及已遮蔽的錯誤摘要。dirty 明細只列 repo-relative staged／modified／deleted／untracked 路徑與處理建議，不讀檔案內容、不會 stash、刪除或忽略檔案。HTTP 404 只有在分支存在且 effective-rules 證據完整時，才可判定沒有作用中的分支規則；當 `branch.protected` 為 true 而 classic protection 回覆 403 時，Required Checks policy 為 `UNKNOWN_PERMISSION`。其他未知證據也維持阻擋。`ALREADY_MERGED` 會導向 exact-head post-merge reconciliation，不會再次規劃 push、建 PR 或 merge。診斷與 `retryable` 欄位都不授予發布權限；主機拒絕、Human approval 或 required checks 仍依原流程處理。
 
 若開發 workspace 有未交付素材，保留原檔並建立獨立乾淨的工程分支 worktree，再將該 root 明確傳給 `prepare` 與原生 tool。素材清單至少記錄路徑、用途、SHA-256、大小、授權與部署來源；母帶需獨立備份，正式音訊經壓縮與音質驗收。Git LFS／物件儲存由專案決定，且部署必須驗證實體檔案可取得。Scanner 的文字、binary 與來源政策限制要各別診斷，不因檔案大小推論授權失敗。
 

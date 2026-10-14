@@ -26,6 +26,8 @@ features:
 
 ## 文件如何組織
 
+For publication recovery, start with the User Guide and follow the linked Security Assurance, Harness and Scenario 260/261 evidence.
+
 Publication Doctor 的候選分支、政策證據與錯誤恢復方式請見 [User Guide](USER_GUIDE.md#git-publication-與-release)、[Security Assurance](SECURITY_ASSURANCE.md#runtime-policy-enforcement) 與 Scenario 260/261。
 
 For publication failures, follow USER_GUIDE.md Git Publication guidance and Scenario 260; runtime adapter permission truth is documented separately in HARNESS.md.

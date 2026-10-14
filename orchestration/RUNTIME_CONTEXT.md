@@ -25,6 +25,8 @@ Managed AIPS CLI runtimes require Python >=3.12. An explicit `AIPS_PYTHON` is au
 
 ## Context contract
 
+Publication Doctor output and automatic Hook recovery omit credentials and raw GitHub response bodies; context diagnostics carry only bounded safe fields.
+
 A native denial may carry a bounded diagnostic identifier, stable reason, phase, category, retry classification and next step; intercepted commands and credential-bearing provider data are excluded.
 
 Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.

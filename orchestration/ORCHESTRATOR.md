@@ -245,6 +245,8 @@ Large/core changes are proposal-first. Use `templates/core-change-proposal.md`. 
 
 ## Git Publish Approval
 
+Before merging a publication PR, Doctor and Authority must use current target-branch Required Checks policy, exact head SHA and passing check evidence; read-only retries grant no permission.
+
 The Doctor reports the target policy branch separately from the candidate and preserves safe GitHub endpoint/status evidence. Its transient recovery guidance permits read-only re-observation only; it does not grant publication authority.
 
 For a blocked or first-time GitHub publication, run `aips publish doctor` and optionally `aips publish diagnose` on the literal merge command. Treat unavailable policy/check evidence as blocking, then follow safe next steps; never infer authorization or perform an unapproved policy change from the report.
@@ -372,6 +374,8 @@ When emitting a Structured Task Graph, treat tasks as writable by default. Set `
 For Evolution Radar semantic work, prefer the generated provider-neutral handoff when no scheduled provider is available rather than inventing a recommendation. For PR integration, stale target-base evidence must route back to refresh/revalidation rather than proceeding with an old PASS.
 
 ## Change-class handoff to Integration Gate
+
+Publication changes reach the Core Gate only after matrix evidence binds the exact candidate and documents the required checks policy boundary.
 
 The exact-candidate Integration Gate verifies deterministic publication diagnostics, target policy evidence, safe native Hook output and read-only transient recovery before remote publication.
 

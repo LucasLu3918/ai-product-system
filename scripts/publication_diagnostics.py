@@ -12,6 +12,10 @@ from typing import Any
 def remote_failure(stderr: str = "", returncode: int | None = None) -> str:
     """Map host failures to stable categories without returning provider text."""
     text = stderr.lower()
+    if "http 429" in text or "rate limit" in text or "secondary rate" in text:
+        return "RATE_LIMITED"
+    if any(marker in text for marker in ("http 500", "http 502", "http 503", "http 504", "server error")):
+        return "GITHUB_SERVER_ERROR"
     if "http 403" in text or "forbidden" in text or "resource not accessible" in text:
         return "PERMISSION"
     if returncode == 4 or "http 401" in text or "authentication" in text or "not logged" in text:
@@ -74,7 +78,56 @@ def classify_required_checks(payload: Any = None, *, returncode: int = 0,
         status, code = "PASS", None
     if returncode == 8 and status == "PASS":
         return {"status": "UNAVAILABLE", "reason_code": "REQUIRED_CHECKS_INVALID", "checks": []}
-    return {"status": status, "reason_code": code, "checks": sorted(names)}
+    result = {"status": status, "reason_code": code, "checks": sorted(names)}
+    if "skipping" in buckets:
+        result.update(provider_status="SKIPPING", github_required_check_outcome="SUCCESSFUL")
+    return result
+
+
+def required_checks_policy(snapshot: dict[str, Any]) -> dict[str, Any]:
+    """Resolve Required Checks from the same complete, read-only policy snapshot."""
+    sources = snapshot.get("sources") if isinstance(snapshot.get("sources"), dict) else {}
+    required: set[str] = set()
+    protection = snapshot.get("branch_protection") or {}
+    if isinstance(protection, dict):
+        required.update(item for item in protection.get("required_checks", [])
+                        if isinstance(item, str) and item)
+    rule_collections = []
+    effective = snapshot.get("effective_rules")
+    if isinstance(effective, list):
+        rule_collections.append(effective)
+    rulesets = snapshot.get("rulesets")
+    if isinstance(rulesets, list):
+        rule_collections.extend(item.get("rules", []) for item in rulesets if isinstance(item, dict))
+    for rules in rule_collections:
+        for rule in rules if isinstance(rules, list) else []:
+            if not isinstance(rule, dict) or rule.get("type") != "required_status_checks":
+                continue
+            parameters = rule.get("parameters") if isinstance(rule.get("parameters"), dict) else {}
+            for check in parameters.get("required_status_checks", []):
+                if isinstance(check, dict) and isinstance(check.get("context"), str) and check["context"]:
+                    required.add(check["context"])
+    if snapshot.get("source_complete") is not True:
+        errors = [source.get("error_class") for source in sources.values()
+                  if isinstance(source, dict) and source.get("error_class")]
+        if "PERMISSION" in errors:
+            return {"status": "UNKNOWN_PERMISSION", "reason_code": "REQUIRED_CHECKS_POLICY_PERMISSION",
+                    "category": "PERMISSION", "retryable": False, "checks": sorted(required),
+                    "sources": sources}
+        transient = next((name for name in ("NETWORK", "RATE_LIMITED", "GITHUB_SERVER_ERROR")
+                          if name in errors), None)
+        if transient:
+            return {"status": "UNAVAILABLE", "reason_code": "REQUIRED_CHECKS_POLICY_" + transient,
+                    "category": transient, "retryable": True, "checks": sorted(required),
+                    "sources": sources}
+        return {"status": "UNAVAILABLE", "reason_code": "REQUIRED_CHECKS_POLICY_UNVERIFIED",
+                "category": "UNAVAILABLE", "retryable": False, "checks": sorted(required),
+                "sources": sources}
+    if not required:
+        return {"status": "UNCONFIGURED", "reason_code": "REQUIRED_CHECKS_UNCONFIGURED",
+                "category": "POLICY", "retryable": False, "checks": [], "sources": sources}
+    return {"status": "CONFIGURED", "reason_code": None, "category": "POLICY",
+            "retryable": False, "checks": sorted(required), "sources": sources}
 
 
 def doctor(root: Path, *, pr_number: int | None = None, branch: str | None = None,
@@ -169,14 +222,9 @@ def doctor(root: Path, *, pr_number: int | None = None, branch: str | None = Non
                         "endpoint": endpoint, "error_class": "NETWORK", "error_message": None}
         snapshot = build_snapshot(repo, policy_branch, read_api)
         policy = snapshot.get("branch_protection") or {}
-        required = policy.get("required_checks") if snapshot.get("source_complete") else None
-        ruleset_required = sorted({str(check.get("context"))
-            for ruleset in (snapshot.get("rulesets") or []) if isinstance(ruleset, dict)
-            for rule in (ruleset.get("rules") or []) if isinstance(rule, dict)
-            and rule.get("type") == "required_status_checks"
-            for check in ((rule.get("parameters") or {}).get("required_status_checks") or [])
-            if isinstance(check, dict) and check.get("context")})
-        required = sorted(set(required or []) | set(ruleset_required)) if snapshot.get("source_complete") else None
+        policy_observation = required_checks_policy(snapshot)
+        required = policy_observation["checks"] if policy_observation["status"] in {"CONFIGURED", "UNCONFIGURED"} else None
+        ruleset_required = sorted(set(required or []) - set(policy.get("required_checks") or [])) if required else []
         result["governance"] = snapshot
         result["phases"].append({"phase": "protection_policy_evidence",
                                  "status": snapshot.get("protection_state", "UNKNOWN"),
@@ -185,28 +233,22 @@ def doctor(root: Path, *, pr_number: int | None = None, branch: str | None = Non
         result["policy"] = {"status": "AVAILABLE" if snapshot.get("source_complete") else "UNAVAILABLE",
                              "branch": policy_branch, "required_checks": required or [],
                              "ruleset_required_checks": ruleset_required,
+                             "required_check_state": policy_observation["status"],
+                             "required_check_reason_code": policy_observation["reason_code"],
                              "source_complete": snapshot.get("source_complete") is True,
                              "api_write_performed": False}
-        if not snapshot.get("source_complete"):
+        if policy_observation["status"] in {"UNKNOWN_PERMISSION", "UNAVAILABLE"}:
             result["blockers"].append("protection_evidence_unavailable")
             item = authority.PublicationError("branch protection evidence unavailable",
-                "PROTECTION_EVIDENCE_UNAVAILABLE", phase="protection_policy_evidence").diagnostic()
-            sources = snapshot.get("sources", {})
-            transient = any(isinstance(source, dict) and source.get("error_class") in
-                            {"NETWORK", "RATE_LIMITED", "GITHUB_SERVER_ERROR"}
-                            for source in sources.values())
-            observed_errors = [source.get("error_class") for source in sources.values()
-                               if isinstance(source, dict) and source.get("error_class")]
-            if transient:
-                item["category"] = next(code for code in observed_errors
-                    if code in {"NETWORK", "RATE_LIMITED", "GITHUB_SERVER_ERROR"})
-            elif observed_errors:
-                item["category"] = observed_errors[0]
-            item["retryable"] = transient
-            item["recovery_mode"] = "SAFE_OBSERVATION" if transient else "MANUAL_REVIEW"
-            item["api_sources"] = sources
+                policy_observation["reason_code"], phase="protection_policy_evidence").diagnostic()
+            item["category"] = policy_observation["category"]
+            item["retryable"] = policy_observation["retryable"]
+            item["recovery_mode"] = "SAFE_OBSERVATION" if policy_observation["retryable"] else "MANUAL_REVIEW"
+            item["api_sources"] = {name: {key: source.get(key) for key in
+                ("status", "endpoint", "http_status", "error_class")}
+                for name, source in policy_observation["sources"].items() if isinstance(source, dict)}
             result["diagnostics"].append(item)
-        elif not required:
+        elif policy_observation["status"] == "UNCONFIGURED":
             result["blockers"].append("required_checks_unconfigured")
             result["diagnostics"].append({"reason_code": "REQUIRED_CHECKS_UNCONFIGURED", "phase": "policy",
                 "category": "POLICY", "detail": "No branch-protection Required Checks were observed.",

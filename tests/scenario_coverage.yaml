@@ -148,8 +148,11 @@ scenarios:
       - scripts/publication_authority.py
       - scripts/publication_planning.py
       - scripts/repository_governance_snapshot.py
+      - scripts/governance_guard.py
       - scripts/publish_preflight.py
       - tests/test_publication_authority.py
+      - tests/test_publication_diagnostics.py
+      - tests/test_publication_error_recovery.py
       - tests/test_publication_planning.py
       - tests/evidence/repository_governance_snapshot_lifecycle.py
       - tests/validation/repository_governance_snapshot_contracts.py
@@ -2079,8 +2082,12 @@ scenarios:
       - tests/scenarios/260-publication-diagnostics-and-doctor.md
       - scripts/publication_diagnostics.py
       - scripts/publication_authority.py
+      - scripts/repository_governance_snapshot.py
+      - scripts/governance_guard.py
       - scripts/publication_planning.py
       - scripts/publish_preflight.py
       - tests/test_publication_diagnostics.py
+      - tests/test_publication_authority.py
+      - tests/test_publication_error_recovery.py
       - tests/test_publication_planning.py
       - tests/validation/publish_preflight_contracts.py

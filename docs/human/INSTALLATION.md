@@ -82,6 +82,8 @@ Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需�
 - Stable release readiness additionally requires exactly one empty `## Unreleased` section; installers continue to require a verified stable tag.
 ## Runtime integration
 
+The Claude Code publication recovery observation uses the existing Doctor command and requires no added runtime component or credential.
+
 The installed Claude Code publication hook uses the native PreToolUse denial envelope and can present a safe diagnostic summary; its output does not grant or execute a denied action.
 
 An installed Claude Code harness can diagnose PR failures through the read-only AIPS publish doctor command. Keep managed PreToolUse hooks active; do not grant blanket Bash access as an error-recovery shortcut.

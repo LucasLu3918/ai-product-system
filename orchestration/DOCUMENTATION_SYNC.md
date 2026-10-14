@@ -219,6 +219,8 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 ## Human documentation placement
 
+Publication policy states and Claude's bounded recovery behavior are synchronized across the User Guide, Security Assurance, Harness adapter and Scenario 260/261. Skill Explorer and Skills CLI guidance remains canonical and independent.
+
 Publication diagnostics keep the Human CLI flow, safe failure categories and Agent-native Hook envelope synchronized with Scenarios 260/261 and the registered canonical sections.
 
 Cross-file publication diagnostics are reconciled against required canonical Human topics; the deterministic placement check remains fail-closed instead of being disabled.

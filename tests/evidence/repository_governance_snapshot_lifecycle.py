@@ -74,7 +74,7 @@ def main() -> int:
     require(incomplete["snapshot_digest"].startswith("sha256:"), "snapshot is fingerprinted")
 
     no_classic = {
-        "repos/owner/repo/branches/main": {"returncode": 0, "http_status": 200, "payload": {"name": "main"}},
+        "repos/owner/repo/branches/main": {"returncode": 0, "http_status": 200, "payload": {"name": "main", "protected": False}},
         "repos/owner/repo/rules/branches/main": {"returncode": 0, "http_status": 200, "payload": []},
         "repos/owner/repo/rulesets?includes_parents=true&per_page=100": {"returncode": 1, "http_status": 403, "payload": None, "error_class": "PERMISSION_OR_AUTHENTICATION", "error_message": "Resource not accessible by integration"},
         "repos/owner/repo/branches/main/protection": {"returncode": 1, "http_status": 404, "payload": None, "error_class": "NOT_FOUND", "error_message": "Branch not protected"},
@@ -91,11 +91,30 @@ def main() -> int:
     classic_protected["repos/owner/repo/branches/main/protection"] = {
         "returncode": 0, "http_status": 200,
         "payload": {"required_status_checks": {"contexts": ["repository"]}}}
+    classic_protected["repos/owner/repo/branches/main"] = {
+        "returncode": 0, "http_status": 200, "payload": {"name": "main", "protected": True}}
     classic = build_snapshot("owner/repo", "main", classic_protected.__getitem__)
     require(classic["protection_state"] == "PROTECTED",
             "affirmative classic branch protection cannot be mislabeled unprotected when effective rules are empty")
     require(classic["classic_protection_configured"] is True,
             "classic protection evidence has an explicit additive field")
+
+    classic_permission = dict(classic_protected)
+    classic_permission["repos/owner/repo/branches/main/protection"] = {
+        "returncode": 1, "http_status": 403, "payload": None,
+        "error_class": "PERMISSION", "error_message": "private detail"}
+    unknown_classic = build_snapshot("owner/repo", "main", classic_permission.__getitem__)
+    require(unknown_classic["source_complete"] is False,
+            "a protected branch with unreadable classic policy remains incomplete")
+    require(unknown_classic["sources"]["branch_protection"]["status"] == "UNKNOWN_PERMISSION",
+            "classic protection permission failure has a distinct policy state")
+
+    inconsistent_protection = dict(no_classic)
+    inconsistent_protection["repos/owner/repo/branches/main"] = {
+        "returncode": 0, "http_status": 200, "payload": {"name": "main", "protected": True}}
+    inconsistent = build_snapshot("owner/repo", "main", inconsistent_protection.__getitem__)
+    require(inconsistent["source_complete"] is False,
+            "aggregate protected state with no readable policy evidence remains incomplete")
 
     inaccessible = dict(no_classic)
     inaccessible["repos/owner/repo/rules/branches/main"] = {"returncode": 1, "http_status": 403, "payload": None, "error_class": "PERMISSION_OR_AUTHENTICATION", "error_message": "Resource not accessible by integration"}

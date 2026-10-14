@@ -207,11 +207,24 @@ class PublicationTest(unittest.TestCase):
                 return subprocess.CompletedProcess(argv, 0, '[{"bucket":"pass","name":"repository"}]', '')
             return real_subprocess_run(argv, **kwargs)
 
+        def policy_reader(_root, endpoint):
+            if endpoint.endswith('/rules/branches/main') or 'rulesets?' in endpoint:
+                payload = []
+            elif endpoint.endswith('/branches/main/protection'):
+                payload = {'required_status_checks': {'contexts': ['repository']}}
+            elif endpoint.endswith('/branches/main'):
+                payload = {'name': 'main', 'protected': True}
+            else:
+                raise AssertionError(endpoint)
+            return {'returncode': 0, 'http_status': 200, 'payload': payload,
+                    'endpoint': endpoint, 'error_class': None, 'error_message': None}
+
         with patch('publication_authority._personal_base', return_value=self.base), \
                 patch('publication_authority._remote_default_branch', return_value='main'), \
                 patch('publication_authority._tip', return_value=self.base), \
                 patch('publication_authority.run', side_effect=observed_run), \
                 patch('publication_authority.subprocess.run', side_effect=observed_subprocess_run), \
+                patch('repository_governance_snapshot.query_github_api', side_effect=policy_reader), \
                 patch('check_secret_leakage.scan_candidate', return_value=([], [], [], {})):
             observed = auth.validate_personal_action(self.repo, 'gh_pr_merge', merge)
             binding = observed['merge_confirmation']
@@ -583,10 +596,22 @@ class PublicationTest(unittest.TestCase):
             if argv[:3] == ['gh', 'pr', 'checks']:
                 return subprocess.CompletedProcess(argv, 0, '[{"bucket":"pass","name":"repository"}]', '')
             return real_subprocess_run(argv, **kwargs)
+        def policy_reader(_root, endpoint):
+            if endpoint.endswith('/rules/branches/main') or 'rulesets?' in endpoint:
+                payload = []
+            elif endpoint.endswith('/branches/main/protection'):
+                payload = {'required_status_checks': {'contexts': ['repository']}}
+            elif endpoint.endswith('/branches/main'):
+                payload = {'name': 'main', 'protected': True}
+            else:
+                raise AssertionError(endpoint)
+            return {'returncode': 0, 'http_status': 200, 'payload': payload,
+                    'endpoint': endpoint, 'error_class': None, 'error_message': None}
         with patch('publication_authority._tip', return_value=self.base), \
                 patch('publication_authority._remote_default_branch', return_value='main'), \
                 patch('publication_authority.run', side_effect=observe), \
-                patch('publication_authority.subprocess.run', side_effect=observe_checks):
+                patch('publication_authority.subprocess.run', side_effect=observe_checks), \
+                patch('repository_governance_snapshot.query_github_api', side_effect=policy_reader):
             self.assertEqual(auth.action(self.repo, 'gh_pr_merge', merge, self.base)['target_ref'], 'refs/heads/main')
             self.assertTrue(auth.action(self.repo, 'gh_pr_merge', merge + ['--auto'], self.base)['merge_confirmation']['auto_merge'])
             for flag in ['-d', '--auto=true', '--admin=true', '--delete-branch=true']:

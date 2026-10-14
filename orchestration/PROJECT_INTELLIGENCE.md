@@ -615,6 +615,8 @@ Do not claim the project has been initialized merely from directory/file-name in
 
 ## Existing-project automatic behavior
 
+Security-boundary Change Impact may use a manually reviewed publication caller/consumer scope when the repository-wide Impact Graph is partial; unknown paths remain explicit.
+
 
 Skills and references provide reusable methods and public facts. Keep project-specific gameplay rules, private research, telemetry, credentials, and participant data in the project’s governed stores; do not promote them into global reusable knowledge.
 
@@ -650,6 +652,8 @@ Architecture and DDD classifications require behavioral/dependency evidence, not
 The CLI commands are deterministic building blocks used by the Agent/Harness and remain available for debugging.
 
 ## Retrieval relationships and impact traversal
+
+Publication security-boundary changes record manually reviewed callers and consumers when the repository-wide relation graph is partial.
 
 Use the exact-diff reconciliation and direct consumer review to complement bounded relationship traversal; unresolved repository-wide API, data, event or consumer dimensions remain partial/unknown.
 

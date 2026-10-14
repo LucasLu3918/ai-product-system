@@ -194,6 +194,8 @@ Publication doctor output is a read-only observation and never changes task read
 
 ## Read-only declaration and fail-closed boundary
 
+The Claude publication Hook's one-shot Doctor observation does not create a scheduled task, retry a workflow or change execution ownership.
+
 Project Intelligence relation candidates are read-only observations and cannot add approved tasks, alter canonical graph state or authorize execution.
 
 An optional creative vision-review report is evidence only: it cannot complete a review task, grant generation authority or change the user's output budget.

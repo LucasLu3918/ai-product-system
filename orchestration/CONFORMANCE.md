@@ -46,6 +46,8 @@ OpenCode integration retains system preflight and existing-host lifecycle checks
 
 ## Scenario 233 — Public CLI Help and Error Contracts
 
+Scenario 233's shared CLI coverage includes the safe Doctor contract; publication tests retain the permission-unknown and transient recovery states.
+
 The existing command facade and stable output contract remain in place.
 
 
@@ -1051,6 +1053,8 @@ Scenario 210 is lifecycle-covered by `tests/evidence/install_preflight_lifecycle
 
 ## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance
 
+Publication diagnostics remain remote GitHub observations; Project Diagnostics does not bootstrap or mutate the repository's policy.
+
 Scenario 237 includes publication policy observation on the remote default branch, safe structured HTTP status evidence and transient read-only recovery.
 
 Scenario 240 covers the personal publication default and high-assurance opt-in, including PR/merge separation and the accepted current-origin trust boundary.
@@ -1074,6 +1078,8 @@ The branch lifecycle report classifies remote branches using current exact-SHA P
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+The Skill Explorer lifecycle remains independent of publication diagnostics and authorization behavior.
+
 Publication denial metadata is limited to the native diagnostic contract and does not affect Skill catalog behavior.
 
 Optional upstream Skills retain their independently reviewed installation lifecycle; publication recovery does not grant new Skill or Git authority. `aips skills list --include-upstream` reports the complete source inventory and filtering while ordinary listing stays canonical-only.
@@ -1085,6 +1091,8 @@ The canonical Skill registry contains 49 AIPS Skills; the pinned 38-item upstrea
 `tests/evidence/skills_cli_lifecycle.py` also verifies upstream batch/selected install, optional-only eligibility, canonical duplicate skips, source-scoped ownership and uninstall across Codex, Claude, and Gemini; modified, unowned, and Portable Command files remain intact. Live Agent discovery is outside this fixture's evidence.
 
 ## Scenario 260 — Publication diagnostics and Doctor
+
+Scenario 260 additionally verifies `UNKNOWN_PERMISSION`, skipped provider-success metadata and one Claude Hook Doctor call for retryable remote failures.
 
 Scenario 260 verifies the read-only `aips publish doctor`, Required Checks classification, literal merge diagnosis without execution or grant consumption, sanitized error output, and consistent runtime guidance. Missing/permission-limited policy evidence remains blocking; no repository policy mutation or merge bypass is introduced. Scenario 261 adds grouped dirty-path evidence and phase attribution through push, PR, checks, and exact-head merged recovery; diagnostics remain non-authorizing. Scenario 233 covers upstream Skill inventory and filtering without changing the canonical-only listing default.
 

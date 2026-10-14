@@ -52,6 +52,8 @@ External Agent/provider credentials 永遠是 optional enhancement；缺少 cred
 
 ## Effectiveness Feedback
 
+Publication release evidence remains candidate-bound; retryable Doctor observations are diagnostic input and do not count as a passing Gate.
+
 Publication diagnostics effectiveness is evaluated by whether users can identify the failed observation phase and safe next step; retry guidance only re-collects transient evidence and never performs publication.
 
 Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
