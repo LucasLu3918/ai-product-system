@@ -6,9 +6,9 @@ from __future__ import annotations
 import argparse
 import fnmatch
 import json
+import uuid
 from pathlib import Path
 from typing import Any
-import uuid
 
 import yaml
 from aips_common import canonical_hash as _aips_canonical_hash
@@ -149,13 +149,7 @@ def decision(profile: dict[str, Any], resource_id: str, operation: str, change_b
             reason = "network_not_allowed"
         elif redirected and constraints.get("redirects_allowed", False) is not True:
             reason = "redirect_not_allowed"
-        elif constraints.get("allowed_destinations") is not None and (not isinstance(destination, str) or destination.casefold() not in {item.casefold() for item in constraints["allowed_destinations"]}):
-            reason = "destination_constraint_mismatch"
-        elif constraints.get("allowed_ports") is not None and (port is None or port not in constraints["allowed_ports"]):
-            reason = "destination_constraint_mismatch"
-        elif constraints.get("allowed_methods") is not None and (not isinstance(method, str) or method.upper() not in {item.upper() for item in constraints["allowed_methods"]}):
-            reason = "destination_constraint_mismatch"
-        elif constraints.get("allowed_paths") is not None and (not isinstance(path, str) or not any(fnmatch.fnmatchcase(path, item) for item in constraints["allowed_paths"])):
+        elif constraints.get("allowed_destinations") is not None and (not isinstance(destination, str) or destination.casefold() not in {item.casefold() for item in constraints["allowed_destinations"]}) or constraints.get("allowed_ports") is not None and (port is None or port not in constraints["allowed_ports"]) or constraints.get("allowed_methods") is not None and (not isinstance(method, str) or method.upper() not in {item.upper() for item in constraints["allowed_methods"]}) or constraints.get("allowed_paths") is not None and (not isinstance(path, str) or not any(fnmatch.fnmatchcase(path, item) for item in constraints["allowed_paths"])):
             reason = "destination_constraint_mismatch"
         else:
             allowed = True

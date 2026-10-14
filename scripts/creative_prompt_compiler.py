@@ -6,7 +6,6 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-
 from creative_errors import Blocked
 
 ASSET_PRESETS_PATH = Path(__file__).resolve().parents[1] / "templates/creative/CREATIVE_ASSET_PRESETS.yaml"

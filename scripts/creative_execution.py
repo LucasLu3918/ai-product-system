@@ -27,7 +27,12 @@ import creative_trace as _creative_trace
 import yaml
 from creative_errors import Blocked, error_payload
 from creative_image_validation import valid_raster
-from creative_prompt_compiler import ASSET_PRESETS_PATH, compile_creative_prompt, load_asset_preset, model_recommendation
+from creative_prompt_compiler import (
+    ASSET_PRESETS_PATH,
+    compile_creative_prompt,
+    load_asset_preset,
+    model_recommendation,
+)
 from creative_repair import (
     checklist,
     compare,
@@ -364,10 +369,17 @@ def _valid_comfy_view_query(query: str) -> bool:
 
 
 def local_request(url: str, *, data: bytes | None = None, headers: dict[str, str] | None = None, timeout: float = 2.0,
-                  max_bytes: int = MAX_IMAGE_BYTES, service: str = "comfyui") -> bytes:
+                  max_bytes: int = MAX_IMAGE_BYTES, service: str | None = None) -> bytes:
     timeout = remaining_timeout(timeout)
     opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect)
     method = "POST" if data is not None else "GET"
+    if service is None:
+        parsed = urllib.parse.urlsplit(url)
+        try:
+            port = parsed.port
+        except ValueError:
+            port = None
+        service = "ollama" if port == 11434 or parsed.path in {"/api/tags", "/api/chat"} else "comfyui"
     validate_local_request(url, method, service)
     request = urllib.request.Request(url, data=data, headers=headers or {}, method=method)
     try:
@@ -1184,7 +1196,7 @@ def review_assist(project: Path, manifest_name: str, model: str, *, detailed: bo
     review_brief = compile_creative_prompt({"prompt": "Inspect the image against the approved profiles."},
                                            {"character": character, "style": style, "collection": collection})
     criteria = checklist({"character": character, "style": style}) if detailed else []
-    tags_body = json.loads(local_request(DEFAULT_OLLAMA_BASE_URL + "/api/tags", timeout=3, max_bytes=512 * 1024, service="ollama"))
+    tags_body = json.loads(local_request(DEFAULT_OLLAMA_BASE_URL + "/api/tags", timeout=3, max_bytes=512 * 1024))
     inventory = tags_body.get("models") if isinstance(tags_body, dict) else None
     installed = {entry.get("name") for entry in inventory if isinstance(entry, dict) and isinstance(entry.get("name"), str)} if isinstance(inventory, list) else set()
     if model not in installed:
@@ -1223,7 +1235,7 @@ def review_assist(project: Path, manifest_name: str, model: str, *, detailed: bo
                          separators=(",", ":")).encode("utf-8")
     response = json.loads(local_request(DEFAULT_OLLAMA_BASE_URL + "/api/chat", data=payload,
                                        headers={"Content-Type": "application/json"}, timeout=min(120, max(1, timeout)),
-                                       max_bytes=MAX_VISION_RESPONSE_BYTES, service="ollama"))
+                                       max_bytes=MAX_VISION_RESPONSE_BYTES))
     message = response.get("message") if isinstance(response, dict) else None
     try:
         model_result = json.loads(message.get("content", "")) if isinstance(message, dict) else None
@@ -1808,7 +1820,7 @@ def main() -> int:
     except Blocked as exc:
         print(json.dumps(exc.to_payload(), ensure_ascii=False))
         return 2
-    except (OSError, ValueError, TypeError, KeyError, subprocess.SubprocessError) as exc:
+    except (OSError, ValueError, TypeError, KeyError, subprocess.SubprocessError):
         print(json.dumps(error_payload(status="BLOCKED", phase="creative.cli", reason_code="creative_execution_error",
                                        source="creative", recovery_action="CHECK_BUNDLE_AND_PROVIDER_CONFIGURATION"), ensure_ascii=False))
         return 2

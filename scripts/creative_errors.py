@@ -5,7 +5,6 @@ import re
 import uuid
 from typing import Any
 
-
 RECOVERY = {
     "resource_profile_not_provided": "請在受信任 Runtime 設定中提供 Resource Authorization Profile，再重新執行。",
     "resource_profile_missing": "確認 Profile 路徑與檔案存在；不要放寬 default-deny。",
