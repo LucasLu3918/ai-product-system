@@ -121,7 +121,9 @@ MFLUX 固定命令表新增 Z-Image Turbo generate：`mflux-generate-z-image-tur
 
 Local creative execution supports MFLUX through fixed argv and ComfyUI through a loopback-only allowlisted workflow. It is explicit, create-only, and never downloads weights.
 
-Ordinary ComfyUI discovery contacts only `127.0.0.1:8188`. An Apple Silicon FP8 metadata warning is advisory; only a separately observed real inference can establish backend compatibility.
+Ordinary ComfyUI discovery contacts only `127.0.0.1:8188`, uses fixed bounded GET paths, reports a capped allowlisted model catalog, disables proxies and refuses redirects. Every ComfyUI request validates a literal loopback IP, explicit port, method and path before connecting. Provider errors retain only safe HTTP status and structured reason/recovery metadata. Apple Silicon reports MPS as a static candidate; FP8 is an advisory warning, and neither FP16/BF16 metadata nor an available MPS backend proves actual inference compatibility.
+
+`templates/creative/CREATIVE_ASSET_PRESETS.yaml` supplies shared character, background, texture and UI ornament prompt guidance. The selected preset and registry hash are recorded in the execution manifest; presets do not select a provider or authorize generation.
 
 System changes keep the exact-candidate repository Gate enabled while any selective-validation proposal remains report-only until its complete observation cohort is reviewed.
 
@@ -262,6 +264,8 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+Creative error envelopes use bounded diagnostics and stable recovery codes. ComfyUI tests use loopback fixtures; static MPS and dtype metadata never count as inference evidence. The User Guide's upstream Skill commands and Scenario 259 remain backed by the canonical registry and ownership-safe projection lifecycle.
 
 Publication diagnostics contract tests preserve GitHub's successful skipped-check outcome separately from AIPS's stricter blocked decision.
 

@@ -81,6 +81,7 @@ class FakeComfyHandler(BaseHTTPRequestHandler):
     missing_vae = False
     fp8_unet = False
     unet_filename = None
+    system_status = None
 
     def log_message(self, *_args):
         return
@@ -94,6 +95,15 @@ class FakeComfyHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.path == "/system_stats":
+            if type(self).system_status is not None:
+                status = type(self).system_status
+                self.send_response(status)
+                if status == 302:
+                    self.send_header("Location", "http://example.invalid/redirected")
+                self.send_header("Content-Length", "20")
+                self.end_headers()
+                self.wfile.write(b"synthetic-token-body")
+                return
             return self.send_bytes(b"{}")
         if self.path == "/object_info/CheckpointLoaderSimple":
             return self.send_bytes(json.dumps({"CheckpointLoaderSimple": {"input": {"required": {"ckpt_name": [["model.safetensors"]]}}}}).encode())
@@ -185,11 +195,15 @@ def mflux_cases(base: Path):
     mflux_fixture(project)
     args_path = base / "mflux-args.txt"
     os.environ["FAKE_MFLUX_ARGS"] = str(args_path)
-    bundle_path, bundle = write_bundle(project)
+    bundle_path, bundle = write_bundle(project, asset_preset="texture")
     before = creative.preflight(project, bundle_path.name)
     require(before["status"] == "READY" and not args_path.exists(), "preflight started the configured generator")
     compatibility = before["backend_compatibility"]
     require(compatibility["status"] == "UNVERIFIED" and compatibility["backend"] == "mflux_local", "static readiness must not imply real hardware/backend compatibility")
+    require(compatibility["evidence_status"] == "STATIC_METADATA_ONLY"
+            and compatibility["mps_runtime_probe"] == "NOT_PERFORMED"
+            and compatibility["accelerator_backend"] in {"mps", "NOT_APPLICABLE"},
+            "static MPS diagnostics claimed an inference or runtime probe")
     require(compatibility["host"]["os"] and compatibility["host"]["architecture"] and compatibility["weight_dtypes"] == ["NOT_EXPOSED_BY_CONFIGURED_WORKFLOW"], "preflight did not disclose available host/model compatibility inputs")
     require(not args_path.exists() and compatibility["evidence"].startswith("Static local preflight only"), "compatibility inspection executed inference")
     result = creative.execute(project, bundle_path.name)
@@ -203,6 +217,10 @@ def mflux_cases(base: Path):
     require(manifest["verification"] == {"workflow_execution": "PASS", "raster_container": "PASS", "model_inference": "UNVERIFIED", "human_visual_review": "PENDING", "user_acceptance": "NOT_RECORDED"}, "workflow, inference, visual review and user acceptance evidence must remain distinct")
     require("private creative prompt" not in manifest_path.read_text() and "private creative prompt" not in creative.read_trace(20).__repr__(), "raw prompt reached a manifest or trace")
     require("--output\n" in args and "--model-path\n" in args and "--prompt\nRequested image brief: private creative prompt" in args, "fixed MFLUX argv or compiled prompt was not formed")
+    require("Creative asset preset: Texture asset" in args
+            and manifest["creative_asset_preset"]["id"] == "texture"
+            and manifest["creative_asset_preset"]["registry_sha256"].startswith("sha256:"),
+            "shared creative preset guidance or provenance was not recorded")
     require("HF_HUB_OFFLINE" not in args and output_magic(output), "MFLUX output fixture was not written")
     expect_blocked(lambda: creative.execute(project, bundle_path.name), "existing output was overwritten")
     reviewed = creative.review(project, result["manifest"], "Independent Human", "PASS", "Identity and style match the approved profiles.")
@@ -510,6 +528,15 @@ def no_engine_case(base: Path):
 
 
 def diagnostic_cases(base: Path):
+    normalized = creative.error_payload(status="UNAVAILABLE", phase="creative.discovery",
+                                        reason_code="provider_http_error", source="comfyui", retryable=True,
+                                        message="Bearer synthetic-secret /Users/lucas/private/profile.yaml token=abc",
+                                        diagnostics={"http_status": 503, "body": "synthetic-token-body", "authorization": "secret"})
+    require({"status", "phase", "reason_code", "source", "retryable", "trace_id", "recovery", "diagnostics"} <= normalized.keys()
+            and normalized["diagnostics"] == {"http_status": 503}
+            and "synthetic-secret" not in repr(normalized) and "/Users/lucas/" not in repr(normalized)
+            and "[REDACTED]" in normalized["message"],
+            "structured provider diagnostics exposed unbounded data or omitted stable fields")
     project = fixture_project(base)
     executable = project / "mflux-generate"
     executable.write_text("fixture", encoding="utf-8")
@@ -527,6 +554,16 @@ def diagnostic_cases(base: Path):
             "health discovery performed inference or external egress")
     server, thread = comfy_server()
     try:
+        invalid_requests = (
+            ("http://example.invalid:8188/system_stats", "GET", "comfyui"),
+            ("http://127.0.0.1:8188/prompt", "GET", "comfyui"),
+            ("http://127.0.0.1:8188/system_stats", "POST", "comfyui"),
+            ("http://127.0.0.1:8188/arbitrary", "GET", "comfyui"),
+            ("http://127.0.0.1:11435/api/chat", "POST", "ollama"),
+        )
+        for request in invalid_requests:
+            expect_blocked(lambda item=request: creative.validate_local_request(*item),
+                           f"unapproved local provider request was accepted: {request}")
         loopback = f"http://127.0.0.1:{server.server_port}"
         with patch.object(creative, "DEFAULT_COMFYUI_BASE_URL", loopback), \
              patch.object(creative.shutil, "which", return_value=None):
@@ -535,6 +572,7 @@ def diagnostic_cases(base: Path):
                 and discovered["comfyui"]["readiness"]["runtime"] == "RUNTIME_VERIFIED"
                 and discovered["comfyui"]["readiness"]["inference"] == "INFERENCE_UNVERIFIED"
                 and all(value == "MODEL_CATALOG_AVAILABLE" for value in discovered["comfyui"]["node_capabilities"].values())
+                and discovered["comfyui"]["model_catalog"]["CheckpointLoaderSimple"] == ["model.safetensors"]
                 and FakeComfyHandler.prompts == 0,
                 "read-only loopback discovery did not report staged service/model readiness")
         require(creative.discover_comfyui("http://127.0.0.1:8189")["reason_code"] == "default_loopback_only",
@@ -548,6 +586,22 @@ def diagnostic_cases(base: Path):
                     "empty ComfyUI inventory was reported as an available model")
         finally:
             FakeComfyHandler.missing_vae = False
+        for status, expected_status, expected_reason, retryable in (
+            (404, "UNVERIFIED", "provider_http_error", False),
+            (500, "UNAVAILABLE", "provider_http_error", True),
+            (302, "UNVERIFIED", "comfy_redirect_refused", False),
+        ):
+            FakeComfyHandler.system_status = status
+            try:
+                with patch.object(creative, "DEFAULT_COMFYUI_BASE_URL", loopback):
+                    failed_probe = creative.discover_comfyui()
+                require(failed_probe["status"] == expected_status and failed_probe["reason_code"] == expected_reason
+                        and failed_probe["retryable"] is retryable
+                        and failed_probe.get("diagnostics", {}).get("http_status") == status
+                        and "synthetic-token-body" not in repr(failed_probe),
+                        f"HTTP {status} ComfyUI diagnostics were not classified/redacted: {failed_probe}")
+            finally:
+                FakeComfyHandler.system_status = None
     finally:
         server.shutdown()
         server.server_close()

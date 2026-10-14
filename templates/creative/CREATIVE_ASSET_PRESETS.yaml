@@ -1,0 +1,35 @@
+version: 1
+description: Shared prompt guidance presets. These do not select a provider, model, or execute generation.
+presets:
+  character:
+    label: Character asset
+    include:
+      - Keep one clear subject silhouette and recognizable identity features.
+      - Use a neutral or transparent-ready background when the workflow supports it.
+      - Keep pose, expression, outfit, and accessory details separable for later reuse.
+    avoid:
+      - Unrequested text, logos, extra characters, or identity changes.
+  background:
+    label: Background asset
+    include:
+      - Establish readable depth, lighting direction, and a clear foreground-to-background hierarchy.
+      - Leave deliberate negative space for the intended subject or interface content.
+      - Keep the palette and perspective consistent with the selected collection direction.
+    avoid:
+      - Competing focal subjects, accidental text, or high-frequency clutter behind important content.
+  texture:
+    label: Texture asset
+    include:
+      - Keep material scale, grain direction, and contrast consistent across a reusable surface.
+      - Prefer an even tile-like field with no central focal object.
+      - Preserve the requested palette and material identity.
+    avoid:
+      - Seams, lettering, watermarks, strong gradients, or isolated objects unless requested.
+  ui_ornament:
+    label: UI ornament
+    include:
+      - Use a compact, clean silhouette that remains legible at small interface sizes.
+      - Keep edges and details distinct from the intended UI text and controls.
+      - Leave padding around the ornament for safe placement.
+    avoid:
+      - Text, numbers, logos, misleading control affordances, or excessive micro-detail.

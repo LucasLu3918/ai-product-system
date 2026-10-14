@@ -593,6 +593,8 @@ The independent-review isolation mechanism is present but not enabled as a defau
 
 Before a supported tool action executes, Runtime Policy Enforcement checks the action envelope against Resource Authorization and the deterministic runtime policy. The result is `ALLOW`, `DENY`, `REQUIRE_APPROVAL` or `BLOCKED`; policy conflicts use deny-overrides. An approval binds the exact action and policy digests, destination, data labels, Change Boundary and expiry.
 
+Resource Authorization matches grant kind, selector, operation, destination and declared constraints; network activity requires an explicit `network_allowed: true`. Runtime diagnostics distinguish Profile source failures and grant denials without emitting local paths, credentials, HTTP headers or response bodies. Read-only ComfyUI discovery is limited to fixed loopback methods/paths; MPS and precision observations remain static and do not establish inference compatibility.
+
 SAL3/4 external egress also needs a verified native hook and a fresh provider receipt proving network allowlist enforcement. The current sandbox registry has no eligible verified egress provider, so these actions remain blocked. A pre-tool shell hook cannot observe every script, child process or SDK network call.
 
 An optional semantic provider may deny or escalate an otherwise allowed action. Its result is bound to the action digest and never overrides a deterministic denial or creates Human approval. NeMo Guardrails is not a required dependency or authorization engine.

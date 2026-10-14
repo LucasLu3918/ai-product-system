@@ -2091,3 +2091,19 @@ scenarios:
       - tests/test_publication_error_recovery.py
       - tests/test_publication_planning.py
       - tests/validation/publish_preflight_contracts.py
+  - id: "262"
+    path: tests/scenarios/262-comfyui-resource-authorization-diagnostics.md
+    coverage: lifecycle
+    evidence:
+      - scripts/resource_authorization.py
+      - scripts/runtime_policy.py
+      - scripts/governance_guard.py
+      - scripts/creative_execution.py
+      - scripts/creative_errors.py
+      - scripts/creative_prompt_compiler.py
+      - templates/creative/CREATIVE_ASSET_PRESETS.yaml
+      - tests/test_runtime_policy.py
+      - tests/evidence/resource_authorization_lifecycle.py
+      - tests/evidence/runtime_policy_lifecycle.py
+      - tests/evidence/creative_execution_lifecycle.py
+      - tests/validation/creative_execution_contracts.py

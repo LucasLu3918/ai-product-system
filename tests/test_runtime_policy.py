@@ -26,7 +26,7 @@ def base_action() -> dict:
         "actor": {"task_id": "runtime-policy-test", "runtime": "claude-code"},
         "action": {"tool": "http_request", "operation": "external_data_egress", "arguments": {"body": "synthetic public fixture"}},
         "resource": {"kind": "external_service", "id": "analytics-provider"},
-        "destination": {"host": "analytics.example.com", "trust": "approved_external"},
+        "destination": {"host": "analytics.example.com", "port": 443, "method": "GET", "path": "/v1/events", "trust": "approved_external"},
         "context": {"effective_sal": 1, "change_boundary": "runtime-policy-test"},
         "data": {"classes": ["public"], "protected_assets": []},
         "authorization": {"resource_profile": "tests/fixtures/runtime_policy/resource-authorization.yaml"},
@@ -45,6 +45,37 @@ def main() -> int:
     cfg = base_config()
     result = policy.evaluate(action, cfg, runtime_capability="TOOL_GUARDED")
     require(result["decision"] == "ALLOW", f"low-risk allow failed: {result}")
+    require({"status", "phase", "reason_code", "source", "retryable", "trace_id", "recovery"} <= result.keys(),
+            f"runtime result diagnostics are incomplete: {result}")
+
+    mismatches = copy.deepcopy(action)
+    mismatches["resource"]["kind"] = "connector"
+    denied_kind = policy.evaluate(mismatches, cfg, runtime_capability="TOOL_GUARDED")
+    require(denied_kind["decision"] == "DENY" and denied_kind["reason_code"] == "grant_kind_mismatch",
+            f"resource kind mismatch must deny with a stable reason: {denied_kind}")
+    mismatches = copy.deepcopy(action)
+    mismatches["destination"]["host"] = "other.example.com"
+    denied_selector = policy.evaluate(mismatches, cfg, runtime_capability="TOOL_GUARDED")
+    require(denied_selector["decision"] == "DENY" and denied_selector["reason_code"] == "selector_mismatch",
+            f"grant selector mismatch must deny: {denied_selector}")
+
+    missing_profile = copy.deepcopy(action)
+    missing_profile["authorization"]["resource_profile"] = "tests/fixtures/runtime_policy/missing-profile.yaml"
+    missing = policy.evaluate(missing_profile, cfg, runtime_capability="TOOL_GUARDED")
+    require(missing["decision"] == "BLOCKED" and missing["reason_code"] == "resource_profile_missing"
+            and "/Users/" not in missing["reason"], f"missing profile must be distinct and redacted: {missing}")
+    no_profile = copy.deepcopy(action)
+    no_profile["authorization"]["resource_profile"] = None
+    absent = policy.evaluate(no_profile, cfg, runtime_capability="TOOL_GUARDED")
+    require(absent["reason_code"] == "resource_profile_not_provided", f"absent profile must have its own reason: {absent}")
+    explicit = copy.deepcopy(action)
+    explicit["destination"].update({"port": 443, "method": "GET", "path": "/v1/events"})
+    require(policy.evaluate(explicit, cfg, runtime_capability="TOOL_GUARDED")["decision"] == "ALLOW",
+            "matching explicit destination metadata should pass")
+    explicit["destination"]["port"] = 8443
+    wrong_port = policy.evaluate(explicit, cfg, runtime_capability="TOOL_GUARDED")
+    require(wrong_port["decision"] == "DENY" and wrong_port["reason_code"] == "destination_constraint_mismatch",
+            f"disallowed destination port must deny: {wrong_port}")
 
     changed = copy.deepcopy(action)
     changed["action"]["arguments"]["body"] += " changed"
@@ -85,7 +116,8 @@ def main() -> int:
                                 approval_path=approval_path,
                                 sandbox_evidence={"status": "AVAILABLE", "provider": "verified-test-sandbox",
                                                   "host": "other.example.com", "data_class": "restricted"})
-        require(stale["decision"] == "BLOCKED" and "APPROVAL_STALE" in stale["reason"], f"destination drift must block: {stale}")
+        require(stale["decision"] == "DENY" and stale["reason_code"] == "selector_mismatch",
+                f"destination drift must fail at the Resource Authorization selector: {stale}")
         policy_drift = policy.evaluate(high_risk, cfg, runtime_capability="TOOL_GUARDED",
                                        approval_path=approval_path,
                                        sandbox_evidence={"status": "AVAILABLE", "provider": "verified-test-sandbox",
@@ -117,6 +149,18 @@ def main() -> int:
     require(semantic_escalate["decision"] == "REQUIRE_APPROVAL", f"semantic escalation did not tighten: {semantic_escalate}")
     semantic_invalid = policy.evaluate(action, cfg, runtime_capability="TOOL_GUARDED", semantic_signal=signal("TIMEOUT"))
     require(semantic_invalid["decision"] == "BLOCKED", f"invalid semantic signal must block: {semantic_invalid}")
+
+    hooked = {"tool_name": "Bash", "tool_input": {"command": "curl https://analytics.example.com/v1/events"},
+              "aips_runtime_action": copy.deepcopy(action)}
+    hooked["aips_runtime_action"]["destination"]["host"] = "evil.example.net"
+    derived = policy.action_from_hook(hooked, "claude-code")
+    require(derived is not None and derived["destination"]["host"] == "analytics.example.com",
+            f"runtime metadata must not replace the observed Hook destination: {derived}")
+    hooked["aips_runtime_action"]["resource"]["id"] = "unrelated-resource"
+    rebuilt = policy.action_from_hook(hooked, "claude-code")
+    require(rebuilt is not None and rebuilt["destination"]["host"] == "analytics.example.com"
+            and rebuilt["resource"]["id"] == "analytics.example.com",
+            "an unbound explicit Runtime Action must be rebuilt from observed Hook input")
 
     credential_action = copy.deepcopy(action)
     credential_action["action"]["arguments"] = {"api_key": "synthetic-secret-value"}

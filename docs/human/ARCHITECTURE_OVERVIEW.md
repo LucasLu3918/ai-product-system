@@ -30,7 +30,7 @@ OpenCode 的 Creative tool 仍使用同一個本機 executor；ComfyUI Z-Image p
 
 OpenCode 創作 tool 支援 discover/configure，產圖意圖、原生檔案 guard 與 Shell effect policy 維持不同檢查；重新投影後仍須驗證實際 host hooks。
 
-Discovery distinguishes installed command, responsive runtime, local model catalog, Bundle preflight and real inference. The ordinary ComfyUI probe is fixed to `127.0.0.1:8188`; static Apple Silicon FP8 evidence stays advisory.
+Discovery distinguishes installed command, responsive runtime, local model catalog, Bundle preflight and real inference. The ordinary ComfyUI probe is fixed to `127.0.0.1:8188` through fixed GET paths and returns a capped built-in model catalog. Requests require a literal loopback IP and validated port/method/path, disable proxies and refuse redirects; diagnostics retain only safe HTTP status and recovery guidance. Shared presets cover character, background, texture and UI ornament guidance. Apple Silicon MPS and model precision are static evidence only; real inference compatibility remains unverified.
 
 Native Context envelope 驗證與 user-only 授權分開處理；只檢查設定的要求仍可執行 discover/preflight，不會啟動生成。
 
@@ -170,7 +170,7 @@ Z-Image Turbo 可使用 MFLUX 專用命令 `mflux-generate-z-image-turbo`，或 
 
 角色插畫新增唯讀 `discover` 與建立新版本的 `configure`，補齊本機引擎設定路徑。OpenCode 先正規化 Context，再判斷使用者要求與取消狀態；要求點陣插畫時不能默默改交 SVG。生成、圖片容器檢查、人工視覺審查與使用者接受分開記錄；沒有模型權重時仍不能宣稱真實產圖驗收。
 
-Reusable character artwork extends the existing Creative Direction path: hashed local identity/style profiles feed optional installed MFLUX or loopback ComfyUI built-in workflows, separate create-only raster assets receive provenance validation, and a deterministic composer typesets the character sheet. Read-only discovery distinguishes command, runtime, model inventory, preflight and inference readiness; its ordinary ComfyUI check only contacts `127.0.0.1:8188`. Preflight never starts generation; unavailable engines return `BLOCKED_NO_ENGINE` with provider-specific reason codes and recovery guidance. On Apple Silicon, explicit FP8 metadata can raise a static advisory while real backend compatibility remains unverified. An independent human visual review checks identity and style fidelity. The helper does not infer quality or install/download image models.
+Reusable character artwork extends the existing Creative Direction path: hashed local identity/style profiles feed optional installed MFLUX or loopback ComfyUI built-in workflows, separate create-only raster assets receive provenance validation, and a deterministic composer typesets the character sheet. Read-only discovery distinguishes command, runtime, model inventory, preflight and inference readiness; its ordinary ComfyUI check only contacts `127.0.0.1:8188` through fixed GET paths and returns a capped built-in model catalog. Requests validate loopback IP, port, method and path, disable proxies and refuse redirects. Structured provider errors retain safe status and recovery guidance. Preflight never starts generation; unavailable engines return `BLOCKED_NO_ENGINE`. Shared asset presets cover character, background, texture and UI ornament guidance. On Apple Silicon, MPS and precision are static evidence only; real backend compatibility remains unverified. An independent human visual review checks identity and style fidelity. The helper does not infer quality or install/download image models.
 
 The `creative_execution` path can prepare versioned Character/Style Profiles and an unconfigured Bundle before any engine is selected; its closed MFLUX registry fixes model/operation commands and bounds multi-reference edits to supported FLUX.2/Qwen operations. ComfyUI and FLUX.1 edits remain single-reference.
 
@@ -346,6 +346,8 @@ Plan36 publication diagnostics preserve this topic's existing behavior and autho
 
 ## Security 與 Governance
 
+Resource Authorization resolves only a trusted profile and enforces grant kind, selector, operation and destination constraints. Its structured denial diagnostics remain default-deny and redact local paths and provider bodies.
+
 `branch.protected` is cross-checked with readable classic protection and effective rules; permission-hidden policy remains unknown and blocks.
 
 Read-only publication diagnosis distinguishes the local candidate branch from the remote default policy branch and retains bounded, sanitized endpoint/status evidence; Human Authority and Host confirmation remain separate.
@@ -428,6 +430,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 
 ## Maintenance governance
+
+Scenario 262 binds local ComfyUI discovery and Resource Authorization diagnostics to loopback-only lifecycle evidence; device compatibility remains unverified without real inference.
 
 Core publication changes close their documentation impact and candidate-bound validation matrix before release.
 

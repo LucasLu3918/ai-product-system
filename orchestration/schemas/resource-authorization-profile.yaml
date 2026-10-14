@@ -13,6 +13,11 @@ grants:
     constraints:
       change_boundary_required: true
       network_allowed: false
+      allowed_destinations: [optional-exact-host]
+      allowed_ports: [optional-tcp-port]
+      allowed_methods: [GET | POST]
+      allowed_paths: ["/v1/**"]
+      redirects_allowed: false
       credential_reference: null
 authority:
   human_approval_granted: false

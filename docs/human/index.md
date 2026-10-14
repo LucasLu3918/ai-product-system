@@ -26,6 +26,8 @@ features:
 
 ## 文件如何組織
 
+Resource Authorization and local Creative execution behavior are documented in the User Guide, Security Assurance, and Scenario 262; implementation ownership and placement remain in the Agent-facing orchestration references.
+
 For publication recovery, start with the User Guide and follow the linked Security Assurance, Harness and Scenario 260/261 evidence.
 
 Publication Doctor 的候選分支、政策證據與錯誤恢復方式請見 [User Guide](USER_GUIDE.md#git-publication-與-release)、[Security Assurance](SECURITY_ASSURANCE.md#runtime-policy-enforcement) 與 Scenario 260/261。

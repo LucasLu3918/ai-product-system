@@ -32,6 +32,8 @@ The Human User Guide describes publication recovery and retains the canonical Sk
 
 上游 Skill 是否可安裝依 canonical ID 是否重複判定；disposition 描述整合背景，不限制使用者安裝。Codex 與 Claude Code 原生投影要求明確呼叫，Gemini 保留啟用前確認。
 
+Resource Authorization 的 Human 操作與安全邊界見 User Guide、Security Assurance；Profile schema、Runtime enforcement、Creative loopback discovery 和 Scenario 262 的 canonical 實作對照見 orchestration references 與 Conformance。
+
 Public CLI commands are documented under the owning user workflow and matching Scenario evidence. A shared dispatcher or Scenario registry does not make unrelated command domains part of that change.
 
 Skill 的使用者搜尋入口是 <a href="./skill-catalog.html">Skill Explorer</a>；49 個 canonical AIPS Skills 與 38 個 vendored 上游來源分開呈現，來源清單固定 commit 並記錄本地路徑與 SHA-256。Skill routing 的 canonical 定義仍在各 `SKILL.md` 與 Registry；Scenario 259 記錄自動路由、實驗／選用與 `$grill-with-docs` 明確呼叫邊界。
@@ -106,6 +108,8 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 Plan36 publication diagnostics preserve this topic's existing behavior and authority boundaries.
 
 ## Agent / machine canonical 文件
+
+The plan39 source-to-topic mapping is maintained by the `plan39-comfyui-resource-authorization-diagnostics` placement rule and the `plan39-comfyui` documentation-sync entry; Scenario 262 is the verification-history anchor.
 
 The Claude Code adapter documents one-shot retryable Doctor recovery; the OpenCode adapter retains explicit read-only recovery guidance.
 

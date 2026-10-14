@@ -421,3 +421,41 @@ rules:
     evidence:
       - tests/evidence/skills_cli_lifecycle.py
       - tests/validation/skills_cli_contracts.py
+  - id: plan39-comfyui-resource-authorization-diagnostics
+    triggers:
+      - scripts/resource_authorization.py
+      - scripts/runtime_policy.py
+      - scripts/governance_guard.py
+      - scripts/creative_execution.py
+      - scripts/creative_errors.py
+      - scripts/creative_prompt_compiler.py
+      - orchestration/schemas/resource-authorization-profile.yaml
+      - orchestration/schemas/runtime-action.yaml
+      - templates/automation/RESOURCE_AUTHORIZATION_PROFILE.yaml
+      - templates/creative/CREATIVE_BUNDLE.yaml
+      - templates/creative/CREATIVE_ASSET_PRESETS.yaml
+      - tests/test_runtime_policy.py
+      - tests/evidence/resource_authorization_lifecycle.py
+      - tests/evidence/runtime_policy_lifecycle.py
+      - tests/evidence/creative_execution_lifecycle.py
+      - tests/validation/creative_execution_contracts.py
+      - tests/scenarios/262-comfyui-resource-authorization-diagnostics.md
+    human_docs:
+      - docs/ARCHITECTURE.md
+      - docs/human/ARCHITECTURE_OVERVIEW.md
+      - docs/human/USER_GUIDE.md
+      - docs/human/TECHNOLOGY_GUIDE.md
+      - docs/human/SECURITY_ASSURANCE.md
+      - docs/human/CONFORMANCE.md
+    agent_docs:
+      - orchestration/RESOURCE_AUTHORIZATION.md
+      - orchestration/RUNTIME_POLICY_ENFORCEMENT.md
+      - orchestration/CONFORMANCE.md
+    evidence:
+      - tests/scenario_coverage.yaml
+      - tests/validation/resource_authorization_contracts.py
+      - tests/validation/runtime_policy_contracts.py
+      - tests/validation/creative_execution_contracts.py
+      - tests/evidence/resource_authorization_lifecycle.py
+      - tests/evidence/runtime_policy_lifecycle.py
+      - tests/evidence/creative_execution_lifecycle.py

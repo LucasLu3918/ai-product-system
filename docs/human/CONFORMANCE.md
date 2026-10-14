@@ -1719,6 +1719,8 @@ Diagnostic recommendations remain read-only and conditional.
 
 ## Scenario 233 — Public CLI Help and Error Contracts
 
+Scenario 233 retains public CLI argument and error compatibility; the structured Creative and Runtime errors added in Scenario 262 do not change its command surface.
+
 The publication Doctor command keeps its structured JSON status and safe reason-code contract while policy visibility now distinguishes permission-hidden state.
 
 The Doctor command adds repository readiness output without changing existing CLI error or permission semantics; Scenario 260 covers its full diagnostics and redaction contract.
@@ -1735,6 +1737,8 @@ Scenario 233 also covers `aips skills list`: localized/grouped text and JSON out
 `tests/evidence/skills_cli_lifecycle.py` and `tests/validation/skill_native_projection_contracts.py` cover native Skill install, repeat install, cross-Host ownership, conflicts, workspace isolation, digest-protected removal, Portable Command projection and legacy migration for Codex, Claude Code and Gemini CLI. These checks validate generated files and ownership behavior; real Host discovery and invocation remain unverified until exercised in each installed Host.
 
 ## Scenario 234 — Local Character Artwork Provenance and Composition
+
+Creative preset guidance and ComfyUI discovery remain static and local; Scenario 262 separately verifies Resource Authorization, request constraints and provider-error handling.
 
 OpenCode host acceptance verifies adapter integration only. It does not verify local image generation, visual quality or user acceptance.
 
@@ -1779,6 +1783,8 @@ Plan36 publication diagnostics preserve this topic's existing behavior and autho
 
 ## Scenario 236 — Local Creative Bundle Execution
 
+Scenario 236 retains the local-only generation workflow and Human review boundary; Scenario 262 adds read-only model inventory, strict HTTP request validation and bounded diagnostic recovery without running inference.
+
 Scenario 240 的 `tests/test_publication_planning.py` 覆蓋 worktree 綁定、精確 SHA/ref、舊指紋拒絕、Host denial、PR 重用與 squash merge 恢復；fixture 不等於真實 Host 或 REST 驗收。
 
 The existing OpenCode integration lifecycle also verifies hash-bound asset import, source drift rejection, destination conflicts, and the source-checkout CLI route.
@@ -1787,6 +1793,8 @@ The existing OpenCode integration lifecycle also verifies hash-bound asset impor
 The cross-profile quality evidence extension is covered by Scenario 258; this creative execution scenario continues to distinguish generated artifacts, image checks, Human review and user acceptance.
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
+
+Scenario 259 retains the pinned upstream inventory, disposition and projection ownership checks; this Creative Runtime change does not alter Skill inventory or installation behavior.
 
 The read-only Skill Explorer and upstream Skill routing are unchanged by the publication diagnostics release.
 
@@ -1875,6 +1883,8 @@ Current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md)
 
 ## Scenario 260 — Publication diagnostics and Doctor
 
+Runtime Hook recovery remains non-authorizing; Scenario 262 diagnostics do not alter candidate validation, native Host confirmation or publication authority.
+
 Scenario 260 verifies that native Hook denials expose only safe diagnostic metadata and that the candidate branch is separate from target policy.
 
 Scenario 260 also checks that Doctor observes target-branch policy independently of the candidate branch, classifies 401/403 and contextual 404 evidence, and includes safe structured Claude Hook denial metadata without command input. Scenario 261 keeps transient recovery read-only and non-authorizing.
@@ -1882,3 +1892,7 @@ Scenario 260 also checks that Doctor observes target-branch policy independently
 The publication diagnostic contract distinguishes missing/stale pinned merge SHA, forbidden flags, verified Required Checks configuration, unavailable policy evidence, and non-authorizing Host recovery guidance.
 
 Scenario 260 verifies stable, redacted diagnostics for publication blockers, read-only `gh pr merge` diagnosis, first-time repository Doctor observations, Required Checks states, unavailable policy evidence, and consistent Claude Code/OpenCode/Codex guidance. The doctor never changes repository settings, executes merge, or consumes a grant. Scenario 261 adds grouped dirty-path evidence and phase attribution through push, PR, checks, and merge recovery; diagnostics remain non-authorizing.
+
+## Scenario 262 — ComfyUI Resource Authorization and Diagnostics
+
+Scenario 262 covers fail-closed Resource Authorization Profile/grant matching, Hook binding to observed URLs, fixed loopback ComfyUI model discovery and safe HTTP recovery, shared creative presets, and static-only MPS compatibility evidence.

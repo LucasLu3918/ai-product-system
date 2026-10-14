@@ -79,7 +79,9 @@ The `aips project diagnose <path>` command is a read-only projection over existi
 
 The deterministic Profile-to-prompt compiler and evidence-ranked model advice live in `scripts/creative_prompt_compiler.py`; shared creative errors live in `scripts/creative_errors.py`. `scripts/creative_execution.py` re-exports the same functions and error type as its compatibility facade.
 
-The shared creative executor registers Z-Image Turbo generation through the fixed `mflux-generate-z-image-turbo` command or the exact built-in ComfyUI split-loader API workflow. Discovery, configuration, preflight and OpenCode share the executor; ComfyUI verifies its UNET, CLIP and VAE inventory and rejects other workflow topology. Editing and other Z-Image variants remain unsupported. Read-only discovery distinguishes command presence, runtime response, model inventory, preflight and actual inference; its ordinary ComfyUI probe is fixed to `127.0.0.1:8188`. Static Apple Silicon FP8 evidence can warn conservatively, while backend compatibility remains unverified until real inference is separately authorized and observed.
+Runtime Hook denial guidance carries the normalized reason and trace fields through the existing Governance Guard, while protected operations still require the native Human authority path.
+
+The shared creative executor registers Z-Image Turbo generation through the fixed `mflux-generate-z-image-turbo` command or the exact built-in ComfyUI split-loader API workflow. Discovery, configuration, preflight and OpenCode share the executor; ComfyUI verifies its UNET, CLIP and VAE inventory and rejects other workflow topology. Editing and other Z-Image variants remain unsupported. Read-only discovery distinguishes command presence, runtime response, capped model inventory, preflight and actual inference; ordinary discovery only probes `127.0.0.1:8188` with fixed GET paths. All local provider requests require a literal loopback IP, explicit port, allowlisted method/path, proxy bypass and redirect refusal. Static Apple Silicon MPS/precision evidence can advise conservatively, while backend compatibility remains unverified until real inference is separately authorized and observed.
 
 The local creative path is `discover → prepare → configure → preflight → execute or resumable generate-set → Human review`. Discovery is read-only and limited to installed MFLUX command/version checks plus the fixed loopback ComfyUI API; configuration creates a new allowlisted Bundle version. `BLOCKED_NO_ENGINE` preserves provider reason codes and bounded recovery guidance without local paths or credentials. OpenCode V2 mutation authority comes from current native prompt admission, independent of dispatch Context or transcript truncation. User-only authorization and explicit raster/vector intent are separate from advisory task routing. New model profiles do not change those authority boundaries or enable external providers.
 
@@ -95,11 +97,13 @@ flowchart TD
     OP --> RC
     OP -->|explicit creative_execution tool| WP[Prepare versioned Profiles + Bundle in EPHEMERAL scope]
     WP -->|unconfigured local engine| CP{Creative Preflight}
+    OP -->|read-only discover| CD[Fixed ComfyUI GET model inventory]
+    CD --> CU[Loopback ComfyUI API · no redirect]
     OP -->|existing Bundle| CP
     CP -->|engine unavailable / invalid bundle| CBL[BLOCKED_NO_ENGINE or policy reason]
     CP -->|explicit execute action only| CE[Scoped EPHEMERAL Creative Executor]
     CE -->|offline argv process| MF[MFLUX local CLI]
-    CE -->|loopback HTTP, built-in nodes| CU[ComfyUI local API]
+    CE -->|validated local HTTP, built-in nodes only| CU
     MF -->|new raster + manifest| CR[Independent Human visual review]
     CU -->|new raster + manifest| CR
     RA --> TC[Compact Turn Context]
@@ -289,6 +293,8 @@ flowchart LR
 The alias candidate is deterministic and transparent. It is not an embedding provider and does not change `semantic.status=NOT_CONFIGURED`. The committed Trial follows the FAIL → KEEP branch: required regressions and no synonym-recall improvement produce recommendation `HOLD`. Normal Turn Context retrieval therefore does not enable the alias lane.
 
 ## Maintenance and publication evidence
+
+Runtime denial recovery is descriptive only: publication and protected operations continue to require exact candidate validation and native Human authorization.
 
 Core publication changes bind their exact changed-file set and validation evidence in the active Core Change Test Matrix.
 

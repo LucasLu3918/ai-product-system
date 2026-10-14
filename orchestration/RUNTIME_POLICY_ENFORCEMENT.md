@@ -29,7 +29,9 @@ Task write authorization is not a substitute for the Runtime Action PEP. `aips r
 
 `orchestration/schemas/runtime-action.yaml` defines version 1. The action binds actor/task/runtime, tool/operation/arguments, resource, destination/trust, effective SAL, Change Boundary, data classes, protected assets, Resource Authorization profile, credential reference and required enforcement. SAL is not data classification. The action digest includes the normalized arguments, destination, risk/data labels, boundary and the Resource Authorization profile fingerprint; it excludes the approval ID.
 
-Only a trusted host adapter may supply a top-level `aips_runtime_action`. User/model-controlled `tool_input` fields are not accepted as authority metadata. The current hooks conservatively identify direct `curl`/`wget` URLs and block them when policy context is missing. Indirect scripts, child processes, SDK calls and hidden sockets require sandbox/network enforcement.
+The current native hooks do not attest a separate trusted Runtime Action channel. They therefore rebuild direct `curl`/`wget` observations from the actual Hook tool name and command, bind the host and request metadata to that command, and read the Profile path only from the trusted `AIPS_RESOURCE_AUTHORIZATION_PROFILE` process environment. A top-level model-supplied `aips_runtime_action` cannot replace or widen observed host facts. Missing, unreadable, malformed or scope-mismatched Profiles produce distinct structured fail-closed diagnostics. Indirect scripts, child processes, SDK calls and hidden sockets require sandbox/network enforcement.
+
+Runtime decisions expose `status`, `phase`, `reason_code`, `source`, `retryable`, `trace_id` and `recovery.action`. Destination evidence can include port, HTTP method, path and redirect status; Resource Authorization compares these to the exact grant kind, selector and constraints before policy evaluation.
 
 ## Policy and decisions
 

@@ -55,6 +55,8 @@ Material visual artifacts use `visual-quality-review`. Review against the approv
 
 ## Local character artwork
 
+Shared `asset_preset` values provide static character, background, texture, and UI ornament prompt guidance; the selected preset hash is recorded in provenance and does not authorize or execute generation.
+
 Publication Doctor recovery is outside the Creative Direction workflow and cannot grant creative execution or publication authority.
 
 Publication diagnostics for an image-asset change remain evidence only; they do not imply permission to publish the asset or merge its PR.

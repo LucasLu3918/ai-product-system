@@ -4,10 +4,13 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import ipaddress
 import json
 import os
 import re
+import shlex
 import sys
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -20,6 +23,7 @@ if str(ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(ROOT / "scripts"))
 
 from content_safety import safe_emit
+from creative_errors import RECOVERY, redact
 from resource_authorization import AuthorizationError, decision as authorization_decision, load_yaml as load_authorization_profile, validate_profile as validate_authorization_profile
 from semantic_guard import validate_signal
 from sandbox_providers import resolve_egress
@@ -68,6 +72,18 @@ def validate_action(action: dict[str, Any]) -> None:
     host = destination.get("host")
     if host is not None and (not isinstance(host, str) or not host.strip() or "/" in host):
         raise PolicyError("destination.host must be a hostname or null")
+    port = destination.get("port")
+    if port is not None and (not isinstance(port, int) or isinstance(port, bool) or not 1 <= port <= 65535):
+        raise PolicyError("destination.port must be a valid TCP port or null")
+    for key in ("method", "path"):
+        value = destination.get(key)
+        if value is not None and (not isinstance(value, str) or not value.strip() or len(value) > 2048 or "\r" in value or "\n" in value):
+            raise PolicyError(f"destination.{key} must be a bounded non-empty string or null")
+    if not isinstance(destination.get("redirected", False), bool):
+        raise PolicyError("destination.redirected must be boolean")
+    selector = action["resource"].get("selector")
+    if selector is not None and (not isinstance(selector, str) or not selector.strip() or len(selector) > 2048):
+        raise PolicyError("resource.selector must be a bounded non-empty string or null")
     sal = action["context"].get("effective_sal")
     if sal is not None and (not isinstance(sal, int) or isinstance(sal, bool) or sal < 0 or sal > 4):
         raise PolicyError("context.effective_sal must be an integer from 0 to 4 or null")
@@ -112,6 +128,16 @@ def action_digest(action: dict[str, Any], *, project_root: Path | None = None) -
 
 def policy_digest(policy: dict[str, Any], policy_bytes: bytes | None = None) -> str:
     return "sha256:" + hashlib.sha256(policy_bytes or canonical_json(policy).encode("utf-8")).hexdigest()
+
+
+def _result(decision: str, reason: str, *, reason_code: str, phase: str = "runtime_policy",
+            source: str = "runtime_policy", retryable: bool = False,
+            recovery_action: str = "CHECK_RUNTIME_POLICY_AND_RETRY", **fields: Any) -> dict[str, Any]:
+    return {"version": 1, "decision": decision, "status": decision, "phase": phase,
+            "reason_code": reason_code, "source": source, "retryable": retryable,
+            "trace_id": str(uuid.uuid4()), "recovery": {"action": RECOVERY.get(reason_code, "檢查已核准的 Runtime Policy 範圍後重新評估。"),
+                                                        "code": recovery_action},
+            "reason": redact(reason), **fields}
 
 
 def validate_policy(policy: dict[str, Any]) -> None:
@@ -213,26 +239,59 @@ def evaluate(action: dict[str, Any], policy: dict[str, Any], *, runtime_capabili
     validate_action(action)
     validate_policy(policy)
     if runtime_capability not in ENFORCEMENT:
-        return {"version": 1, "decision": "BLOCKED", "reason": "runtime enforcement capability unknown",
-                "action_digest": action_digest(action)}
+        return _result("BLOCKED", "runtime enforcement capability unknown", reason_code="runtime_capability_unknown",
+                       phase="runtime_policy.enforcement", recovery_action="VERIFY_RUNTIME_CAPABILITY",
+                       action_digest=action_digest(action))
     project_root = project_root or ROOT
     digest = action_digest(action, project_root=project_root)
     current_policy_digest = policy_digest(policy, policy_bytes)
     profile_path = ((action.get("authorization") or {}).get("resource_profile"))
     if not isinstance(profile_path, str) or not profile_path.strip():
-        return {"version": 1, "decision": "BLOCKED", "reason": "Resource Authorization profile unavailable", "action_digest": digest}
+        return _result("BLOCKED", "Resource Authorization profile was not provided by the runtime configuration.",
+                       reason_code="resource_profile_not_provided", phase="authorization.profile_resolution",
+                       source="resource_authorization", recovery_action="CONFIGURE_TRUSTED_PROFILE",
+                       action_digest=digest)
     try:
-        profile_file = (project_root / profile_path).resolve()
+        profile_file = (project_root / profile_path).resolve(strict=True)
         if not profile_file.is_relative_to(project_root.resolve()):
-            raise PolicyError("Resource Authorization profile must remain inside the project")
+            return _result("BLOCKED", "Resource Authorization profile must remain inside the project.",
+                           reason_code="resource_profile_outside_project", phase="authorization.profile_resolution",
+                           source="resource_authorization", recovery_action="USE_PROJECT_PROFILE",
+                           action_digest=digest)
         profile = load_authorization_profile(profile_file)
         validate_authorization_profile(profile)
         auth_operation = "execute" if action["action"]["operation"] == "external_data_egress" else action["action"]["operation"]
-        auth = authorization_decision(profile, action["resource"]["id"], auth_operation, action["context"].get("change_boundary"))
-    except (OSError, yaml.YAMLError, AuthorizationError, PolicyError) as exc:
-        return {"version": 1, "decision": "BLOCKED", "reason": "Resource Authorization failed: " + str(exc), "action_digest": digest}
+        destination = action["destination"]
+        resource = action["resource"]
+        auth = authorization_decision(
+            profile, resource["id"], auth_operation, action["context"].get("change_boundary"),
+            resource_kind=resource["kind"], selector=resource.get("selector"), destination=destination.get("host"),
+            network_used=(action["action"]["operation"] == "external_data_egress"),
+            port=destination.get("port"), method=destination.get("method"), path=destination.get("path"),
+            redirected=destination.get("redirected", False),
+        )
+    except FileNotFoundError:
+        return _result("BLOCKED", "Resource Authorization profile does not exist.", reason_code="resource_profile_missing",
+                       phase="authorization.profile_resolution", source="resource_authorization",
+                       recovery_action="CHECK_PROFILE_PATH", action_digest=digest)
+    except PermissionError:
+        return _result("BLOCKED", "Resource Authorization profile cannot be read.", reason_code="resource_profile_unreadable",
+                       phase="authorization.profile_resolution", source="resource_authorization",
+                       recovery_action="CHECK_PROFILE_PERMISSIONS", action_digest=digest)
+    except AuthorizationError as exc:
+        return _result("BLOCKED", str(exc), reason_code=exc.reason_code,
+                       phase="authorization.profile_validation", source="resource_authorization",
+                       recovery_action="CHECK_PROFILE_AND_RETRY", action_digest=digest)
+    except (OSError, yaml.YAMLError, PolicyError):
+        return _result("BLOCKED", "Resource Authorization profile could not be safely loaded.",
+                       reason_code="resource_profile_unreadable", phase="authorization.profile_resolution",
+                       source="resource_authorization", recovery_action="CHECK_PROFILE_PATH_AND_PERMISSIONS",
+                       action_digest=digest)
     if auth["status"] != "ALLOW":
-        return {"version": 1, "decision": "DENY", "reason": "Resource Authorization denied action", "action_digest": digest}
+        return _result("DENY", "Resource Authorization denied action: " + auth["reason"],
+                       reason_code=auth["reason"], phase="authorization.grant_match",
+                       source="resource_authorization", recovery_action="REVIEW_APPROVED_GRANT",
+                       action_digest=digest, authorization=auth)
     serialized = canonical_json(action.get("action", {}).get("arguments"))
     content = safe_emit(sink="source_artifact", payload={"arguments": serialized})
     contains_secret = content.get("decision") in {"BLOCK", "REDACT"}
@@ -240,11 +299,13 @@ def evaluate(action: dict[str, Any], policy: dict[str, Any], *, runtime_capabili
     allowlist = {str(item).lower() for item in policy.get("external_destination_allowlist", [])}
     trust = action["destination"].get("trust")
     if trust in {"external", "approved_external"} and (not host or host.lower() not in allowlist):
-        return {"version": 1, "decision": "DENY", "reason": "external destination is not allowlisted",
-                "action_digest": digest, "policy_digest": current_policy_digest}
+        return _result("DENY", "external destination is not allowlisted", reason_code="destination_not_allowlisted",
+                       phase="runtime_policy.destination", recovery_action="USE_ALLOWLISTED_DESTINATION",
+                       action_digest=digest, policy_digest=current_policy_digest)
     if trust in {"external", "approved_external"} and action["context"].get("effective_sal") is None:
-        return {"version": 1, "decision": "BLOCKED", "reason": "effective SAL is unknown for external action",
-                "action_digest": digest}
+        return _result("BLOCKED", "effective SAL is unknown for external action", reason_code="effective_sal_unknown",
+                       phase="runtime_policy.classification", recovery_action="CLASSIFY_ACTION_RISK",
+                       action_digest=digest)
     matches = [r for r in policy["rules"] if _matches(action, r.get("when") or {}, contains_secret)]
     matches.sort(key=lambda r: (-r.get("priority", 0), r["id"]))
     if any(r["effect"] == "DENY" for r in matches):
@@ -291,41 +352,90 @@ def evaluate(action: dict[str, Any], policy: dict[str, Any], *, runtime_capabili
             reason = "optional semantic guard tightened deterministic result"
         elif semantic_decision is not None and semantic_decision != "ALLOW":
             decision, reason = "BLOCKED", "optional semantic guard returned an invalid result"
-    return {"version": 1, "decision": decision, "reason": reason, "action_digest": digest,
-            "policy_digest": current_policy_digest, "matched_rules": rule_ids, "runtime_capability": runtime_capability,
-            "audit": {"event_type": "RUNTIME_ACTION_" + decision, "action_digest": digest,
-                      "policy_digest": current_policy_digest, "destination_host": host, "rule_ids": rule_ids,
-                      "resource_authorization_fingerprint": auth.get("profile_fingerprint")}}
+    reason_codes = {"ALLOW": "policy_allow", "DENY": "policy_denied", "REQUIRE_APPROVAL": "approval_required", "BLOCKED": "runtime_policy_blocked"}
+    recovery = {"ALLOW": "NONE_REQUIRED", "DENY": "REVIEW_POLICY_AND_SCOPE", "REQUIRE_APPROVAL": "REQUEST_SCOPED_HUMAN_APPROVAL", "BLOCKED": "CHECK_RUNTIME_CAPABILITY_AND_EVIDENCE"}
+    return _result(decision, reason, reason_code=reason_codes[decision], phase="runtime_policy.decision",
+                   source="runtime_policy", recovery_action=recovery[decision], retryable=False,
+                   action_digest=digest, policy_digest=current_policy_digest, matched_rules=rule_ids,
+                   runtime_capability=runtime_capability,
+                   audit={"event_type": "RUNTIME_ACTION_" + decision, "action_digest": digest,
+                          "policy_digest": current_policy_digest, "destination_host": host, "rule_ids": rule_ids,
+                          "resource_authorization_fingerprint": auth.get("profile_fingerprint")})
 
 
 def classify_url(value: str) -> tuple[str | None, str]:
     parsed = urlparse(value)
     if parsed.scheme not in {"http", "https"} or not parsed.hostname:
         return None, "unknown"
-    return parsed.hostname.lower(), "external"
+    host = parsed.hostname.lower()
+    try:
+        if ipaddress.ip_address(host).is_loopback:
+            return host, "internal"
+    except ValueError:
+        pass
+    return host, "external"
 
 
 def action_from_hook(payload: dict[str, Any], runtime: str) -> dict[str, Any] | None:
     explicit = payload.get("aips_runtime_action")
-    if isinstance(explicit, dict):
-        return explicit
     tool_input = payload.get("tool_input") or {}
     tool_name = str(payload.get("tool_name") or "unknown")
     command = str(tool_input.get("command") or "")
-    # Only classify direct, visible HTTP(S) CLI URLs. Scripts, child processes,
-    # SDK calls and arbitrary shell syntax require OS/sandbox network enforcement.
+    # Only classify visible curl/wget URLs. Complex shell, scripts, child
+    # processes and SDK calls cannot borrow a model-supplied Runtime Action.
     match = re.search(r"https?://[^\s'\"<>]+", command)
     if not match or not re.search(r"(?:^|[;&|\s])(curl|wget)(?:\s|$)", command):
         return None
-    host, trust = classify_url(match.group(0).rstrip(",);]"))
+    raw_url = match.group(0).rstrip(",);]")
+    host, trust = classify_url(raw_url)
+    try:
+        parsed_command = shlex.split(command)
+    except ValueError:
+        parsed_command = []
+    direct = bool(parsed_command and Path(parsed_command[0]).name in {"curl", "wget"})
+    method = "GET"
+    if direct and parsed_command[0].endswith("curl"):
+        for index, token in enumerate(parsed_command[:-1]):
+            if token in {"-X", "--request"}:
+                method = parsed_command[index + 1].upper()
+                break
+        if "-I" in parsed_command or "--head" in parsed_command:
+            method = "HEAD"
+    observed = urlparse(raw_url)
+    observed_host = host if direct else None
+    observed_id = host if direct and host else "unresolved-host"
+    # A top-level action is accepted only when its claimed tool/operation and
+    # resource host bind to the actual direct command. Its authority metadata is
+    # still rebuilt from the host event and trusted environment.
+    explicit_action = explicit.get("action") if isinstance(explicit, dict) else {}
+    explicit_resource = explicit.get("resource") if isinstance(explicit, dict) else {}
+    explicit_destination = explicit.get("destination") if isinstance(explicit, dict) else {}
+    explicit_action = explicit_action if isinstance(explicit_action, dict) else {}
+    explicit_resource = explicit_resource if isinstance(explicit_resource, dict) else {}
+    explicit_destination = explicit_destination if isinstance(explicit_destination, dict) else {}
+    bound = (isinstance(explicit, dict)
+             and explicit_action.get("tool") == tool_name
+             and explicit_action.get("operation") == "external_data_egress"
+             and explicit_resource.get("kind") == "external_service"
+             and explicit_resource.get("id") == observed_id
+             and explicit_destination.get("host") == observed_host)
+    context = explicit.get("context") if bound else {}
+    data = explicit.get("data") if bound else {}
+    requirements = explicit.get("requirements") if bound else {}
     return {"version": 1, "actor": {"task_id": str(payload.get("session_id") or "runtime-hook"), "runtime": runtime},
             "action": {"tool": tool_name, "operation": "external_data_egress", "arguments": {"command": "[redacted]"}},
-            "resource": {"kind": "external_service", "id": host or "unresolved-host"},
-            "destination": {"host": host, "trust": trust},
-            "context": {"effective_sal": None, "change_boundary": None},
-            "data": {"classes": [], "protected_assets": []},
+            "resource": {"kind": "external_service", "id": observed_id, "selector": observed_host},
+            "destination": {"host": observed_host, "trust": trust if direct else "unknown",
+                            "port": observed.port or (443 if observed.scheme == "https" else 80),
+                            "method": method if direct else None, "path": observed.path or "/" if direct else None},
+            "context": {"effective_sal": context.get("effective_sal") if isinstance(context, dict) else None,
+                        "change_boundary": context.get("change_boundary") if isinstance(context, dict) else None},
+            "data": {"classes": data.get("classes", []) if isinstance(data, dict) else [],
+                     "protected_assets": data.get("protected_assets", []) if isinstance(data, dict) else []},
             "authorization": {"resource_profile": os.environ.get("AIPS_RESOURCE_AUTHORIZATION_PROFILE")},
-            "requirements": {"minimum_enforcement": "TOOL_GUARDED", "sandbox_provider_id": None}}
+            "requirements": {"minimum_enforcement": (requirements.get("minimum_enforcement", "TOOL_GUARDED")
+                                                         if isinstance(requirements, dict) else "TOOL_GUARDED"),
+                             "sandbox_provider_id": requirements.get("sandbox_provider_id") if isinstance(requirements, dict) else None}}
 
 
 def load_policy(path: Path) -> tuple[dict[str, Any], bytes]:
@@ -355,8 +465,11 @@ def main() -> int:
         rendered = json.dumps(decision, indent=2, ensure_ascii=False) if args.format == "json" else yaml.safe_dump(decision, sort_keys=False, allow_unicode=True)
         print(rendered, end="")
         return 0 if decision["decision"] == "ALLOW" else 1
-    except (OSError, yaml.YAMLError, PolicyError) as exc:
-        print(yaml.safe_dump({"version": 1, "decision": "BLOCKED", "reason": str(exc)}, sort_keys=False), end="")
+    except (OSError, yaml.YAMLError, PolicyError):
+        result = _result("BLOCKED", "Runtime Policy input could not be safely loaded.",
+                         reason_code="runtime_policy_input_invalid", phase="runtime_policy.input",
+                         recovery_action="CHECK_POLICY_AND_ACTION_FILES")
+        print(yaml.safe_dump(result, sort_keys=False, allow_unicode=True), end="")
         return 2
 
 
