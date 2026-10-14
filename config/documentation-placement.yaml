@@ -367,7 +367,7 @@ placement_rules:
   - id: evolution
     triggers: [scripts/evolution_*.py, config/evolution-*.yaml, references/evolution/ISSUE_79_*.yaml, .github/workflows/evolution-*.yml, orchestration/EVOLUTION_RADAR.md]
     placements:
-      orchestration/EVOLUTION_RADAR.md: [Operating modes, Technology Intelligence Expansion]
+      orchestration/EVOLUTION_RADAR.md: [Operating modes, Technology Intelligence Expansion, "Issue #79 observable-event integration Trial"]
       docs/human/EVOLUTION_RADAR.md: [Weekly Signal Scan, Evidence Quality, Deterministic Pre-analysis, Semantic Analysis, Human Decision Binding, Controlled Trial, Trial → ADOPT, Effectiveness Feedback, Current Boundaries]
       docs/human/EVOLUTION_RADAR_OVERVIEW.md: [Signal Collection, Deterministic Pre-analysis, Semantic Analysis, Human Decision, Controlled Trial, Trial → Adoption, Effectiveness Feedback]
       docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Execution, Quality & Verification, Evolution & Maintenance, Security & Governance]

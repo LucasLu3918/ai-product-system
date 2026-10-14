@@ -48,6 +48,8 @@ Human 可選 REJECT / HOLD / ASSESS / TRIAL / ADOPT。Positive decision 若 base
 
 TRIAL 使用 approved scope / paths 與 AIPS-owned isolation。執行後檢查 forbidden paths、diff size、repository validation 與 evidence fingerprint。
 
+Scenario 140 的 observable-event 評估維持離線 evidence：歷史事件可用已命中的 Resource Authorization Grant 補足缺漏上下文，明確事件上下文仍須符合 Grant。成功但違反 network grant 的事件會同時分類為 `network_policy_violation` 與 `unauthorized_success`；這不代表 live capture 或 runtime enforcement。
+
 ## Trial → Adoption
 
 OpenCode Harness acceptance remains version-scoped evidence; Evolution Radar promotion still requires its own Human decision and effectiveness evidence.
