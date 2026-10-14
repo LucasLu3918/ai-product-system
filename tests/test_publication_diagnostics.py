@@ -240,9 +240,8 @@ class PublicationDiagnosticsTest(unittest.TestCase):
 
         (self.root / 'candidate.txt').write_text('candidate\n')
         subprocess.run(['git', 'add', '.'], cwd=self.root, check=True, capture_output=True)
-        fixture_email = subprocess.run(['git', 'config', '--get', 'user.email'], cwd=ROOT,
-                                       check=True, capture_output=True, text=True).stdout.strip()
-        subprocess.run(['git', '-c', 'user.name=Fixture', '-c', f'user.email={fixture_email}',
+        subprocess.run(['git', '-c', 'user.name=Fixture',
+                        '-c', 'user.email=fixture',
                         'commit', '-m', 'fixture'], cwd=self.root, check=True, capture_output=True)
         head = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=self.root, check=True,
                               capture_output=True, text=True).stdout.strip()
