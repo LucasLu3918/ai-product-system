@@ -217,7 +217,6 @@ def detect(event: dict[str, Any], profile: dict[str, Any]) -> list[dict[str, str
         resource_kind=event.get("resource_kind") or (grant or {}).get("kind"),
         selector=event.get("selector") or (grant or {}).get("selector"),
         destination=event.get("destination"),
-        network_used=event.get("network_used", False),
         port=event.get("port"),
         method=event.get("method"),
         path=event.get("path"),
@@ -237,7 +236,7 @@ def detect(event: dict[str, Any], profile: dict[str, Any]) -> list[dict[str, str
     ):
         anomalies.append({"type": "missing_required_change_boundary", "severity": "HIGH"})
 
-    if grant is not None and event.get("network_used", False) and constraints.get("network_allowed") is False:
+    if grant is not None and event.get("network_used", False) and constraints.get("network_allowed") is not True:
         anomalies.append({"type": "network_policy_violation", "severity": "HIGH"})
 
     return anomalies

@@ -42,7 +42,7 @@ Human Decision 綁定 candidate、evidence、baseline revision、scope、actor/t
 
 TRIAL 只在 approved scope / paths 與 AIPS-owned isolation 中執行。Trial runner 驗證 forbidden paths、diff size、repository validation 與 evidence fingerprint；external executor 不可 self-assert PASS。
 
-Scenario 140 的離線 observable-event replay 會依 Resource Authorization Profile 分析事件。舊事件缺少 kind / selector 時使用命中的 Grant 中繼資料；事件若提供上下文則會一併比對。禁止網路的 Grant 出現成功網路事件時，evidence 同時標示 `network_policy_violation` 與 `unauthorized_success`；這只更新分析結果，不啟用 runtime enforcement 或 live capture。
+Scenario 140 的離線 observable-event replay 會依 Resource Authorization Profile 分析事件。舊事件缺少 kind / selector 時使用命中的 Grant 中繼資料；事件若提供上下文則會一併比對。若 Grant 未明確允許網路使用，事件仍標示 `network_policy_violation`；這是事後 evidence，不啟用 runtime enforcement 或 live capture。
 
 ## Trial → ADOPT
 
