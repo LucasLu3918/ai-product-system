@@ -290,6 +290,8 @@ Focused Intelligence context evidence must distinguish storage deduplication fro
 
 ## Impact-derived regression testing
 
+Plan41 records scanner, CLI, documentation-closure, and exact-candidate Gate evidence in the canonical Core Change Test Matrix; its approved scope does not require independent review.
+
 Publication policy changes test branch protection visibility, exact target policy, check-state classification and Hook no-write behavior.
 
 The publication matrix covers candidate-versus-policy branch selection, HTTP error classes, safe Hook diagnostics and read-only retry classification on the exact candidate.
@@ -508,6 +510,8 @@ When public repository hardening changes, review together:
 Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功，再分別模擬 loopback 與 browser 失敗，確保環境阻擋診斷不受 optional module availability 干擾；這不變更 runtime 行為。
 
 ## Validation architecture consistency
+
+The full repository runner registers Scenario 263 and its commit-safety lifecycle; its evidence remains separate from the required exact-candidate Integration Gate.
 
 Plan40 adds publication-diagnostic evidence without changing independent-review attestation or Skill Explorer routing; the exact-candidate repository Gate remains required for both existing boundaries.
 
@@ -764,5 +768,7 @@ Protected dispatch 會逐筆重新讀取 merged PR，確認 `merged_at`、head S
 
 
 ## Runtime Content Safety Boundary
+
+Plan41 adds redacted Hook findings, strict ignore-marker handling and bounded PNG/JPEG/WebP/M4A/MP3 metadata inspection through the existing commit safety boundary. Unsupported binaries, malformed media, unreadable Git objects and scanner failures remain explicit fail-closed outcomes; see Scenario 263.
 
 Register every new persistence or publication sink in `config/content-safety.yaml`. Preserve the `sanitize → hash → persist` ordering for audit data and update scenarios when detector or sink policy behavior changes.

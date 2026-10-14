@@ -26,6 +26,8 @@ features:
 
 ## 文件如何組織
 
+Commit Content Safety 的操作說明見 [User Guide](USER_GUIDE.md#runtime-content-safety-boundary)，權限與 fail-closed 邊界見 [Security Assurance](SECURITY_ASSURANCE.md#runtime-content-safety-boundary)，驗證證據見 Scenario 263。
+
 Resource Authorization and local Creative execution behavior are documented in the User Guide, Security Assurance, and Scenario 262; implementation ownership and placement remain in the Agent-facing orchestration references.
 
 For publication recovery, start with the User Guide and follow the linked Security Assurance, Harness and Scenario 260/261 evidence.

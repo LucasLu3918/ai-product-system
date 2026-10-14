@@ -350,6 +350,8 @@ Plan36 publication diagnostics preserve this topic's existing behavior and autho
 
 ## Security 與 Governance
 
+Commit diagnostics remain a content-safety observation; they do not alter independent-review evidence, Resource Authorization, or publication authority.
+
 未知或不受支援的 publication reason code 會回報 `INTERNAL_DIAGNOSTIC_GAP`，並提供階段與安全恢復指引；diagnostic ID 僅能讀取已設定且通過 hash-chain 驗證的 allowlisted ledger event。
 
 Resource Authorization resolves only a trusted profile and enforces grant kind, selector, operation and destination constraints. Its structured denial diagnostics remain default-deny and redact local paths and provider bodies.
@@ -436,6 +438,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 
 ## Maintenance governance
+
+The Plan41 matrix binds the registered commit-safety lifecycle and recursive documentation closure to the candidate before its Integration Gate.
 
 Plan40 將錯誤來源、候選/runtime 綁定、診斷追查與 publication lifecycle 欄位納入同一 exact-candidate 驗證；ledger 未設定時不建立預設儲存，也不改變授權結果。
 
@@ -580,6 +584,8 @@ Docs build 與 Pages hosting 分開驗證：PR / main 都能證明 VitePress bui
 
 Documentation Placement 對 behavior-bearing source 採 fail-closed mapping：只要 source 落在 Technology Guide 的廣域同步 surface，就必須先命中 subsystem placement rule。這避免新功能以「文件最後補充說明」逃過 topic architecture。
 ## Runtime Content Safety Boundary
+
+Plan41 extends the existing boundary with structured, redacted commit-denial diagnostics and a read-only `aips safety diagnose commit` command that shares the native Hook scanner. Strict ignore-marker handling and bounded PNG/JPEG/WebP/M4A/MP3 metadata scans preserve the existing BLOCK and fail-closed policy.
 
 Telemetry additions use bounded allowlisted fields and exclude prompts, images, credentials and private reasoning.
 

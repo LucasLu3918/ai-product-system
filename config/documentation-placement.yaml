@@ -303,7 +303,7 @@ placement_rules:
       orchestration/ORCHESTRATOR.md: [Minimal algorithm, System Update Preflight, Risk-Proportional Security Assurance, Context expansion, Checkpoint and resume, Change-class handoff to Integration Gate, Runtime Content Safety Boundary, System Self-Improvement]
 
   - id: content-safety
-    triggers: [config/content-safety.yaml, scripts/content_safety.py, scripts/gemini_observable_event_capture.py, orchestration/CONTENT_SAFETY_BOUNDARY.md]
+    triggers: [config/content-safety.yaml, scripts/content_safety.py, scripts/check_secret_leakage.py, scripts/governance_guard.py, scripts/media_metadata.py, scripts/safety_diagnostics.py, scripts/publication_authority.py, scripts/aips_cli/dispatch.sh, scripts/aips_cli/help.sh, scripts/gemini_observable_event_capture.py, orchestration/CONTENT_SAFETY_BOUNDARY.md, tests/test_safety_diagnostics.py, tests/validate_repository.py, tests/fixtures/plan21-contract-golden-vectors.yaml, tests/scenarios/263-runtime-content-safety-commit-diagnostics.md]
     placements:
       docs/human/ARCHITECTURE_OVERVIEW.md: [Deterministic Execution, Runtime Content Safety Boundary]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Runtime Content Safety Boundary]
@@ -311,7 +311,9 @@ placement_rules:
       docs/human/PROJECT_INTELLIGENCE.md: [Runtime Content Safety Boundary]
       docs/human/SECURITY_ASSURANCE.md: [Runtime Content Safety Boundary]
       docs/human/MAINTENANCE.md: [Durable Run State consistency, Runtime Content Safety Boundary]
+      docs/human/CONFORMANCE.md: [Scenario 263 — Commit Safety Diagnostics]
       orchestration/CONTENT_SAFETY_BOUNDARY.md: [Purpose, Contract, Detection boundaries, Sink policy, Runtime truthfulness, Delivery stages, Security invariants]
+      orchestration/CONFORMANCE.md: [Scenario 263 — Commit Safety Diagnostics]
 
   - id: parallel-run-dashboard
     triggers: [scripts/run_dashboard.py, scripts/run_projection.py, scripts/run_state.py, templates/workspace/RUN_CHECKPOINT.yaml, orchestration/RUN_DASHBOARD.md, orchestration/RUN_RESUME.md]

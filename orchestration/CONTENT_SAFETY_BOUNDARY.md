@@ -10,6 +10,8 @@ The implementation is provider-neutral and does not require an external API cred
 
 ## Contract
 
+Commit Hook and read-only `aips safety diagnose commit` call the same staged-candidate implementation. Commit scans always use strict ignore-marker behavior. Supported PNG, JPEG, WebP, M4A and MP3 metadata is bounded and format-aware; unsupported/malformed binaries and incomplete scans fail closed with redacted structured diagnostics. This is a content decision, not publication authority.
+
 All AIPS-owned persistence paths should call:
 
 ```python

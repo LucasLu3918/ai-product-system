@@ -22,6 +22,8 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 ## 文件角色
 
+Plan41 的 commit 安全診斷由既有 Content Safety kernel、`governance_guard.py` 與唯讀 `safety_diagnostics.py` 共用實作；Human 操作與安全邊界由 User Guide、Security Assurance、Harness 及 Scenario 263 說明。
+
 Publication root-cause diagnostics and the optional Diagnostic ID lookup contract are implemented in the publication authority/planning/diagnostics and governance-audit modules; Human recovery steps live in User Guide, while native adapter and exact scenario boundaries live in Harness and Conformance.
 
 Publication Doctor recovery is documented in the User Guide, security authority boundary, Runtime adapter guidance and Scenario 260/261 evidence.

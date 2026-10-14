@@ -483,7 +483,7 @@ class PublicationTest(unittest.TestCase):
         with patch('governance_guard.subprocess.run', side_effect=unavailable_blob), \
                 self.assertRaises(auth.PublicationError) as unavailable:
             guard.commit_safety(self.repo, command)
-        self.assertEqual(unavailable.exception.reason_code, 'STAGED_CONTENT_UNAVAILABLE')
+        self.assertEqual(unavailable.exception.reason_code, 'STAGED_BLOB_UNAVAILABLE')
 
         def oversized_blob(argv, **kwargs):
             if argv[:2] == ['git', 'show']:
@@ -518,9 +518,9 @@ class PublicationTest(unittest.TestCase):
         # A real M4A is accepted by the staged commit guard and exact-candidate scanner.
         valid_path = self.repo / 'valid-audio.m4a'
         valid_path.write_bytes(audio)
-        (self.repo / 'legacy-audio.mp3').write_bytes(b'legacy mp3 binary fixture\x00\xff')
-        (self.repo / 'legacy-video.mp4').write_bytes(b'legacy mp4 binary fixture\x00\xfe')
-        self.run_git(self.repo, 'add', 'valid-audio.m4a', 'legacy-audio.mp3', 'legacy-video.mp4')
+        # Minimal valid ID3v2.4 tag, followed by opaque audio bytes.
+        (self.repo / 'legacy-audio.mp3').write_bytes(b'ID3\x04\x00\x00\x00\x00\x00\x00' + b'\xff\xfb\x90\x64' + b'legacy audio bytes')
+        self.run_git(self.repo, 'add', 'valid-audio.m4a', 'legacy-audio.mp3')
         command = 'git commit -m ' + __import__('shlex').quote('add audio fixture')
         self.assertNotEqual(guard.commit_safety(self.repo, command)['decision'], 'BLOCK')
         self.run_git(self.repo, 'commit', '-m', 'add audio fixture')

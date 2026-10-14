@@ -72,6 +72,7 @@ class Finding:
     length: int
     action: str
     confidence: float
+    line: int | None = None
 
     def as_dict(self) -> dict[str, Any]:
         return self.__dict__.copy()
@@ -114,9 +115,11 @@ def _policy(config: dict[str, Any], sink: str, kind: str) -> dict[str, Any]:
     return policies.get(kind) or policies.get("DEFAULT") or {"action": "ALLOW", "confidence": 0.0}
 
 
-def _finding(kind: str, detector: str, location: str, value: str, config: dict[str, Any], sink: str) -> Finding:
+def _finding(kind: str, detector: str, location: str, value: str, config: dict[str, Any], sink: str,
+             line: int | None = None) -> Finding:
     rule = _policy(config, sink, kind)
-    return Finding(kind, detector, location, _fingerprint(value), len(value), str(rule.get("action", "ALLOW")), float(rule.get("confidence", 1.0)))
+    return Finding(kind, detector, location, _fingerprint(value), len(value), str(rule.get("action", "ALLOW")),
+                   float(rule.get("confidence", 1.0)), line)
 
 
 def _walk(value: Any, prefix: str = ""):
@@ -130,29 +133,30 @@ def _walk(value: Any, prefix: str = ""):
         yield prefix or "<root>", value
 
 
-def scan_payload(payload: Any, *, sink: str, config: dict[str, Any] | None = None, context: dict[str, Any] | None = None) -> list[Finding]:
+def scan_payload(payload: Any, *, sink: str, config: dict[str, Any] | None = None,
+                 context: dict[str, Any] | None = None, strict: bool = False) -> list[Finding]:
     config = config or load_config()
     findings: list[Finding] = []
     for location, text in _walk(payload):
-        for item in scan_text(text, location):
+        for item in scan_text(text, location, strict=strict):
             rule = _policy(config, sink, "SECRET")
             findings.append(Finding(
                 "SECRET", item["detector"], location, str(item["fingerprint"]), int(item["secret_length"]),
-                str(rule.get("action", "ALLOW")), float(rule.get("confidence", 1.0)),
+                str(rule.get("action", "ALLOW")), float(rule.get("confidence", 1.0)), int(item.get("line", 1)),
             ))
         for match in EMAIL_RE.finditer(text):
-            findings.append(_finding("PII", "email", location, match.group(0), config, sink))
+            findings.append(_finding("PII", "email", location, match.group(0), config, sink, text.count("\n", 0, match.start()) + 1))
         for match in PHONE_RE.finditer(text):
-            findings.append(_finding("PII", "phone", location, match.group(0), config, sink))
+            findings.append(_finding("PII", "phone", location, match.group(0), config, sink, text.count("\n", 0, match.start()) + 1))
         for match in CARD_RE.finditer(text):
             candidate = match.group(0)
             if _luhn(candidate):
-                findings.append(_finding("PII", "credit-card-luhn", location, candidate, config, sink))
+                findings.append(_finding("PII", "credit-card-luhn", location, candidate, config, sink, text.count("\n", 0, match.start()) + 1))
         for match in TAIWAN_ID_RE.finditer(text):
             if _taiwan_id(match.group(0)):
-                findings.append(_finding("PII", "taiwan-id-checksum", location, match.group(0), config, sink))
+                findings.append(_finding("PII", "taiwan-id-checksum", location, match.group(0), config, sink, text.count("\n", 0, match.start()) + 1))
         for match in INJECTION_RE.finditer(text):
-            findings.append(_finding("INJECTION_SIGNAL", "instruction-pattern", location, match.group(0), config, sink))
+            findings.append(_finding("INJECTION_SIGNAL", "instruction-pattern", location, match.group(0), config, sink, text.count("\n", 0, match.start()) + 1))
     trust = (context or {}).get("trust") or (context or {}).get("source", {}).get("trust")
     if trust == "UNTRUSTED":
         findings.append(_finding("UNTRUSTED_CONTENT", "provenance", "context", "UNTRUSTED_CONTENT", config, sink))
@@ -204,9 +208,10 @@ def load_config(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
     return value
 
 
-def safe_emit(*, sink: str, payload: Any, context: dict[str, Any] | None = None, config: dict[str, Any] | None = None) -> dict[str, Any]:
+def safe_emit(*, sink: str, payload: Any, context: dict[str, Any] | None = None,
+              config: dict[str, Any] | None = None, strict: bool = False) -> dict[str, Any]:
     config = config or load_config()
-    findings = scan_payload(payload, sink=sink, config=config, context=context)
+    findings = scan_payload(payload, sink=sink, config=config, context=context, strict=strict)
     actions = {finding.action.upper() for finding in findings}
     if "BLOCK" in actions:
         decision = "BLOCK"

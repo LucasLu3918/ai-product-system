@@ -247,6 +247,8 @@ Large/core changes are proposal-first. Use `templates/core-change-proposal.md`. 
 
 ## Git Publish Approval
 
+Commit Content Safety findings explain local recovery; they do not replace this proposal-first approval or authorize a merge.
+
 Publication Prepare and Diagnostic ID lookup provide safe evidence for this approval review. `PLANNED`, `AUTHORIZED` at the AIPS Hook layer, or a verified diagnostic record never substitutes for Human intent, native Host confirmation, required checks or an observed merge.
 
 Runtime denial diagnostics and recovery instructions do not supply publication authority; the exact-candidate Gate, task authorization and native Host confirmation remain separate.
@@ -467,6 +469,8 @@ Validation observations never authorize selective execution: `NOT_READY` is an e
 When publication is blocked, use `aips publish doctor --worktree <candidate-root> --worktree-details` to classify policy evidence, worktree state, and PR state by phase. Preserve unknown files; use the named safe recovery step and retain Human/host authority.
 
 ## Runtime Content Safety Boundary
+
+Commit content decisions remain in the existing sink-aware scanner. The Hook and read-only diagnostic CLI share candidate inspection; structured findings stay redacted and cannot authorize Human/Host publication actions.
 
 Runtime Resource Authorization remains default-deny and binds each Hook action to its observed Resource selector and constrained destination; diagnostics are sanitized and cannot grant the denied operation.
 

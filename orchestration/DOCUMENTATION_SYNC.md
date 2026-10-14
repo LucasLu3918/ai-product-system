@@ -219,6 +219,8 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 ## Human documentation placement
 
+Plan41 maps `scripts/content_safety.py`, `governance_guard.py`, `media_metadata.py`, `safety_diagnostics.py`, CLI dispatch/help and commit-safety evidence to the existing Runtime Content Safety topics and Scenario 263. Keep strict scanning, format limits, redacted diagnostics and unchanged authority boundaries aligned.
+
 Plan40 publication diagnostic changes synchronize stable reason-code behavior, safe Prepare/Hook candidate bindings, separate lifecycle states, and optional hash-chain-verified Diagnostic ID lookup across User Guide, Maintenance, Human/Agent Harness guidance and Scenario 261. Preserve the no-default-ledger, no-raw-command and no-added-authority boundaries.
 
 The plan39 Resource Authorization/ComfyUI boundary maps to User Guide Runtime Resource and Creative topics, Security Assurance, Architecture Overview, Technology Guide, and Scenario 262. Presets remain prompt guidance; MPS evidence stays static until real inference is separately authorized and observed.
@@ -310,6 +312,8 @@ The new `scripts/retrieval_storage.py` helper belongs to the existing Project In
 Scenario 260 publication diagnostics synchronize with the Human Git Publication/Security Assurance sections, Architecture Overview, Claude Code adapter, CLI help, and the source-controlled diagnostic contracts.
 
 ## Scenario 220 — Parallel advisory fast feedback
+
+The Plan41 lifecycle is registered in the repository runner and current Scenario Conformance projections without changing the maintenance schedule or its evidence semantics.
 
 Plan21 Phase 2 shared canonical JSON/hash, relative-path and glob behavior is pinned by `tests/evidence/shared_primitives_lifecycle.py`; synchronize Human guidance while retaining partial graph coverage.
 

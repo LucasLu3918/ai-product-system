@@ -28,6 +28,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+Plan41 synchronizes the shared commit scanner, strict marker behavior, supported media metadata parsing, redacted denial fields, read-only CLI and fail-closed errors across the Content Safety topic, Hook/CLI guidance, Scenario 263 and both Conformance views. Human Authority, Required Checks and Git Publish Approval remain unchanged.
+
 Plan40 keeps reason-code mapping, candidate/runtime binding, diagnostic trace privacy, and separate planning/authorization/Host/execution states aligned across the User Guide, Maintenance, Claude and OpenCode adapter guidance, and Scenario 261. Diagnostic lookup reads only an explicitly configured, hash-chain-verified allowlisted event; it creates no ledger and grants no authority.
 
 Resource Authorization/Profile and local ComfyUI diagnostics use the existing Runtime Resource and Creative topics. Their canonical source mapping, four bounded asset presets, Scenario 262 and static-only MPS evidence are synchronized through the plan39 placement rule.
@@ -233,6 +235,8 @@ Canonical source 是 docs/human/TECHNOLOGY_GUIDE.md。舊 HTML 只保留 backwar
 Getting Started / Installation / User Guide 以 task-oriented方式導覽；Architecture / Technology Guide 負責 explanation；Conformance 負責 reference/evidence history；Maintenance 文件給 maintainer。
 
 ## Deterministic protection
+
+Scenario 263, its registered lifecycle, and the regenerated conformance projections are synchronized as one candidate-bound documentation change.
 
 The Claude Code Doctor recovery description remains limited to one read-only observation for retryable network, rate-limit or GitHub server failures.
 

@@ -11,6 +11,7 @@ import re
 import shlex
 import subprocess
 import sys
+import uuid
 from datetime import UTC
 from pathlib import Path, PurePosixPath
 from typing import Any
@@ -31,6 +32,7 @@ except ModuleNotFoundError:  # imported as a repository module
 PROTECTED = ("git_push", "git_tag", "gh_pr_create", "gh_pr_merge", "gh_release_create")
 CONTENT_SENSITIVE = ("git_commit", *PROTECTED)
 logger = logging.getLogger(__name__)
+READ_ONLY_GIT_ENV = {**os.environ, "GIT_OPTIONAL_LOCKS": "0"}
 SET_LIKE_KEYS = {"files", "boundaries", "operations"}
 ASSIGNMENT_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*=")
 CONTROL_TOKENS = {";", ";;", "&", "&&", "|", "||"}
@@ -332,7 +334,7 @@ def operation_for(command: str):
 def commit_safety(cwd: Path, command: str) -> dict:
     """Scan actual commit messages and staged blobs; exempt only final author email metadata."""
     from content_safety import scan_payload
-    from publication_authority import PublicationError, git
+    from publication_authority import PublicationError
     from publication_commands import shell_commands
     commands = shell_commands(command)
     if len(commands) != 1 or commands[0][:2] != ["git", "commit"]:
@@ -349,12 +351,16 @@ def commit_safety(cwd: Path, command: str) -> dict:
         word = args[i]
         if word in {'-m', '--message', '-F', '--file'}:
             if i + 1 >= len(args):
-                raise PublicationError("commit message value missing", reason_code='PUBLICATION_OPTION_INVALID')
+                raise PublicationError("commit message value missing", reason_code='PUBLICATION_OPTION_INVALID', phase='commit_message')
             value = args[i + 1]
             if word in {'-F', '--file'}:
                 if value == '-':
                     raise PublicationError("stdin commit message cannot be inspected", reason_code='CONTENT_INSPECTION_UNAVAILABLE')
-                value = (cwd / value).read_text()
+                try:
+                    value = (cwd / value).read_text(encoding='utf-8')
+                except (OSError, UnicodeError) as exc:
+                    raise PublicationError("commit message file unavailable", reason_code='MESSAGE_FILE_UNAVAILABLE',
+                                           context={'error_class': type(exc).__name__}, phase='commit_message') from exc
             messages.append(value)
             i += 2
         elif word.startswith('--message=') or word.startswith('-m') and len(word) > 2:
@@ -368,44 +374,134 @@ def commit_safety(cwd: Path, command: str) -> dict:
     if not messages:
         raise PublicationError("explicit commit message required", reason_code='PUBLICATION_INPUT_UNBOUND')
     message = '\n\n'.join(messages)
-    original = scan_payload(message, sink='git_commit')
+    try:
+        original = scan_payload(message, sink='git_commit', strict=True)
+    except Exception as exc:  # Any scanner error blocks the candidate.
+        raise PublicationError("commit message scanner failed", 'CONTENT_SCANNER_FAILED',
+                               context={'error_class': type(exc).__name__}, phase='commit_message') from exc
     if any(item.type == 'SECRET' and item.action == 'BLOCK' for item in original):
-        return {'decision': 'BLOCK', 'reason_codes': ['SECRET']}
+        return _commit_block([item.as_dict() for item in original], 'commit_message', None)
     blocks = message.rstrip().split('\n\n')
     trailer = re.compile(r'^(Co-Authored-By: [^<>\r\n]+ <)([A-Za-z0-9.!#$%&\x27*+/=?^_`{|}~-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})(>)$', re.IGNORECASE)
     if len(blocks) > 1 and all(trailer.fullmatch(line) for line in blocks[-1].splitlines()):
         blocks[-1] = '\n'.join(trailer.sub(r'\1git-email-metadata\3', line) for line in blocks[-1].splitlines())
         message = '\n\n'.join(blocks)
-    safety = safe_emit(sink='git_commit', payload={'message': message})
+    try:
+        safety = safe_emit(sink='git_commit', payload={'message': message}, strict=True)
+    except Exception as exc:  # Scanner failures must fail closed with a safe class.
+        raise PublicationError("commit message scanner failed", 'CONTENT_SCANNER_FAILED',
+                               context={'error_class': type(exc).__name__}, phase='commit_message') from exc
     if safety['decision'] == 'BLOCK':
-        return safety
-    root = Path(git(cwd, 'rev-parse', '--show-toplevel'))
-    staged = subprocess.run(['git', 'diff', '--cached', '--name-only', '-z', '--diff-filter=ACMR'], cwd=root,
-                            capture_output=True, timeout=10, check=False)
+        return _commit_block(safety['findings'], 'commit_message', None)
+    try:
+        root_proc = subprocess.run(['git', 'rev-parse', '--show-toplevel'], cwd=cwd, env=READ_ONLY_GIT_ENV,
+                                   capture_output=True, text=True, timeout=10, check=False)
+        if root_proc.returncode:
+            raise OSError('repository root unavailable')
+        root = Path(root_proc.stdout.strip())
+        staged = subprocess.run(['git', 'diff', '--cached', '--name-only', '-z', '--diff-filter=ACMR'], cwd=root,
+                                env=READ_ONLY_GIT_ENV, capture_output=True, timeout=10, check=False)
+        index = subprocess.run(['git', 'ls-files', '--stage', '-z'], cwd=root, env=READ_ONLY_GIT_ENV,
+                               capture_output=True, timeout=10, check=False)
+    except subprocess.TimeoutExpired as exc:
+        raise PublicationError("staged index inspection timed out", "STAGED_INDEX_UNAVAILABLE",
+                               context={'error_class': type(exc).__name__}, phase='staged_index') from exc
+    except OSError as exc:
+        raise PublicationError("repository index unavailable", "STAGED_INDEX_UNAVAILABLE",
+                               context={'error_class': type(exc).__name__}, phase='staged_index') from exc
     if staged.returncode:
-        raise PublicationError("staged file list unavailable", "STAGED_CONTENT_UNAVAILABLE")
+        raise PublicationError("staged file list unavailable", "STAGED_INDEX_UNAVAILABLE", phase='staged_index')
+    if index.returncode:
+        raise PublicationError("staged index entries unavailable", "STAGED_INDEX_UNAVAILABLE", phase='staged_index')
+    index_modes: dict[bytes, set[bytes]] = {}
+    for record in index.stdout.split(b'\0'):
+        if not record:
+            continue
+        header, separator, index_path = record.partition(b'\t')
+        fields = header.split()
+        if separator and len(fields) == 3:
+            index_modes.setdefault(index_path, set()).add(fields[0])
     for name in staged.stdout.split(b'\0'):
         if not name:
             continue
-        blob = subprocess.run(['git', 'show', ':' + os.fsdecode(name)], cwd=root, capture_output=True, timeout=10, check=False)
+        if b'160000' in index_modes.get(name, set()):
+            raise PublicationError("staged submodule content cannot be inspected", "STAGED_CONTENT_UNSUPPORTED_BINARY",
+                                   phase='staged_blob')
+        try:
+            blob = subprocess.run(['git', 'show', ':' + os.fsdecode(name)], cwd=root, env=READ_ONLY_GIT_ENV,
+                                  capture_output=True, timeout=10, check=False)
+        except subprocess.TimeoutExpired as exc:
+            raise PublicationError("staged blob inspection timed out", "STAGED_BLOB_UNAVAILABLE",
+                                   context={'error_class': type(exc).__name__}, phase='staged_blob') from exc
+        except OSError as exc:
+            raise PublicationError("staged blob process unavailable", "STAGED_BLOB_UNAVAILABLE",
+                                   context={'error_class': type(exc).__name__}, phase='staged_blob') from exc
         if blob.returncode:
-            raise PublicationError("staged blob unavailable", "STAGED_CONTENT_UNAVAILABLE")
+            raise PublicationError("staged blob unavailable", "STAGED_BLOB_UNAVAILABLE", phase='staged_blob')
+        relative = os.fsdecode(name)
+        suffix = PurePosixPath(relative).suffix.lower()
+        media_suffixes = {'.png', '.jpg', '.jpeg', '.webp', '.m4a', '.mp3'}
         if len(blob.stdout) > 8 * 1024 * 1024:
-            reason = "M4A_TOO_LARGE" if PurePosixPath(os.fsdecode(name)).suffix.lower() == '.m4a' else "STAGED_CONTENT_TOO_LARGE"
-            raise PublicationError("staged blob exceeds inspection limit", reason)
-        if PurePosixPath(os.fsdecode(name)).suffix.lower() == '.m4a':
-            from m4a_inspection import M4AInspectionError, inspect_m4a, metadata_text
+            reason = "M4A_TOO_LARGE" if suffix == '.m4a' else "STAGED_CONTENT_TOO_LARGE"
+            raise PublicationError("staged blob exceeds inspection limit", reason, phase='staged_blob')
+        if suffix in media_suffixes:
+            from media_metadata import MediaInspectionError, extract_metadata
             try:
-                inspected = inspect_m4a(blob.stdout)
-            except M4AInspectionError as exc:
-                raise PublicationError("staged M4A is malformed or its extension is spoofed", "M4A_INVALID") from exc
-            staged_text = metadata_text(inspected.metadata)
+                staged_text = extract_metadata(blob.stdout, suffix)
+            except MediaInspectionError as exc:
+                reason = 'M4A_INVALID' if suffix == '.m4a' else 'STAGED_MEDIA_INVALID'
+                raise PublicationError("staged media is malformed or its extension is spoofed", reason,
+                                       context={'error_class': type(exc).__name__}, phase='media_metadata') from exc
         else:
-            staged_text = blob.stdout.decode('utf-8', errors='replace')
-        result = safe_emit(sink='git_commit', payload={'staged_blob': staged_text})
+            try:
+                if b'\x00' in blob.stdout:
+                    raise UnicodeError('binary NUL')
+                staged_text = blob.stdout.decode('utf-8', errors='strict')
+            except UnicodeError as exc:
+                raise PublicationError("staged binary format is unsupported", "STAGED_CONTENT_UNSUPPORTED_BINARY",
+                                       context={'error_class': type(exc).__name__}, phase='staged_blob') from exc
+        try:
+            result = safe_emit(sink='git_commit', payload={'staged_blob': staged_text}, strict=True)
+        except Exception as exc:  # Scanner failures fail closed.
+            raise PublicationError("staged content scanner failed", 'CONTENT_SCANNER_FAILED',
+                                   context={'error_class': type(exc).__name__}, phase='content_scan') from exc
         if result['decision'] == 'BLOCK':
-            return result
+            return _commit_block(result['findings'], 'staged_blob', relative)
     return safety
+
+
+def _commit_block(findings: list[dict[str, Any]], source: str, path: str | None) -> dict[str, Any]:
+    """Project scanner findings into safe, stable diagnostics with no matched values."""
+    code_for = {'SECRET': 'CONTENT_SECRET_BLOCKED', 'PII': 'CONTENT_PII_BLOCKED',
+                'INJECTION_SIGNAL': 'CONTENT_INJECTION_BLOCKED'}
+    safe_findings = []
+    for finding in findings:
+        if not isinstance(finding, dict) or finding.get('action') != 'BLOCK':
+            continue
+        item = {'reason_code': code_for.get(finding.get('type'), 'CONTENT_SAFETY_BLOCKED'),
+                'category': finding.get('type') if finding.get('type') in code_for else 'CONTENT',
+                'detector': finding.get('detector') if isinstance(finding.get('detector'), str) else 'unknown',
+                'source': source}
+        if isinstance(finding.get('line'), int) and finding['line'] > 0:
+            item['line'] = finding['line']
+        if path:
+            relative = PurePosixPath(path)
+            if (not relative.is_absolute() and '..' not in relative.parts and len(path) <= 200
+                    and re.fullmatch(r'[A-Za-z0-9._/-]+', path)
+                    and not re.match(r'^[A-Za-z]:', path)):
+                try:
+                    from content_safety import scan_payload
+                    if not any(item.action == 'BLOCK' for item in scan_payload(path, sink='git_commit', strict=True)):
+                        item['file'] = path
+                except Exception as exc:  # noqa: BLE001 - unsafe path is omitted.
+                    logger.debug("Omitting unsafe commit path after %s", type(exc).__name__)
+        safe_findings.append(item)
+    first = safe_findings[0] if safe_findings else {
+        'reason_code': 'CONTENT_SAFETY_BLOCKED', 'category': 'CONTENT', 'detector': 'unknown', 'source': source}
+    return {'decision': 'BLOCK', 'reason_code': first['reason_code'], 'phase': 'content_scan',
+            'source': source, 'category': first['category'], 'diagnostic_id': str(uuid.uuid4()),
+            'retryable': False, 'findings': safe_findings,
+            'reason_codes': list(dict.fromkeys(item['reason_code'] for item in safe_findings))}
 
 
 def _record_publication_diagnostic(diagnostic: dict[str, Any], runtime: str) -> str:
@@ -464,7 +560,17 @@ def deny_hook_input(runtime: str, reason: str, diagnostic: dict[str, Any] | None
         "UNSUPPORTED_GITHUB_MUTATION": "AIPS requires a separately reviewed workflow for this GitHub mutation.",
         "CONTENT_CANDIDATE_UNAVAILABLE": "AIPS could not inspect the publication content; retry after resolving the local inspection error.",
         "STAGED_CONTENT_UNAVAILABLE": "AIPS could not read a staged file for content inspection; check the index and restage the candidate.",
+        "STAGED_INDEX_UNAVAILABLE": "AIPS could not read the staged index; repair the local Git index and rerun the safety diagnosis.",
+        "STAGED_BLOB_UNAVAILABLE": "AIPS could not read a staged blob; check the staged file and Git object database, then retry.",
+        "MESSAGE_FILE_UNAVAILABLE": "AIPS could not read the commit message file; check the file encoding and access, then retry.",
         "STAGED_CONTENT_TOO_LARGE": "AIPS cannot inspect a staged file above the configured size limit; split or remove that file.",
+        "STAGED_CONTENT_UNSUPPORTED_BINARY": "AIPS cannot safely inspect this binary format; convert it to a supported format or remove it from the commit.",
+        "STAGED_MEDIA_INVALID": "AIPS could not verify this media file; repair the file or use a supported format with matching contents.",
+        "CONTENT_SCANNER_FAILED": "AIPS could not complete the content scanner; resolve the local scanner error and retry without bypassing the guard.",
+        "CONTENT_SECRET_BLOCKED": "AIPS blocked a possible secret in commit content; remove or rotate it, then scan again.",
+        "CONTENT_PII_BLOCKED": "AIPS blocked personal information in commit content; remove it or use an approved redacted value, then scan again.",
+        "CONTENT_INJECTION_BLOCKED": "AIPS blocked an instruction-like signal in commit content; revise the content and scan again.",
+        "CONTENT_SAFETY_BLOCKED": "AIPS blocked commit content; inspect the safe finding categories and rescan after correction.",
         "M4A_TOO_LARGE": "AIPS cannot publish M4A files above 8 MiB; use Git LFS or external asset storage and keep the repository pointer/documentation here.",
         "M4A_INVALID": "AIPS could not verify this .m4a as a valid M4A audio file; use a correctly encoded file with matching extension.",
         "CONTENT_INSPECTION_UNAVAILABLE": "AIPS content inspection could not complete; check the local scanner and Git state.",
@@ -476,7 +582,8 @@ def deny_hook_input(runtime: str, reason: str, diagnostic: dict[str, Any] | None
     trace_status = _record_publication_diagnostic(diagnostic, runtime)
     safe_fields = {key: diagnostic.get(key) for key in
                    ("diagnostic_id", "reason_code", "phase", "category", "detail", "detail_zh",
-                    "blocking_rule", "blocking_rule_id", "source", "retryable", "recovery_mode", "next_step", "next_step_zh")}
+                    "blocking_rule", "blocking_rule_id", "source", "retryable", "recovery_mode", "next_step", "next_step_zh",
+                    "findings")}
     if diagnostic.get('binding'):
         safe_fields['binding'] = diagnostic['binding']
     safe_fields.update({"authorization_status": "DENIED", "execution_status": "NOT_EXECUTED",
@@ -634,12 +741,10 @@ def hook(runtime: str) -> int:
             except (ValueError, TypeError, KeyError, IndexError, AttributeError, ImportError, subprocess.TimeoutExpired):
                 return deny_hook_input(runtime, "CONTENT_INSPECTION_UNAVAILABLE")
             if safety["decision"] == "BLOCK":
-                reason = "content safety blocked " + operation
-                if runtime == "claude-code":
-                    print(json.dumps({"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny", "permissionDecisionReason": "AIPS blocked: " + reason}}))
-                else:
-                    print(json.dumps({"decision": "deny", "reason": "AIPS blocked: " + reason}))
-                return 0
+                reason = safety.get('reason_code') or 'CONTENT_SAFETY_BLOCKED'
+                diagnostic = PublicationError('', reason, phase=safety.get('phase') or 'content_scan').diagnostic()
+                diagnostic.update({key: safety[key] for key in ('diagnostic_id', 'source', 'category', 'retryable', 'findings') if key in safety})
+                return deny_hook_input(runtime, reason, diagnostic)
     ok = False
     hook_diagnostic = None
     reason = "no active AIPS Approval Record"
