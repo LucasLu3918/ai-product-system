@@ -219,6 +219,8 @@ For CLI and validation modularization, the boundary matrix must cover direct sou
 
 Publication diagnostics changes derive tests for every Required Checks state, API/auth failure, stale PR/head evidence, raw-output redaction, no mutation, and no grant consumption. Doctor and merge diagnosis remain read-only; validate their exact candidate through repository validation and the Core Matrix before publication.
 
+Plan42 extends Scenario 263 with bounded TTF/OTF/WOFF/WOFF2 parsing, size-before-read, dependency failures, metadata secrecy, Hook/CLI/publication/history parity and unchanged Git state; the exact candidate still requires its complete Core Integration Gate.
+
 ## Publication Root-Cause Recovery (Plan35)
 
 Plan40's matrix binds explicit publication reason codes, redacted error gaps, Prepare/Hook candidate observations, lifecycle-state separation and optional verified Diagnostic ID lookup to the exact candidate. Optional ledger failure is covered as a non-authorizing side effect.

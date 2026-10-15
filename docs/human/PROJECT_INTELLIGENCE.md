@@ -177,6 +177,8 @@ Mutation 前建立 CHANGE_IMPACT，涵蓋 Input / Output / Data / Events / Consu
 
 Publication Change Impact includes API evidence, CLI routing, authority diagnostics, hook consumers, PR observations, and the documentation/test closure. This run-local impact does not create persistent project policy.
 
+Plan42 的 scoped Change Impact 覆蓋字型解析器、staged Hook/CLI、publication preview、候選歷史掃描、依賴與 Scenario 263；全域 Impact Graph 仍是 partial，不推論為完整。
+
 ## Preserve Valid Native Conventions
 
 Explicit Rule → Formatter/Linter/Contract → Shared Abstraction → Majority Convention → Approved Intelligence → Framework Best Practice → AIPS Default。Unsafe/broken legacy pattern 不盲目複製。

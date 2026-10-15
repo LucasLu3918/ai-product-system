@@ -11,6 +11,12 @@ MAX_METADATA_BYTES = 1024 * 1024
 class MediaInspectionError(ValueError):
     """A media candidate is malformed, spoofed, oversized, or not safely inspectable."""
 
+    def __init__(self, message: str, *, format_name: str | None = None, cause_class: str | None = None):
+        super().__init__(message)
+        self.reason_code = message
+        self.format_name = format_name
+        self.cause_class = cause_class
+
 
 def _bounded(parts: list[bytes]) -> str:
     raw = b"\n".join(parts)
@@ -302,6 +308,14 @@ def _m4a(data: bytes) -> str:
 def extract_metadata(data: bytes, suffix: str) -> str:
     if len(data) > MAX_MEDIA_BYTES:
         raise MediaInspectionError("media exceeds inspection limit")
+    if suffix.lower() in {".ttf", ".otf", ".woff", ".woff2"}:
+        from font_metadata import FontInspectionError, extract_font_metadata
+        try:
+            text, _format = extract_font_metadata(data, suffix)
+            return text
+        except FontInspectionError as exc:
+            raise MediaInspectionError(exc.reason_code, format_name=exc.format_name,
+                                      cause_class=exc.cause_class) from exc
     handlers = {".png": _png, ".jpg": _jpeg, ".jpeg": _jpeg, ".webp": _webp,
                 ".m4a": _m4a, ".mp3": _mp3}
     handler = handlers.get(suffix.lower())

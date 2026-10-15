@@ -75,6 +75,8 @@ For scheduled repository work, `aips run owner claim` derives a task-scoped auth
 
 For supported runtime tool actions, Resource Authorization is one input to `orchestration/RUNTIME_POLICY_ENFORCEMENT.md`. It remains default-DENY evidence and is evaluated before policy ALLOW; an action cannot use a policy allow rule to bypass a missing resource grant.
 
+Commit font metadata scanning is a content-safety control, not a Resource Authorization grant; its ALLOW result cannot authorize a tool action, push, or merge.
+
 ## CLI
 
 ~~~bash

@@ -151,6 +151,8 @@ The authorization profile defaults to DENY and can only narrow ordinary operatio
 
 Runtime Policy Enforcement may require provider-observed network allowlist evidence for protected external egress. The existing E2B candidate is disabled and deny-all; it does not currently authorize external egress. A pre-tool hook is not a substitute for sandbox network control.
 
+Staged font metadata inspection reads the exact Git blob after a size precheck and does not mutate the worktree or index. Passing content safety grants no resource or execution authorization.
+
 ## Runtime-security assessment boundary
 
 

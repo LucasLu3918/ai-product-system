@@ -119,3 +119,5 @@ Prospective `aips docs impact --base HEAD --planned-path <path>` resolves sync a
 Reusable local character artwork reuses the Creative Direction Skills, provenance validation and deterministic typeset sheets; see [User Guide](USER_GUIDE.md#creative-directionstyle-與-brand) and [Scenario Conformance](CONFORMANCE.md#scenario-234--local-character-artwork-provenance-and-composition).
 
 For publication failure diagnosis, start with [Git Publication 與 Release](./USER_GUIDE.md#git-publication-與-release); security and authority details are in [Security Assurance](./SECURITY_ASSURANCE.md).
+
+Runtime Content Safety 的 canonical 行為與安全界線見 `orchestration/CONTENT_SAFETY_BOUNDARY.md`；字型掃描的驗證情境為 Scenario 263。

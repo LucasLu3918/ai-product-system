@@ -303,11 +303,12 @@ placement_rules:
       orchestration/ORCHESTRATOR.md: [Minimal algorithm, System Update Preflight, Risk-Proportional Security Assurance, Context expansion, Checkpoint and resume, Change-class handoff to Integration Gate, Runtime Content Safety Boundary, System Self-Improvement]
 
   - id: content-safety
-    triggers: [config/content-safety.yaml, scripts/content_safety.py, scripts/check_secret_leakage.py, scripts/governance_guard.py, scripts/media_metadata.py, scripts/safety_diagnostics.py, scripts/publication_authority.py, scripts/aips_cli/dispatch.sh, scripts/aips_cli/help.sh, scripts/gemini_observable_event_capture.py, orchestration/CONTENT_SAFETY_BOUNDARY.md, tests/test_safety_diagnostics.py, tests/validate_repository.py, tests/fixtures/plan21-contract-golden-vectors.yaml, tests/scenarios/263-runtime-content-safety-commit-diagnostics.md]
+    triggers: [config/content-safety.yaml, scripts/content_safety.py, scripts/check_secret_leakage.py, scripts/governance_guard.py, scripts/media_metadata.py, scripts/font_metadata.py, scripts/safety_diagnostics.py, scripts/publication_authority.py, scripts/publish_preflight.py, requirements.txt, constraints/tested.txt, orchestration/CONTENT_SAFETY_BOUNDARY.md, tests/test_safety_diagnostics.py, tests/test_font_metadata.py, tests/validate_repository.py, tests/fixtures/plan21-contract-golden-vectors.yaml, tests/scenarios/263-runtime-content-safety-commit-diagnostics.md]
     placements:
       docs/human/ARCHITECTURE_OVERVIEW.md: [Deterministic Execution, Runtime Content Safety Boundary]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Runtime Content Safety Boundary]
       docs/human/USER_GUIDE.md: [Checkpoint / Resume, Runtime Content Safety Boundary]
+      docs/human/INSTALLATION.md: [macOS / Linux]
       docs/human/PROJECT_INTELLIGENCE.md: [Runtime Content Safety Boundary]
       docs/human/SECURITY_ASSURANCE.md: [Runtime Content Safety Boundary]
       docs/human/MAINTENANCE.md: [Durable Run State consistency, Runtime Content Safety Boundary]

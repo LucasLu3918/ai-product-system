@@ -769,6 +769,6 @@ Protected dispatch 會逐筆重新讀取 merged PR，確認 `merged_at`、head S
 
 ## Runtime Content Safety Boundary
 
-Plan41 adds redacted Hook findings, strict ignore-marker handling and bounded PNG/JPEG/WebP/M4A/MP3 metadata inspection through the existing commit safety boundary. Unsupported binaries, malformed media, unreadable Git objects and scanner failures remain explicit fail-closed outcomes; see Scenario 263.
+Plan41 adds redacted Hook findings, strict ignore-marker handling and bounded PNG/JPEG/WebP/M4A/MP3 metadata inspection through the existing commit safety boundary. Plan42 extends the same boundary to bounded TTF/OTF/WOFF/WOFF2 metadata, checks staged Git object sizes before reading blobs, and keeps publication preview and exact-candidate history scanning aligned. Unsupported binaries, malformed fonts/media, unavailable dependencies, unreadable Git objects and scanner failures remain explicit fail-closed outcomes; see Scenario 263.
 
 Register every new persistence or publication sink in `config/content-safety.yaml`. Preserve the `sanitize → hash → persist` ordering for audit data and update scenarios when detector or sink policy behavior changes.

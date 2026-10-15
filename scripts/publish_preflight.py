@@ -320,6 +320,7 @@ def preview_content_safety(base: str, files: list[str]) -> dict[str, Any]:
     untracked: dict[str, str] = {}
     unscannable: list[str] = []
     m4a_blockers: list[str] = []
+    font_blockers: list[str] = []
     for relative in files:
         path = (ROOT / relative).resolve()
         if not path.is_relative_to(ROOT.resolve()) or not path.is_file():
@@ -338,6 +339,17 @@ def preview_content_safety(base: str, files: list[str]) -> dict[str, Any]:
             # The source-artifact sink scans selected metadata, not binary audio.
             untracked[relative] = metadata_text(inspected.metadata)
             continue
+        if path.suffix.lower() in {".ttf", ".otf", ".woff", ".woff2"}:
+            from media_metadata import MediaInspectionError, extract_metadata
+            if path.stat().st_size > 8 * 1024 * 1024:
+                font_blockers.append(f"STAGED_FONT_RESOURCE_LIMIT: {relative}")
+                continue
+            try:
+                untracked[relative] = extract_metadata(path.read_bytes(), path.suffix.lower())
+            except (MediaInspectionError, OSError) as exc:
+                reason = str(exc) if str(exc).startswith("STAGED_FONT_") else "STAGED_FONT_INVALID"
+                font_blockers.append(f"{reason}: {relative}")
+            continue
         tracked = subprocess.run(["git", "ls-files", "--error-unmatch", "--", relative], cwd=ROOT, capture_output=True, text=True)
         if tracked.returncode == 0:
             continue
@@ -349,7 +361,7 @@ def preview_content_safety(base: str, files: list[str]) -> dict[str, Any]:
         except (OSError, UnicodeError):
             unscannable.append(relative)
     check = safe_emit(sink="source_artifact", payload={"tracked_additions": tracked_additions, "untracked_files": untracked})
-    blockers = list(m4a_blockers)
+    blockers = list(m4a_blockers) + font_blockers
     if check["decision"] == "BLOCK":
         blockers.append("early content-safety check blocked the working-tree candidate")
     if unscannable:

@@ -395,6 +395,8 @@ Runtime Policy Enforcement 使用四種結果：`ALLOW`、`DENY`、`REQUIRE_APPR
 
 Validation Observation keeps evidence readiness separate from operational failure: a completed `NOT_READY` cohort does not fail collection, while API, artifact, missing-report and unknown-status errors remain failures. Its graduation report exposes validator-level run precision, skip precision, recall, false-negative rate and confusion counts; zero-denominator rates stay null. Dependency Review records exact-candidate shadow parity; the standalone high-severity check remains authoritative until a separate reviewed switch after the observation window.
 
+Plan42 routes TTF/OTF/WOFF/WOFF2 font metadata through the existing strict content-safety scanner; diagnostics stay redacted and separate from Resource Authorization and publication approval.
+
 ## Scenario Conformance 與 Agent Eval
 
 Scenario 260/261 cover unknown policy permissions, skipped provider outcomes, fresh merge policy evidence and one-shot Claude Doctor recovery.

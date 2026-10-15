@@ -177,6 +177,8 @@ flowchart LR
     VLM --> REPORT[Separate advisory report; Human decision required]
 ~~~
 
+Plan42 extends this same content-safety flow to bounded TTF/OTF/WOFF/WOFF2 metadata; staged blob sizes are checked before reads, and metadata scanning does not grant commit or publication authority.
+
 ## Parallel run observation flow
 
 ~~~mermaid

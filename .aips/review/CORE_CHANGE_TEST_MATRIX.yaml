@@ -1,80 +1,56 @@
 version: 1
 change:
-  id: plan41-commit-safety-diagnostics
-  summary: Add shared commit-safety scanning, structured redacted denials, strict publication scanning, format-aware media handling, and read-only diagnostics.
+  id: plan42-staged-binary-safety
+  summary: Safely inspect staged fonts and report actionable root causes without changing commit or publication authority.
   boundary:
-    - Shared Hook and CLI commit candidate scanning with safe findings
-    - Strict ignore marker, media/binary classification, bounded parsing and fail-closed errors
-    - Read-only CLI, scenario coverage and recursive documentation closure
+    - Bounded TTF/OTF/WOFF/WOFF2 metadata parsing through the shared staged content-safety pipeline
+    - Git object size precheck, parser/decompression limits, magic/suffix reconciliation, fail-closed malformed or unsupported content
+    - Stable safe diagnostics across native Hook, Safety Diagnose CLI, and publication candidate scanner
+    - Managed fontTools/Brotli dependency detection and tested runtime dependency constraints
+    - Regression, lifecycle, security/redaction, documentation and exact-candidate validation evidence
 matrix:
-  - boundary: Shared commit scanner and structured denial diagnostics
-    reason: Hook denials must retain actionable causes without exposing protected values, and the CLI must observe the same scan implementation.
+  - boundary: Staged blob detection, size-before-read, bounded font parser and metadata extraction
+    reason: The current scanner reads a full blob before checking the limit and treats valid font binaries as generic unsupported content; parsers add attack surface.
     checks:
-      static_lint: {applicable: true, evidence: "Ruff delta has no new touched-code findings; three inherited findings match origin/main; git diff --check PASS; final Gate pending"}
-      unit: {applicable: true, evidence: "Focused safety/diagnostics/publication regression suite: 96 tests PASS"}
-      integration: {applicable: true, evidence: "Focused 96-test suite and full repository validation PASS (263 scenarios)"}
-      contract: {applicable: true, evidence: "Plan21 CLI contract baseline and documentation sync/conformance contracts PASS"}
-      e2e: {applicable: true, evidence: "Read-only CLI and Hook share staged scanner; HEAD/status/index-hash invariants PASS"}
-      security: {applicable: true, evidence: "Strict marker, redacted denial, scanner-failure and fail-closed regression assertions PASS"}
-      migration_recovery: {applicable: false, na_reason: "Additive diagnostic output; no persisted schema."}
-      cli_harness: {applicable: true, evidence: "aips safety diagnose commit --help and native Hook denial contract PASS"}
-      docs_schema: {applicable: true, evidence: "Final publish preview: recursive closure complete; zero missing additions or placement errors"}
-  - boundary: Strict scanning, media/binary parsing, and fail-closed classification
-    reason: Protected commit content cannot disable scanning; supported formats need bounded parsing and unsupported or incomplete inspection must deny safely.
+      static_lint: {applicable: true, evidence: PASS}
+      unit: {applicable: true, evidence: PASS}
+      integration: {applicable: true, evidence: PASS}
+      contract: {applicable: true, evidence: PASS}
+      e2e: {applicable: true, evidence: PASS}
+      security: {applicable: true, evidence: PASS}
+      migration_recovery: {applicable: false, na_reason: No application persistence or schema migration; parser denial leaves Git index and files unchanged.}
+      cli_harness: {applicable: true, evidence: PASS}
+      docs_schema: {applicable: true, evidence: PASS}
+  - boundary: Shared format capability and root-cause diagnostics across Hook, CLI, and publication scanning
+    reason: Inconsistent format handling can either reject valid content or weaken a downstream scanner; error categories must stay safe and actionable.
     checks:
-      static_lint: {applicable: true, evidence: "Ruff delta has no new touched-code findings; three inherited findings match origin/main; bounded parser contracts PASS; final Gate pending"}
-      unit: {applicable: true, evidence: "PNG/JPEG/WebP/M4A/MP3 extraction and malformed-format tests PASS"}
-      integration: {applicable: true, evidence: "Unknown binary, oversize/read failure and scanner exception paths fail closed"}
-      contract: {applicable: true, evidence: "Protected scans use strict marker handling; existing Secret/PII/Injection BLOCK policy retained"}
-      e2e: {applicable: true, evidence: "Full repository validation PASS, 263 scenarios"}
-      security: {applicable: true, evidence: "No matched content or raw exception reaches Hook/CLI denial; malformed and unsupported data denied"}
-      migration_recovery: {applicable: false, na_reason: "No persisted state or format migration."}
-      cli_harness: {applicable: true, evidence: "Hook and CLI share strict staged candidate classification; fail-closed reasons stable"}
-      docs_schema: {applicable: true, evidence: "Human security and maintenance guidance plus Scenario 263 closure PASS"}
-  - boundary: Read-only CLI, scenario/conformance, and documentation closure
-    reason: Operators need safe local diagnostics while publication authority remains unchanged and documented across affected consumers.
+      static_lint: {applicable: true, evidence: PASS}
+      unit: {applicable: true, evidence: PASS}
+      integration: {applicable: true, evidence: PASS}
+      contract: {applicable: true, evidence: PASS}
+      e2e: {applicable: true, evidence: PASS}
+      security: {applicable: true, evidence: PASS}
+      migration_recovery: {applicable: false, na_reason: Additive diagnostic fields; no stored diagnostic schema migration.}
+      cli_harness: {applicable: true, evidence: PASS}
+      docs_schema: {applicable: true, evidence: PASS}
+  - boundary: Managed parser dependency and installation diagnostics
+    reason: A missing parser dependency must fail closed with the correct runtime and actionable install guidance, without modifying system Python.
     checks:
-      static_lint: {applicable: true, evidence: "Ruff delta has no new touched-code findings; three inherited findings match origin/main; docs placement and diff checks PASS; final Gate pending"}
-      unit: {applicable: true, evidence: "CLI diagnosis, message-file failures, redaction and read-only behavior tests PASS"}
-      integration: {applicable: true, evidence: "Full repository validation PASS; Scenario 263 lifecycle is registered"}
-      contract: {applicable: true, evidence: "CLI routing/help and stable golden vectors PASS"}
-      e2e: {applicable: true, evidence: "Full repository validation PASS, 263 scenarios; exact-candidate Gate pending"}
-      security: {applicable: true, evidence: "Diagnostics do not mutate Git or grant commit/publication authority"}
-      migration_recovery: {applicable: false, na_reason: "No persisted state migration."}
-      cli_harness: {applicable: true, evidence: "aips safety diagnose commit --help PASS; shared read-only CLI/Hook behavior covered"}
-      docs_schema: {applicable: true, evidence: "AIPS recursive documentation preview complete; Scenario/conformance projections regenerated"}
+      static_lint: {applicable: true, evidence: PASS}
+      unit: {applicable: true, evidence: PASS}
+      integration: {applicable: true, evidence: PASS}
+      contract: {applicable: true, evidence: PASS}
+      e2e: {applicable: true, evidence: PASS}
+      security: {applicable: true, evidence: PASS}
+      migration_recovery: {applicable: true, evidence: PASS}
+      cli_harness: {applicable: true, evidence: PASS}
+      docs_schema: {applicable: true, evidence: PASS}
 scope_recomputed_after_expansion: true
-documentation_impact_complete: true
-documentation_closure_approved:
-  - docs/ARCHITECTURE.md
-  - docs/human/ARCHITECTURE_OVERVIEW.md
-  - docs/human/CONFORMANCE.md
-  - docs/human/CONFORMANCE_CURRENT.md
-  - docs/human/CONFORMANCE_HISTORY_INDEX.md
-  - docs/human/DOCUMENTATION_MAP.md
-  - docs/human/DOCUMENTATION_SYNC.md
-  - docs/human/HARNESS.md
-  - docs/human/INSTALLATION.md
-  - docs/human/MAINTENANCE.md
-  - docs/human/PROJECT_INTELLIGENCE.md
-  - docs/human/SECURITY_ASSURANCE.md
-  - docs/human/TECHNOLOGY_GUIDE.md
-  - docs/human/USER_GUIDE.md
-  - docs/human/index.md
-  - orchestration/CONFORMANCE.md
-  - orchestration/CONTENT_SAFETY_BOUNDARY.md
-  - orchestration/DETERMINISTIC_SCHEDULER.md
-  - orchestration/DOCUMENTATION_SYNC.md
-  - orchestration/EXECUTION_ISOLATION.md
-  - orchestration/ORCHESTRATOR.md
-  - orchestration/RESOURCE_AUTHORIZATION.md
-  - orchestration/RUNTIME_POLICY_ENFORCEMENT.md
-  - tests/scenarios/263-runtime-content-safety-commit-diagnostics.md
 actual_diff_reconciled: true
-blockers: []
-status: READY
 review_evidence:
   required: false
 candidate:
-  base_sha: 28839f2ab21eb0be77ee9c159cd47f42d07fd936
-  changed_files_hash: 253c7d9c00b072ea9b0c0318a326aa874fb6a94359d78131bb54216b96d67fee
+  base_sha: d971b1954019c385f82b0363ce32aa71a3b4b8e6
+  changed_files_hash: 843952b8fa1bdc9baef2406dfee5c9532e35b12bbe3ed12c155847e66b4afa4d
+blockers: []
+status: READY

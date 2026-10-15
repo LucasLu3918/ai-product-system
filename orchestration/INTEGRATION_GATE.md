@@ -125,6 +125,8 @@ The candidate fingerprint includes the scanner and policy SHA-256 hashes, along 
 
 `ALREADY_MERGED` is an idempotent read-only recovery state bound to the exact PR head, merge commit, and live default base. It routes to post-merge reconciliation and does not replace the exact-candidate Gate or required checks.
 
+The exact-candidate scanner also extracts bounded TTF/OTF/WOFF/WOFF2 metadata and applies the strict Secret/PII/Injection detectors to the final tree and changed history blobs.
+
 ## Validation Profile
 
 The Integration Gate inventory includes `scripts/publish_post_merge.py` and its facade lifecycle evidence so exact-candidate validation compiles and exercises the extracted implementation.

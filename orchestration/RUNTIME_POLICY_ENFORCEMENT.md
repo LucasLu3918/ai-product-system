@@ -50,6 +50,8 @@ Decisions:
 
 The active Approval Record must bind operation `external_data_egress`, action digest, policy digest, exact destination, data classes, protected assets and Change Boundary. It must be APPROVED and unexpired. A missing record yields `REQUIRE_APPROVAL`; a present stale/invalid record yields `BLOCKED`.
 
+Font metadata inspection runs at the existing Git commit safety boundary and preserves the current Runtime Action Envelope decisions; it neither broadens nor bypasses runtime permissions.
+
 ## Audit and semantic providers
 
 When `AIPS_GOVERNANCE_AUDIT_LEDGER` is configured, the hook appends a sanitized event through the existing Governance Audit implementation. Events include only action/policy digests, decision, destination hostname and rule IDs; raw arguments and secrets are omitted. An audit append failure blocks an otherwise allowed action. The hook observes pre-execution authorization; it does not claim that a tool actually completed.

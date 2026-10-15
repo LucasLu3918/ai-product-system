@@ -2119,7 +2119,9 @@ scenarios:
       - scripts/content_safety.py
       - scripts/governance_guard.py
       - scripts/media_metadata.py
+      - scripts/font_metadata.py
       - scripts/safety_diagnostics.py
       - tests/test_safety_diagnostics.py
+      - tests/test_font_metadata.py
       - tests/validate_repository.py
       - tests/fixtures/plan21-contract-golden-vectors.yaml

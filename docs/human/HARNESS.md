@@ -208,6 +208,9 @@ Independent review uses the canonical Scheduler and Integration Gate contracts t
 Runtime Content Safety Boundary 只在 AIPS-owned sink 或已驗證 native hook 上宣稱強制能力；MCP-only 或 unsupported host tools 維持 ADVISORY。安全掃描不會取得 Host-native tool interception 或 Human Authority。
 
 - The release-readiness check is evidence only: it never grants runtime capability or tag-writing authority.
+
+Commit Hook 與唯讀診斷會共用有界的字型 metadata 掃描；它只回報內容安全決策，不替代 Host permission、Human approval 或 Git publication authority。
+
 ## Progressive disclosure
 
 Turn Context 固定載入精簡的 `SYSTEM_CORE.md`，再依任務選擇 canonical orchestration 路徑。Codex、Claude Code 與 Gemini hook 都取得路由指標；`SYSTEM.md` 保留相容索引，不是固定系統層。

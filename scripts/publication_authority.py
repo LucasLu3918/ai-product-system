@@ -14,7 +14,7 @@ import stat
 import subprocess
 import uuid
 from datetime import UTC, datetime
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any
 from urllib.parse import urlparse
 from urllib.request import HTTPRedirectHandler, Request, build_opener
@@ -78,6 +78,25 @@ class PublicationError(ValueError):
         mode = self.context.get('mode')
         if mode in {'personal', 'high_assurance'}:
             result['mode'] = mode
+        file_path = self.context.get('file')
+        if isinstance(file_path, str) and len(file_path) <= 2048:
+            path_fingerprint = 'sha256:' + hashlib.sha256(file_path.encode('utf-8')).hexdigest()
+            if re.fullmatch(r'[A-Za-z0-9._/-]{1,200}', file_path):
+                relative = PurePosixPath(file_path)
+                from content_safety import scan_payload
+                if (not relative.is_absolute() and '..' not in relative.parts and not re.match(r'^[A-Za-z]:', file_path)
+                        and not any(item.action == 'BLOCK' for item in scan_payload(file_path, sink='git_commit', strict=True))):
+                    result['file'] = file_path
+                else:
+                    result['path_fingerprint'] = path_fingerprint
+            else:
+                result['path_fingerprint'] = path_fingerprint
+        font_format = self.context.get('format')
+        if font_format in {'ttf', 'otf', 'woff', 'woff2', 'TrueType', 'OpenType-CFF', 'WOFF', 'WOFF2'}:
+            result['format'] = font_format
+        error_class = self.context.get('error_class')
+        if code.startswith('STAGED_FONT_') and isinstance(error_class, str) and re.fullmatch(r'[A-Za-z][A-Za-z0-9_.]{0,79}', error_class):
+            result['error_class'] = error_class
         worktree = self.context.get('worktree')
         if code == 'WORKTREE_DIRTY' and isinstance(worktree, Path):
             result['worktree_details'] = worktree_dirty_details(worktree)
@@ -136,6 +155,11 @@ PUBLICATION_DIAGNOSTICS = {
     'STAGED_CONTENT_TOO_LARGE': ('A staged file exceeds the content inspection limit.', 'Split or remove the oversized staged file, then retry.'),
     'STAGED_CONTENT_UNSUPPORTED_BINARY': ('The staged binary format is unsupported by the safe metadata scanner.', 'Use a supported media format or remove the unsupported binary from the candidate.', 'staged_blob', 'UNSUPPORTED'),
     'STAGED_MEDIA_INVALID': ('A staged media file is malformed or its extension does not match its contents.', 'Repair the media file or use a supported format with matching contents.', 'media_metadata', 'INVALID'),
+    'STAGED_FONT_INVALID': ('A staged font is malformed or cannot be safely parsed.', 'Repair or replace the font, then rerun the read-only commit safety diagnosis.', 'font_metadata', 'INVALID'),
+    'STAGED_FONT_FORMAT_MISMATCH': ('A staged font signature does not match its filename extension.', 'Use the correct font extension or replace the malformed file.', 'font_metadata', 'INVALID'),
+    'STAGED_FONT_INSPECTOR_UNAVAILABLE': ('The required font metadata inspector is not installed.', 'Install the declared fontTools dependency and rerun the read-only diagnosis.', 'font_metadata', 'UNAVAILABLE'),
+    'STAGED_FONT_BROTLI_UNAVAILABLE': ('The required WOFF2 decompressor is not installed.', 'Install the declared Brotli dependency and rerun the read-only diagnosis.', 'font_metadata', 'UNAVAILABLE'),
+    'STAGED_FONT_RESOURCE_LIMIT': ('A staged font exceeds a bounded inspection resource limit.', 'Reduce or replace the font and stay within the documented size limits.', 'font_metadata', 'LIMIT'),
     'CONTENT_SCANNER_FAILED': ('The required commit content scanner could not complete.', 'Resolve the local scanner error and retry without bypassing the safety check.', 'content_scan', 'UNAVAILABLE'),
     'CONTENT_SECRET_BLOCKED': ('A secret detector blocked commit content.', 'Remove or rotate the possible secret, then rerun the read-only commit safety diagnosis.', 'content_scan', 'SECRET'),
     'CONTENT_PII_BLOCKED': ('A personal-information detector blocked commit content.', 'Remove or redact the personal information according to policy, then rerun the diagnosis.', 'content_scan', 'PII'),
@@ -228,6 +252,11 @@ PUBLICATION_DIAGNOSTICS_ZH = {
     'MESSAGE_FILE_UNAVAILABLE': ('無法讀取指定的 commit 訊息檔。', '檢查檔案編碼與存取權限後，重新執行 commit 安全診斷。'),
     'STAGED_CONTENT_UNSUPPORTED_BINARY': ('此二進位格式不受安全 metadata scanner 支援。', '改用受支援的媒體格式，或從候選中移除該二進位檔。'),
     'STAGED_MEDIA_INVALID': ('媒體檔格式錯誤，或副檔名與實際內容不符。', '修復媒體檔，或改用格式與內容一致的受支援檔案。'),
+    'STAGED_FONT_INVALID': ('字型檔格式錯誤或無法安全解析。', '修復或替換字型檔後，重新執行唯讀 commit 安全診斷。'),
+    'STAGED_FONT_FORMAT_MISMATCH': ('字型簽章與檔名副檔名不一致。', '改用正確副檔名或替換格式錯誤的檔案。'),
+    'STAGED_FONT_INSPECTOR_UNAVAILABLE': ('缺少必要的字型 metadata 檢查器。', '安裝已宣告的 fontTools 相依套件後重新執行唯讀診斷。'),
+    'STAGED_FONT_BROTLI_UNAVAILABLE': ('缺少必要的 WOFF2 解壓套件。', '安裝已宣告的 Brotli 相依套件後重新執行唯讀診斷。'),
+    'STAGED_FONT_RESOURCE_LIMIT': ('字型檔超出有界檢查的資源上限。', '縮小或替換字型檔，並遵守文件中的大小限制。'),
     'CONTENT_SCANNER_FAILED': ('必要的 commit 內容掃描未能完成。', '修復本機 scanner 後重新執行；不可略過安全檢查。'),
     'CONTENT_SECRET_BLOCKED': ('commit 內容觸發可能的密鑰偵測規則。', '移除或輪替可能的密鑰，再重新執行唯讀 commit 安全診斷。'),
     'CONTENT_PII_BLOCKED': ('commit 內容觸發個人資料偵測規則。', '依政策移除或遮蔽個人資料，再重新執行唯讀診斷。'),

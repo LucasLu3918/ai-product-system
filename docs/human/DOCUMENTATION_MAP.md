@@ -239,6 +239,8 @@ Retrieval SQLite storage helpers are implemented in `scripts/retrieval_storage.p
 
 Publication diagnostics use `scripts/publication_authority.py`, `scripts/publication_planning.py`, and `scripts/repository_governance_snapshot.py` as machine sources; current behavior is explained in Git Publication, Security Assurance, Architecture Overview, and the Claude Code adapter.
 
+Runtime Content Safety 的字型格式、上限、失敗原因與 Authority 邊界以 `orchestration/CONTENT_SAFETY_BOUNDARY.md` 為 canonical；Hook/CLI/候選掃描 evidence 記錄於 Scenario 263。
+
 ## Shared canonical 文件
 
 Publication troubleshooting lives in the User Guide, with security contracts in Security Assurance and runtime adapter behavior in Harness; Scenarios 260/261 define the shared evidence contract.

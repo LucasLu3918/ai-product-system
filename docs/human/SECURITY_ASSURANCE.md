@@ -440,7 +440,7 @@ SAL 2+ default registration requires an independently retained anchor. SAL 4 req
 The retention helper never deletes evidence or grants compaction authority. Expiry only creates a Human-review action and a minimal digest record.
 ## Runtime Content Safety Boundary
 
-Plan41 preserves Secret, PII and Injection Signal blocking for commits while making denial causes observable without matched content. Protected commit scans use strict marker handling; supported media metadata is inspected with bounded parsers, and unknown/malformed formats or incomplete scans fail closed. The read-only diagnostic CLI shares the Hook path and grants no authority.
+Plan41 preserves Secret, PII and Injection Signal blocking for commits while making denial causes observable without matched content. Protected commit scans use strict marker handling; supported media and TTF/OTF/WOFF/WOFF2 font metadata is inspected with bounded parsers, and unknown/malformed formats or incomplete scans fail closed. The read-only diagnostic CLI shares the Hook path and grants no authority.
 
 
 Creative traces and tool responses exclude raw prompts, image bytes, credentials, arbitrary workflow bodies, and absolute local paths; remote image egress is not supported.

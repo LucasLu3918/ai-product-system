@@ -230,6 +230,7 @@ Preserve valid native conventions and never refactor unrelated code merely to ma
 
 When this repository itself changes, the final review must include the Documentation Impact Gate in `docs/human/MAINTENANCE.md`. A system change is incomplete if affected docs, flows, diagrams, examples, scenarios, templates/schemas, VERSION or CHANGELOG are stale.
 
+Core content-safety changes such as Plan42 bind their exact changed-path set to the Core Change Test Matrix and pass the Integration Gate before remote publication.
 
 ## System Self-Improvement
 
