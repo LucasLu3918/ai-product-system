@@ -305,6 +305,8 @@ The Scheduler validates this structure and includes runtime requirements only fo
 Only `tcp` is supported in v0.51. Port IDs must be stable resource IDs, `preferred` is optional and non-authoritative, and `expose_as` accepts environment-variable names only.
 ## Runtime Content Safety Boundary
 
+The staged-font scanner is a bounded content decision and leaves task state, scheduling, and Git index state unchanged.
+
 The `aips safety diagnose commit` command is a read-only observer over the same staged commit scanner used by the Hook. It does not add a task mutation, scheduler transition or publication authority; scanner and format errors remain fail-closed.
 
 Scheduler resource declarations do not authorize provider requests. Runtime Policy and Resource Authorization validate the observed Resource and destination at execution time.

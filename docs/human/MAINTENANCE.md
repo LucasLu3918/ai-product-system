@@ -10,6 +10,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+Creative font assets use the shared bounded metadata scanner described in Runtime Content Safety; this check does not make licensing or visual-quality decisions.
+
 The plan39 ComfyUI Resource Authorization lifecycle is tracked by Scenario 262 and its Core Change Matrix; its deterministic fixture uses loopback only and does not perform model inference.
 
 Core publication changes close recursive Human and Agent documentation placement before the exact-candidate Gate.
@@ -426,6 +428,8 @@ High-risk external runtime actions also require an exact, unexpired Approval Rec
 
 ## Public repository / CI consistency
 
+Scenario 263 covers font parser bounds, staged blob size-before-read, scanner parity across commit/publication/history, and redacted diagnostics; exact-candidate validation remains required before publication.
+
 The lucas-lab target requires PRs and the `verify` and `visual-audit` checks; force pushes and branch deletion are disabled with zero required approvals.
 
 創作品質維護分開觀察必要條件漏判、生成／修正次數、重複缺陷與耗時。缺陷回饋、修正版 Profile／Bundle、比較報告保留 hash 關聯；既有 Profile 不原地修改。合成 lifecycle 只驗證流程，真實 vision 正確率需獨立實測。
@@ -769,6 +773,6 @@ Protected dispatch 會逐筆重新讀取 merged PR，確認 `merged_at`、head S
 
 ## Runtime Content Safety Boundary
 
-Plan41 adds redacted Hook findings, strict ignore-marker handling and bounded PNG/JPEG/WebP/M4A/MP3 metadata inspection through the existing commit safety boundary. Unsupported binaries, malformed media, unreadable Git objects and scanner failures remain explicit fail-closed outcomes; see Scenario 263.
+Plan41 adds redacted Hook findings, strict ignore-marker handling and bounded PNG/JPEG/WebP/M4A/MP3 metadata inspection through the existing commit safety boundary. Plan42 extends the same boundary to bounded TTF/OTF/WOFF/WOFF2 metadata, checks staged Git object sizes before reading blobs, and keeps publication preview and exact-candidate history scanning aligned. Unsupported binaries, malformed fonts/media, unavailable dependencies, unreadable Git objects and scanner failures remain explicit fail-closed outcomes; see Scenario 263.
 
 Register every new persistence or publication sink in `config/content-safety.yaml`. Preserve the `sanitize → hash → persist` ordering for audit data and update scenarios when detector or sink policy behavior changes.

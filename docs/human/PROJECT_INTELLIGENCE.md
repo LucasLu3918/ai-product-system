@@ -423,6 +423,8 @@ Scenario 134 不改 production Retrieval / Turn Context。Local Trial PASS 也�
 Project Intelligence follows `orchestration/PROJECT_IDENTITY.md`. EPHEMERAL storage is workspace-scoped by canonical `workspace_id`; repository-wide writer coordination belongs to the isolation layer and uses `repository_id`.
 ## Runtime Content Safety Boundary
 
+Plan42 的 scoped Change Impact 覆蓋字型解析器、staged Hook/CLI、publication preview、候選歷史掃描、依賴與 Scenario 263；全域 Impact Graph 仍是 partial，不推論為完整。
+
 Commit safety reports only a stable reason, phase, category/detector, Diagnostic ID and a sanitized relative file when safe. The Hook and read-only diagnostic CLI share the scanner; findings do not persist matched content or change publication authority.
 
 Publication scanning excludes only validated numeric Git index/mode metadata; paths, added/removed/context lines and unknown headers remain scanned. Branch deletion verifies GitHub RS256 issuer, repository, protected main, workflow SHA, dispatch event and a proposal-bound audience. Runner flags alone grant no authority; tokens remain in memory.

@@ -6,6 +6,8 @@ Evolution deterministic pre-analysis ships as an internal Python module with the
 
 ## macOS / Linux
 
+Commit safety 會以已安裝的 `fontTools` 解析 TTF/OTF/WOFF/WOFF2 中繼資料；WOFF2 另需 `Brotli`。兩者由 `requirements.txt` 管理，managed AIPS install/update/preflight 會一併修復缺少的必要 runtime dependency。不要改用系統 Python 或停用 Hook 來略過檢查。
+
 ~~~bash
 (
   set -e

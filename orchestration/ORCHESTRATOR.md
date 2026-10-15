@@ -383,6 +383,8 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 
 ## Change-class handoff to Integration Gate
 
+Plan42 content-safety changes bind the affected staged-font and publication boundaries to the Core Change Test Matrix before the exact-candidate Gate.
+
 Publication changes reach the Core Gate only after matrix evidence binds the exact candidate and documents the required checks policy boundary.
 
 The exact-candidate Integration Gate verifies deterministic publication diagnostics, target policy evidence, safe native Hook output and read-only transient recovery before remote publication.

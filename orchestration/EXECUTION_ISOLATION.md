@@ -133,6 +133,8 @@ An explicit read-only task may omit a writer boundary only when it has no `write
 
 ## Resource-scoped authorization
 
+Font metadata scanning reads the exact staged Git blob after a size check and does not write to the worktree or index; a safety ALLOW is not an execution grant.
+
 Publication diagnostic bindings and ledger records are evidence only and are not execution-isolation grants. A matching candidate fingerprint cannot authorize a protected action or satisfy the native Host decision.
 
 Execution Isolation answers **where** a task runs and enforces the existing single-writer boundary. It does not by itself answer which resources/operations an Agent may use inside that workspace.

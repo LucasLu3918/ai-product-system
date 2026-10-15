@@ -55,6 +55,8 @@ Material visual artifacts use `visual-quality-review`. Review against the approv
 
 ## Local character artwork
 
+Font files committed with creative assets pass through the shared content-safety metadata scanner; it does not assess licensing, authorship, or visual quality.
+
 Publication Diagnostic ID lookup and ledger tracing are Git governance evidence only; they neither read creative assets nor authorize creative execution, asset publication, or PR merge.
 
 Shared `asset_preset` values provide static character, background, texture, and UI ornament prompt guidance; the selected preset hash is recorded in provenance and does not authorize or execute generation.

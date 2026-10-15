@@ -28,7 +28,7 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
-Plan41 synchronizes the shared commit scanner, strict marker behavior, supported media metadata parsing, redacted denial fields, read-only CLI and fail-closed errors across the Content Safety topic, Hook/CLI guidance, Scenario 263 and both Conformance views. Human Authority, Required Checks and Git Publish Approval remain unchanged.
+Plan41 synchronizes the shared commit scanner, strict marker behavior, supported media metadata parsing, redacted denial fields, read-only CLI and fail-closed errors across the Content Safety topic, Hook/CLI guidance, Scenario 263 and both Conformance views. Plan42 adds bounded TTF/OTF/WOFF/WOFF2 metadata parsing, fontTools/Brotli dependency installation, pre-read staged blob sizing and publication/history parity to the same placements. Human Authority, Required Checks and Git Publish Approval remain unchanged.
 
 Plan40 keeps reason-code mapping, candidate/runtime binding, diagnostic trace privacy, and separate planning/authorization/Host/execution states aligned across the User Guide, Maintenance, Claude and OpenCode adapter guidance, and Scenario 261. Diagnostic lookup reads only an explicitly configured, hash-chain-verified allowlisted event; it creates no ledger and grants no authority.
 

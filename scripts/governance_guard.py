@@ -427,8 +427,29 @@ def commit_safety(cwd: Path, command: str) -> dict:
         if b'160000' in index_modes.get(name, set()):
             raise PublicationError("staged submodule content cannot be inspected", "STAGED_CONTENT_UNSUPPORTED_BINARY",
                                    phase='staged_blob')
+        relative = os.fsdecode(name)
+        suffix = PurePosixPath(relative).suffix.lower()
+        font_suffixes = {'.ttf', '.otf', '.woff', '.woff2'}
+        media_suffixes = {'.png', '.jpg', '.jpeg', '.webp', '.m4a', '.mp3'}
         try:
-            blob = subprocess.run(['git', 'show', ':' + os.fsdecode(name)], cwd=root, env=READ_ONLY_GIT_ENV,
+            size = subprocess.run(['git', 'cat-file', '-s', ':' + relative], cwd=root, env=READ_ONLY_GIT_ENV,
+                                  capture_output=True, timeout=10, check=False)
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            raise PublicationError("staged blob size unavailable", "STAGED_BLOB_UNAVAILABLE",
+                                   context={'error_class': type(exc).__name__}, phase='staged_blob') from exc
+        if size.returncode:
+            raise PublicationError("staged blob size unavailable", "STAGED_BLOB_UNAVAILABLE", phase='staged_blob')
+        try:
+            blob_size = int(size.stdout.strip())
+        except ValueError as exc:
+            raise PublicationError("staged blob size invalid", "STAGED_BLOB_UNAVAILABLE", phase='staged_blob') from exc
+        limit = 8 * 1024 * 1024
+        if blob_size > limit:
+            reason = "M4A_TOO_LARGE" if suffix == '.m4a' else ("STAGED_FONT_RESOURCE_LIMIT" if suffix in font_suffixes else "STAGED_CONTENT_TOO_LARGE")
+            raise PublicationError("staged blob exceeds inspection limit", reason,
+                                   context={'file': relative, 'format': suffix[1:]}, phase='staged_blob')
+        try:
+            blob = subprocess.run(['git', 'show', ':' + relative], cwd=root, env=READ_ONLY_GIT_ENV,
                                   capture_output=True, timeout=10, check=False)
         except subprocess.TimeoutExpired as exc:
             raise PublicationError("staged blob inspection timed out", "STAGED_BLOB_UNAVAILABLE",
@@ -438,20 +459,21 @@ def commit_safety(cwd: Path, command: str) -> dict:
                                    context={'error_class': type(exc).__name__}, phase='staged_blob') from exc
         if blob.returncode:
             raise PublicationError("staged blob unavailable", "STAGED_BLOB_UNAVAILABLE", phase='staged_blob')
-        relative = os.fsdecode(name)
-        suffix = PurePosixPath(relative).suffix.lower()
-        media_suffixes = {'.png', '.jpg', '.jpeg', '.webp', '.m4a', '.mp3'}
-        if len(blob.stdout) > 8 * 1024 * 1024:
-            reason = "M4A_TOO_LARGE" if suffix == '.m4a' else "STAGED_CONTENT_TOO_LARGE"
-            raise PublicationError("staged blob exceeds inspection limit", reason, phase='staged_blob')
-        if suffix in media_suffixes:
+        if len(blob.stdout) > limit:
+            reason = "M4A_TOO_LARGE" if suffix == '.m4a' else ("STAGED_FONT_RESOURCE_LIMIT" if suffix in font_suffixes else "STAGED_CONTENT_TOO_LARGE")
+            raise PublicationError("staged blob exceeds inspection limit", reason,
+                                   context={'file': relative, 'format': suffix[1:]}, phase='staged_blob')
+        if suffix in media_suffixes | font_suffixes:
             from media_metadata import MediaInspectionError, extract_metadata
             try:
                 staged_text = extract_metadata(blob.stdout, suffix)
             except MediaInspectionError as exc:
-                reason = 'M4A_INVALID' if suffix == '.m4a' else 'STAGED_MEDIA_INVALID'
+                raw_reason = getattr(exc, 'reason_code', str(exc))
+                reason = raw_reason if raw_reason.startswith('STAGED_FONT_') else ('M4A_INVALID' if suffix == '.m4a' else 'STAGED_MEDIA_INVALID')
                 raise PublicationError("staged media is malformed or its extension is spoofed", reason,
-                                       context={'error_class': type(exc).__name__}, phase='media_metadata') from exc
+                                       context={'error_class': getattr(exc, 'cause_class', None) or type(exc).__name__,
+                                                'file': relative, 'format': getattr(exc, 'format_name', None) or suffix[1:]},
+                                       phase='font_metadata' if suffix in font_suffixes else 'media_metadata') from exc
         else:
             try:
                 if b'\x00' in blob.stdout:
@@ -566,6 +588,11 @@ def deny_hook_input(runtime: str, reason: str, diagnostic: dict[str, Any] | None
         "STAGED_CONTENT_TOO_LARGE": "AIPS cannot inspect a staged file above the configured size limit; split or remove that file.",
         "STAGED_CONTENT_UNSUPPORTED_BINARY": "AIPS cannot safely inspect this binary format; convert it to a supported format or remove it from the commit.",
         "STAGED_MEDIA_INVALID": "AIPS could not verify this media file; repair the file or use a supported format with matching contents.",
+        "STAGED_FONT_INVALID": "AIPS could not safely parse this font; repair or replace the font file.",
+        "STAGED_FONT_FORMAT_MISMATCH": "AIPS found a mismatch between the font extension and its signature; correct the extension or file.",
+        "STAGED_FONT_INSPECTOR_UNAVAILABLE": "AIPS font inspection requires fontTools; install the declared dependency.",
+        "STAGED_FONT_BROTLI_UNAVAILABLE": "AIPS WOFF2 inspection requires Brotli; install the declared dependency.",
+        "STAGED_FONT_RESOURCE_LIMIT": "AIPS font inspection exceeded a bounded resource limit; reduce or replace the font.",
         "CONTENT_SCANNER_FAILED": "AIPS could not complete the content scanner; resolve the local scanner error and retry without bypassing the guard.",
         "CONTENT_SECRET_BLOCKED": "AIPS blocked a possible secret in commit content; remove or rotate it, then scan again.",
         "CONTENT_PII_BLOCKED": "AIPS blocked personal information in commit content; remove it or use an approved redacted value, then scan again.",

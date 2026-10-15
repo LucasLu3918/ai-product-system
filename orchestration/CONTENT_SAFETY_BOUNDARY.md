@@ -10,7 +10,7 @@ The implementation is provider-neutral and does not require an external API cred
 
 ## Contract
 
-Commit Hook and read-only `aips safety diagnose commit` call the same staged-candidate implementation. Commit scans always use strict ignore-marker behavior. Supported PNG, JPEG, WebP, M4A and MP3 metadata is bounded and format-aware; unsupported/malformed binaries and incomplete scans fail closed with redacted structured diagnostics. This is a content decision, not publication authority.
+Commit Hook and read-only `aips safety diagnose commit` call the same staged-candidate implementation. Commit scans always use strict ignore-marker behavior. Supported PNG, JPEG, WebP, M4A, MP3, TTF, OTF, WOFF and WOFF2 metadata is bounded and format-aware; font signatures and declared decompressed sizes are checked before fontTools parsing. FontTools/Brotli absence, malformed or spoofed fonts, unsupported binaries and incomplete scans fail closed with redacted structured diagnostics. Git blob sizes are checked before staged contents are loaded. This is a content decision, not publication authority.
 
 All AIPS-owned persistence paths should call:
 

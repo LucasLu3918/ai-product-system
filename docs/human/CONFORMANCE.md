@@ -1897,6 +1897,8 @@ Current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md)
 
 ## Scenario 260 — Publication diagnostics and Doctor
 
+Publication preflight now uses the shared bounded font metadata scanner for candidate previews; safe diagnostics preserve the existing Required Checks and publication approval boundaries.
+
 Scenario 263 adds content-safety diagnostics as a separate surface; publication Doctor, exact PR binding, and Required Checks remain authoritative for merge.
 
 Plan40 adds explicit error-cause coverage, safe Prepare/Hook bindings, independent lifecycle states, and optional verified Diagnostic ID lookup while preserving personal-mode confirmation and Harness/CLI authority boundaries.
@@ -1921,4 +1923,4 @@ Scenario 262 covers fail-closed Resource Authorization Profile/grant matching, H
 
 ## Scenario 263 — Commit Safety Diagnostics
 
-The native commit Hook and read-only `aips safety diagnose commit` use the same staged-content scanner. Strict ignore-marker handling, bounded PNG/JPEG/WebP/M4A/MP3 metadata scans, fail-closed unknown binary and scanner errors, and redacted structured recovery are verified by `tests/test_safety_diagnostics.py`. This diagnostic surface does not grant commit or publication authority.
+The native commit Hook and read-only `aips safety diagnose commit` use the same staged-content scanner. Strict ignore-marker handling, bounded PNG/JPEG/WebP/M4A/MP3/TTF/OTF/WOFF/WOFF2 metadata scans, pre-read Git blob limits, fail-closed unknown binary and scanner errors, redacted structured recovery, and unchanged HEAD/index are verified by `tests/test_safety_diagnostics.py` and `tests/test_font_metadata.py`. This diagnostic surface does not grant commit or publication authority.

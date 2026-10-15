@@ -28,6 +28,7 @@ BINARY_EXT = {
     ".zip", ".gz", ".tar", ".7z", ".woff", ".woff2", ".ttf", ".otf",
     ".mp3", ".mp4", ".m4a", ".mov", ".sqlite", ".db",
 }
+FONT_EXT = {".woff", ".woff2", ".ttf", ".otf"}
 PLACEHOLDER_HINTS = {
     "placeholder", "example", "dummy", "fake", "changeme", "replace_me",
     "replace-me", "your_", "your-", "xxxxx", "redacted", "sample", "fixture",
@@ -188,6 +189,17 @@ def scan_m4a(payload: bytes, location: str, policy: dict[str, Any], findings: li
     return None
 
 
+def scan_font(payload: bytes, location: str, policy: dict[str, Any], findings: list[dict[str, Any]], *, revision: str | None = None) -> str | None:
+    from media_metadata import MediaInspectionError, extract_metadata
+    try:
+        metadata = extract_metadata(payload, PurePosixPath(location).suffix.lower())
+    except MediaInspectionError as exc:
+        reason = str(exc) if str(exc).startswith("STAGED_FONT_") else "STAGED_FONT_INVALID"
+        return f"{reason}: {normalize_path(location)}"
+    scan_text(metadata, location, policy, strict=True, findings=findings, revision=revision)
+    return None
+
+
 def scan_text(
     text: str, location: str = "<payload>", policy: dict[str, Any] | None = None, *,
     strict: bool = False, findings: list[dict[str, Any]] | None = None,
@@ -234,7 +246,7 @@ def iter_files(root: Path, explicit: list[str], policy: dict[str, Any]) -> Itera
         for name in files:
             path = Path(base) / name
             relative = path.relative_to(root).as_posix()
-            if not generated_path(relative, policy) and (path.suffix.lower() not in BINARY_EXT or path.suffix.lower() == ".m4a"):
+            if not generated_path(relative, policy) and (path.suffix.lower() not in BINARY_EXT or path.suffix.lower() in FONT_EXT | {".m4a"}):
                 yield path
 
 
@@ -251,6 +263,14 @@ def scan_worktree(root: Path, policy: dict[str, Any], *, strict: bool, paths: li
                     blockers.append(f"M4A exceeds 8 MiB publication limit: {relative}; use Git LFS or external asset storage.")
                     continue
                 blocker = scan_m4a(path.read_bytes(), relative, policy, findings)
+                if blocker and strict:
+                    blockers.append(blocker)
+                continue
+            if path.suffix.lower() in FONT_EXT:
+                if path.stat().st_size > 8 * 1024 * 1024:
+                    blockers.append(f"STAGED_FONT_RESOURCE_LIMIT: {normalize_path(relative)}")
+                    continue
+                blocker = scan_font(path.read_bytes(), relative, policy, findings)
                 if blocker and strict:
                     blockers.append(blocker)
                 continue
@@ -312,7 +332,7 @@ def scan_candidate(root: Path, base: str, head: str, policy: dict[str, Any]) -> 
     # Scan the committed final tree, not a possibly dirty filesystem view.
     for mode, blob_sha, path in decode_tree_paths(git(root, "ls-tree", "-rz", "--full-tree", head_sha)):
         suffix = PurePosixPath(path).suffix.lower()
-        if mode == "160000" or generated_path(path, policy) or (suffix in BINARY_EXT and suffix != ".m4a"):
+        if mode == "160000" or generated_path(path, policy) or (suffix in BINARY_EXT and suffix not in FONT_EXT | {".m4a"}):
             continue
         if mode == "120000":
             continue
@@ -323,6 +343,15 @@ def scan_candidate(root: Path, base: str, head: str, policy: dict[str, Any]) -> 
                     continue
                 payload = git(root, "cat-file", "blob", blob_sha)
                 blocker = scan_m4a(payload, path, policy, findings)
+                if blocker:
+                    blockers.append(blocker)
+                continue
+            if suffix in FONT_EXT:
+                if int(git_text(root, "cat-file", "-s", blob_sha)) > 8 * 1024 * 1024:
+                    blockers.append(f"STAGED_FONT_RESOURCE_LIMIT: {normalize_path(path)}")
+                    continue
+                payload = git(root, "cat-file", "blob", blob_sha)
+                blocker = scan_font(payload, path, policy, findings)
                 if blocker:
                     blockers.append(blocker)
                 continue
@@ -358,7 +387,7 @@ def scan_candidate(root: Path, base: str, head: str, policy: dict[str, Any]) -> 
                 blockers.append("candidate history contains a path that is not UTF-8")
                 continue
             suffix = PurePosixPath(path).suffix.lower()
-            if generated_path(path, policy) or (suffix in BINARY_EXT and suffix != ".m4a"):
+            if generated_path(path, policy) or (suffix in BINARY_EXT and suffix not in FONT_EXT | {".m4a"}):
                 continue
             try:
                 object_spec = f"{commit}:{path}"
@@ -368,6 +397,15 @@ def scan_candidate(root: Path, base: str, head: str, policy: dict[str, Any]) -> 
                         continue
                     payload = git(root, "cat-file", "blob", object_spec)
                     blocker = scan_m4a(payload, path, policy, findings, revision=commit)
+                    if blocker:
+                        blockers.append(blocker)
+                    continue
+                if suffix in FONT_EXT:
+                    if int(git_text(root, "cat-file", "-s", object_spec)) > 8 * 1024 * 1024:
+                        blockers.append(f"STAGED_FONT_RESOURCE_LIMIT: {normalize_path(path)}")
+                        continue
+                    payload = git(root, "cat-file", "blob", object_spec)
+                    blocker = scan_font(payload, path, policy, findings, revision=commit)
                     if blocker:
                         blockers.append(blocker)
                     continue

@@ -177,6 +177,8 @@ flowchart LR
     VLM --> REPORT[Separate advisory report; Human decision required]
 ~~~
 
+Plan42 extends this same content-safety flow to bounded TTF/OTF/WOFF/WOFF2 metadata; staged blob sizes are checked before reads, and metadata scanning does not grant commit or publication authority.
+
 ## Parallel run observation flow
 
 ~~~mermaid
@@ -297,6 +299,8 @@ flowchart LR
 The alias candidate is deterministic and transparent. It is not an embedding provider and does not change `semantic.status=NOT_CONFIGURED`. The committed Trial follows the FAIL → KEEP branch: required regressions and no synonym-recall improvement produce recommendation `HOLD`. Normal Turn Context retrieval therefore does not enable the alias lane.
 
 ## Maintenance and publication evidence
+
+Plan42 adds bounded font-metadata inspection to commit and publication safety evidence; the content decision remains separate from Personal or High-Assurance publication approval.
 
 Commit diagnostics preserve the Git Publish Approval Gate; they cannot authorize a branch update, PR merge, or release.
 
