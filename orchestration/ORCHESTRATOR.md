@@ -230,7 +230,6 @@ Preserve valid native conventions and never refactor unrelated code merely to ma
 
 When this repository itself changes, the final review must include the Documentation Impact Gate in `docs/human/MAINTENANCE.md`. A system change is incomplete if affected docs, flows, diagrams, examples, scenarios, templates/schemas, VERSION or CHANGELOG are stale.
 
-Core content-safety changes such as Plan42 bind their exact changed-path set to the Core Change Test Matrix and pass the Integration Gate before remote publication.
 
 ## System Self-Improvement
 
@@ -383,6 +382,8 @@ When emitting a Structured Task Graph, treat tasks as writable by default. Set `
 For Evolution Radar semantic work, prefer the generated provider-neutral handoff when no scheduled provider is available rather than inventing a recommendation. For PR integration, stale target-base evidence must route back to refresh/revalidation rather than proceeding with an old PASS.
 
 ## Change-class handoff to Integration Gate
+
+Plan42 content-safety changes bind the affected staged-font and publication boundaries to the Core Change Test Matrix before the exact-candidate Gate.
 
 Publication changes reach the Core Gate only after matrix evidence binds the exact candidate and documents the required checks policy boundary.
 

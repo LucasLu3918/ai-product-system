@@ -72,6 +72,8 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+Creative font files pass through the shared bounded metadata scan when staged or included in publication candidates; it screens embedded text and does not approve licenses or visual quality.
+
 Commit Content Safety remains separate from Creative Runtime grants and does not create provider or asset-import authority.
 
 Git publication Diagnostic IDs are governance evidence only; they do not inspect creative assets or authorize generation, asset publication, or merge.
@@ -792,6 +794,8 @@ Scenario / validation history
 
 Documentation Placement Contract 會檢查 heading hierarchy、version/scenario-style heading 與 changed-line placement。新增功能不得只在 current-behavior 文件尾端追加 `vX.Y` / Scenario 說明；若確實需要新 topic，必須同時把 canonical section 加入 placement contract。
 ## Runtime Content Safety Boundary
+
+字型檔案會先核對 TTF、OTF、WOFF 或 WOFF2 簽章、副檔名與解壓上限，再以有界解析器掃描名稱及廠商中繼資料；格式偽裝、解析錯誤、缺少套件、超限或命中 Secret／PII／Injection 都會 fail closed。這項內容檢查不授予 Git 或執行權限。
 
 本機可用 `aips safety diagnose commit --worktree <repo> --message-file <path> [--format json|text]` 查詢 commit 安全結果。它與 Hook 共用掃描器且只讀暫存候選；拒絕摘要不含命中值，Secret／PII／Injection 仍阻擋，未知格式或掃描不完整仍拒絕。
 

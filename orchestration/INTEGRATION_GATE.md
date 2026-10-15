@@ -125,8 +125,6 @@ The candidate fingerprint includes the scanner and policy SHA-256 hashes, along 
 
 `ALREADY_MERGED` is an idempotent read-only recovery state bound to the exact PR head, merge commit, and live default base. It routes to post-merge reconciliation and does not replace the exact-candidate Gate or required checks.
 
-The exact-candidate scanner also extracts bounded TTF/OTF/WOFF/WOFF2 metadata and applies the strict Secret/PII/Injection detectors to the final tree and changed history blobs.
-
 ## Validation Profile
 
 The Integration Gate inventory includes `scripts/publish_post_merge.py` and its facade lifecycle evidence so exact-candidate validation compiles and exercises the extracted implementation.
@@ -286,6 +284,8 @@ Versioned review matrices may preserve history, but CI consumes only the canonic
 
 Parallel Runtime Port Isolation does not change Integration Gate authority or candidate semantics. Runtime port lifecycle evidence is executed by repository validation for the exact candidate, while Scheduler-focused validation continues to check deterministic Task Graph metadata. A port lease is ephemeral execution coordination evidence and is not included as a merge/release authorization token.
 ## Content Safety Gate
+
+The exact candidate scan applies the shared bounded font parser to the final tree and changed history blobs, with stable redacted failures and no change to publication authority.
 
 The Integration Gate runs the content-safety lifecycle for affected candidates and requires the canonical sink manifest. Durable/public content safety failures are blocking; diagnostic redaction remains a safe degraded path.
 

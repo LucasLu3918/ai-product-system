@@ -133,6 +133,8 @@ An explicit read-only task may omit a writer boundary only when it has no `write
 
 ## Resource-scoped authorization
 
+Font metadata scanning reads the exact staged Git blob after a size check and does not write to the worktree or index; a safety ALLOW is not an execution grant.
+
 Publication diagnostic bindings and ledger records are evidence only and are not execution-isolation grants. A matching candidate fingerprint cannot authorize a protected action or satisfy the native Host decision.
 
 Execution Isolation answers **where** a task runs and enforces the existing single-writer boundary. It does not by itself answer which resources/operations an Agent may use inside that workspace.
@@ -150,8 +152,6 @@ Execution Profile
 The authorization profile defaults to DENY and can only narrow ordinary operations. It cannot grant merge, release, publication, destructive administration, Human approval or a wider Change Boundary.
 
 Runtime Policy Enforcement may require provider-observed network allowlist evidence for protected external egress. The existing E2B candidate is disabled and deny-all; it does not currently authorize external egress. A pre-tool hook is not a substitute for sandbox network control.
-
-Staged font metadata inspection reads the exact Git blob after a size precheck and does not mutate the worktree or index. Passing content safety grants no resource or execution authorization.
 
 ## Runtime-security assessment boundary
 

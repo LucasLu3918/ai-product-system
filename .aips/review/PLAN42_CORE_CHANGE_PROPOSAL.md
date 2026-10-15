@@ -111,4 +111,4 @@ Approval record: The user's direct instruction to implement all Plan42 recommend
 
 Proposal fingerprint: sha256:5d88413e8d47f60c4594a541f68359659e53d7e37405dae96060fa8aea358128
 
-Scope fingerprint: sha256:843952b8fa1bdc9baef2406dfee5c9532e35b12bbe3ed12c155847e66b4afa4d
+Scope fingerprint: sha256:3568a78447b6cbd14c252c9bb07a64fe78894f8d08dbd92948a872203c93c74f

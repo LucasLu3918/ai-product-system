@@ -82,6 +82,8 @@ Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEM
 
 ## Execution
 
+Font assets in creative workflows use the same bounded metadata safety scanner at commit and publication boundaries; this does not add a rendering, licensing, or authorization capability.
+
 The Git diagnostic ledger records only allowlisted publication metadata; it does not inspect creative assets, call a generator, or grant creative execution.
 
 The Doctor observation does not retry workflow execution or execute publication commands; merge Authority re-reads the target policy before accepting required checks.
@@ -227,6 +229,8 @@ The Retrieval Intelligence SQLite persistence boundary is `scripts/retrieval_sto
 Plan36 publication diagnostics preserve this topic's existing behavior and authority boundaries.
 
 ## Security & Governance
+
+Plan42 只擴充既有 commit 與 publication content scanner：候選字型中繼資料先經大小、簽章及格式驗證，再套用相同 Secret／PII／Injection 規則；publication approval 與 runtime permission 決策維持原有路徑。
 
 Commit denial diagnostics stay within the existing content-safety scanner and do not alter creative-provider execution or Resource Authorization.
 

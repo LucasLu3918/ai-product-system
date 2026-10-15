@@ -12,6 +12,8 @@ It does not infer intent, discover permissions from prose, or grant protected pu
 
 ## Contract
 
+Commit font metadata inspection is a content-safety decision; it cannot authorize a tool action, push, merge, or release.
+
 Publication diagnostic bindings and audit records are observational data, not resource grants. They do not infer a selector or operation permission and cannot authorize push, PR creation, merge, or any Creative action.
 
 Each execution may reference a Resource Authorization Profile:
@@ -74,8 +76,6 @@ Resource Authorization can tighten an operation but never widens Change Boundary
 For scheduled repository work, `aips run owner claim` derives a task-scoped authorization record from the canonical Task Graph `write_set` and `change_boundary`. Paths outside the write set remain denied at the contract level, and final task completion independently checks the actual Git diff. This record is advisory evidence: it is not a filesystem sandbox and cannot intercept arbitrary runtime writes. Report `TOOL_GUARDED` only when a verified native write guard enforces the exact task record.
 
 For supported runtime tool actions, Resource Authorization is one input to `orchestration/RUNTIME_POLICY_ENFORCEMENT.md`. It remains default-DENY evidence and is evaluated before policy ALLOW; an action cannot use a policy allow rule to bypass a missing resource grant.
-
-Commit font metadata scanning is a content-safety control, not a Resource Authorization grant; its ALLOW result cannot authorize a tool action, push, or merge.
 
 ## CLI
 

@@ -300,6 +300,8 @@ The alias candidate is deterministic and transparent. It is not an embedding pro
 
 ## Maintenance and publication evidence
 
+Plan42 adds bounded font-metadata inspection to commit and publication safety evidence; the content decision remains separate from Personal or High-Assurance publication approval.
+
 Commit diagnostics preserve the Git Publish Approval Gate; they cannot authorize a branch update, PR merge, or release.
 
 Runtime denial recovery is descriptive only: publication and protected operations continue to require exact candidate validation and native Human authorization.

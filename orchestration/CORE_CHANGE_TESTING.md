@@ -211,6 +211,8 @@ The validate workflow may run bounded advisory feedback in parallel with the req
 Publication Preflight lifecycle tests must cover the enabled merge-method response and separately exercise repository-metadata API access failures. Keep network/auth diagnostics redacted, and verify latest-label routing when a newer PR event supersedes an older run.
 ## Content Safety Core Change Evidence
 
+Plan42 binds bounded TTF/OTF/WOFF/WOFF2 parsing, size-before-read, dependency-failure, metadata-secret, Hook/CLI/publication/history parity and unchanged Git state evidence to Scenario 263 and the exact-candidate matrix.
+
 Runtime Content Safety Boundary changes require detector, sink, publication, provenance and documentation evidence. The active Core Change Matrix must bind the exact candidate changed-file set and include security negative paths.
 
 Runtime Policy Enforcement Core Changes also reconcile action and policy digest binding, approval expiry/scope drift, runtime capability truthfulness, high-risk sandbox fail-closed behavior, semantic deny/escalate monotonicity, audit redaction and the exact candidate file-set binding.
@@ -218,8 +220,6 @@ Runtime Policy Enforcement Core Changes also reconcile action and policy digest 
 For CLI and validation modularization, the boundary matrix must cover direct source-checkout invocation, installed symlink invocation, argument and exit-status compatibility, validator import order and timing labels, error aggregation order, single-owner lifecycle execution, and publication-policy output equivalence.
 
 Publication diagnostics changes derive tests for every Required Checks state, API/auth failure, stale PR/head evidence, raw-output redaction, no mutation, and no grant consumption. Doctor and merge diagnosis remain read-only; validate their exact candidate through repository validation and the Core Matrix before publication.
-
-Plan42 extends Scenario 263 with bounded TTF/OTF/WOFF/WOFF2 parsing, size-before-read, dependency failures, metadata secrecy, Hook/CLI/publication/history parity and unchanged Git state; the exact candidate still requires its complete Core Integration Gate.
 
 ## Publication Root-Cause Recovery (Plan35)
 

@@ -10,6 +10,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+Creative font assets use the shared bounded metadata scanner described in Runtime Content Safety; this check does not make licensing or visual-quality decisions.
+
 The plan39 ComfyUI Resource Authorization lifecycle is tracked by Scenario 262 and its Core Change Matrix; its deterministic fixture uses loopback only and does not perform model inference.
 
 Core publication changes close recursive Human and Agent documentation placement before the exact-candidate Gate.
@@ -425,6 +427,8 @@ High-risk external runtime actions also require an exact, unexpired Approval Rec
 High-risk external runtime actions also require an exact, unexpired Approval Record and fresh verified network-egress enforcement. A hook alone is not a sandbox; missing provider proof blocks the action.
 
 ## Public repository / CI consistency
+
+Scenario 263 covers font parser bounds, staged blob size-before-read, scanner parity across commit/publication/history, and redacted diagnostics; exact-candidate validation remains required before publication.
 
 The lucas-lab target requires PRs and the `verify` and `visual-audit` checks; force pushes and branch deletion are disabled with zero required approvals.
 

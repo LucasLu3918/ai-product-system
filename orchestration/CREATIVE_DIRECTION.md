@@ -55,6 +55,8 @@ Material visual artifacts use `visual-quality-review`. Review against the approv
 
 ## Local character artwork
 
+Font files committed with creative assets pass through the shared content-safety metadata scanner; it does not assess licensing, authorship, or visual quality.
+
 Publication Diagnostic ID lookup and ledger tracing are Git governance evidence only; they neither read creative assets nor authorize creative execution, asset publication, or PR merge.
 
 Shared `asset_preset` values provide static character, background, texture, and UI ornament prompt guidance; the selected preset hash is recorded in provenance and does not authorize or execute generation.
@@ -120,5 +122,3 @@ For OpenCode V2, mutation authority comes from the native prompt-admission hook 
 Creative generation and Git publication remain separate authority boundaries. Publication Doctor is a read-only repository readiness observation; it does not authorize publishing generated assets or alter any Creative Bundle.
 
 Plan36 changes only Git publication diagnostics. It does not change creative task authorization, asset import, generation, or review behavior.
-
-Creative font assets remain subject to the repository commit-content scanner: supported font metadata is inspected for Secret/PII/Injection, and this check does not approve creative assets or their licenses.

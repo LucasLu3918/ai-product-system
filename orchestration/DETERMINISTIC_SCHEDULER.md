@@ -247,9 +247,6 @@ An optional task `review` block declares `mode: SELF_CHECK | INDEPENDENT_REVIEW`
 Execution IDs and runtime attestation are produced by the execution runtime and recorded in task state; they are not guessed from Role, model, prompt, or task labels. On completion, the Scheduler validates structured evidence. Same execution becomes `FAILED`; absent/unverifiable runtime evidence becomes `UNVERIFIED`; packet/candidate drift becomes `STALE`. A required review that does not meet its declared mode is not treated as COMPLETE for downstream dispatch. The Integration Gate separately checks the report against the exact candidate.
 
 - Release readiness also fails closed when `CHANGELOG.md` is unavailable or its canonical `## Unreleased` section is missing, duplicated, malformed, or non-empty; the check remains read-only.
-
-The commit-content scanner inspects staged font metadata through bounded parsers and never changes the Git index; this observation remains separate from scheduler action authorization.
-
 ## Validation de-duplication boundary
 
 GitHub auto-merge planning is not Scheduler execution: `aips publish prepare --auto-merge` binds the exact PR head and passing required checks, while native Human authorization remains a separate boundary.
@@ -307,6 +304,8 @@ The Scheduler validates this structure and includes runtime requirements only fo
 
 Only `tcp` is supported in v0.51. Port IDs must be stable resource IDs, `preferred` is optional and non-authoritative, and `expose_as` accepts environment-variable names only.
 ## Runtime Content Safety Boundary
+
+The staged-font scanner is a bounded content decision and leaves task state, scheduling, and Git index state unchanged.
 
 The `aips safety diagnose commit` command is a read-only observer over the same staged commit scanner used by the Hook. It does not add a task mutation, scheduler transition or publication authority; scanner and format errors remain fail-closed.
 

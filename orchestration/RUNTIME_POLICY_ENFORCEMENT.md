@@ -27,6 +27,8 @@ Task write authorization is not a substitute for the Runtime Action PEP. `aips r
 
 ## Runtime Action Envelope
 
+The commit-time font metadata scanner does not evaluate or broaden Runtime Action Envelope permissions; its ALLOW result remains separate from tool authorization.
+
 `orchestration/schemas/runtime-action.yaml` defines version 1. The action binds actor/task/runtime, tool/operation/arguments, resource, destination/trust, effective SAL, Change Boundary, data classes, protected assets, Resource Authorization profile, credential reference and required enforcement. SAL is not data classification. The action digest includes the normalized arguments, destination, risk/data labels, boundary and the Resource Authorization profile fingerprint; it excludes the approval ID.
 
 The current native hooks do not attest a separate trusted Runtime Action channel. They therefore rebuild direct `curl`/`wget` observations from the actual Hook tool name and command, bind the host and request metadata to that command, and read the Profile path only from the trusted `AIPS_RESOURCE_AUTHORIZATION_PROFILE` process environment. A top-level model-supplied `aips_runtime_action` cannot replace or widen observed host facts. Missing, unreadable, malformed or scope-mismatched Profiles produce distinct structured fail-closed diagnostics. Indirect scripts, child processes, SDK calls and hidden sockets require sandbox/network enforcement.
@@ -49,8 +51,6 @@ Decisions:
 - `BLOCKED` — required evidence, policy, SAL, enforcement, sandbox or valid configuration is unavailable or stale.
 
 The active Approval Record must bind operation `external_data_egress`, action digest, policy digest, exact destination, data classes, protected assets and Change Boundary. It must be APPROVED and unexpired. A missing record yields `REQUIRE_APPROVAL`; a present stale/invalid record yields `BLOCKED`.
-
-Font metadata inspection runs at the existing Git commit safety boundary and preserves the current Runtime Action Envelope decisions; it neither broadens nor bypasses runtime permissions.
 
 ## Audit and semantic providers
 

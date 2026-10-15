@@ -177,8 +177,6 @@ Mutation 前建立 CHANGE_IMPACT，涵蓋 Input / Output / Data / Events / Consu
 
 Publication Change Impact includes API evidence, CLI routing, authority diagnostics, hook consumers, PR observations, and the documentation/test closure. This run-local impact does not create persistent project policy.
 
-Plan42 的 scoped Change Impact 覆蓋字型解析器、staged Hook/CLI、publication preview、候選歷史掃描、依賴與 Scenario 263；全域 Impact Graph 仍是 partial，不推論為完整。
-
 ## Preserve Valid Native Conventions
 
 Explicit Rule → Formatter/Linter/Contract → Shared Abstraction → Majority Convention → Approved Intelligence → Framework Best Practice → AIPS Default。Unsafe/broken legacy pattern 不盲目複製。
@@ -424,6 +422,8 @@ Scenario 134 不改 production Retrieval / Turn Context。Local Trial PASS 也�
 
 Project Intelligence follows `orchestration/PROJECT_IDENTITY.md`. EPHEMERAL storage is workspace-scoped by canonical `workspace_id`; repository-wide writer coordination belongs to the isolation layer and uses `repository_id`.
 ## Runtime Content Safety Boundary
+
+Plan42 的 scoped Change Impact 覆蓋字型解析器、staged Hook/CLI、publication preview、候選歷史掃描、依賴與 Scenario 263；全域 Impact Graph 仍是 partial，不推論為完整。
 
 Commit safety reports only a stable reason, phase, category/detector, Diagnostic ID and a sanitized relative file when safe. The Hook and read-only diagnostic CLI share the scanner; findings do not persist matched content or change publication authority.
 

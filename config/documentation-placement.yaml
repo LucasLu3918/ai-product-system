@@ -234,7 +234,7 @@ placement_rules:
       orchestration/RUN_DASHBOARD.md: [Contract, CLI and local API, Failure and security behavior]
 
   - id: harness
-    triggers: [harness/**, scripts/harness_resolve.py, scripts/manage_runtime_adapter.py, scripts/opencode_skill_projection.py, scripts/opencode_native_guard.py, scripts/opencode_trace.py, scripts/creative_workspace_profile.py, scripts/creative_execution.py, scripts/creative_repair.py, tests/evidence/creative_repair_lifecycle.py, requirements.txt, scripts/creative_trace.py, scripts/creative_quality_benchmark.py, templates/creative/QUALITY_BENCHMARK.json, scripts/turn_intent.py, scripts/project_intelligence.py, scripts/project_intelligence_discovery.py, scripts/mcp_server.py, scripts/portable_commands.py, templates/harness/**, orchestration/EXECUTION_ISOLATION.md]
+    triggers: [harness/**, scripts/harness_resolve.py, scripts/manage_runtime_adapter.py, scripts/opencode_skill_projection.py, scripts/opencode_native_guard.py, scripts/opencode_trace.py, scripts/creative_workspace_profile.py, scripts/creative_execution.py, scripts/creative_repair.py, tests/evidence/creative_repair_lifecycle.py, scripts/creative_trace.py, scripts/creative_quality_benchmark.py, templates/creative/QUALITY_BENCHMARK.json, scripts/turn_intent.py, scripts/project_intelligence.py, scripts/project_intelligence_discovery.py, scripts/mcp_server.py, scripts/portable_commands.py, templates/harness/**]
     placements:
       docs/ARCHITECTURE.md: [Runtime flow, Installation and project lifecycle, End-to-end product delivery]
       docs/human/HARNESS.md: [Integration model, Native Runtime Adapters, MCP Interoperability, Portable Commands, Capability truth, Progressive disclosure, Ownership 與解除]
@@ -481,8 +481,6 @@ placement_rules:
       - tests/validation/skills_cli_contracts.py
       - tests/validation/skill_native_projection_contracts.py
       - tests/scenarios/233-public-cli-help-error-contracts.md
-      - tests/scenario_coverage.yaml
-      - config/documentation-placement.yaml
     placements:
       docs/human/USER_GUIDE.md: [Roles、Skills 與重用]
       docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
@@ -862,7 +860,6 @@ placement_rules:
   - id: personal-publication-modes
     triggers:
       - scripts/publication_authority.py
-      - scripts/governance_guard.py
       - scripts/check_secret_leakage.py
       - scripts/m4a_inspection.py
       - SYSTEM_CORE.md
@@ -878,8 +875,7 @@ placement_rules:
       docs/human/SECURITY_ASSURANCE.md: [Runtime Policy Enforcement, Release Security Gate]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Security 與 Governance, Maintenance governance]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Security & Governance, Quality & Verification]
-      docs/ARCHITECTURE.md: [Maintenance and publication evidence]
-      orchestration/ORCHESTRATOR.md: [Git Publish Approval, Change-class handoff to Integration Gate]
+      docs/ARCHITECTURE.md: [Runtime flow, Maintenance and publication evidence]
 
   - id: creative-quality-cross-profile-evidence
     triggers:
@@ -904,7 +900,6 @@ placement_rules:
     triggers:
       - scripts/resource_authorization.py
       - scripts/runtime_policy.py
-      - scripts/governance_guard.py
       - scripts/creative_execution.py
       - scripts/creative_errors.py
       - scripts/creative_prompt_compiler.py

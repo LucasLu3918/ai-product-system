@@ -1897,6 +1897,8 @@ Current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md)
 
 ## Scenario 260 — Publication diagnostics and Doctor
 
+Publication preflight now uses the shared bounded font metadata scanner for candidate previews; safe diagnostics preserve the existing Required Checks and publication approval boundaries.
+
 Scenario 263 adds content-safety diagnostics as a separate surface; publication Doctor, exact PR binding, and Required Checks remain authoritative for merge.
 
 Plan40 adds explicit error-cause coverage, safe Prepare/Hook bindings, independent lifecycle states, and optional verified Diagnostic ID lookup while preserving personal-mode confirmation and Harness/CLI authority boundaries.

@@ -130,6 +130,8 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 ## Creative Workflow
 
+Creative asset ingestion and review remain unchanged; font metadata passes through the existing content-safety boundary before commit or publication, with no license or visual approval implied.
+
 Git publication diagnostic tracing remains outside the creative asset flow and cannot grant generation, creative review, or asset publication permission.
 
 Publication diagnostics do not change creative asset execution or Human visual review authority.
@@ -586,6 +588,8 @@ Docs build 與 Pages hosting 分開驗證：PR / main 都能證明 VitePress bui
 
 Documentation Placement 對 behavior-bearing source 採 fail-closed mapping：只要 source 落在 Technology Guide 的廣域同步 surface，就必須先命中 subsystem placement rule。這避免新功能以「文件最後補充說明」逃過 topic architecture。
 ## Runtime Content Safety Boundary
+
+Commit、publication preview 與候選歷史掃描共用 TTF/OTF/WOFF/WOFF2 metadata scanner；staged Git blob 會先檢查大小，診斷只輸出安全路徑或雜湊指紋。
 
 Plan41 extends the existing boundary with structured, redacted commit-denial diagnostics and a read-only `aips safety diagnose commit` command that shares the native Hook scanner. Strict ignore-marker handling and bounded PNG/JPEG/WebP/M4A/MP3 metadata scans preserve the existing BLOCK and fail-closed policy.
 

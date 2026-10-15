@@ -453,6 +453,8 @@ AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned cont
 
 ## Runtime Policy Enforcement
 
+The bounded font metadata scanner fails closed on missing dependencies, spoofed or malformed formats, size limits and Secret/PII/Injection findings. It does not grant runtime permission or alter Human approval.
+
 Commit-safety diagnostics are not Runtime Action approvals; they cannot satisfy independent review, Resource Authorization, merge confirmation, or Required Checks.
 
 Publication diagnostic fields and optional ledger tracing are observability only. Unknown causes remain a diagnostic gap; they do not downgrade the existing fail-closed requirement or create Human, Host, push, PR, or merge authority.
