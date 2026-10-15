@@ -6,7 +6,7 @@ ast_serialize==0.12.1
 attrs==26.1.0
 cffi==2.1.1
 click==8.5.0
-coverage==7.16.1
+coverage==7.16.2
 cryptography==50.0.1
 greenlet==3.5.6
 h11==0.16.0
