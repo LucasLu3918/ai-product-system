@@ -1,5 +1,7 @@
 # System Maintenance
 
+Creative asset import policy is canonical in `orchestration/CREATIVE_DIRECTION.md`; keep the CLI opt-in, candidate mode, Human guidance, Security Assurance, and Scenario 264 synchronized.
+
 Runtime Context 或 Integration Gate 改動時，執行 Scenario 198、完整 repository validation 與 exact-candidate Integration Gate，並維護 Change Impact 和 CORE_CHANGE_TEST_MATRIX 證據。
 
 Retrieval relation extraction changes preserve the legacy `retrieval_intelligence.py` entry points. Run the focused extraction lifecycle, retrieval lifecycle and full repository Gate; lexical traversal uncertainty remains explicit.
@@ -9,6 +11,8 @@ Project Intelligence promotion eligibility and target confinement are implemente
 Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as its CLI/import facade. The focused Radar lifecycle and module-identity checks preserve deterministic output and Human decision authority.
 
 ## Documentation Impact Gate
+
+Creative import changes map to the User Guide, Creative Direction protocol, Harness and Technology topics, architecture, security guidance, and Scenario 264. Review the exact placement closure while keeping global Impact Graph coverage unchanged.
 
 Creative font assets use the shared bounded metadata scanner described in Runtime Content Safety; this check does not make licensing or visual-quality decisions.
 
@@ -514,6 +518,8 @@ When public repository hardening changes, review together:
 Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功，再分別模擬 loopback 與 browser 失敗，確保環境阻擋診斷不受 optional module availability 干擾；這不變更 runtime 行為。
 
 ## Validation architecture consistency
+
+The shared OpenCode lifecycle runner owns separate creative-import and Skill Explorer cases; changes to one contract must not be reported as behavior changes to the other.
 
 The full repository runner registers Scenario 263 and its commit-safety lifecycle; its evidence remains separate from the required exact-candidate Integration Gate.
 

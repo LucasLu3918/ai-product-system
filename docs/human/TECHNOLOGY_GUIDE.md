@@ -8,6 +8,8 @@ Retrieval relation candidates are built by a small standard-library module behin
 
 ## Runtime & Integration
 
+The creative import CLI is routed by the existing AIPS command facade. Its explicit Git destination opt-in is independent of OpenCode native permission acceptance.
+
 The publication diagnostic contract distinguishes stable blocker reason, source phase, safe recovery, candidate/runtime binding, and independent plan, authorization, Host and execution states. Optional trace storage writes only allowlisted fields to an explicitly configured hash-chained ledger; lookup verifies the chain before returning a record.
 
 The Claude Code publication Hook can invoke the existing read-only Doctor once after explicitly retryable network, rate-limit or GitHub server errors.
@@ -18,7 +20,7 @@ OpenCode's optional native acceptance records host version, platform, plugin dig
 
 The OpenCode creative adapter exposes the shared Z-Image Turbo profile and component filenames. Discovery and failure recovery remain local-only; command, runtime, model inventory, preflight and inference readiness are distinct evidence.
 
-OpenCode V2 registers a bounded creative tool that requires explicit intent. Its `prepare` action creates versioned character/style Profiles and an unconfigured Bundle in a non-Git EPHEMERAL scope; `preflight` remains read-only and `execute` requires a ready Bundle.
+OpenCode V2 registers a bounded creative tool that requires explicit intent. Its `prepare` action creates versioned character/style Profiles and an unconfigured Bundle in a non-Git EPHEMERAL scope; `preflight` remains read-only and `execute` requires a ready Bundle. Existing-asset import rejects Git destinations by default; `aips creative import-candidate --allow-git-destination` provides an explicit, hash-bound create-only path to the exact Git worktree root from a non-Git EPHEMERAL source. It does not stage or commit.
 
 
 ### Turn-Aware Global Harness
@@ -81,6 +83,8 @@ Local hybrid retrieval 組合 lexical、symbols、structural relation、tests、
 Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEMENTATION_APPROVED` 進入核准範圍；實作後對帳 actual diff 與 declared impact，只有完整記錄 reconciliation evidence 才能標記 `READY`。
 
 ## Execution
+
+Creative import candidates bind source and destination hashes and write only an absent target; Git imports require explicit opt-in and never stage or commit.
 
 Font assets in creative workflows use the same bounded metadata safety scanner at commit and publication boundaries; this does not add a rendering, licensing, or authorization capability.
 
@@ -277,6 +281,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
+Scenario 264 verifies the creative import CLI and create-only lifecycle, including unchanged Git index bytes. Skill Explorer checks remain separate even though both lifecycle contracts share an evidence runner.
+
 The commit-safety lifecycle is registered with repository validation; its read-only CLI cannot substitute for publication or independent-review checks.
 
 
@@ -352,7 +358,7 @@ Scenario 236 and the creative lifecycle verify provider boundaries, provenance, 
 
 OpenCode validation separates install and discovery from Session Context delivery and permission-hook execution; claims remain limited to the tested host and version.
 
-OpenCode Adapter 使用 ownership digest、安全路徑檢查與原子寫入管理全域 AGENTS、canonical Skills、Commands 及 V2 plugin。V2 plugin 在 primary dispatch 注入 compact Turn Context，permission hook 檢查受支援的直接檔案資源，Shell 限制為 bounded read-only allowlist。L1 允許非 Git workspace 的 confined 新 creative asset；L2 要求 Project Intelligence READY/CURRENT；L3 外部動作沿用 Human approval。Lifecycle 涵蓋版本、重裝、衝突、漂移、損壞 manifest、symlink、中斷恢復與解除。Plugin discovery 已由 OpenCode 2.0.24 registry 驗證；模型 Context delivery 與 permission action 尚未驗證，Governance 維持 ADVISORY，MCP/custom tools 和 out-of-process writes 不在 guard 範圍。OpenCode 是目前唯一會安裝 AIPS 原生 Skill 投影的 Host；其他 Host 透過 MCP Resource 或按需讀取 canonical source 載入，並依 ownership 記錄與摘要比對安全移除。
+OpenCode Adapter 使用 ownership digest、安全路徑檢查與原子寫入管理全域 AGENTS、canonical Skills、Commands 及 V2 plugin。V2 plugin 在 primary dispatch 注入 compact Turn Context，permission hook 檢查受支援的直接檔案資源，Shell 限制為 bounded read-only allowlist。L1 允許非 Git workspace 的 confined 新 creative asset；L2 要求 Project Intelligence READY/CURRENT；L3 外部動作沿用 Human approval。獨立的 creative import CLI 預設拒絕 Git 目的地；顯式 opt-in 只允許雜湊綁定、由非 Git EPHEMERAL 來源寫入精確 Git worktree root，且不會 stage 或 commit。Lifecycle 涵蓋版本、重裝、衝突、漂移、損壞 manifest、symlink、中斷恢復與解除。Plugin discovery 已由 OpenCode 2.0.24 registry 驗證；模型 Context delivery 與 permission action 尚未驗證，Governance 維持 ADVISORY，MCP/custom tools 和 out-of-process writes 不在 guard 範圍。OpenCode 是目前唯一會安裝 AIPS 原生 Skill 投影的 Host；其他 Host 透過 MCP Resource 或按需讀取 canonical source 載入，並依 ownership 記錄與摘要比對安全移除。
 
 必要的 repository lifecycle 會在隔離 fixture 中重新解析完整 Python 3.12 環境，所以 CI 固定安裝四份驗證 requirements，包含 Playwright 與 OpenAPI Python 模組。精準路徑計畫仍控制 Node 設定、Chromium 下載及可選 OpenAPI evidence；`ci_validation_plan_contracts.py` 另驗證文件變更也不可省略 Python 套件，並拒絕條件安裝、漏裝及無條件下載 Chromium 的回歸。
 

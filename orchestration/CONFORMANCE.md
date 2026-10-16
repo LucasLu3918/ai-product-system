@@ -1086,6 +1086,8 @@ The branch lifecycle report classifies remote branches using current exact-SHA P
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+The shared evidence runner contains a distinct creative-import lifecycle; these cases do not alter the Skill Explorer contract.
+
 Commit-safety diagnostics do not change the pinned upstream Skill inventory, installation rules, or routing.
 
 Plan40 publication diagnostics leave the pinned Skill source inventory, installation eligibility, and canonical-only listing unchanged.
@@ -1127,3 +1129,7 @@ Scenario 262 locks stage-specific default-deny Profile diagnostics, kind/selecto
 The native commit Hook and read-only `aips safety diagnose commit` share the staged-content scanner. Strict ignore-marker handling, bounded PNG/JPEG/WebP/M4A/MP3/TTF/OTF/WOFF/WOFF2 metadata extraction, pre-read Git blob size checks, fail-closed unknown binary and scanner-error classifications, metadata-secret redaction, unchanged HEAD/index, and content-redacted structured diagnostics are covered by `tests/test_safety_diagnostics.py` and `tests/test_font_metadata.py`. This does not change Human Authority, Required Checks, or Git Publish Approval.
 
 The canonical Skill registry and pinned upstream manifest classify the complete 38-item source inventory; the generated Human Explorer presents active Skills and source dispositions separately. Writing Fragments → Beats → Shape remains explicit-request-only, and untested Beta entries remain unrouted. `tests/validation/skill_catalog_contracts.py` checks deterministic registry, output and source invariants; Scenario 259 remains manual for semantic routing acceptance.
+
+## Scenario 264 — Hash-bound Creative Git Asset Import
+
+tests/evidence/opencode_integration_lifecycle.py verifies the AIPS creative import candidate and CLI flow, source/candidate hash checks, no overwrite or path escape, explicit Git-root opt-in, and unchanged Git index bytes. It uses synthetic local assets and does not stage or commit.

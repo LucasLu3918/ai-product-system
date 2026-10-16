@@ -1800,6 +1800,8 @@ The cross-profile quality evidence extension is covered by Scenario 258; this cr
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+The shared OpenCode lifecycle runner also owns a separate Scenario 264 creative-import case; its result does not change Skill Explorer installation or Host acceptance.
+
 Commit-safety CLI coverage is separate from the pinned upstream Skill inventory and cannot change Skill discovery or routing.
 
 Scenario 261 publication diagnostics do not change the pinned upstream Skill inventory, installation eligibility, or the canonical-only default listing.
@@ -1924,3 +1926,7 @@ Scenario 262 covers fail-closed Resource Authorization Profile/grant matching, H
 ## Scenario 263 — Commit Safety Diagnostics
 
 The native commit Hook and read-only `aips safety diagnose commit` use the same staged-content scanner. Strict ignore-marker handling, bounded PNG/JPEG/WebP/M4A/MP3/TTF/OTF/WOFF/WOFF2 metadata scans, pre-read Git blob limits, fail-closed unknown binary and scanner errors, redacted structured recovery, and unchanged HEAD/index are verified by `tests/test_safety_diagnostics.py` and `tests/test_font_metadata.py`. This diagnostic surface does not grant commit or publication authority.
+
+## Scenario 264 — Hash-bound Creative Git Asset Import
+
+The lifecycle verifies default Git destination rejection, explicit exact-root opt-in, hash revalidation, create-only writes, and unchanged Git index bytes. The source remains a non-Git EPHEMERAL workspace; import does not stage or commit.

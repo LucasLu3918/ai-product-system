@@ -25,7 +25,7 @@ Read-only publication planning binds the explicit worktree, exact candidate, liv
 Read-only publication planning binds the explicit worktree, exact candidate, live default base, remote/PR state and body/policy digests. It returns native-tool cwd/argv and versioned phase-specific diagnostics with sanitized evidence provenance; neither a plan nor its fingerprint grants permission or executes a protected operation. The publication doctor separately observes branch existence, effective rules, classic protection and rulesets, retaining UNKNOWN when evidence is incomplete.
 
 
-Creative workspace import is a local flow: review a private source-hash candidate, then explicitly create the exact absent target in a non-Git workspace.
+Creative workspace import is a local flow: review a private source-hash candidate, then explicitly create the exact absent target. Git destinations remain denied by default; a hash-bound `GIT_OPT_IN` candidate may target the exact Git worktree root from a non-Git EPHEMERAL source and still cannot stage or commit.
 
 
 After a local creative trial, the read-only quality benchmark validates registered profile-case coverage and raster hashes. It records model, check and compiler failures separately from Human review, user acceptance and runtime attestation; it adds no runtime provider or authorization path.
@@ -147,7 +147,7 @@ flowchart TD
     V --> IR[Targeted Intelligence Refresh]
     IR --> DONE[Persist / Complete]
     OP --> ACT{Direct native file action?}
-    ACT -->|L1 new creative asset in non-Git workspace| ASSET[Confined create-only asset write]
+    ACT -->|L1 new creative asset in non-Git workspace or explicit Git import opt-in| ASSET[Confined create-only asset write; no stage or commit]
     ACT -->|L2 existing project mutation| GUARD[Ready/current Intelligence + target path + authority check]
     ACT -->|L3 external effect| HUMAN[Existing Human approval gate]
 ~~~

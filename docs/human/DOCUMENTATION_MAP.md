@@ -22,6 +22,8 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 ## 文件角色
 
+Creative asset import uses the existing Creative Direction and Harness command surfaces; it does not add a Skill catalog entry or alter Skill Explorer behavior.
+
 Plan41 的 commit 安全診斷由既有 Content Safety kernel、`governance_guard.py` 與唯讀 `safety_diagnostics.py` 共用實作；Human 操作與安全邊界由 User Guide、Security Assurance、Harness 及 Scenario 263 說明。
 
 Publication root-cause diagnostics and the optional Diagnostic ID lookup contract are implemented in the publication authority/planning/diagnostics and governance-audit modules; Human recovery steps live in User Guide, while native adapter and exact scenario boundaries live in Harness and Conformance.
@@ -113,6 +115,8 @@ Plan36 publication diagnostics preserve this topic's existing behavior and autho
 
 ## Agent / machine canonical 文件
 
+Creative import command policy is owned by orchestration/CREATIVE_DIRECTION.md; executable evidence is tests/scenarios/264-creative-git-asset-import.md and its registered lifecycle.
+
 Creative asset authorization remains canonical in Creative Direction and adapter protocols; Git publication Diagnostic ID tracing stays in the publication authority/ledger path and is not a creative permission source.
 
 The plan39 source-to-topic mapping is maintained by the `plan39-comfyui-resource-authorization-diagnostics` placement rule and the `plan39-comfyui` documentation-sync entry; Scenario 262 is the verification-history anchor.
@@ -129,7 +133,7 @@ Publication diagnosis is documented in the User Guide and Technology Guide, with
 
 Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
 
-Creative workspace asset import is described in USER_GUIDE.md and governed by orchestration/CREATIVE_DIRECTION.md.
+Creative workspace asset import is described in USER_GUIDE.md and governed by orchestration/CREATIVE_DIRECTION.md. Git destinations remain denied unless the CLI candidate explicitly opts into a hash-bound, create-only import.
 
 
 Cross-profile creative quality evidence is defined by the registered dataset and benchmark template, implemented by `scripts/creative_quality_benchmark.py`, and verified by Scenario 258. Human usage and technical boundaries are described in USER_GUIDE and TECHNOLOGY_GUIDE.

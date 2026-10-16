@@ -54,6 +54,8 @@ AIPS Core
 
 ## Native Runtime Adapters
 
+Creative asset import remains an explicit CLI operation. OpenCode native file permissions neither authorize nor execute the Git import path; the exact-hash candidate and separate Git publication boundary still apply.
+
 Claude Code commit Hook diagnostics include only safe reason/category/detector data, an optional sanitized repository-relative file, and a Diagnostic ID. `aips safety diagnose commit` invokes the same scanner in read-only mode; this does not add a Host capability or publication permission.
 
 Publication Hook responses share the authority layer's stable reason code and safe candidate/runtime binding with Prepare. `AUTHORIZED` records only AIPS Hook approval; native Host permission remains unevaluated and execution remains unobserved until the host action completes.
@@ -170,6 +172,8 @@ MCP Server 不呼叫第二個 LLM，也不取得 Human approval、Git publish、
 Temporal Project Intelligence 的 historical query 由既有 deterministic CLI／Project Intelligence layer 提供；MCP 與 Runtime adapter 只傳遞 bounded context，不新增 Temporal Role、Gate 或 host-native authority。
 
 ## Capability truth
+
+The shared OpenCode lifecycle also contains a distinct Skill Explorer contract. Passing creative import cases does not establish Skill installation or Host acceptance.
 
 Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
 

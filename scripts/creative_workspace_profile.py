@@ -157,14 +157,36 @@ def _has_git_metadata(root: Path) -> bool:
     return any((parent / ".git").exists() for parent in (root, *root.parents))
 
 
-def import_candidate(source_project: Path, source: str, destination_project: Path, target: str) -> dict[str, Any]:
+def _destination_mode(root: Path, allow_git_destination: bool) -> str:
+    has_git_metadata = _has_git_metadata(root)
+    git_marker = root / ".git"
+    if allow_git_destination:
+        if not has_git_metadata or git_marker.is_symlink() or not git_marker.exists():
+            raise ValueError("Git destination opt-in requires the Git worktree root")
+        return "GIT_OPT_IN"
+    if has_git_metadata:
+        raise ValueError("destination must be a non-Git EPHEMERAL creative workspace")
+    return "EPHEMERAL"
+
+
+def import_candidate(
+    source_project: Path,
+    source: str,
+    destination_project: Path,
+    target: str,
+    *,
+    allow_git_destination: bool = False,
+) -> dict[str, Any]:
     """Create a private, hash-bound import proposal without changing either project."""
     source_root = _project_root(source_project, "source project")
     destination_root = _project_root(destination_project, "destination project")
-    if _has_git_metadata(destination_root):
-        raise ValueError("destination must be a non-Git EPHEMERAL creative workspace")
+    destination_mode = _destination_mode(destination_root, allow_git_destination)
+    if destination_mode == "GIT_OPT_IN" and _has_git_metadata(source_root):
+        raise ValueError("Git destination import requires a non-Git EPHEMERAL source")
     source_relative, source_path = _relative_path(source_root, source, "source")
     target_relative, target_path = _relative_path(destination_root, target, "target")
+    if any(part.casefold() == ".git" for part in target_relative.parts):
+        raise ValueError("target must not enter Git metadata")
     if source_relative.suffix.casefold() not in ASSETS or target_relative.suffix.casefold() not in ASSETS:
         raise ValueError("source and target must use supported image or SVG extensions")
     if source_relative.suffix.casefold() != target_relative.suffix.casefold():
@@ -187,7 +209,7 @@ def import_candidate(source_project: Path, source: str, destination_project: Pat
         "source_project": {"id": hashlib.sha256(str(source_root).encode()).hexdigest()[:24], "path": str(source_root)},
         "source": {"path": source_relative.as_posix(), "sha256": _sha256_file(source_path), "bytes": source_info.st_size, "format": source_relative.suffix.lower().lstrip(".")},
         "destination_project": {"id": hashlib.sha256(str(destination_root).encode()).hexdigest()[:24], "path": str(destination_root)},
-        "destination": {"path": target_relative.as_posix(), **target_state},
+        "destination": {"path": target_relative.as_posix(), "mode": destination_mode, **target_state},
         "overwrite": False,
         "source_content_cached": False,
         "created": False,
@@ -209,10 +231,17 @@ def import_asset(candidate_file: Path, accept_hash: str) -> dict[str, Any]:
         raise ValueError("candidate is not an importable create-only proposal")
     source_root = _project_root(Path(candidate["source_project"]["path"]), "source project")
     destination_root = _project_root(Path(candidate["destination_project"]["path"]), "destination project")
-    if _has_git_metadata(destination_root):
-        raise ValueError("destination must be a non-Git EPHEMERAL creative workspace")
+    destination = candidate.get("destination")
+    destination_mode = destination.get("mode", "EPHEMERAL") if isinstance(destination, dict) else None
+    if destination_mode not in {"EPHEMERAL", "GIT_OPT_IN"}:
+        raise ValueError("candidate destination mode is invalid")
+    _destination_mode(destination_root, destination_mode == "GIT_OPT_IN")
+    if destination_mode == "GIT_OPT_IN" and _has_git_metadata(source_root):
+        raise ValueError("Git destination import requires a non-Git EPHEMERAL source")
     source_relative, source_path = _relative_path(source_root, candidate["source"]["path"], "source")
     target_relative, target_path = _relative_path(destination_root, candidate["destination"]["path"], "target")
+    if any(part.casefold() == ".git" for part in target_relative.parts):
+        raise ValueError("target must not enter Git metadata")
     if not source_path.is_file() or source_path.is_symlink() or source_path.stat(follow_symlinks=False).st_size != candidate["source"]["bytes"]:
         raise ValueError("source asset changed after candidate creation")
     if _sha256_file(source_path) != candidate["source"]["sha256"]:
@@ -265,6 +294,11 @@ def main() -> int:
     candidate_parser.add_argument("--source", required=True)
     candidate_parser.add_argument("--destination-project", type=Path, required=True)
     candidate_parser.add_argument("--target", required=True)
+    candidate_parser.add_argument(
+        "--allow-git-destination",
+        action="store_true",
+        help="Explicitly bind this create-only candidate to a Git worktree destination.",
+    )
     import_parser = sub.add_parser("import")
     import_parser.add_argument("--candidate", type=Path, required=True)
     import_parser.add_argument("--accept-hash", required=True, help="Exact candidate SHA-256 shown by import-candidate")
@@ -275,7 +309,13 @@ def main() -> int:
         elif args.action == "next-version":
             result = next_version(args.project, args.target)
         elif args.action == "import-candidate":
-            result = import_candidate(args.source_project, args.source, args.destination_project, args.target)
+            result = import_candidate(
+                args.source_project,
+                args.source,
+                args.destination_project,
+                args.target,
+                allow_git_destination=args.allow_git_destination,
+            )
         else:
             result = import_asset(args.candidate, args.accept_hash)
         print(json.dumps(result, ensure_ascii=False, indent=2))

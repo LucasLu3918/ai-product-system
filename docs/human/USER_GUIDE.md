@@ -90,7 +90,7 @@ Creative generation and asset import retain their existing grants; a later Git p
 
 發布前使用 `aips publish prepare --worktree <candidate-root> --title <title> --body-file <file>`；原生工具必須使用輸出的 `cwd` 與精確 `argv`。`--expected-fingerprint` 可拒絕舊觀察，`--host-denied` 只回報 Host 拒絕。每次續行重新查詢遠端分支與 PR；PLANNED 不是授權，也不是完整 Integration Gate PASS。
 
-To bring an existing image or SVG into a creative workspace, use `aips creative import-candidate` to review a source hash and absent destination, then `aips creative import --candidate FILE --accept-hash SHA256` to revalidate and create the exact file without overwrite.
+To bring an existing image or SVG into a creative workspace, use `aips creative import-candidate` to review a source hash and absent destination, then `aips creative import --candidate FILE --accept-hash SHA256` to revalidate and create the exact file without overwrite. Git destinations remain rejected by default. For a user-selected Git worktree, explicitly add `--allow-git-destination` to candidate creation; the candidate then binds the Git mode, source and destination hashes, and exact target. The source must be in a non-Git EPHEMERAL workspace, and the destination must be the worktree root. Import remains create-only and never stages or commits; use the separate Git publication process for publication.
 
 OpenCode acceptance applies only to the reported host version and source. A successful Context or file-hook check does not cover arbitrary Shell processes, MCP/custom tools, or writes initiated outside OpenCode; the report marks these effects UNSUPPORTED and grants no additional authority.
 
@@ -195,6 +195,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
+Creative asset import is a dedicated CLI workflow, separate from OpenCode native file permissions. Git destinations require the explicit, hash-bound import opt-in described under Creative Direction.
+
 Publication Hook and Prepare share safe reason codes and candidate observations; their lifecycle fields remain separate from native Host permission and Human authorization.
 
 Resource and creative Runtime Hook errors include a stable reason code and bounded recovery step; this diagnostic context does not grant a write or generation action.
@@ -259,6 +261,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 詳細請看 [Global Harness 與 MCP](HARNESS.md)。
 
 ## Roles、Skills 與重用
+
+Skill Explorer manages reusable instructions; creative asset import is a separate asset workflow and does not install or modify Skills.
 
 `aips safety diagnose commit` is an independent read-only CLI; it adds no Skill inventory, Skill Explorer route, or installation behavior.
 
