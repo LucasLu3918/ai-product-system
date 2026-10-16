@@ -1,56 +1,102 @@
 version: 1
 change:
-  id: plan42-staged-binary-safety
-  summary: Safely inspect staged fonts and report actionable root causes without changing commit or publication authority.
+  id: creative-git-asset-import
+  summary: Preserve default Git rejection while allowing an explicitly opted-in, hash-bound,
+    create-only creative asset import to the exact Git worktree root.
   boundary:
-    - Bounded TTF/OTF/WOFF/WOFF2 metadata parsing through the shared staged content-safety pipeline
-    - Git object size precheck, parser/decompression limits, magic/suffix reconciliation, fail-closed malformed or unsupported content
-    - Stable safe diagnostics across native Hook, Safety Diagnose CLI, and publication candidate scanner
-    - Managed fontTools/Brotli dependency detection and tested runtime dependency constraints
-    - Regression, lifecycle, security/redaction, documentation and exact-candidate validation evidence
+  - Creative import CLI and candidate schema, including legacy EPHEMERAL candidate
+    compatibility.
+  - Source/destination identity, confined paths, target absence, race/replay behavior,
+    no staging, and no publication authority.
+  - Canonical Human/Agent documentation, Scenario 264 coverage, generated conformance
+    summary and its pinned coverage baseline, and exact-candidate repository validation.
 matrix:
-  - boundary: Staged blob detection, size-before-read, bounded font parser and metadata extraction
-    reason: The current scanner reads a full blob before checking the limit and treats valid font binaries as generic unsupported content; parsers add attack surface.
-    checks:
-      static_lint: {applicable: true, evidence: PASS}
-      unit: {applicable: true, evidence: PASS}
-      integration: {applicable: true, evidence: PASS}
-      contract: {applicable: true, evidence: PASS}
-      e2e: {applicable: true, evidence: PASS}
-      security: {applicable: true, evidence: PASS}
-      migration_recovery: {applicable: false, na_reason: No application persistence or schema migration; parser denial leaves Git index and files unchanged.}
-      cli_harness: {applicable: true, evidence: PASS}
-      docs_schema: {applicable: true, evidence: PASS}
-  - boundary: Shared format capability and root-cause diagnostics across Hook, CLI, and publication scanning
-    reason: Inconsistent format handling can either reject valid content or weaken a downstream scanner; error categories must stay safe and actionable.
-    checks:
-      static_lint: {applicable: true, evidence: PASS}
-      unit: {applicable: true, evidence: PASS}
-      integration: {applicable: true, evidence: PASS}
-      contract: {applicable: true, evidence: PASS}
-      e2e: {applicable: true, evidence: PASS}
-      security: {applicable: true, evidence: PASS}
-      migration_recovery: {applicable: false, na_reason: Additive diagnostic fields; no stored diagnostic schema migration.}
-      cli_harness: {applicable: true, evidence: PASS}
-      docs_schema: {applicable: true, evidence: PASS}
-  - boundary: Managed parser dependency and installation diagnostics
-    reason: A missing parser dependency must fail closed with the correct runtime and actionable install guidance, without modifying system Python.
-    checks:
-      static_lint: {applicable: true, evidence: PASS}
-      unit: {applicable: true, evidence: PASS}
-      integration: {applicable: true, evidence: PASS}
-      contract: {applicable: true, evidence: PASS}
-      e2e: {applicable: true, evidence: PASS}
-      security: {applicable: true, evidence: PASS}
-      migration_recovery: {applicable: true, evidence: PASS}
-      cli_harness: {applicable: true, evidence: PASS}
-      docs_schema: {applicable: true, evidence: PASS}
+- boundary: Candidate policy and exact create-only filesystem write
+  reason: A Git destination expands an existing local creative import boundary; default
+    denial, exact hashes, path confinement, race safety, and no index mutation must
+    remain enforced.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'PASS: tests/validate_repository.py (exact-candidate working tree)'
+    unit:
+      applicable: true
+      evidence: 'PASS: tests/evidence/opencode_integration_lifecycle.py (direct helper
+        lifecycle cases)'
+    integration:
+      applicable: true
+      evidence: 'PASS: tests/evidence/opencode_integration_lifecycle.py and tests/validate_repository.py'
+    contract:
+      applicable: true
+      evidence: 'PASS: tests/evidence/conformance_summary_lifecycle.py and tests/validate_repository.py'
+    e2e:
+      applicable: false
+      na_reason: The feature is a local file/CLI flow with no application server or
+        user interface; the full repository gate plus CLI lifecycle exercises the
+        supported user path.
+    security:
+      applicable: true
+      evidence: 'PASS: tests/evidence/opencode_integration_lifecycle.py (default denial,
+        hash drift, tamper, path, replay, unchanged Git index)'
+    migration_recovery:
+      applicable: false
+      na_reason: Candidate metadata is private local cache state; legacy candidates
+        retain EPHEMERAL default and no persisted application schema changes.
+    cli_harness:
+      applicable: true
+      evidence: 'PASS: tests/evidence/opencode_integration_lifecycle.py (CLI opt-in
+        and import)'
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: tests/evidence/conformance_summary_lifecycle.py and tests/validate_repository.py
+        (Scenario 264 / 264 total)'
+- boundary: Scenario coverage, generated conformance summary, pinned coverage baseline,
+    documentation consistency, and exact candidate repository health
+  reason: Human and Agent instructions must agree on opt-in, source/destination constraints,
+    and the separate Git publication boundary; canonical scenario registration, its
+    generated Human summary and pinned aggregate, and the repository gate must validate
+    the resulting candidate.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'PASS: tests/validate_repository.py (exact-candidate working tree)'
+    unit:
+      applicable: false
+      na_reason: Documentation and scenario-index changes are validated by repository
+        schema, conformance, documentation impact, and exact candidate gates rather
+        than a standalone unit behavior.
+    integration:
+      applicable: true
+      evidence: 'PASS: tests/evidence/opencode_integration_lifecycle.py and tests/validate_repository.py'
+    contract:
+      applicable: true
+      evidence: 'PASS: tests/evidence/conformance_summary_lifecycle.py and tests/validate_repository.py'
+    e2e:
+      applicable: false
+      na_reason: Documentation/schema changes have no live application flow; exact
+        candidate validation checks the registered contracts.
+    security:
+      applicable: true
+      evidence: 'PASS: tests/evidence/opencode_integration_lifecycle.py (default denial,
+        hash drift, tamper, path, replay, unchanged Git index)'
+    migration_recovery:
+      applicable: false
+      na_reason: No system installation, persisted project database, or migration
+        behavior changes.
+    cli_harness:
+      applicable: true
+      evidence: 'PASS: tests/evidence/opencode_integration_lifecycle.py (CLI opt-in
+        and import)'
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: tests/evidence/conformance_summary_lifecycle.py and tests/validate_repository.py
+        (Scenario 264 / 264 total)'
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 review_evidence:
   required: false
 candidate:
-  base_sha: d971b1954019c385f82b0363ce32aa71a3b4b8e6
-  changed_files_hash: 3568a78447b6cbd14c252c9bb07a64fe78894f8d08dbd92948a872203c93c74f
+  base_sha: 42ea03a3ba60c9356fbcea8e4782a6879f236a14
+  changed_files_hash: 1d05cf4149ac3640ee4e0c48d14e5aa0958b5be40df2c95f8fb5ca65a2c6aa99
 blockers: []
 status: READY

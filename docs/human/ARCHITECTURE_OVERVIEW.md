@@ -265,7 +265,7 @@ The capability registry maps the local creative executor, Bundle template, lifec
 
 OpenCode is an existing Harness capability: its generated Skills, Session-root Context, native permission decisions, and lifecycle checks remain represented by the canonical Capability Registry and conformance evidence.
 
-The OpenCode native helper uses L1 for confined new creative assets in non-Git workspaces, L2 for READY/CURRENT project mutations, and L3 for external effects under the existing Human approval gate.
+The OpenCode native helper uses L1 for confined new creative assets in non-Git workspaces. The separate creative import CLI rejects Git destinations by default; a hash-bound explicit opt-in permits create-only import to the exact Git worktree root from a non-Git EPHEMERAL source, without staging or committing. L2 remains for READY/CURRENT project mutations, and L3 for external effects under the existing Human approval gate.
 
 OpenCode Skills 由 canonical Skill Registry 生成；description、source digest 與 ownership 的一致性由 deterministic lifecycle 驗證。
 

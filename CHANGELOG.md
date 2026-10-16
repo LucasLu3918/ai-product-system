@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Allow explicitly opted-in, hash-bound, create-only creative asset import to the exact Git worktree root from a non-Git EPHEMERAL source; preserve default Git rejection and never stage or commit.
+
 - Preserve specific publication rejection codes; add safe Prepare/Hook binding and lifecycle fields, Traditional Chinese recovery guidance, and optional verified Diagnostic ID lookup through the existing configured governance audit ledger.
 
 - Match Resource Authorization grants against kind, selector, operation, destination and network/HTTP constraints; distinguish Profile resolution failures, bind Hook actions to observed URLs, and expose structured redacted diagnostics with Traditional Chinese recovery guidance.

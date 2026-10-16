@@ -291,15 +291,74 @@ def creative_profile_cases(base):
         expect_blocked(lambda: creative_profile.import_asset(Path(conflict["candidate_file"]), conflict["candidate_sha256"]))
         expect_blocked(lambda: creative_profile.import_candidate(project, "../outside.png", destination, "assets/outside.png"))
         expect_blocked(lambda: creative_profile.import_candidate(project, "ignored.png", destination, "assets/ignored.png"))
+        legacy_destination = base / "legacy-destination"
+        (legacy_destination / "assets").mkdir(parents=True)
+        legacy_candidate = creative_profile.import_candidate(project, "cat.svg", legacy_destination, "assets/cat.svg")
+        legacy_doc = json.loads(Path(legacy_candidate["candidate_file"]).read_text(encoding="utf-8"))
+        legacy_doc["destination"].pop("mode")
+        legacy_doc.pop("candidate_sha256")
+        legacy_doc["candidate_sha256"] = __import__("hashlib").sha256(creative_profile._candidate_body(legacy_doc)).hexdigest()
+        legacy_file = base / "legacy-candidate.json"
+        legacy_file.write_text(json.dumps(legacy_doc), encoding="utf-8")
+        legacy_import = creative_profile.import_asset(legacy_file, legacy_doc["candidate_sha256"])
+        assert legacy_import["status"] == "IMPORTED" and (legacy_destination / "assets" / "cat.svg").read_bytes() == b"<svg/>"
         git_destination = base / "git-destination"
         git_destination.mkdir()
-        (git_destination / ".git").mkdir()
+        subprocess.run(["git", "init", "-q", str(git_destination)], check=True)
+        (git_destination / "tracked.txt").write_text("baseline\n", encoding="utf-8")
+        subprocess.run(["git", "-C", str(git_destination), "add", "tracked.txt"], check=True)
+        git_index = git_destination / ".git" / "index"
+        index_before_import = git_index.read_bytes()
         expect_blocked(lambda: creative_profile.import_candidate(project, "cat.svg", git_destination, "cat.svg"))
+        (git_destination / "assets").mkdir()
+        explicit_git = creative_profile.import_candidate(
+            project, "cat.svg", git_destination, "assets/cat.svg", allow_git_destination=True
+        )
+        assert explicit_git["status"] == "READY"
+        assert explicit_git["destination"]["mode"] == "GIT_OPT_IN"
+        assert explicit_git["overwrite"] is False
+        explicit_git_file = Path(explicit_git["candidate_file"])
+        imported_git = creative_profile.import_asset(explicit_git_file, explicit_git["candidate_sha256"])
+        assert imported_git["status"] == "IMPORTED" and imported_git["created"] is True
+        assert (git_destination / "assets" / "cat.svg").read_bytes() == b"<svg/>"
+        assert git_index.read_bytes() == index_before_import, "import must not change the Git index"
+        expect_blocked(lambda: creative_profile.import_asset(explicit_git_file, explicit_git["candidate_sha256"]))
+        expect_blocked(lambda: creative_profile.import_candidate(
+            project, "cat.svg", git_destination, "assets/.git/cat.svg", allow_git_destination=True
+        ))
+        non_git_opt_in = base / "non-git-opt-in"
+        (non_git_opt_in / "assets").mkdir(parents=True)
+        expect_blocked(lambda: creative_profile.import_candidate(
+            project, "cat.svg", non_git_opt_in, "assets/cat.svg", allow_git_destination=True
+        ))
+        nested_destination = git_destination / "assets"
+        expect_blocked(lambda: creative_profile.import_candidate(
+            project, "cat.svg", nested_destination, "nested.svg", allow_git_destination=True
+        ))
+        expect_blocked(lambda: creative_profile.import_candidate(
+            git_destination, "assets/cat.svg", git_destination, "assets/from-git.svg", allow_git_destination=True
+        ))
 
         cli_destination = base / "cli-destination"
         (cli_destination / "assets").mkdir(parents=True)
+        cli_git_destination = base / "cli-git-destination"
+        cli_git_destination.mkdir()
+        subprocess.run(["git", "init", "-q", str(cli_git_destination)], check=True)
+        (cli_git_destination / "tracked.txt").write_text("baseline\n", encoding="utf-8")
+        subprocess.run(["git", "-C", str(cli_git_destination), "add", "tracked.txt"], check=True)
+        cli_git_index = cli_git_destination / ".git" / "index"
+        cli_index_before_import = cli_git_index.read_bytes()
+        (cli_git_destination / "assets").mkdir()
         cli_env = {**os.environ, "XDG_CACHE_HOME": str(env_cache), "AIPS_VALIDATION_PYTHON": sys.executable}
         cli = ROOT / "bin" / "aips"
+        rejected_cli_proposal = run([str(cli), "creative", "import-candidate", "--source-project", str(project), "--source", "cat.svg", "--destination-project", str(cli_git_destination), "--target", "assets/rejected.svg"], cli_env, ok=False)
+        assert rejected_cli_proposal.returncode != 0
+        proposal_git = run([str(cli), "creative", "import-candidate", "--source-project", str(project), "--source", "cat.svg", "--destination-project", str(cli_git_destination), "--target", "assets/cat.svg", "--allow-git-destination"], cli_env)
+        proposal_git_doc = json.loads(proposal_git.stdout)
+        imported_git_cli = run([str(cli), "creative", "import", "--candidate", proposal_git_doc["candidate_file"], "--accept-hash", proposal_git_doc["candidate_sha256"]], cli_env)
+        assert json.loads(imported_git_cli.stdout)["status"] == "IMPORTED"
+        assert (cli_git_destination / "assets" / "cat.svg").read_bytes() == b"<svg/>"
+        assert cli_git_index.read_bytes() == cli_index_before_import, "CLI import must not change the Git index"
         proposal = run([str(cli), "creative", "import-candidate", "--source-project", str(project), "--source", "cat.svg", "--destination-project", str(cli_destination), "--target", "assets/cat.svg"], cli_env)
         proposal_doc = json.loads(proposal.stdout)
         imported_cli = run([str(cli), "creative", "import", "--candidate", proposal_doc["candidate_file"], "--accept-hash", proposal_doc["candidate_sha256"]], cli_env)

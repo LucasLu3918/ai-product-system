@@ -129,7 +129,7 @@ Publication diagnosis is documented in the User Guide and Technology Guide, with
 
 Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
 
-Creative workspace asset import is described in USER_GUIDE.md and governed by orchestration/CREATIVE_DIRECTION.md.
+Creative workspace asset import is described in USER_GUIDE.md and governed by orchestration/CREATIVE_DIRECTION.md. Git destinations remain denied unless the CLI candidate explicitly opts into a hash-bound, create-only import.
 
 
 Cross-profile creative quality evidence is defined by the registered dataset and benchmark template, implemented by `scripts/creative_quality_benchmark.py`, and verified by Scenario 258. Human usage and technical boundaries are described in USER_GUIDE and TECHNOLOGY_GUIDE.

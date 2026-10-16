@@ -2125,3 +2125,9 @@ scenarios:
       - tests/test_font_metadata.py
       - tests/validate_repository.py
       - tests/fixtures/plan21-contract-golden-vectors.yaml
+  - id: "264"
+    path: tests/scenarios/264-creative-git-asset-import.md
+    coverage: lifecycle
+    evidence:
+      - scripts/creative_workspace_profile.py
+      - tests/evidence/opencode_integration_lifecycle.py

@@ -1,5 +1,7 @@
 # System Maintenance
 
+Creative asset import policy is canonical in `orchestration/CREATIVE_DIRECTION.md`; keep the CLI opt-in, candidate mode, Human guidance, Security Assurance, and Scenario 264 synchronized.
+
 Runtime Context 或 Integration Gate 改動時，執行 Scenario 198、完整 repository validation 與 exact-candidate Integration Gate，並維護 Change Impact 和 CORE_CHANGE_TEST_MATRIX 證據。
 
 Retrieval relation extraction changes preserve the legacy `retrieval_intelligence.py` entry points. Run the focused extraction lifecycle, retrieval lifecycle and full repository Gate; lexical traversal uncertainty remains explicit.
