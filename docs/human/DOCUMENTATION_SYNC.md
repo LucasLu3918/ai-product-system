@@ -10,6 +10,8 @@ Evolution deterministic pre-analysis follows the same facade rule: `evolution_an
 
 ## 文件角色
 
+The shared OpenCode integration lifecycle contains independent Skill Explorer and creative-import cases; document each contract in its own canonical topic.
+
 Upstream native Skill lifecycle behavior is documented in User Guide and Harness; ownership-safe removal and source validation evidence belong in Technology Guide, Maintenance, and Scenario 259. Keep command behavior aligned across these canonical sections.
 
 ~~~text
@@ -27,6 +29,8 @@ SYSTEM.md / orchestration / roles / skills
 ~~~
 
 ## Current-behavior placement contract
+
+Creative Git asset import is mapped to the User Guide Creative Direction section, Technology Guide Execution, Architecture Overview Creative Workflow, Agent Creative Direction protocol, and Scenario 264.
 
 Plan41 synchronizes the shared commit scanner, strict marker behavior, supported media metadata parsing, redacted denial fields, read-only CLI and fail-closed errors across the Content Safety topic, Hook/CLI guidance, Scenario 263 and both Conformance views. Plan42 adds bounded TTF/OTF/WOFF/WOFF2 metadata parsing, fontTools/Brotli dependency installation, pre-read staged blob sizing and publication/history parity to the same placements. Human Authority, Required Checks and Git Publish Approval remain unchanged.
 

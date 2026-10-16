@@ -6,6 +6,8 @@ AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前�
 
 ## Runtime 與接入層
 
+The creative import CLI uses the existing command dispatcher and remains independent of OpenCode native file-permission decisions.
+
 Publication `prepare`、Hook 與 `diagnose` 共用安全候選綁定與穩定原因碼；觀察結果分開呈現規劃、AIPS 授權、Host 決策與實際執行，不合併成單一成功狀態。
 
 Claude Code Hook only performs one read-only Publication Doctor observation for explicitly retryable network, rate-limit or GitHub server failures; native confirmation and publication authority remain separate.
@@ -129,6 +131,8 @@ repository_id
 EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才使用 project-local .ai/。
 
 ## Creative Workflow
+
+Creative asset import is a separate local flow from generation: Git destinations require explicit user opt-in, hash-bound source and destination checks, create-only writes, and no automatic staging or commit.
 
 Creative asset ingestion and review remain unchanged; font metadata passes through the existing content-safety boundary before commit or publication, with no license or visual approval implied.
 
@@ -442,6 +446,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 
 ## Maintenance governance
+
+Scenario 264 and the creative import guidance are registered with the existing documentation and conformance controls; this scoped addition does not upgrade repository-wide Impact Graph coverage.
 
 The Plan41 matrix binds the registered commit-safety lifecycle and recursive documentation closure to the candidate before its Integration Gate.
 

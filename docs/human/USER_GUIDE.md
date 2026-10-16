@@ -195,6 +195,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
+Creative asset import is a dedicated CLI workflow, separate from OpenCode native file permissions. Git destinations require the explicit, hash-bound import opt-in described under Creative Direction.
+
 Publication Hook and Prepare share safe reason codes and candidate observations; their lifecycle fields remain separate from native Host permission and Human authorization.
 
 Resource and creative Runtime Hook errors include a stable reason code and bounded recovery step; this diagnostic context does not grant a write or generation action.
@@ -259,6 +261,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 詳細請看 [Global Harness 與 MCP](HARNESS.md)。
 
 ## Roles、Skills 與重用
+
+Skill Explorer manages reusable instructions; creative asset import is a separate asset workflow and does not install or modify Skills.
 
 `aips safety diagnose commit` is an independent read-only CLI; it adds no Skill inventory, Skill Explorer route, or installation behavior.
 

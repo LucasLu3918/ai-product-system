@@ -8,6 +8,8 @@ Retrieval relation candidates are built by a small standard-library module behin
 
 ## Runtime & Integration
 
+The creative import CLI is routed by the existing AIPS command facade. Its explicit Git destination opt-in is independent of OpenCode native permission acceptance.
+
 The publication diagnostic contract distinguishes stable blocker reason, source phase, safe recovery, candidate/runtime binding, and independent plan, authorization, Host and execution states. Optional trace storage writes only allowlisted fields to an explicitly configured hash-chained ledger; lookup verifies the chain before returning a record.
 
 The Claude Code publication Hook can invoke the existing read-only Doctor once after explicitly retryable network, rate-limit or GitHub server errors.
@@ -81,6 +83,8 @@ Local hybrid retrieval 組合 lexical、symbols、structural relation、tests、
 Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEMENTATION_APPROVED` 進入核准範圍；實作後對帳 actual diff 與 declared impact，只有完整記錄 reconciliation evidence 才能標記 `READY`。
 
 ## Execution
+
+Creative import candidates bind source and destination hashes and write only an absent target; Git imports require explicit opt-in and never stage or commit.
 
 Font assets in creative workflows use the same bounded metadata safety scanner at commit and publication boundaries; this does not add a rendering, licensing, or authorization capability.
 
@@ -276,6 +280,8 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+Scenario 264 verifies the creative import CLI and create-only lifecycle, including unchanged Git index bytes. Skill Explorer checks remain separate even though both lifecycle contracts share an evidence runner.
 
 The commit-safety lifecycle is registered with repository validation; its read-only CLI cannot substitute for publication or independent-review checks.
 

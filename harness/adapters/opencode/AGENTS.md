@@ -1,5 +1,7 @@
 # AIPS Global Turn Harness
 
+The dedicated aips creative import-candidate / import CLI is separate from OpenCode native file actions. Git destinations remain denied unless the user explicitly selects the hash-bound create-only import flow.
+
 
 Publication prepare/diagnose planning is read-only and binds an explicit candidate worktree; native tools retain their own permission and authority checks. Re-observe live Git/PR state before continuation; a planning fingerprint never grants publication or merge authority.
 For publication blocks, use `aips publish doctor` and `aips publish diagnose --worktree <root> --command '<literal command>'` as read-only observations. Preserve their stable reason code, phase, Required Checks state and safe next step; never expose raw GitHub output or treat unavailable evidence as success. Diagnosis never executes merge or consumes grants; repository policy and merge actions remain under existing Human Authority and native confirmation.

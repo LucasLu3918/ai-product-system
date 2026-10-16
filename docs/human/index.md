@@ -26,6 +26,8 @@ features:
 
 ## 文件如何組織
 
+Creative asset import 操作見 [User Guide](USER_GUIDE.md)，邊界與 Scenario 264 見 [Technology Guide](TECHNOLOGY_GUIDE.md) 和 [Conformance](CONFORMANCE.md)。
+
 Commit Content Safety 的操作說明見 [User Guide](USER_GUIDE.md#runtime-content-safety-boundary)，權限與 fail-closed 邊界見 [Security Assurance](SECURITY_ASSURANCE.md#runtime-content-safety-boundary)，驗證證據見 Scenario 263。
 
 Resource Authorization and local Creative execution behavior are documented in the User Guide, Security Assurance, and Scenario 262; implementation ownership and placement remain in the Agent-facing orchestration references.
@@ -91,7 +93,7 @@ Project Intelligence 與診斷恢復流程見 [Project Intelligence 使用指南
 
 本機角色插畫設定與排查請見 User Guide 的 Creative Direction、Style 與 Brand；命令盤點、流程測試、真實生成及人工品質審查分開驗收。
 
-Creative Bundle 的操作方式見 [User Guide](USER_GUIDE.md#creative-directionstyle-與-brand)，技術限制見 [Technology Guide](TECHNOLOGY_GUIDE.md#local-character-artwork)；OpenCode adapter 的 canonical contract 位於 Agent 文件與 Conformance Scenario 236。
+Creative Bundle 的操作方式見 [User Guide](USER_GUIDE.md)，技術限制見 [Technology Guide](TECHNOLOGY_GUIDE.md#local-character-artwork)；OpenCode adapter 的 canonical contract 位於 Agent 文件與 Conformance Scenario 236。
 
 OpenCode 安裝、Session Context、creative asset profile、trace 與原生 acceptance 的操作說明集中於 [Harness](HARNESS.md)。
 
@@ -116,7 +118,7 @@ Prospective `aips docs impact --base HEAD --planned-path <path>` resolves sync a
 
 目前主要實作遵循 Runtime 模型偏好，Skill registry 由 frontmatter 決定性產生。詳見 [技術指南](TECHNOLOGY_GUIDE.md) 與 [Conformance](CONFORMANCE.md)。
 
-Reusable local character artwork reuses the Creative Direction Skills, provenance validation and deterministic typeset sheets; see [User Guide](USER_GUIDE.md#creative-directionstyle-與-brand) and [Scenario Conformance](CONFORMANCE.md#scenario-234--local-character-artwork-provenance-and-composition).
+Reusable local character artwork reuses the Creative Direction Skills, provenance validation and deterministic typeset sheets; see [User Guide](USER_GUIDE.md) and [Scenario Conformance](CONFORMANCE.md#scenario-234--local-character-artwork-provenance-and-composition).
 
 For publication failure diagnosis, start with [Git Publication 與 Release](./USER_GUIDE.md#git-publication-與-release); security and authority details are in [Security Assurance](./SECURITY_ASSURANCE.md).
 

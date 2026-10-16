@@ -38,6 +38,8 @@ Shared instruction files use reversible delimited managed blocks. Structured set
 
 ## Capability
 
+The creative asset import CLI remains a distinct explicit action. A Git destination requires a reviewed hash-bound candidate and does not expand Host-native file permission capability.
+
 The creative repair contract extends the existing executor: current explicit reconstruction intent, per-criterion local advisory checks, copied Profile/Bundle versions, hash-bound comparison and opt-in bounded repairs. Machine findings grant neither execution nor Human/user acceptance; no model download, cloud fallback or overwrite is introduced.
 
 Publication command guards verify external signed v2 receipts and consume them once. This does not upgrade Codex/OpenCode ADVISORY or claim enforcement over arbitrary interpreter/MCP/subprocess execution; unsupported shell inputs deny.

@@ -84,6 +84,8 @@ Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需�
 - Stable release readiness additionally requires exactly one empty `## Unreleased` section; installers continue to require a verified stable tag.
 ## Runtime integration
 
+Creative asset import uses the installed aips creative CLI and requires no additional Host adapter or generator setup. Git destinations remain unavailable unless the user explicitly opts into the hash-bound create-only candidate flow.
+
 The installed CLI exposes `aips safety diagnose commit --worktree <repo> --message-file <path> [--format json|text]`. It reads the staged candidate and explicit message only; it does not stage, commit, publish, or alter Host and repository authority settings.
 
 Publication Diagnostic ID lookup uses `aips publish diagnose --diagnostic-id <UUID>` and reads only the existing ledger selected by `AIPS_GOVERNANCE_AUDIT_LEDGER`. Without that setting it reports `NOT_CONFIGURED`; installation does not create a ledger or change audit configuration.

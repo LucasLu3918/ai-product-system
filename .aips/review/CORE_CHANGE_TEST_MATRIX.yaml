@@ -8,8 +8,7 @@ change:
     compatibility.
   - Source/destination identity, confined paths, target absence, race/replay behavior,
     no staging, and no publication authority.
-  - Canonical Human/Agent documentation, Scenario 264 coverage, generated conformance
-    summary and its pinned coverage baseline, and exact-candidate repository validation.
+  - Canonical Human/Agent documentation and config/documentation-placement.yaml, including the Scenario 264 placement, generated conformance summary/history index, pinned coverage baseline, and exact-candidate repository validation.
 matrix:
 - boundary: Candidate policy and exact create-only filesystem write
   reason: A Git destination expands an existing local creative import boundary; default
@@ -18,7 +17,7 @@ matrix:
   checks:
     static_lint:
       applicable: true
-      evidence: 'PASS: tests/validate_repository.py (exact-candidate working tree)'
+      evidence: 'PASS: aips publish preview verifies documentation placement; exact repository validation is required in the candidate Gate'
     unit:
       applicable: true
       evidence: 'PASS: tests/evidence/opencode_integration_lifecycle.py (direct helper
@@ -48,8 +47,7 @@ matrix:
         and import)'
     docs_schema:
       applicable: true
-      evidence: 'PASS: tests/evidence/conformance_summary_lifecycle.py and tests/validate_repository.py
-        (Scenario 264 / 264 total)'
+      evidence: 'PASS: tests/evidence/conformance_summary_lifecycle.py (Scenario 264 / 264 total); repository validator runs in the exact-candidate Integration Gate'
 - boundary: Scenario coverage, generated conformance summary, pinned coverage baseline,
     documentation consistency, and exact candidate repository health
   reason: Human and Agent instructions must agree on opt-in, source/destination constraints,
@@ -59,7 +57,7 @@ matrix:
   checks:
     static_lint:
       applicable: true
-      evidence: 'PASS: tests/validate_repository.py (exact-candidate working tree)'
+      evidence: 'PASS: aips publish preview verifies documentation placement; exact repository validation is required in the candidate Gate'
     unit:
       applicable: false
       na_reason: Documentation and scenario-index changes are validated by repository
@@ -89,14 +87,13 @@ matrix:
         and import)'
     docs_schema:
       applicable: true
-      evidence: 'PASS: tests/evidence/conformance_summary_lifecycle.py and tests/validate_repository.py
-        (Scenario 264 / 264 total)'
+      evidence: 'PASS: tests/evidence/conformance_summary_lifecycle.py (Scenario 264 / 264 total); repository validator runs in the exact-candidate Integration Gate'
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 review_evidence:
   required: false
 candidate:
   base_sha: 42ea03a3ba60c9356fbcea8e4782a6879f236a14
-  changed_files_hash: 1d05cf4149ac3640ee4e0c48d14e5aa0958b5be40df2c95f8fb5ca65a2c6aa99
+  changed_files_hash: 607b00595d52b54fd3ef18e99772c5972942fbc458039aacd21c80bb97f4e17e
 blockers: []
 status: READY
