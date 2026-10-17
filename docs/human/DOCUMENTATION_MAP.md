@@ -22,6 +22,8 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 ## 文件角色
 
+Claude Code publication 的操作步驟位於 User Guide，安裝相容資訊位於 Installation，Agent 契約則位於 Harness adapter 文件。
+
 Creative asset import uses the existing Creative Direction and Harness command surfaces; it does not add a Skill catalog entry or alter Skill Explorer behavior.
 
 Plan41 的 commit 安全診斷由既有 Content Safety kernel、`governance_guard.py` 與唯讀 `safety_diagnostics.py` 共用實作；Human 操作與安全邊界由 User Guide、Security Assurance、Harness 及 Scenario 263 說明。
@@ -114,6 +116,8 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 Plan36 publication diagnostics preserve this topic's existing behavior and authority boundaries.
 
 ## Agent / machine canonical 文件
+
+Claude Code publication guard 的版本門檻與安全診斷由 Harness adapter 文件及安裝指南共同記錄；行為驗收以 Scenario 261 為準。
 
 Creative import command policy is owned by orchestration/CREATIVE_DIRECTION.md; executable evidence is tests/scenarios/264-creative-git-asset-import.md and its registered lifecycle.
 

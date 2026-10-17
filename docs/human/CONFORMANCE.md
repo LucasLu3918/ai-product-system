@@ -1800,6 +1800,8 @@ The cross-profile quality evidence extension is covered by Scenario 258; this cr
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+Runtime host-specific enforcement limits remain documented separately; Skill discovery does not infer native hook support. See Scenario 261 for Claude Code version-bound publication guard evidence.
+
 The shared OpenCode lifecycle runner also owns a separate Scenario 264 creative-import case; its result does not change Skill Explorer installation or Host acceptance.
 
 Commit-safety CLI coverage is separate from the pinned upstream Skill inventory and cannot change Skill discovery or routing.
@@ -1899,6 +1901,8 @@ Current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md)
 
 ## Scenario 260 — Publication diagnostics and Doctor
 
+Claude Code 的版本相容案例驗證 v2.1.295+ 僅在 publication PreToolUse 使用 `onFailure: block`，舊版/未知版本保留設定並警示；敏感例外訊息不得進入 hook payload。
+
 Publication preflight now uses the shared bounded font metadata scanner for candidate previews; safe diagnostics preserve the existing Required Checks and publication approval boundaries.
 
 Scenario 263 adds content-safety diagnostics as a separate surface; publication Doctor, exact PR binding, and Required Checks remain authoritative for merge.
@@ -1924,6 +1928,8 @@ Publication Diagnostic IDs remain separate from ComfyUI discovery, Resource Auth
 Scenario 262 covers fail-closed Resource Authorization Profile/grant matching, Hook binding to observed URLs, fixed loopback ComfyUI model discovery and safe HTTP recovery, shared creative presets, and static-only MPS compatibility evidence.
 
 ## Scenario 263 — Commit Safety Diagnostics
+
+共享 hook 的非預期授權例外會 fail closed，並限制輸出為診斷 ID、穩定原因與 allowlist 例外類別。
 
 The native commit Hook and read-only `aips safety diagnose commit` use the same staged-content scanner. Strict ignore-marker handling, bounded PNG/JPEG/WebP/M4A/MP3/TTF/OTF/WOFF/WOFF2 metadata scans, pre-read Git blob limits, fail-closed unknown binary and scanner errors, redacted structured recovery, and unchanged HEAD/index are verified by `tests/test_safety_diagnostics.py` and `tests/test_font_metadata.py`. This diagnostic surface does not grant commit or publication authority.
 

@@ -1,7 +1,6 @@
 # AI Product System 使用指南
 
 Local validation 會依共用 Runtime Context 選擇符合 Gate 需求的 Python；涉及核心執行環境時，Integration Gate 另驗證 runtime invariant matrix。
-
 Evolution pre-analysis continues to use `evolution_analysis.py` as its existing command entry point; the internal implementation split requires no new user command.
 
 本文件描述 **目前如何使用 AIPS**。版本演進放在 `CHANGELOG.md`，Scenario / validation 歷史放在 [Scenario Conformance](CONFORMANCE.md)；current-behavior 文件不再以 `vX.Y` 章節追加新功能。
@@ -71,6 +70,8 @@ aips attach /path/to/project
 Detach 會先同步可重用 Intelligence，再封存 project-local workspace；不直接刪除使用者累積資料。
 
 ## Creative Direction、Style 與 Brand
+
+Creative 輸出若要 Git 發布仍須走獨立 publication guard；創作授權不取代發布授權。
 
 Creative font files pass through the shared bounded metadata scan when staged or included in publication candidates; it screens embedded text and does not approve licenses or visual quality.
 
@@ -195,6 +196,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
+Claude Code publication guard 依 host 版本採用 fail-closed hook 設定；安裝指南說明舊版與未知版本的相容行為。
+
 Creative asset import is a dedicated CLI workflow, separate from OpenCode native file permissions. Git destinations require the explicit, hash-bound import opt-in described under Creative Direction.
 
 Publication Hook and Prepare share safe reason codes and candidate observations; their lifecycle fields remain separate from native Host permission and Human authorization.
@@ -261,6 +264,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 詳細請看 [Global Harness 與 MCP](HARNESS.md)。
 
 ## Roles、Skills 與重用
+
+Runtime adapter 的安全能力依各 host 的實際版本判定，不能由 Skill 或能力目錄推定。
 
 Skill Explorer manages reusable instructions; creative asset import is a separate asset workflow and does not install or modify Skills.
 
@@ -622,6 +627,8 @@ Retrieval index persistence is an internal, rebuildable cache boundary in `scrip
 
 ## Git Publication 與 Release
 
+Claude Code v2.1.295+ 的 publication guard 在 Hook 啟動失敗時使用 `onFailure: block`；舊版/未知版只回報限制並保留相容設定，diagnostic 不會授權重試或合併。
+
 Commit-safety findings provide recovery guidance only; exact-candidate approval, Required Checks, and Human authority still govern publication and merge.
 
 Runtime Hook diagnostics are advisory recovery context. They do not approve publication or bypass the candidate Gate and native Host confirmation.
@@ -798,6 +805,8 @@ Scenario / validation history
 
 Documentation Placement Contract 會檢查 heading hierarchy、version/scenario-style heading 與 changed-line placement。新增功能不得只在 current-behavior 文件尾端追加 `vX.Y` / Scenario 說明；若確實需要新 topic，必須同時把 canonical section 加入 placement contract。
 ## Runtime Content Safety Boundary
+
+Hook 對非預期授權例外 fail closed，僅顯示安全診斷 ID 與 allowlist 例外類別，不顯示原始例外文字。
 
 字型檔案會先核對 TTF、OTF、WOFF 或 WOFF2 簽章、副檔名與解壓上限，再以有界解析器掃描名稱及廠商中繼資料；格式偽裝、解析錯誤、缺少套件、超限或命中 Secret／PII／Injection 都會 fail closed。這項內容檢查不授予 Git 或執行權限。
 

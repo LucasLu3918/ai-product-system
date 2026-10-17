@@ -133,6 +133,7 @@ An explicit read-only task may omit a writer boundary only when it has no `write
 
 ## Resource-scoped authorization
 
+Git publication 是獨立授權邊界；Hook 授權流程內部發生非預期例外時拒絕操作，且不得把診斷資訊轉成執行權限。
 Font metadata scanning reads the exact staged Git blob after a size check and does not write to the worktree or index; a safety ALLOW is not an execution grant.
 
 Publication diagnostic bindings and ledger records are evidence only and are not execution-isolation grants. A matching candidate fingerprint cannot authorize a protected action or satisfy the native Host decision.

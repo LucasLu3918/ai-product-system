@@ -81,6 +81,9 @@ def record_diagnostic(diagnostic: dict[str, Any], runtime: str,
             'actor': {'type': 'runtime', 'id': runtime if runtime in {'claude-code', 'codex', 'gemini-cli', 'opencode'} else 'codex'},
             'binding': safe_binding,
         }
+        error_class = diagnostic.get('error_class')
+        if isinstance(error_class, str) and re.fullmatch(r'[A-Za-z][A-Za-z0-9_.]{0,79}', error_class):
+            event['error_class'] = error_class
         append_event(Path(ledger).expanduser().resolve(), event)
         return 'RECORDED'
     except Exception:  # noqa: BLE001 - audit is best effort and must not alter publication decisions.
