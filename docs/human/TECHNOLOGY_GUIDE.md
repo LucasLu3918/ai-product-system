@@ -1,5 +1,6 @@
 # AIPS Technology Guide
 
+
 獨立審查 receipt 的 Ed25519 驗簽使用 Python `cryptography`，版本固定於驗證依賴。受信任公鑰清單由執行環境在候選 repository 外提供；未提供時不宣稱已驗證 runtime 隔離。Context、Retrieval 與 Integration Gate 的操作耗時來自實際起迄事件，不推估模型 token。
 
 Retrieval relation candidates are built by a small standard-library module behind the established Python facade. They remain rebuildable lexical evidence and do not claim compiler-grade call resolution.
@@ -83,6 +84,8 @@ Local hybrid retrieval 組合 lexical、symbols、structural relation、tests、
 Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEMENTATION_APPROVED` 進入核准範圍；實作後對帳 actual diff 與 declared impact，只有完整記錄 reconciliation evidence 才能標記 `READY`。
 
 ## Execution
+
+Claude Code managed publication guard 依實際版本路由：v2.1.295+ 設定 `onFailure: block`，舊版/未知版維持相容設定並警示。
 
 Creative import candidates bind source and destination hashes and write only an absent target; Git imports require explicit opt-in and never stage or commit.
 
@@ -280,6 +283,8 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+Scenario 261 驗證 Claude Code 版本路由、Hook fail-closed 與診斷內容的隱私邊界。
 
 Scenario 264 verifies the creative import CLI and create-only lifecycle, including unchanged Git index bytes. Skill Explorer checks remain separate even though both lifecycle contracts share an evidence runner.
 
@@ -544,6 +549,7 @@ Official Docs Site 使用 VitePress 1.6.x stable line，提供 sidebar、local s
 Documentation Placement 將每個 behavior-bearing source 綁到 canonical Human topic；Technology Guide 的廣域 trigger surface若出現尚未映射的新 source，CI 會 fail closed，要求先更新 placement contract。每條已知 subsystem rule 也明確限制 Technology Guide 可修改的 domain，因此版本新增功能不能再任意 append 到文件尾端。
 ## Runtime Content Safety Boundary
 
+非預期授權例外會被拒絕；Hook 和 opt-in ledger 只保留 allowlist 例外類別，不保留原始錯誤文字。
 The shared commit candidate scanner backs both the native Hook and `aips safety diagnose commit`. Format-aware metadata extraction is bounded for PNG, JPEG, WebP, M4A and MP3; unknown binary and scanner failures return stable safe diagnostics and fail closed.
 
 The provider-neutral `scripts/content_safety.py` kernel supplies deterministic secret and baseline PII detection, provenance-aware injection signals, and sink-aware `ALLOW`, `REDACT`, `BLOCK` and `REVIEW` decisions without requiring an external model or API credential.

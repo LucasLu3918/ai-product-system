@@ -30,6 +30,7 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+跨 runtime 的 publication guard 變更須同步共享診斷契約、受影響的 native adapter 版本限制，以及 Scenario 261 的相容性證據。
 Creative Git asset import is mapped to the User Guide Creative Direction section, Technology Guide Execution, Architecture Overview Creative Workflow, Agent Creative Direction protocol, and Scenario 264.
 
 Plan41 synchronizes the shared commit scanner, strict marker behavior, supported media metadata parsing, redacted denial fields, read-only CLI and fail-closed errors across the Content Safety topic, Hook/CLI guidance, Scenario 263 and both Conformance views. Plan42 adds bounded TTF/OTF/WOFF/WOFF2 metadata parsing, fontTools/Brotli dependency installation, pre-read staged blob sizing and publication/history parity to the same placements. Human Authority, Required Checks and Git Publish Approval remain unchanged.

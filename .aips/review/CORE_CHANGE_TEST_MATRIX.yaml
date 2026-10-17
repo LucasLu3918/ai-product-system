@@ -1,99 +1,147 @@
 version: 1
 change:
-  id: creative-git-asset-import
-  summary: Preserve default Git rejection while allowing an explicitly opted-in, hash-bound,
-    create-only creative asset import to the exact Git worktree root.
+  id: plan43-publication-diagnostics-safe-recovery
+  summary: Preserve fail-closed publication diagnostics for unexpected hook authorization
+    failures and configure Claude Code native failure blocking only when the detected
+    runtime supports it.
   boundary:
-  - Creative import CLI and candidate schema, including legacy EPHEMERAL candidate
-    compatibility.
-  - Source/destination identity, confined paths, target absence, race/replay behavior,
-    no staging, and no publication authority.
-  - Canonical Human/Agent documentation and config/documentation-placement.yaml, including the Scenario 264 placement, generated conformance summary/history index, pinned coverage baseline, and exact-candidate repository validation.
+  - Publication hook unexpected-error classification, safe error_class output, optional
+    redacted diagnostic ledger, and unchanged deny/Human authorization behavior.
+  - Claude Code managed PreToolUse hook version detection and onFailure:block compatibility
+    at v2.1.295+, including unaffected UserPromptSubmit behavior.
+  - Canonical Human/Agent documentation closure, Scenario 261/runtime contracts, and
+    exact-candidate repository validation.
 matrix:
-- boundary: Candidate policy and exact create-only filesystem write
-  reason: A Git destination expands an existing local creative import boundary; default
-    denial, exact hashes, path confinement, race safety, and no index mutation must
-    remain enforced.
+- boundary: Publication hook fail-closed behavior, diagnostics privacy, and authority
+    preservation
+  reason: Unexpected internal exceptions must not escape the hook or reveal exception
+    text; diagnostic metadata may expose only an allowlisted exception class while
+    preserving the existing deny decision.
   checks:
     static_lint:
       applicable: true
-      evidence: 'PASS: aips publish preview verifies documentation placement; exact repository validation is required in the candidate Gate'
+      evidence: 'PASS: git diff --check; AIPS publish preview content-safety scan
+        PASS.'
     unit:
       applicable: true
-      evidence: 'PASS: tests/evidence/opencode_integration_lifecycle.py (direct helper
-        lifecycle cases)'
+      evidence: 'PASS: tests/test_publication_diagnostics.py (15 tests), tests/test_publication_error_recovery.py
+        (7 tests), tests/test_publication_authority.py (37 tests).'
     integration:
       applicable: true
-      evidence: 'PASS: tests/evidence/opencode_integration_lifecycle.py and tests/validate_repository.py'
+      evidence: 'PASS: publication hook RuntimeError contract in tests/test_publication_diagnostics.py;
+        runtime contract suite passed.'
     contract:
       applicable: true
-      evidence: 'PASS: tests/evidence/conformance_summary_lifecycle.py and tests/validate_repository.py'
+      evidence: 'PASS: tests/scenarios/261-publication-diagnostics-and-safe-recovery.md
+        and tests/validation/runtime_contracts.py.'
     e2e:
       applicable: false
-      na_reason: The feature is a local file/CLI flow with no application server or
-        user interface; the full repository gate plus CLI lifecycle exercises the
-        supported user path.
+      na_reason: This is a native runtime hook and diagnostic contract with no application
+        UI or server; the hook and runtime lifecycle contracts exercise the supported
+        path.
     security:
       applicable: true
-      evidence: 'PASS: tests/evidence/opencode_integration_lifecycle.py (default denial,
-        hash drift, tamper, path, replay, unchanged Git index)'
+      evidence: 'PASS: RuntimeError with a private sentinel is denied; output and
+        optional ledger retain only the validated error_class and do not expose exception
+        text.'
     migration_recovery:
       applicable: false
-      na_reason: Candidate metadata is private local cache state; legacy candidates
-        retain EPHEMERAL default and no persisted application schema changes.
+      na_reason: No persistent schema migration or recovery workflow changes; the
+        optional JSONL ledger adds one allowlisted field compatibly.
     cli_harness:
       applicable: true
-      evidence: 'PASS: tests/evidence/opencode_integration_lifecycle.py (CLI opt-in
-        and import)'
+      evidence: 'PASS: PYTHONPATH=tests python -m validation.runtime_contracts plus
+        Claude hook installation/uninstallation contracts.'
     docs_schema:
       applicable: true
-      evidence: 'PASS: tests/evidence/conformance_summary_lifecycle.py (Scenario 264 / 264 total); repository validator runs in the exact-candidate Integration Gate'
-- boundary: Scenario coverage, generated conformance summary, pinned coverage baseline,
-    documentation consistency, and exact candidate repository health
-  reason: Human and Agent instructions must agree on opt-in, source/destination constraints,
-    and the separate Git publication boundary; canonical scenario registration, its
-    generated Human summary and pinned aggregate, and the repository gate must validate
-    the resulting candidate.
+      evidence: 'PASS: AIPS publish preview documentation closure and placement PASS;
+        repository validation runs in exact-candidate Integration Gate.'
+- boundary: Claude Code version-bound native publication guard failure policy
+  reason: Only supported Claude Code versions may receive onFailure:block; old/unknown
+    versions retain compatible settings with a warning, and prompt-context hooks must
+    not inherit the publication policy.
   checks:
     static_lint:
       applicable: true
-      evidence: 'PASS: aips publish preview verifies documentation placement; exact repository validation is required in the candidate Gate'
+      evidence: 'PASS: git diff --check; scripts/aips_cli/harness.sh bash syntax check.'
     unit:
-      applicable: false
-      na_reason: Documentation and scenario-index changes are validated by repository
-        schema, conformance, documentation impact, and exact candidate gates rather
-        than a standalone unit behavior.
+      applicable: true
+      evidence: 'PASS: tests/validation/runtime_contracts.py uses a fake Claude executable
+        to verify automatic 2.1.295 detection and explicit 2.1.294 compatibility.'
     integration:
       applicable: true
-      evidence: 'PASS: tests/evidence/opencode_integration_lifecycle.py and tests/validate_repository.py'
+      evidence: 'PASS: runtime contract installs supported and older guard configurations
+        and verifies managed hook separation.'
     contract:
       applicable: true
-      evidence: 'PASS: tests/evidence/conformance_summary_lifecycle.py and tests/validate_repository.py'
+      evidence: 'PASS: Scenario 261 records v2.1.295+ and old/unknown-version behavior.'
     e2e:
       applicable: false
-      na_reason: Documentation/schema changes have no live application flow; exact
-        candidate validation checks the registered contracts.
+      na_reason: A Claude Code native host is not installed at the required 2.1.295
+        version; synthetic executable lifecycle covers exact adapter routing but not
+        host execution.
     security:
       applicable: true
-      evidence: 'PASS: tests/evidence/opencode_integration_lifecycle.py (default denial,
-        hash drift, tamper, path, replay, unchanged Git index)'
+      evidence: 'PASS: only PreToolUse gets onFailure:block on supported versions;
+        old version omits the field and UserPromptSubmit remains unchanged.'
     migration_recovery:
       applicable: false
-      na_reason: No system installation, persisted project database, or migration
-        behavior changes.
+      na_reason: Managed settings update is additive and preserves unrelated user
+        settings; no persistent data migration.
     cli_harness:
       applicable: true
-      evidence: 'PASS: tests/evidence/opencode_integration_lifecycle.py (CLI opt-in
-        and import)'
+      evidence: 'PASS: tests/validation/runtime_contracts.py exercises manage_runtime_adapter.py
+        install and removal.'
     docs_schema:
       applicable: true
-      evidence: 'PASS: tests/evidence/conformance_summary_lifecycle.py (Scenario 264 / 264 total); repository validator runs in the exact-candidate Integration Gate'
+      evidence: 'PASS: Harness, Installation, and Scenario 261 canonical documentation
+        placement verified by AIPS publish preview.'
+- boundary: Cross-runtime documentation closure and repository-level contracts
+  reason: Publication behavior is shared across adapters and interacts with the existing
+    safety, resource authorization, and documentation contracts; verify exact scenario
+    registration and preserve all approval boundaries.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'PASS: AIPS publish preview reports documentation closure and placement
+        PASS, content safety PASS, and approved Git identity PASS.'
+    unit:
+      applicable: false
+      na_reason: Documentation-only additions have no separate unit behavior; exact
+        candidate repository validation checks all schema and conformance contracts.
+    integration:
+      applicable: true
+      evidence: 'Required: exact-candidate Core Integration Gate runs scripts/validate_repository.py
+        and configured affected-boundary checks before publication.'
+    contract:
+      applicable: true
+      evidence: 'PASS: Scenario 261 registration and runtime contracts; exact candidate
+        repository validation will verify generated conformance projections.'
+    e2e:
+      applicable: false
+      na_reason: No application user flow or remote side effect is added by the documentation;
+        remote PR required checks remain separate.
+    security:
+      applicable: true
+      evidence: 'PASS: AIPS publish preview candidate content scan; exact candidate
+        secret scan is part of the configured Gate.'
+    migration_recovery:
+      applicable: false
+      na_reason: No installation or project-state migration.
+    cli_harness:
+      applicable: true
+      evidence: 'PASS: harness shell syntax and runtime contract checks; full repository
+        Gate remains required.'
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: recursive documentation impact and placement preview; full
+        repository validator is required in Gate.'
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 review_evidence:
   required: false
 candidate:
-  base_sha: 42ea03a3ba60c9356fbcea8e4782a6879f236a14
-  changed_files_hash: 607b00595d52b54fd3ef18e99772c5972942fbc458039aacd21c80bb97f4e17e
+  base_sha: 486001968f64bab4f1d05d1922747843f9cf9d74
+  changed_files_hash: abd0baa5da1d3f583ab62851c16e9f4f5fcfdfd4b0f7937d8ed704813d36cfc6
 blockers: []
 status: READY

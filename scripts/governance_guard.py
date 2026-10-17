@@ -819,7 +819,7 @@ def hook(runtime: str) -> int:
                 elif path:
                     valid, reason, _ = verify_record(path, approval_operations[0], cwd, command=command, consume=True)
                     ok = valid
-        except (OSError, ValueError, TypeError, KeyError, AttributeError, ImportError, yaml.YAMLError, subprocess.TimeoutExpired) as exc:
+        except Exception as exc:  # noqa: BLE001 - unexpected hook failures must deny with a redacted diagnostic.
             logger.warning("Approval verification failed closed: %s", type(exc).__name__)
             if isinstance(exc, ValueError) and hasattr(exc, 'diagnostic'):
                 diagnostic = exc.diagnostic()
@@ -848,7 +848,7 @@ def hook(runtime: str) -> int:
                 (" [phase=" + str(hook_diagnostic.get("phase")) + "; diagnostic_id=" +
                  str(hook_diagnostic.get("diagnostic_id")) + "]" if hook_diagnostic else ""),
             **({"additionalContext": "AIPS diagnostic: " + json.dumps({key: hook_diagnostic.get(key) for key in
-                ("diagnostic_id", "reason_code", "phase", "category", "detail", "detail_zh",
+                ("diagnostic_id", "reason_code", "phase", "category", "error_class", "detail", "detail_zh",
                  "blocking_rule", "blocking_rule_id", "source", "retryable",
                  "recovery_mode", "next_step", "next_step_zh", "doctor_observation",
                  "binding", "trace_status")}, ensure_ascii=False, separators=(",", ":")) +

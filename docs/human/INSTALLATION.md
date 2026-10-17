@@ -6,6 +6,7 @@ Evolution deterministic pre-analysis ships as an internal Python module with the
 
 ## macOS / Linux
 
+Claude Code managed publication guard 只有在 v2.1.295 以上使用 `onFailure: block`；舊版或無法辨識版本時仍安裝相容設定並顯示警示。
 Commit safety 會以已安裝的 `fontTools` 解析 TTF/OTF/WOFF/WOFF2 中繼資料；WOFF2 另需 `Brotli`。兩者由 `requirements.txt` 管理，managed AIPS install/update/preflight 會一併修復缺少的必要 runtime dependency。不要改用系統 Python 或停用 Hook 來略過檢查。
 
 ~~~bash
@@ -84,6 +85,7 @@ Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需�
 - Stable release readiness additionally requires exactly one empty `## Unreleased` section; installers continue to require a verified stable tag.
 ## Runtime integration
 
+安裝 Claude Code adapter 時由管理器偵測版本；v2.1.295+ 的 publication PreToolUse guard fail closed，舊版/未知版保留相容設定並提示限制。
 Creative asset import uses the installed aips creative CLI and requires no additional Host adapter or generator setup. Git destinations remain unavailable unless the user explicitly opts into the hash-bound create-only candidate flow.
 
 The installed CLI exposes `aips safety diagnose commit --worktree <repo> --message-file <path> [--format json|text]`. It reads the staged candidate and explicit message only; it does not stage, commit, publish, or alter Host and repository authority settings.
@@ -94,7 +96,7 @@ Runtime Resource Authorization profiles are supplied by trusted Runtime configur
 
 The Claude Code publication recovery observation uses the existing Doctor command and requires no added runtime component or credential.
 
-The installed Claude Code publication hook uses the native PreToolUse denial envelope and can present a safe diagnostic summary; its output does not grant or execute a denied action.
+The installed Claude Code publication hook uses the native PreToolUse denial envelope and can present a safe diagnostic summary; its output does not grant or execute a denied action. Claude Code v2.1.295 or later also receives `onFailure: "block"` for the managed PreToolUse guard so a hook crash or timeout blocks the tool call. Older or unknown versions retain compatible settings and cannot guarantee this host-level failure behavior; upgrade before relying on it.
 
 An installed Claude Code harness can diagnose PR failures through the read-only AIPS publish doctor command. Keep managed PreToolUse hooks active; do not grant blanket Bash access as an error-recovery shortcut.
 

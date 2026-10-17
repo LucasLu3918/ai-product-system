@@ -440,6 +440,7 @@ SAL 2+ default registration requires an independently retained anchor. SAL 4 req
 The retention helper never deletes evidence or grants compaction authority. Expiry only creates a Human-review action and a minimal digest record.
 ## Runtime Content Safety Boundary
 
+Publication guard 的 hook payload 與選用 ledger 僅接受 allowlist 的錯誤類別，排除例外訊息與命令內容。
 Plan41 preserves Secret, PII and Injection Signal blocking for commits while making denial causes observable without matched content. Protected commit scans use strict marker handling; supported media and TTF/OTF/WOFF/WOFF2 font metadata is inspected with bounded parsers, and unknown/malformed formats or incomplete scans fail closed. The read-only diagnostic CLI shares the Hook path and grants no authority.
 
 
@@ -453,6 +454,7 @@ AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned cont
 
 ## Runtime Policy Enforcement
 
+Claude Code v2.1.295+ 的 publication PreToolUse guard 使用 `onFailure: block`；舊版或未知版維持相容設定並警示，不將支援能力推測為已啟用。
 The bounded font metadata scanner fails closed on missing dependencies, spoofed or malformed formats, size limits and Secret/PII/Injection findings. It does not grant runtime permission or alter Human approval.
 
 Commit-safety diagnostics are not Runtime Action approvals; they cannot satisfy independent review, Resource Authorization, merge confirmation, or Required Checks.

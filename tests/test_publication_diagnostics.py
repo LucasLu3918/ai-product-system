@@ -219,6 +219,47 @@ class PublicationDiagnosticsTest(unittest.TestCase):
         self.assertIn('"source":"AIPS_PUBLICATION"', context)
         self.assertNotIn("command", context)
 
+    def test_internal_hook_failure_exposes_only_safe_error_class(self):
+        from contextlib import redirect_stdout
+        from io import StringIO
+
+        command = "git push origin " + "a" * 40 + ":refs/heads/codex/fixture"
+        output = StringIO()
+        with patch.object(governance_guard, "operations_for", return_value=["git_push"]), \
+                patch.object(governance_guard, "safe_emit", return_value={"decision": "ALLOW"}), \
+                patch("publication_authority.publication_mode", return_value="personal"), \
+                patch("publication_commands.shell_commands", return_value=[["git", "push", "origin", "a" * 40 + ":refs/heads/codex/fixture"]]), \
+                patch("publication_authority.validate_personal_action", side_effect=RuntimeError("private token detail")), \
+                patch.dict(os.environ, {'AIPS_GOVERNANCE_AUDIT_LEDGER': ''}), \
+                patch.object(governance_guard.sys, "stdin", StringIO(json.dumps({
+                    "cwd": str(self.root), "tool_input": {"command": command}}))), \
+                redirect_stdout(output):
+            governance_guard.hook("claude-code")
+        payload = json.loads(output.getvalue())["hookSpecificOutput"]
+        self.assertEqual(payload["permissionDecision"], "deny")
+        context = payload["additionalContext"]
+        self.assertIn('"error_class":"RuntimeError"', context)
+        self.assertNotIn("private token detail", output.getvalue())
+
+    def test_diagnostic_ledger_records_only_allowlisted_error_class(self):
+        ledger = self.root / "diagnostics.jsonl"
+        with patch.dict(os.environ, {'AIPS_GOVERNANCE_AUDIT_LEDGER': str(ledger)}):
+            status = diagnostics.record_diagnostic({
+                "diagnostic_id": "d2fd1f72-9781-4a52-b220-d474b7e94b2f",
+                "reason_code": "INTERNAL_DIAGNOSTIC_GAP", "phase": "hook_authorization",
+                "source": "AIPS_PUBLICATION", "blocking_rule_id": "INTERNAL_DIAGNOSTIC_GAP",
+                "error_class": "RuntimeError"}, "claude-code")
+            unsafe_status = diagnostics.record_diagnostic({
+                "diagnostic_id": "9f02fdb5-b2ae-4ef0-89ca-34d102bb93f0",
+                "reason_code": "INTERNAL_DIAGNOSTIC_GAP", "phase": "hook_authorization",
+                "source": "AIPS_PUBLICATION", "blocking_rule_id": "INTERNAL_DIAGNOSTIC_GAP",
+                "error_class": "RuntimeError: secret"}, "claude-code")
+        events = [json.loads(line) for line in ledger.read_text(encoding="utf-8").splitlines()]
+        self.assertEqual(status, "RECORDED")
+        self.assertEqual(unsafe_status, "RECORDED")
+        self.assertEqual(events[0]["error_class"], "RuntimeError")
+        self.assertNotIn("error_class", events[1])
+
     def test_hook_optional_trace_failure_never_changes_block_decision(self):
         from contextlib import redirect_stdout
         from io import StringIO

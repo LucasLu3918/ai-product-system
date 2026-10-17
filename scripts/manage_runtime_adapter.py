@@ -7,6 +7,7 @@ import json
 import os
 import re
 import subprocess
+import sys
 from pathlib import Path
 
 import yaml
@@ -81,8 +82,20 @@ def save_json(path: Path, data: dict):
 def claude_hook_entry(command: str) -> dict:
     return {"hooks": [{"type": "command", "command": command, "timeout": 10}]}
 
-def claude_guard_entry(command: str) -> dict:
-    return {"matcher": "Bash", "hooks": [{"type": "command", "command": command, "timeout": 10}]}
+def claude_guard_entry(command: str, *, fail_closed: bool = False) -> dict:
+    hook = {"type": "command", "command": command, "timeout": 10}
+    if fail_closed:
+        hook["onFailure"] = "block"
+    return {"matcher": "Bash", "hooks": [hook]}
+
+def claude_supports_hook_failure_block(version_output: str | None) -> bool:
+    """Claude Code added command-hook onFailure in v2.1.295; unknown versions stay compatible."""
+    match = re.search(r"(?<!\d)(\d+)\.(\d+)\.(\d+)(?!\d)", version_output or "")
+    return bool(match and tuple(map(int, match.groups())) >= (2, 1, 295))
+
+def claude_version_label(version_output: str | None) -> str:
+    match = re.search(r"(?<!\d)(\d+\.\d+\.\d+)(?!\d)", version_output or "")
+    return match.group(1) if match else "unknown"
 
 def is_aips_hook(group: dict) -> bool:
     return any(HOOK_MARKER in str(h.get("command", "")) for h in (group.get("hooks") or []) if isinstance(h, dict))
@@ -94,7 +107,8 @@ def _install_aips_group(groups: list, entry: dict):
             return
     groups.append(entry)
 
-def install_claude_hook(settings: Path, command: str, guard_command: str | None = None):
+def install_claude_hook(settings: Path, command: str, guard_command: str | None = None,
+                        *, fail_closed: bool = False):
     try:
         data = load_json(settings)
     except Exception as exc:
@@ -108,7 +122,7 @@ def install_claude_hook(settings: Path, command: str, guard_command: str | None 
         guard_groups = hooks.setdefault("PreToolUse", [])
         if not isinstance(guard_groups, list):
             return "ERROR", "Claude hooks.PreToolUse is not a list"
-        _install_aips_group(guard_groups, claude_guard_entry(guard_command))
+        _install_aips_group(guard_groups, claude_guard_entry(guard_command, fail_closed=fail_closed))
     save_json(settings, data)
     return "OK", str(settings)
 
@@ -164,14 +178,17 @@ def write_manifest(system: Path, state: Path, owned: Path, binary: Path, target:
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("action", choices=["install-block","uninstall-block","install-claude-hook","uninstall-claude-hook","host-ids","write-manifest"])
+    p.add_argument("action", choices=["install-block","uninstall-block","install-claude-hook","uninstall-claude-hook","claude-hook-support","host-ids","write-manifest"])
     p.add_argument("--target"); p.add_argument("--source"); p.add_argument("--snapshot")
     p.add_argument("--settings"); p.add_argument("--command"); p.add_argument("--guard-command")
+    p.add_argument("--runtime-version", help="Detected Claude Code version output; unknown versions retain compatible settings")
     p.add_argument("--system-root"); p.add_argument("--state-home"); p.add_argument("--owned-home"); p.add_argument("--bin-home")
     a = p.parse_args()
     if a.action == "host-ids":
         print("\n".join(host_ids(Path(a.system_root))))
         return 0
+    if a.action == "claude-hook-support":
+        return 0 if claude_supports_hook_failure_block(a.runtime_version) else 1
     if a.action == "write-manifest":
         status, message = write_manifest(Path(a.system_root), Path(a.state_home), Path(a.owned_home), Path(a.bin_home), Path(a.target))
     elif a.action == "install-block":
@@ -179,7 +196,22 @@ def main():
     elif a.action == "uninstall-block":
         status, message = uninstall_block(Path(a.target), Path(a.snapshot))
     elif a.action == "install-claude-hook":
-        status, message = install_claude_hook(Path(a.settings), str(a.command), str(a.guard_command) if a.guard_command else None)
+        runtime_version = a.runtime_version
+        if runtime_version is None:
+            try:
+                detected = subprocess.run(["claude", "--version"], capture_output=True,
+                                          text=True, timeout=5, check=False)
+                runtime_version = detected.stdout.strip() if detected.returncode == 0 else None
+            except (OSError, subprocess.TimeoutExpired):
+                runtime_version = None
+        supported = claude_supports_hook_failure_block(runtime_version)
+        status, message = install_claude_hook(Path(a.settings), str(a.command),
+            str(a.guard_command) if a.guard_command else None, fail_closed=supported)
+        if status == "OK" and a.guard_command and not supported:
+            version_label = claude_version_label(runtime_version)
+            message += f"; failure blocking not configured (Claude Code {version_label} requires v2.1.295 or later)"
+            print("Warning: Claude Code hook failure blocking requires v2.1.295 or later; "
+                  "the managed publication guard is installed without onFailure=block.", file=sys.stderr)
     else:
         status, message = uninstall_claude_hook(Path(a.settings))
     print(json.dumps({"status": status, "message": message}, ensure_ascii=False))

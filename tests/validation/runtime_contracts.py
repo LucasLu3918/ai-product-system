@@ -381,6 +381,67 @@ with tempfile.TemporaryDirectory() as tmp:
     settings_doc = json.loads(settings.read_text(encoding="utf-8"))
     if install_hook.returncode != 0 or "PreToolUse" not in settings_doc.get("hooks", {}) or "UserPromptSubmit" not in settings_doc.get("hooks", {}):
         errors.append("Claude hook composition must preserve unrelated settings/hooks")
+    install_supported_guard = subprocess.run([
+        sys.executable, str(manager), "install-claude-hook", "--settings", str(settings),
+        "--command", "AIPS_MANAGED_HOOK=1 echo prompt", "--guard-command", "AIPS_MANAGED_HOOK=1 echo guard",
+        "--runtime-version", "2.1.295 (Claude Code)"], capture_output=True, text=True, check=False)
+    settings_doc = json.loads(settings.read_text(encoding="utf-8"))
+    pretool_aips = next((group for group in settings_doc["hooks"]["PreToolUse"]
+                         if any("AIPS_MANAGED_HOOK=1" in hook.get("command", "")
+                                for hook in group.get("hooks", []))), {})
+    prompt_aips = next((group for group in settings_doc["hooks"]["UserPromptSubmit"]
+                        if any("AIPS_MANAGED_HOOK=1" in hook.get("command", "")
+                               for hook in group.get("hooks", []))), {})
+    if (install_supported_guard.returncode != 0 or
+            (pretool_aips.get("hooks") or [{}])[0].get("onFailure") != "block"):
+        errors.append("Claude Code v2.1.295+ publication guard must block when its hook fails")
+    if (prompt_aips.get("hooks") or [{}])[0].get("onFailure") is not None:
+        errors.append("Claude prompt-context hook must not inherit publication guard failure policy")
+    install_older_guard = subprocess.run([
+        sys.executable, str(manager), "install-claude-hook", "--settings", str(settings),
+        "--command", "AIPS_MANAGED_HOOK=1 echo prompt", "--guard-command", "AIPS_MANAGED_HOOK=1 echo guard",
+        "--runtime-version", "2.1.294 (Claude Code)"], capture_output=True, text=True, check=False)
+    settings_doc = json.loads(settings.read_text(encoding="utf-8"))
+    pretool_aips = next((group for group in settings_doc["hooks"]["PreToolUse"]
+                         if any("AIPS_MANAGED_HOOK=1" in hook.get("command", "")
+                                for hook in group.get("hooks", []))), {})
+    if (install_older_guard.returncode != 0 or
+            (pretool_aips.get("hooks") or [{}])[0].get("onFailure") is not None or
+            "requires v2.1.295 or later" not in install_older_guard.stdout):
+        errors.append("older Claude Code must retain compatible guard settings and report the failure-blocking limitation")
+    unknown_version = "unavailable private host output"
+    unknown_settings = root / "unknown-settings.json"
+    install_unknown_guard = subprocess.run([
+        sys.executable, str(manager), "install-claude-hook", "--settings", str(unknown_settings),
+        "--command", "AIPS_MANAGED_HOOK=1 echo prompt", "--guard-command", "AIPS_MANAGED_HOOK=1 echo guard",
+        "--runtime-version", unknown_version], capture_output=True, text=True, check=False)
+    unknown_doc = json.loads(unknown_settings.read_text(encoding="utf-8"))
+    unknown_pretool = next((group for group in unknown_doc["hooks"]["PreToolUse"]
+                            if any("AIPS_MANAGED_HOOK=1" in hook.get("command", "")
+                                   for hook in group.get("hooks", []))), {})
+    if (install_unknown_guard.returncode != 0 or
+            (unknown_pretool.get("hooks") or [{}])[0].get("onFailure") is not None or
+            unknown_version in install_unknown_guard.stdout + install_unknown_guard.stderr):
+        errors.append("unknown Claude versions must omit unsupported settings and redact unparsed host output")
+    fake_bin = root / "bin"
+    fake_bin.mkdir()
+    fake_claude = fake_bin / "claude"
+    fake_claude.write_text("#!/bin/sh\nprintf '2.1.295 (Claude Code)\\n'\n", encoding="utf-8")
+    fake_claude.chmod(0o755)
+    detected_settings = root / "detected-settings.json"
+    detected_env = {**os.environ, "PATH": str(fake_bin) + os.pathsep + os.environ.get("PATH", "")}
+    install_detected_guard = subprocess.run([
+        sys.executable, str(manager), "install-claude-hook", "--settings", str(detected_settings),
+        "--command", "AIPS_MANAGED_HOOK=1 echo prompt", "--guard-command", "AIPS_MANAGED_HOOK=1 echo guard",
+    ], capture_output=True, text=True, env=detected_env, check=False)
+    detected_doc = json.loads(detected_settings.read_text(encoding="utf-8"))
+    detected_pretool = next((group for group in detected_doc["hooks"]["PreToolUse"]
+                             if any("AIPS_MANAGED_HOOK=1" in hook.get("command", "")
+                                    for hook in group.get("hooks", []))), {})
+    if (install_detected_guard.returncode != 0 or
+            (detected_pretool.get("hooks") or [{}])[0].get("onFailure") != "block" or
+            "Warning:" in install_detected_guard.stderr):
+        errors.append("Claude version auto-detection must enable native failure blocking on supported versions")
     remove_hook = subprocess.run([sys.executable, str(manager), "uninstall-claude-hook", "--settings", str(settings)], capture_output=True, text=True)
     settings_doc = json.loads(settings.read_text(encoding="utf-8"))
     if remove_hook.returncode != 0 or "PreToolUse" not in settings_doc.get("hooks", {}) or "UserPromptSubmit" in settings_doc.get("hooks", {}):

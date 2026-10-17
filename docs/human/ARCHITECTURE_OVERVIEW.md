@@ -1,5 +1,6 @@
 # 系統架構總覽
 
+
 AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前架構**；版本歷史放 CHANGELOG，Scenario 證據歷史放 Conformance。
 
 ![AI Product System 架構總覽](assets/system-overview.svg)
@@ -132,6 +133,8 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 ## Creative Workflow
 
+Creative 任務與 Git publication 維持分離；發布 guard 的版本相容性與拒絕決策不受 creative grant 影響。
+
 Creative asset import is a separate local flow from generation: Git destinations require explicit user opt-in, hash-bound source and destination checks, create-only writes, and no automatic staging or commit.
 
 Creative asset ingestion and review remain unchanged; font metadata passes through the existing content-safety boundary before commit or publication, with no license or visual approval implied.
@@ -190,6 +193,8 @@ OpenCode V2 prompt admission issues a fresh transient grant for each user respon
 Plan36 publication diagnostics preserve this topic's existing behavior and authority boundaries.
 
 ## Planning 與 Product Delivery
+
+Claude Code 的 managed publication PreToolUse guard 僅在 v2.1.295 以上設定 `onFailure: block`；舊版或未知版本保留相容設定並警示。共用 guard 遇到非預期授權例外仍拒絕操作，只回報診斷 ID 與 allowlist 例外類別。
 
 Merge readiness shares fresh policy evidence for the PR target branch between Doctor and the publication authority.
 
@@ -595,6 +600,7 @@ Docs build 與 Pages hosting 分開驗證：PR / main 都能證明 VitePress bui
 Documentation Placement 對 behavior-bearing source 採 fail-closed mapping：只要 source 落在 Technology Guide 的廣域同步 surface，就必須先命中 subsystem placement rule。這避免新功能以「文件最後補充說明」逃過 topic architecture。
 ## Runtime Content Safety Boundary
 
+Hook 診斷只傳遞 allowlist 的錯誤類別與診斷欄位，不回傳原始例外文字或命令內容。
 Commit、publication preview 與候選歷史掃描共用 TTF/OTF/WOFF/WOFF2 metadata scanner；staged Git blob 會先檢查大小，診斷只輸出安全路徑或雜湊指紋。
 
 Plan41 extends the existing boundary with structured, redacted commit-denial diagnostics and a read-only `aips safety diagnose commit` command that shares the native Hook scanner. Strict ignore-marker handling and bounded PNG/JPEG/WebP/M4A/MP3 metadata scans preserve the existing BLOCK and fail-closed policy.

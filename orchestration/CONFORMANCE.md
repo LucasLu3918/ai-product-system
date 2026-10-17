@@ -1,5 +1,6 @@
 # Scenario Conformance
 
+
 The Agent-facing rules in this document are normative. The generated Human current view and section-anchor history crosswalk live in `docs/human/CONFORMANCE_CURRENT.md` and `docs/human/CONFORMANCE_HISTORY_INDEX.md`; `tests/scenario_coverage.yaml` remains the canonical coverage data.
 
 The retrieval relation extraction lifecycle checks legacy facade behavior against the internal implementation, including masking, relation rows and secret-path exclusion. It does not upgrade lexical evidence to compiler-resolved semantics.
@@ -1086,6 +1087,8 @@ The branch lifecycle report classifies remote branches using current exact-SHA P
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+Host Skill discovery does not establish native hook enforcement. Publication guard compatibility is verified separately under Scenario 261.
+
 The shared evidence runner contains a distinct creative-import lifecycle; these cases do not alter the Skill Explorer contract.
 
 Commit-safety diagnostics do not change the pinned upstream Skill inventory, installation rules, or routing.
@@ -1125,6 +1128,8 @@ Git publication diagnostics do not alter ComfyUI discovery, Resource Authorizati
 Scenario 262 locks stage-specific default-deny Profile diagnostics, kind/selector/operation/destination/constraint matching, observed Hook URL binding, and structured redacted Runtime/Creative recovery. It verifies fixed loopback ComfyUI read-only model discovery, HTTP/method/path/redirect denials, shared static asset presets and evidence-only MPS reporting; no inference or external download is performed.
 
 ## Scenario 263 — Commit Safety Diagnostics
+
+Claude Code v2.1.295+ 僅在 managed publication PreToolUse 啟用 `onFailure: block`；舊版或未知版保持設定相容並警示。Hook 和 ledger 不得包含例外文字。
 
 The native commit Hook and read-only `aips safety diagnose commit` share the staged-content scanner. Strict ignore-marker handling, bounded PNG/JPEG/WebP/M4A/MP3/TTF/OTF/WOFF/WOFF2 metadata extraction, pre-read Git blob size checks, fail-closed unknown binary and scanner-error classifications, metadata-secret redaction, unchanged HEAD/index, and content-redacted structured diagnostics are covered by `tests/test_safety_diagnostics.py` and `tests/test_font_metadata.py`. This does not change Human Authority, Required Checks, or Git Publish Approval.
 

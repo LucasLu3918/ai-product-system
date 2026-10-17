@@ -141,6 +141,7 @@ Publication Preflight lifecycle evidence stubs the Python module probe before as
 
 ## Failure behavior
 
+Native publication guard 啟動失敗不能被當成允許；Claude Code v2.1.295+ 對 managed publication PreToolUse 使用 `onFailure: block`，舊版/未知版由 adapter 保留相容設定並警示。
 Publication recovery may re-collect remote evidence for transient network, rate-limit or server failures only. Authentication, permission, policy, missing-resource, stale-candidate and Human/Host authority failures are not automatic retries.
 
 Only explicitly retryable read-only GitHub observations may be scheduled. Host denials, policy mutations and confirmed merges are not scheduler retries.

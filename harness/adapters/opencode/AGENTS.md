@@ -53,6 +53,7 @@ Ordinary generation grants permit bounded `quality-check` of manifests produced 
 
 ## Publication Root-Cause Recovery (Plan35)
 
+共享 publication 診斷會 fail closed 處理非預期授權例外，回報 allowlist 錯誤類別與診斷 ID，且不輸出例外文字。Claude Code 的版本門檻僅適用其 native guard。
 OpenCode may relay the shared safe reason code, phase, recovery guidance and candidate/runtime binding. Preserve the explicit lifecycle distinction between plan, AIPS authorization, Host decision and observed execution; these diagnostics stay read-only and advisory.
 
 Automatic one-shot Doctor recovery is Claude Code Hook behavior only; OpenCode recovery remains an explicit read-only observation and does not grant publication authority.

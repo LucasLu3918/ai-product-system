@@ -55,6 +55,7 @@ Material visual artifacts use `visual-quality-review`. Review against the approv
 
 ## Local character artwork
 
+創作產物若需 Git 發布，仍由獨立 publication guard 授權；非預期 guard 例外會拒絕操作並回報安全診斷，不會由創作授權覆蓋。
 Font files committed with creative assets pass through the shared content-safety metadata scanner; it does not assess licensing, authorship, or visual quality.
 
 Publication Diagnostic ID lookup and ledger tracing are Git governance evidence only; they neither read creative assets nor authorize creative execution, asset publication, or PR merge.

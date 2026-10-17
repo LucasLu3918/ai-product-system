@@ -47,6 +47,7 @@ The canonical sink manifest is `config/content-safety.yaml`. Any new persistence
 
 ## Security invariants
 
+AIPS publication hook 對未預期授權例外 fail closed；回傳與 opt-in ledger 限定 allowlist 例外類別，不攜帶原始訊息或命令。
 Operational dashboard output follows the same sink-aware boundary: only a sanitized allowlist may cross into the localhost observation surface, with no prompts, reasoning, secrets or mutation authority.
 
 - No raw secret or private reasoning is emitted in findings, audit records or observable events.

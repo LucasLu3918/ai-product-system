@@ -26,6 +26,7 @@ features:
 
 ## 文件如何組織
 
+Claude Code 的版本相容限制見安裝指南與 Harness adapter 說明；診斷契約和驗收案例分別由 Git Publication 指南及 Scenario 261 說明。
 Creative asset import 操作見 [User Guide](USER_GUIDE.md)，邊界與 Scenario 264 見 [Technology Guide](TECHNOLOGY_GUIDE.md) 和 [Conformance](CONFORMANCE.md)。
 
 Commit Content Safety 的操作說明見 [User Guide](USER_GUIDE.md#runtime-content-safety-boundary)，權限與 fail-closed 邊界見 [Security Assurance](SECURITY_ASSURANCE.md#runtime-content-safety-boundary)，驗證證據見 Scenario 263。

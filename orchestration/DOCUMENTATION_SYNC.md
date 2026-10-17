@@ -219,6 +219,7 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 ## Human documentation placement
 
+Publication guard 的跨 runtime 行為、Claude Code 版本限制與 Scenario 261 證據須同步到對應的 Human 與 adapter 文件。
 Scenario 264 creative import behavior is placed in the existing Creative Direction, Harness, Technology and Architecture topics; Skill Explorer evidence remains a separate contract.
 
 Plan41 maps `scripts/content_safety.py`, `governance_guard.py`, `media_metadata.py`, `safety_diagnostics.py`, CLI dispatch/help and commit-safety evidence to the existing Runtime Content Safety topics and Scenario 263. Plan42 adds `font_metadata.py`, bounded fontTools/Brotli-backed TTF/OTF/WOFF/WOFF2 inspection, pre-read Git blob sizing, publication-preview and history-scan parity, and stable redacted font diagnostics. Keep strict scanning, format limits, dependency pins and unchanged authority boundaries aligned.
