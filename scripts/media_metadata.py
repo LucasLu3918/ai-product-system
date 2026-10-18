@@ -6,6 +6,7 @@ import zlib
 
 MAX_MEDIA_BYTES = 8 * 1024 * 1024
 MAX_METADATA_BYTES = 1024 * 1024
+MAX_AVIF_BOXES = 10_000
 
 
 class MediaInspectionError(ValueError):
@@ -16,6 +17,20 @@ class MediaInspectionError(ValueError):
         self.reason_code = message
         self.format_name = format_name
         self.cause_class = cause_class
+
+
+def media_diagnostic_code(error: MediaInspectionError) -> str:
+    """Return a stable, safe category without exposing parser text to users."""
+    reason = error.reason_code.lower()
+    if "inspection limit" in reason or "exceeds" in reason or "resource limit" in reason:
+        return "STAGED_MEDIA_RESOURCE_LIMIT"
+    if "signature mismatch" in reason or "file type box missing" in reason:
+        return "STAGED_MEDIA_SIGNATURE_MISMATCH"
+    if "unsupported" in reason or "brand" in reason:
+        return "STAGED_MEDIA_UNSUPPORTED_FEATURE"
+    if "location" in reason or "extent" in reason or "metadata" in reason:
+        return "STAGED_MEDIA_METADATA_UNINSPECTABLE"
+    return "STAGED_MEDIA_INVALID"
 
 
 def _bounded(parts: list[bytes]) -> str:
@@ -305,6 +320,191 @@ def _m4a(data: bytes) -> str:
         raise MediaInspectionError("invalid M4A container") from exc
 
 
+def _avif(data: bytes) -> str:
+    """Inspect a static AVIF container and extract bounded Exif/XMP item text.
+
+    This validates ISO-BMFF structure and metadata locations; it does not decode
+    AV1 image payloads or establish visual quality.
+    """
+    def boxes(payload: bytes, start: int = 0, end: int | None = None):
+        limit = len(payload) if end is None else end
+        offset = start
+        count = 0
+        while offset < limit:
+            count += 1
+            if count > MAX_AVIF_BOXES:
+                raise MediaInspectionError("AVIF box count exceeds inspection limit")
+            if limit - offset < 8:
+                raise MediaInspectionError("truncated AVIF box")
+            size = int.from_bytes(payload[offset:offset + 4], "big")
+            kind = payload[offset + 4:offset + 8]
+            header = 8
+            if size == 1:
+                if limit - offset < 16:
+                    raise MediaInspectionError("truncated AVIF extended box")
+                size = int.from_bytes(payload[offset + 8:offset + 16], "big")
+                header = 16
+            elif size == 0:
+                size = limit - offset
+            if size < header or offset + size > limit:
+                raise MediaInspectionError("invalid AVIF box size")
+            yield kind, offset + header, offset + size
+            offset += size
+        if offset != limit:
+            raise MediaInspectionError("invalid AVIF box boundary")
+
+    try:
+        top = list(boxes(data))
+        if not top or top[0][0] != b"ftyp":
+            raise MediaInspectionError("AVIF file type box missing")
+        _, ftyp_start, ftyp_end = top[0]
+        ftyp = data[ftyp_start:ftyp_end]
+        if len(ftyp) < 8 or (len(ftyp) - 8) % 4:
+            raise MediaInspectionError("invalid AVIF file type box")
+        brands = {ftyp[:4]} | {ftyp[index:index + 4] for index in range(8, len(ftyp), 4)}
+        if b"avis" in brands or not ({b"avif", b"mif1", b"miaf"} & brands):
+            raise MediaInspectionError("unsupported AVIF brand")
+        meta_boxes = [item for item in top if item[0] == b"meta"]
+        if len(meta_boxes) != 1:
+            raise MediaInspectionError("AVIF metadata box missing or duplicated")
+        _, meta_start, meta_end = meta_boxes[0]
+        if meta_end - meta_start < 4:
+            raise MediaInspectionError("truncated AVIF metadata box")
+        meta_children = list(boxes(data, meta_start + 4, meta_end))
+        by_type: dict[bytes, list[tuple[int, int]]] = {}
+        for kind, start, end in meta_children:
+            by_type.setdefault(kind, []).append((start, end))
+        if len(by_type.get(b"iinf", [])) != 1 or len(by_type.get(b"iloc", [])) != 1:
+            raise MediaInspectionError("AVIF item index is incomplete")
+
+        # Map item IDs to metadata MIME/type declarations.
+        item_types: dict[int, tuple[bytes, bytes]] = {}
+        iinf_start, iinf_end = by_type[b"iinf"][0]
+        if iinf_end - iinf_start < 6:
+            raise MediaInspectionError("truncated AVIF item information")
+        iinf_version = data[iinf_start]
+        count_width = 2 if iinf_version == 0 else 4
+        if iinf_version not in {0, 1} or iinf_end - iinf_start < 4 + count_width:
+            raise MediaInspectionError("unsupported AVIF item information version")
+        info_count = int.from_bytes(data[iinf_start + 4:iinf_start + 4 + count_width], "big")
+        info_boxes = list(boxes(data, iinf_start + 4 + count_width, iinf_end))
+        if info_count != len(info_boxes):
+            raise MediaInspectionError("AVIF item information count mismatch")
+        for kind, start, end in info_boxes:
+            if kind != b"infe" or end - start < 12:
+                continue
+            version = data[start]
+            if version not in {2, 3}:
+                continue
+            width = 2 if version == 2 else 4
+            item_id = int.from_bytes(data[start + 4:start + 4 + width], "big")
+            type_offset = start + 8
+            item_kind = data[type_offset:type_offset + 4]
+            tail = data[type_offset + 4:end]
+            if item_kind == b"Exif":
+                item_types[item_id] = (item_kind, b"")
+            elif item_kind == b"mime":
+                fields = tail.split(b"\x00")
+                mime = fields[1].lower() if len(fields) >= 2 else b""
+                if mime in {b"application/rdf+xml", b"application/xml", b"text/xml"}:
+                    item_types[item_id] = (item_kind, mime)
+
+        # Parse iloc versions 0–2, retaining only bounded local extents.
+        iloc_start, iloc_end = by_type[b"iloc"][0]
+        if iloc_end - iloc_start < 8:
+            raise MediaInspectionError("truncated AVIF item locations")
+        version = data[iloc_start]
+        if version not in {0, 1, 2}:
+            raise MediaInspectionError("unsupported AVIF item location version")
+        sizes_at = iloc_start + 4
+        offset_size, length_size = data[sizes_at] >> 4, data[sizes_at] & 15
+        base_size = data[sizes_at + 1] >> 4
+        index_size = data[sizes_at + 1] & 15 if version in {1, 2} else 0
+        if max(offset_size, length_size, base_size, index_size) > 8:
+            raise MediaInspectionError("unsupported AVIF item location field size")
+        cursor = sizes_at + 2
+        count_width = 4 if version == 2 else 2
+        item_count = int.from_bytes(data[cursor:cursor + count_width], "big")
+        cursor += count_width
+        id_width = 4 if version == 2 else 2
+        idat_boxes = by_type.get(b"idat", [])
+        metadata_parts: list[bytes] = []
+
+        def read_uint(width: int) -> int:
+            nonlocal cursor
+            if cursor + width > iloc_end:
+                raise MediaInspectionError("truncated AVIF item location entry")
+            value = int.from_bytes(data[cursor:cursor + width], "big") if width else 0
+            cursor += width
+            return value
+
+        for _ in range(item_count):
+            item_id = read_uint(id_width)
+            method_raw = read_uint(2) if version in {1, 2} else 0
+            if method_raw & 0xfff0:
+                raise MediaInspectionError("invalid AVIF item construction method")
+            method = method_raw & 0x000f
+            data_reference = read_uint(2)
+            base = read_uint(base_size)
+            extent_count = read_uint(2)
+            targets_metadata = item_id in item_types
+            for _extent in range(extent_count):
+                if index_size:
+                    read_uint(index_size)
+                extent_offset = read_uint(offset_size)
+                extent_length = read_uint(length_size)
+                if not targets_metadata:
+                    continue
+                if data_reference != 0 or method not in {0, 1}:
+                    raise MediaInspectionError("unsupported AVIF metadata location")
+                absolute = base + extent_offset
+                if method == 1:
+                    if len(idat_boxes) != 1:
+                        raise MediaInspectionError("AVIF item data box missing or duplicated")
+                    idat_start, idat_end = idat_boxes[0]
+                    absolute += idat_start
+                    if absolute < idat_start or absolute + extent_length > idat_end:
+                        raise MediaInspectionError("invalid AVIF item data extent")
+                elif absolute + extent_length > len(data):
+                    raise MediaInspectionError("invalid AVIF item extent")
+                elif not any(start <= absolute and absolute + extent_length <= end
+                             for kind, start, end in top if kind == b"mdat"):
+                    raise MediaInspectionError("AVIF metadata extent is outside item data")
+                if extent_length > MAX_METADATA_BYTES or sum(map(len, metadata_parts)) + extent_length > MAX_METADATA_BYTES:
+                    raise MediaInspectionError("metadata exceeds inspection limit")
+                item_kind, mime = item_types[item_id]
+                if item_kind == b"Exif" or mime in {b"application/rdf+xml", b"application/xml", b"text/xml"}:
+                    metadata_parts.append(data[absolute:absolute + extent_length])
+        if cursor != iloc_end:
+            raise MediaInspectionError("invalid AVIF item location boundary")
+        texts: list[bytes] = []
+        for part in metadata_parts:
+            if len(part) >= 4 and part[:4].isdigit():
+                exif_offset = int.from_bytes(part[:4], "big")
+                if 4 + exif_offset < len(part):
+                    texts.extend(_printable_runs(part[4 + exif_offset:]))
+            else:
+                texts.extend(_printable_runs(part))
+        return _bounded(texts)
+    except MediaInspectionError:
+        raise
+    except (IndexError, OverflowError, ValueError) as exc:
+        raise MediaInspectionError("invalid AVIF container") from exc
+
+
+MEDIA_FORMAT_REGISTRY = {
+    ".png": ("raster", _png),
+    ".jpg": ("raster", _jpeg),
+    ".jpeg": ("raster", _jpeg),
+    ".webp": ("raster", _webp),
+    ".avif": ("raster", _avif),
+    ".m4a": ("audio", _m4a),
+    ".mp3": ("audio", _mp3),
+}
+RASTER_SUFFIXES = frozenset(suffix for suffix, (kind, _handler) in MEDIA_FORMAT_REGISTRY.items() if kind == "raster")
+MEDIA_SUFFIXES = frozenset(MEDIA_FORMAT_REGISTRY)
+
+
 def extract_metadata(data: bytes, suffix: str) -> str:
     if len(data) > MAX_MEDIA_BYTES:
         raise MediaInspectionError("media exceeds inspection limit")
@@ -316,9 +516,8 @@ def extract_metadata(data: bytes, suffix: str) -> str:
         except FontInspectionError as exc:
             raise MediaInspectionError(exc.reason_code, format_name=exc.format_name,
                                       cause_class=exc.cause_class) from exc
-    handlers = {".png": _png, ".jpg": _jpeg, ".jpeg": _jpeg, ".webp": _webp,
-                ".m4a": _m4a, ".mp3": _mp3}
-    handler = handlers.get(suffix.lower())
-    if not handler:
+    registered = MEDIA_FORMAT_REGISTRY.get(suffix.lower())
+    if not registered:
         raise MediaInspectionError("unsupported binary format")
+    _kind, handler = registered
     return handler(data)

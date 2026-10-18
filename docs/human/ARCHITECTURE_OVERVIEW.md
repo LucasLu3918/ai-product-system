@@ -133,6 +133,8 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 ## Creative Workflow
 
+Creative raster validation recognizes AVIF through the shared media registry; metadata safety, provenance and visual-quality review remain separate checks.
+
 Creative file changes retain their existing authorization boundary; publication diagnostics provide no creative-file grant.
 
 Creative 任務與 Git publication 維持分離；發布 guard 的版本相容性與拒絕決策不受 creative grant 影響。
@@ -244,6 +246,8 @@ Phase 4 在這條實作流程加入可選的 OpenAPI client generator adapter：
 Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行報告與目前 Profile、契約、工具、輸入、產物、Git 歷史及 Phase 3 provenance 交叉核對；舊 Profile 不受影響。共用 Widgets 參考專案執行本機 HTTP 服務與產生的 client，驗證工作流程及該案例行為。各真實產品的契約、測試和證據仍留在產品專案。
 
 ## Deterministic Execution
+
+The staged content-safety Hook handles AVIF metadata under bounded limits without changing Harness action authority.
 
 Claude native failure evidence is observational and never schedules retries or mutates the candidate.
 
@@ -367,6 +371,8 @@ Plan36 publication diagnostics preserve this topic's existing behavior and autho
 
 ## Security 與 Governance
 
+AVIF metadata scanning is independent of Human publication grants, independent-review evidence and ComfyUI resource authorization.
+
 Publication detail codes and native failure observations remain non-authorizing across personal publication modes.
 
 Commit diagnostics remain a content-safety observation; they do not alter independent-review evidence, Resource Authorization, or publication authority.
@@ -417,6 +423,8 @@ Validation Observation keeps evidence readiness separate from operational failur
 Plan42 routes TTF/OTF/WOFF/WOFF2 font metadata through the existing strict content-safety scanner; diagnostics stay redacted and separate from Resource Authorization and publication approval.
 
 ## Scenario Conformance 與 Agent Eval
+
+Scenario 265 records AVIF metadata safety and preserves the distinction between deterministic container checks and visual-quality evidence.
 
 Scenario 260/261 cover unknown policy permissions, skipped provider outcomes, fresh merge policy evidence and one-shot Claude Doctor recovery.
 
@@ -560,6 +568,8 @@ Publication diagnostics extend the existing read-only Git publication flow with 
 
 ## Documentation Architecture
 
+The Runtime Content Safety and Scenario 265 documentation crosswalk tracks the AVIF limits and unsupported-feature recovery path.
+
 Documentation placement resolves changed behavior to its owning Human and Agent topics. Shared registries use focused rules so a change to one scenario does not expand into unrelated capability documentation.
 
 大型文件報告提供既有章節導覽，機器可讀 Registry 保留 Canonical 單一來源。新 helper 透過 Placement／Sync 對應既有主題，避免另外建立一份政策。
@@ -609,6 +619,8 @@ Docs build 與 Pages hosting 分開驗證：PR / main 都能證明 VitePress bui
 
 Documentation Placement 對 behavior-bearing source 採 fail-closed mapping：只要 source 落在 Technology Guide 的廣域同步 surface，就必須先命中 subsystem placement rule。這避免新功能以「文件最後補充說明」逃過 topic architecture。
 ## Runtime Content Safety Boundary
+
+Static AVIF EXIF/XMP metadata is scanned across commit, candidate/history, preflight and Creative validation; the parser does not claim to decode AV1 image data.
 
 The native failure observer emits a fixed category and parsed exit code only; raw host errors and commands remain private.
 

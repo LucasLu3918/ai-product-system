@@ -9,6 +9,8 @@ Retrieval relation candidates are built by a small standard-library module behin
 
 ## Runtime & Integration
 
+Harness commit hooks route staged AVIF through the shared metadata safety scanner; native runtime enforcement remains bounded to each adapter's documented capabilities.
+
 The creative import CLI is routed by the existing AIPS command facade. Its explicit Git destination opt-in is independent of OpenCode native permission acceptance.
 
 The publication diagnostic contract distinguishes stable blocker reason, source phase, safe recovery, candidate/runtime binding, and independent plan, authorization, Host and execution states. Optional trace storage writes only allowlisted fields to an explicitly configured hash-chained ledger; lookup verifies the chain before returning a record.
@@ -84,6 +86,8 @@ Local hybrid retrieval 組合 lexical、symbols、structural relation、tests、
 Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEMENTATION_APPROVED` 進入核准範圍；實作後對帳 actual diff 與 declared impact，只有完整記錄 reconciliation evidence 才能標記 `READY`。
 
 ## Execution
+
+The publication preflight scans bounded AVIF EXIF/XMP metadata, while Creative raster validation accepts only structures supported by the shared registry; ComfyUI Resource Authorization remains a separate boundary.
 
 Publication preflight diagnoses literal commands and exact candidates without executing push, PR or merge actions; unsupported forms retain their stable refusal reason with a bounded detail code.
 Security-sensitive hook output is allowlisted and excludes raw command and exception text; native execution failures remain observations without retry or authority.
@@ -245,6 +249,8 @@ Plan36 publication diagnostics preserve this topic's existing behavior and autho
 
 ## Security & Governance
 
+Independent review evidence and personal publication authority remain unchanged by AVIF metadata inspection; ComfyUI resource grants remain a separate boundary.
+
 Plan42 只擴充既有 commit 與 publication content scanner：候選字型中繼資料先經大小、簽章及格式驗證，再套用相同 Secret／PII／Injection 規則；publication approval 與 runtime permission 決策維持原有路徑。
 
 Commit denial diagnostics stay within the existing content-safety scanner and do not alter creative-provider execution or Resource Authorization.
@@ -291,6 +297,8 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+The Matt Pocock Skill Explorer lifecycle remains independent of the AVIF media-format registry and its security checks.
 
 Scenario 259 and the Matt Pocock Skill Explorer inventory remain unchanged; Scenario 261 verifies command detail codes and bounded native failure observations.
 
@@ -558,6 +566,8 @@ Official Docs Site 使用 VitePress 1.6.x stable line，提供 sidebar、local s
 
 Documentation Placement 將每個 behavior-bearing source 綁到 canonical Human topic；Technology Guide 的廣域 trigger surface若出現尚未映射的新 source，CI 會 fail closed，要求先更新 placement contract。每條已知 subsystem rule 也明確限制 Technology Guide 可修改的 domain，因此版本新增功能不能再任意 append 到文件尾端。
 ## Runtime Content Safety Boundary
+
+AVIF uses the same 8 MiB media cap and a 1 MiB metadata cap; unsupported or animated structures fail closed and the AV1 payload is not decoded as text.
 
 非預期授權例外會被拒絕；Hook 和 opt-in ledger 只保留 allowlist 例外類別，不保留原始錯誤文字。
 The shared commit candidate scanner backs both the native Hook and `aips safety diagnose commit`. Format-aware metadata extraction is bounded for PNG, JPEG, WebP, M4A and MP3; unknown binary and scanner failures return stable safe diagnostics and fail closed.

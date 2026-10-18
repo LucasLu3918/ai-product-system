@@ -17,6 +17,7 @@ from typing import Any, Iterable
 import yaml
 from aips_common import canonical_hash as _aips_canonical_hash
 from aips_common import glob_matches as _aips_glob_matches
+from media_metadata import MediaInspectionError, extract_metadata
 
 DEFAULT_POLICY = Path(__file__).resolve().parents[1] / "config" / "secret-scan.yaml"
 SKIP_DIRS = {
@@ -200,6 +201,19 @@ def scan_font(payload: bytes, location: str, policy: dict[str, Any], findings: l
     return None
 
 
+def scan_raster_metadata(payload: bytes, location: str, policy: dict[str, Any], findings: list[dict[str, Any]], *, revision: str | None = None) -> str | None:
+    """Scan declared raster metadata while leaving encoded pixels untouched."""
+    suffix = PurePosixPath(location).suffix.lower()
+    try:
+        metadata = extract_metadata(payload, suffix)
+    except MediaInspectionError:
+        if len(payload) > 8 * 1024 * 1024:
+            return f"raster exceeds 8 MiB publication limit: {normalize_path(location)}"
+        return f"invalid or spoofed raster file: {normalize_path(location)}"
+    scan_text(metadata, location, policy, strict=True, findings=findings, revision=revision)
+    return None
+
+
 def scan_text(
     text: str, location: str = "<payload>", policy: dict[str, Any] | None = None, *,
     strict: bool = False, findings: list[dict[str, Any]] | None = None,
@@ -246,7 +260,7 @@ def iter_files(root: Path, explicit: list[str], policy: dict[str, Any]) -> Itera
         for name in files:
             path = Path(base) / name
             relative = path.relative_to(root).as_posix()
-            if not generated_path(relative, policy) and (path.suffix.lower() not in BINARY_EXT or path.suffix.lower() in FONT_EXT | {".m4a"}):
+            if not generated_path(relative, policy) and (path.suffix.lower() not in BINARY_EXT or path.suffix.lower() in FONT_EXT | {".m4a", ".avif"}):
                 yield path
 
 
@@ -258,6 +272,14 @@ def scan_worktree(root: Path, policy: dict[str, Any], *, strict: bool, paths: li
         if generated_path(relative, policy):
             continue
         try:
+            if path.suffix.lower() == ".avif":
+                if path.stat().st_size > 8 * 1024 * 1024:
+                    blockers.append(f"raster exceeds 8 MiB publication limit: {relative}")
+                    continue
+                blocker = scan_raster_metadata(path.read_bytes(), relative, policy, findings)
+                if blocker and strict:
+                    blockers.append(blocker)
+                continue
             if path.suffix.lower() == ".m4a":
                 if path.stat().st_size > 8 * 1024 * 1024:
                     blockers.append(f"M4A exceeds 8 MiB publication limit: {relative}; use Git LFS or external asset storage.")
@@ -332,11 +354,20 @@ def scan_candidate(root: Path, base: str, head: str, policy: dict[str, Any]) -> 
     # Scan the committed final tree, not a possibly dirty filesystem view.
     for mode, blob_sha, path in decode_tree_paths(git(root, "ls-tree", "-rz", "--full-tree", head_sha)):
         suffix = PurePosixPath(path).suffix.lower()
-        if mode == "160000" or generated_path(path, policy) or (suffix in BINARY_EXT and suffix not in FONT_EXT | {".m4a"}):
+        if mode == "160000" or generated_path(path, policy) or (suffix in BINARY_EXT and suffix not in FONT_EXT | {".m4a", ".avif"}):
             continue
         if mode == "120000":
             continue
         try:
+            if suffix == ".avif":
+                if int(git_text(root, "cat-file", "-s", blob_sha)) > 8 * 1024 * 1024:
+                    blockers.append(f"raster exceeds 8 MiB publication limit: {normalize_path(path)}")
+                    continue
+                payload = git(root, "cat-file", "blob", blob_sha)
+                blocker = scan_raster_metadata(payload, path, policy, findings)
+                if blocker:
+                    blockers.append(blocker)
+                continue
             if suffix == ".m4a":
                 if int(git_text(root, "cat-file", "-s", blob_sha)) > 8 * 1024 * 1024:
                     blockers.append(f"M4A exceeds 8 MiB publication limit: {normalize_path(path)}; use Git LFS or external asset storage.")
@@ -387,10 +418,19 @@ def scan_candidate(root: Path, base: str, head: str, policy: dict[str, Any]) -> 
                 blockers.append("candidate history contains a path that is not UTF-8")
                 continue
             suffix = PurePosixPath(path).suffix.lower()
-            if generated_path(path, policy) or (suffix in BINARY_EXT and suffix not in FONT_EXT | {".m4a"}):
+            if generated_path(path, policy) or (suffix in BINARY_EXT and suffix not in FONT_EXT | {".m4a", ".avif"}):
                 continue
             try:
                 object_spec = f"{commit}:{path}"
+                if suffix == ".avif":
+                    if int(git_text(root, "cat-file", "-s", object_spec)) > 8 * 1024 * 1024:
+                        blockers.append(f"candidate history raster exceeds 8 MiB publication limit: {normalize_path(path)}")
+                        continue
+                    payload = git(root, "cat-file", "blob", object_spec)
+                    blocker = scan_raster_metadata(payload, path, policy, findings, revision=commit)
+                    if blocker:
+                        blockers.append(blocker)
+                    continue
                 if suffix == ".m4a":
                     if int(git_text(root, "cat-file", "-s", object_spec)) > 8 * 1024 * 1024:
                         blockers.append(f"M4A exceeds 8 MiB publication limit: {normalize_path(path)}; use Git LFS or external asset storage.")

@@ -48,6 +48,13 @@ def valid_raster(path: Path) -> bool:
         data = path.read_bytes()
         if path.suffix.lower() == ".png":
             return valid_png(data)
+        if path.suffix.lower() == ".avif":
+            from media_metadata import MediaInspectionError, extract_metadata
+            try:
+                extract_metadata(data, ".avif")
+                return True
+            except MediaInspectionError:
+                return False
         if path.suffix.lower() in {".jpg", ".jpeg"}:
             return data.startswith(b"\xff\xd8\xff") and data.endswith(b"\xff\xd9") and b"\xff\xda" in data and any(bytes((255, marker)) in data for marker in (192, 193, 194))
         if path.suffix.lower() == ".webp":

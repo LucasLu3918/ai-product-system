@@ -1087,6 +1087,8 @@ The branch lifecycle report classifies remote branches using current exact-SHA P
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+Scenario 265 adds no Skill Explorer or install behavior; it reuses the bounded media scanner.
+
 Plan44 does not alter the upstream Skill inventory or canonical-only default; publication troubleshooting remains outside Skill routing.
 
 Host Skill discovery does not establish native hook enforcement. Publication guard compatibility is verified separately under Scenario 261.
@@ -1123,6 +1125,8 @@ Scenario 260 verifies the read-only `aips publish doctor`, Required Checks class
 
 ## Scenario 262 — ComfyUI Resource Authorization and Diagnostics
 
+ComfyUI authorization remains separate from AVIF metadata and Creative raster validity checks.
+
 Commit Content Safety diagnostics do not create or alter Resource Authorization profiles, grants, or ComfyUI access.
 
 Git publication diagnostics do not alter ComfyUI discovery, Resource Authorization profile matching, or creative action grants.
@@ -1135,9 +1139,10 @@ Plan44's native failure observer reports bounded execution metadata only; it exc
 
 Claude Code v2.1.295+ 僅在 managed publication PreToolUse 啟用 `onFailure: block`；舊版或未知版保持設定相容並警示。Hook 和 ledger 不得包含例外文字。
 
-The native commit Hook and read-only `aips safety diagnose commit` share the staged-content scanner. Strict ignore-marker handling, bounded PNG/JPEG/WebP/M4A/MP3/TTF/OTF/WOFF/WOFF2 metadata extraction, pre-read Git blob size checks, fail-closed unknown binary and scanner-error classifications, metadata-secret redaction, unchanged HEAD/index, and content-redacted structured diagnostics are covered by `tests/test_safety_diagnostics.py` and `tests/test_font_metadata.py`. This does not change Human Authority, Required Checks, or Git Publish Approval.
+The native commit Hook and read-only `aips safety diagnose commit` share the staged-content scanner. Strict ignore-marker handling, bounded PNG/JPEG/WebP/AVIF/M4A/MP3/TTF/OTF/WOFF/WOFF2 metadata extraction, pre-read Git blob size checks, fail-closed unknown binary and scanner-error classifications, metadata-secret redaction, unchanged HEAD/index, and content-redacted structured diagnostics are covered by `tests/test_safety_diagnostics.py` and `tests/test_font_metadata.py`. This does not change Human Authority, Required Checks, or Git Publish Approval. Scenario 265 adds bounded static AVIF EXIF/XMP metadata, candidate/history scanning and Creative raster validation; unsupported item structures fail closed without treating encoded image payload as text.
 
 The canonical Skill registry and pinned upstream manifest classify the complete 38-item source inventory; the generated Human Explorer presents active Skills and source dispositions separately. Writing Fragments → Beats → Shape remains explicit-request-only, and untested Beta entries remain unrouted. `tests/validation/skill_catalog_contracts.py` checks deterministic registry, output and source invariants; Scenario 259 remains manual for semantic routing acceptance.
+
 
 ## Scenario 264 — Hash-bound Creative Git Asset Import
 

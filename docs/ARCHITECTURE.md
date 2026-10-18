@@ -4,6 +4,8 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ## Runtime flow
 
+Staged media content is inspected by the existing bounded safety scanner; AVIF adds metadata extraction without changing Harness authority or provider execution, creative provenance or licensing, personal publication approval, or ComfyUI resource authorization.
+
 Plan44 extends the existing flow with allowlisted shell-form detail and Claude-only native failure evidence; it adds no authority service, retry path or architecture component.
 
 The shared publication guard fails closed on unexpected authorization exceptions and returns a diagnostic ID plus an allowlisted exception class without exception text. Claude Code `onFailure: block` is enabled only for managed publication hooks on v2.1.295 or later; older or unknown versions retain compatible settings and receive a warning.
@@ -589,6 +591,7 @@ This extends the existing Governance + Evidence surface and adds no approval gat
 
 ## Creative direction and brand reuse
 
+
 ~~~mermaid
 flowchart TD
     U[User Creative Request] --> B{Approved Brand System?}
@@ -999,6 +1002,7 @@ flowchart TD
 ~~~
 
 ## Enforceable governance
+
 
 ~~~mermaid
 flowchart TD

@@ -321,9 +321,20 @@ def preview_content_safety(base: str, files: list[str]) -> dict[str, Any]:
     unscannable: list[str] = []
     m4a_blockers: list[str] = []
     font_blockers: list[str] = []
+    raster_blockers: list[str] = []
     for relative in files:
         path = (ROOT / relative).resolve()
         if not path.is_relative_to(ROOT.resolve()) or not path.is_file():
+            continue
+        if path.suffix.lower() == ".avif":
+            from media_metadata import MediaInspectionError, extract_metadata
+            if path.stat().st_size > 8 * 1024 * 1024:
+                raster_blockers.append(f"AVIF exceeds 8 MiB publication limit: {relative}")
+                continue
+            try:
+                untracked[relative] = extract_metadata(path.read_bytes(), ".avif")
+            except (MediaInspectionError, OSError):
+                raster_blockers.append(f"STAGED_MEDIA_INVALID: {relative}")
             continue
         if path.suffix.lower() == ".m4a":
             from m4a_inspection import M4AInspectionError, inspect_m4a, metadata_text
@@ -361,7 +372,7 @@ def preview_content_safety(base: str, files: list[str]) -> dict[str, Any]:
         except (OSError, UnicodeError):
             unscannable.append(relative)
     check = safe_emit(sink="source_artifact", payload={"tracked_additions": tracked_additions, "untracked_files": untracked})
-    blockers = list(m4a_blockers) + font_blockers
+    blockers = list(m4a_blockers) + font_blockers + raster_blockers
     if check["decision"] == "BLOCK":
         blockers.append("early content-safety check blocked the working-tree candidate")
     if unscannable:

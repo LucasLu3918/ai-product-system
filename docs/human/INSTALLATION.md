@@ -6,6 +6,8 @@ Evolution deterministic pre-analysis ships as an internal Python module with the
 
 ## macOS / Linux
 
+No AVIF parser dependency is installed: supported static AVIF metadata uses the bounded built-in scanner, and unsupported structures fail closed.
+
 Claude 的失敗觀察只回報固定類別與解析出的 exit code，不保存原始錯誤文字，也不重試或授權發布。
 
 Claude Code managed publication guard 只有在 v2.1.295 以上使用 `onFailure: block`；舊版或無法辨識版本時仍安裝相容設定並顯示警示。
@@ -86,6 +88,8 @@ Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需�
 
 - Stable release readiness additionally requires exactly one empty `## Unreleased` section; installers continue to require a verified stable tag.
 ## Runtime integration
+
+Commit-time AVIF metadata scanning uses built-in bounded parsing and adds no package installation or native runtime adapter requirement.
 
 安裝 Claude Code adapter 時由管理器偵測版本；v2.1.295+ 的 publication PreToolUse guard fail closed，舊版/未知版保留相容設定並提示限制。
 Creative asset import uses the installed aips creative CLI and requires no additional Host adapter or generator setup. Git destinations remain unavailable unless the user explicitly opts into the hash-bound create-only candidate flow.

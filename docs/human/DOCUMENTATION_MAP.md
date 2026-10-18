@@ -28,6 +28,7 @@ Claude Code publication 的操作步驟位於 User Guide，安裝相容資訊位
 
 Creative asset import uses the existing Creative Direction and Harness command surfaces; it does not add a Skill catalog entry or alter Skill Explorer behavior.
 
+
 Plan41 的 commit 安全診斷由既有 Content Safety kernel、`governance_guard.py` 與唯讀 `safety_diagnostics.py` 共用實作；Human 操作與安全邊界由 User Guide、Security Assurance、Harness 及 Scenario 263 說明。
 
 Publication root-cause diagnostics and the optional Diagnostic ID lookup contract are implemented in the publication authority/planning/diagnostics and governance-audit modules; Human recovery steps live in User Guide, while native adapter and exact scenario boundaries live in Harness and Conformance.
@@ -35,6 +36,8 @@ Publication root-cause diagnostics and the optional Diagnostic ID lookup contrac
 Publication Doctor recovery is documented in the User Guide, security authority boundary, Runtime adapter guidance and Scenario 260/261 evidence.
 
 The User Guide remains the Human entry point for publication troubleshooting, while this map preserves canonical Skill Explorer and adapter-document ownership.
+
+Scenario 265 is registered as content-safety evidence and does not change the upstream Skill inventory.
 
 The Human User Guide describes publication recovery and retains the canonical Skill and Harness documentation links.
 
@@ -118,6 +121,9 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 Plan36 publication diagnostics preserve this topic's existing behavior and authority boundaries.
 
 ## Agent / machine canonical 文件
+
+Creative raster validation uses the shared AVIF metadata scanner in `scripts/creative_image_validation.py`; its format handling is not a Skill or new capability route.
+
 
 Unsupported command details and native execution failure evidence use the existing publication and adapter contracts; they add no separate Runtime or Skill source.
 Character artwork remains governed by Creative Direction and existing Harness adapters; Plan44 does not add a creative generation or asset-import source.

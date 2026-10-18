@@ -4,6 +4,7 @@ Runtime Context 的 Agent canonical 文件為 `orchestration/RUNTIME_CONTEXT.md`
 
 Human Docs 與 Agent canonical protocols 分工，但 behavior-bearing change 必須同步更新適用文件。
 
+
 Retrieval relation extraction is an internal module behind the existing `retrieval_intelligence.py` facade. Changes preserve the public import and candidate evidence semantics, with the non-compiler-resolved boundary documented in Project Intelligence guidance.
 
 Evolution deterministic pre-analysis follows the same facade rule: `evolution_analysis.py` remains the CLI/import entry point while `evolution_preanalysis.py` owns its implementation; behavior and authority documentation stay in the Evolution topics.
@@ -29,6 +30,8 @@ SYSTEM.md / orchestration / roles / skills
 ~~~
 
 ## Current-behavior placement contract
+
+AVIF content-safety behavior is synchronized across User Guide, Security Assurance, Runtime Content Safety protocol and Scenario 265; no AV1 decode or visual-quality claim is implied.
 
 跨 runtime 的 publication guard 變更須同步共享診斷契約、受影響的 native adapter 版本限制，以及 Scenario 261 的相容性證據。
 Creative Git asset import is mapped to the User Guide Creative Direction section, Technology Guide Execution, Architecture Overview Creative Workflow, Agent Creative Direction protocol, and Scenario 264.

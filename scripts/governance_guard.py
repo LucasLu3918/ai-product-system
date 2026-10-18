@@ -430,7 +430,8 @@ def commit_safety(cwd: Path, command: str) -> dict:
         relative = os.fsdecode(name)
         suffix = PurePosixPath(relative).suffix.lower()
         font_suffixes = {'.ttf', '.otf', '.woff', '.woff2'}
-        media_suffixes = {'.png', '.jpg', '.jpeg', '.webp', '.m4a', '.mp3'}
+        from media_metadata import MEDIA_SUFFIXES
+        media_suffixes = MEDIA_SUFFIXES
         try:
             size = subprocess.run(['git', 'cat-file', '-s', ':' + relative], cwd=root, env=READ_ONLY_GIT_ENV,
                                   capture_output=True, timeout=10, check=False)
@@ -445,7 +446,11 @@ def commit_safety(cwd: Path, command: str) -> dict:
             raise PublicationError("staged blob size invalid", "STAGED_BLOB_UNAVAILABLE", phase='staged_blob') from exc
         limit = 8 * 1024 * 1024
         if blob_size > limit:
-            reason = "M4A_TOO_LARGE" if suffix == '.m4a' else ("STAGED_FONT_RESOURCE_LIMIT" if suffix in font_suffixes else "STAGED_CONTENT_TOO_LARGE")
+            reason = "M4A_TOO_LARGE" if suffix == '.m4a' else (
+                "STAGED_FONT_RESOURCE_LIMIT" if suffix in font_suffixes else
+                "STAGED_MEDIA_RESOURCE_LIMIT" if suffix in media_suffixes else
+                "STAGED_CONTENT_TOO_LARGE"
+            )
             raise PublicationError("staged blob exceeds inspection limit", reason,
                                    context={'file': relative, 'format': suffix[1:]}, phase='staged_blob')
         try:
@@ -460,16 +465,28 @@ def commit_safety(cwd: Path, command: str) -> dict:
         if blob.returncode:
             raise PublicationError("staged blob unavailable", "STAGED_BLOB_UNAVAILABLE", phase='staged_blob')
         if len(blob.stdout) > limit:
-            reason = "M4A_TOO_LARGE" if suffix == '.m4a' else ("STAGED_FONT_RESOURCE_LIMIT" if suffix in font_suffixes else "STAGED_CONTENT_TOO_LARGE")
+            reason = "M4A_TOO_LARGE" if suffix == '.m4a' else (
+                "STAGED_FONT_RESOURCE_LIMIT" if suffix in font_suffixes else
+                "STAGED_MEDIA_RESOURCE_LIMIT" if suffix in media_suffixes else
+                "STAGED_CONTENT_TOO_LARGE"
+            )
             raise PublicationError("staged blob exceeds inspection limit", reason,
                                    context={'file': relative, 'format': suffix[1:]}, phase='staged_blob')
         if suffix in media_suffixes | font_suffixes:
-            from media_metadata import MediaInspectionError, extract_metadata
+            from media_metadata import (
+                MediaInspectionError,
+                extract_metadata,
+                media_diagnostic_code,
+            )
             try:
                 staged_text = extract_metadata(blob.stdout, suffix)
             except MediaInspectionError as exc:
                 raw_reason = getattr(exc, 'reason_code', str(exc))
-                reason = raw_reason if raw_reason.startswith('STAGED_FONT_') else ('M4A_INVALID' if suffix == '.m4a' else 'STAGED_MEDIA_INVALID')
+                reason = raw_reason if raw_reason.startswith('STAGED_FONT_') else (
+                    'M4A_INVALID' if suffix == '.m4a' else
+                    media_diagnostic_code(exc) if suffix == '.avif' else
+                    'STAGED_MEDIA_INVALID'
+                )
                 raise PublicationError("staged media is malformed or its extension is spoofed", reason,
                                        context={'error_class': getattr(exc, 'cause_class', None) or type(exc).__name__,
                                                 'file': relative, 'format': getattr(exc, 'format_name', None) or suffix[1:]},

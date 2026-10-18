@@ -215,6 +215,8 @@ Review actual:
 
 ## Release Security Gate
 
+Publication preflight applies the AVIF metadata safety check before candidate scanning; this remains independent of branch protection and merge authorization.
+
 Publication diagnostics remain read-only: a retryable Doctor observation cannot change policy, run workflows or authorize a merge.
 
 Read-only publication diagnosis distinguishes authentication, permission, missing-resource, rate-limit, service and network evidence; unavailable policy evidence blocks, and retry never runs push, PR or merge actions.
@@ -337,6 +339,8 @@ Privacy, complexity, tools, context and total task cost remain part of model rou
 
 ## Secret and credential safety
 
+AVIF EXIF/XMP is treated as untrusted embedded text and scanned under the same strict secret rules; the encoded image payload and raw parser exceptions are never emitted.
+
 The Hook Doctor envelope retains only allowlisted reason, phase, category and safe next-step fields; provider response bodies and credentials stay excluded.
 
 
@@ -447,6 +451,8 @@ The Claude native failure observer excludes raw host errors and command text fro
 Publication guard 的 hook payload 與選用 ledger 僅接受 allowlist 的錯誤類別，排除例外訊息與命令內容。
 Plan41 preserves Secret, PII and Injection Signal blocking for commits while making denial causes observable without matched content. Protected commit scans use strict marker handling; supported media and TTF/OTF/WOFF/WOFF2 font metadata is inspected with bounded parsers, and unknown/malformed formats or incomplete scans fail closed. The read-only diagnostic CLI shares the Hook path and grants no authority.
 
+AVIF metadata inspection is bounded to 8 MiB input and 1 MiB metadata, scans supported EXIF/XMP text through the existing strict content-safety path, and never interprets encoded image payload as text. Animated, malformed, spoofed or unsupported AVIF structures fail closed with stable signature, feature, metadata, resource-limit or invalid-container diagnostics and safe recovery guidance; parser exceptions and metadata values remain redacted. The local parser has no optional inspector dependency. Container validation does not claim AV1 decoding or visual-quality assurance. It does not alter independent-review evidence, personal publication authority, or ComfyUI Resource Authorization.
+
 
 Creative traces and tool responses exclude raw prompts, image bytes, credentials, arbitrary workflow bodies, and absolute local paths; remote image egress is not supported.
 
@@ -457,6 +463,8 @@ The Parallel Run Dashboard is loopback-only and read-only. Its projection cannot
 AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned content is persisted or before candidate publication content is approved. Secrets are redacted from diagnostic sinks and blocked from durable/public sinks; deterministic PII is context- and sink-aware; external content is marked with provenance and prompt injection is reported as a signal. This boundary does not replace Human Authority, Publish Approval, native runtime hooks or repository-side secret protection.
 
 ## Runtime Policy Enforcement
+
+ComfyUI Resource Authorization remains separate from AVIF container validation and does not grant access to image payloads.
 
 Claude Code v2.1.295+ 的 publication PreToolUse guard 使用 `onFailure: block`；舊版或未知版維持相容設定並警示，不將支援能力推測為已啟用。
 The bounded font metadata scanner fails closed on missing dependencies, spoofed or malformed formats, size limits and Secret/PII/Injection findings. It does not grant runtime permission or alter Human approval.

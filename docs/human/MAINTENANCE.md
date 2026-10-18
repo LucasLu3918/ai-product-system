@@ -12,6 +12,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+Creative raster and content-safety changes include the AVIF limits and Scenario 265 placement in the exact-candidate documentation review.
+
 Character artwork keeps its existing source-to-candidate, hash-verification and create-only lifecycle; publication diagnosis adds no asset import or generation behavior.
 
 Scenario 261 的 adapter 版本限制及安全恢復建議應同步到 Human 與 Agent canonical 文件。
@@ -523,6 +525,8 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 
 ## Validation architecture consistency
 
+The Matt Pocock Skill Explorer remains a separate validation surface; Scenario 265 covers the AVIF scanner without changing Skill catalog evidence.
+
 Publication diagnostics 的 Core matrix 分開驗證底層錯誤來源、safe hook payload、重試性與 Claude Code 版本路由；hook 內部錯誤必須拒絕操作且不得洩漏例外文字。
 
 The shared OpenCode lifecycle runner owns separate creative-import and Skill Explorer cases; changes to one contract must not be reported as behavior changes to the other.
@@ -790,6 +794,6 @@ Protected dispatch 會逐筆重新讀取 merged PR，確認 `merged_at`、head S
 The Claude native failure observer emits only bounded allowlisted fields and does not persist raw host errors or command text.
 
 Runtime hook 的診斷輸出採 allowlist；只保留錯誤類別和穩定診斷資料，不記錄原始例外或命令。
-Plan41 adds redacted Hook findings, strict ignore-marker handling and bounded PNG/JPEG/WebP/M4A/MP3 metadata inspection through the existing commit safety boundary. Plan42 extends the same boundary to bounded TTF/OTF/WOFF/WOFF2 metadata, checks staged Git object sizes before reading blobs, and keeps publication preview and exact-candidate history scanning aligned. Unsupported binaries, malformed fonts/media, unavailable dependencies, unreadable Git objects and scanner failures remain explicit fail-closed outcomes; see Scenario 263.
+Plan41 adds redacted Hook findings, strict ignore-marker handling and bounded PNG/JPEG/WebP/M4A/MP3 metadata inspection through the existing commit safety boundary. Plan42 extends the same boundary to bounded TTF/OTF/WOFF/WOFF2 metadata, checks staged Git object sizes before reading blobs, and keeps publication preview and exact-candidate history scanning aligned. Scenario 265 adds static AVIF EXIF/XMP within the same 8 MiB media limit and 1 MiB metadata cap; unsupported binaries and incomplete inspection remain fail closed.
 
 Register every new persistence or publication sink in `config/content-safety.yaml`. Preserve the `sanitize → hash → persist` ordering for audit data and update scenarios when detector or sink policy behavior changes.
