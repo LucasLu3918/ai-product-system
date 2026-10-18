@@ -219,6 +219,8 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 ## Human documentation placement
 
+Scenario 265 maps AVIF limits and recovery across User Guide, Technology Guide, Security Assurance and the Runtime Content Safety boundary.
+
 Publication guard 的跨 runtime 行為、Claude Code 版本限制與 Scenario 261 證據須同步到對應的 Human 與 adapter 文件。
 Scenario 264 creative import behavior is placed in the existing Creative Direction, Harness, Technology and Architecture topics; Skill Explorer evidence remains a separate contract.
 

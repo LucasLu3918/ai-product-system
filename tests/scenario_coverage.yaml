@@ -2134,3 +2134,12 @@ scenarios:
     evidence:
       - scripts/creative_workspace_profile.py
       - tests/evidence/opencode_integration_lifecycle.py
+  - id: "265"
+    path: tests/scenarios/265-avif-media-safety.md
+    coverage: lifecycle
+    evidence:
+      - scripts/media_metadata.py
+      - scripts/check_secret_leakage.py
+      - scripts/publish_preflight.py
+      - scripts/creative_image_validation.py
+      - tests/test_safety_diagnostics.py

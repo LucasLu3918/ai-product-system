@@ -1744,6 +1744,8 @@ Scenario 233 also covers `aips skills list`: localized/grouped text and JSON out
 
 ## Scenario 234 — Local Character Artwork Provenance and Composition
 
+Creative image validation shares the bounded AVIF container check; provenance and visual review remain separate evidence.
+
 Creative preset guidance and ComfyUI discovery remain static and local; Scenario 262 separately verifies Resource Authorization, request constraints and provider-error handling.
 
 OpenCode host acceptance verifies adapter integration only. It does not verify local image generation, visual quality or user acceptance.
@@ -1751,6 +1753,8 @@ OpenCode host acceptance verifies adapter integration only. It does not verify l
 The lifecycle uses synthetic SVG/PNG fixtures to verify confined paths, active-content rejection, file dimensions and hashes, verified local-provider/license provenance, stable UTF-8 Traditional Chinese labels, non-overwriting deterministic sheet composition, and optional Creative Evidence manifest-digest binding. It does not invoke a model, download weights, attest identity consistency, or claim hardware performance; those require the user's local runtime and independent visual review.
 
 ## Scenario 235 — OpenCode Native Context and Action Guard
+
+Media-content denials remain in the commit safety scanner and do not expand the OpenCode action guard's enforcement claim.
 
 原生驗收僅對指定 OpenCode 版本、平台與來源摘要成立；任意 Shell、MCP／自訂工具及 guard 外寫入標為 UNSUPPORTED，不代表生產模型品質或整體強制治理。
 
@@ -1799,6 +1803,8 @@ The existing OpenCode integration lifecycle also verifies hash-bound asset impor
 The cross-profile quality evidence extension is covered by Scenario 258; this creative execution scenario continues to distinguish generated artifacts, image checks, Human review and user acceptance.
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
+
+Scenario 265 adds no Skill Explorer or install behavior; it reuses the existing media scanner.
 
 Publication diagnostics do not alter Scenario 259's upstream Skill inventory, filtering, or canonical-only default.
 
@@ -1866,6 +1872,8 @@ Plan44 also verifies stable detail codes for unsupported command forms and a sep
 
 ## Scenario 240 — Personal Publication Default and High-Assurance Opt-In
 
+AVIF metadata inspection is a local content-safety check and does not change personal publication mode or grant requirements.
+
 Merge readiness now consumes fresh Required Checks policy from the same target-branch observer as Doctor; native confirmation and exact candidate binding remain required.
 
 Scenario 240 的 `tests/test_publication_planning.py` 覆蓋 worktree 綁定、精確 SHA/ref、舊指紋拒絕、Host denial、PR 重用與 squash merge 恢復；fixture 不等於真實 Host 或 REST 驗收。
@@ -1927,6 +1935,8 @@ Scenario 260 verifies stable, redacted diagnostics for publication blockers, rea
 
 ## Scenario 262 — ComfyUI Resource Authorization and Diagnostics
 
+ComfyUI authorization remains separate from AVIF metadata and Creative raster validity checks.
+
 Commit Content Safety remains separate from ComfyUI Resource Authorization profiles and grants.
 
 Publication Diagnostic IDs remain separate from ComfyUI discovery, Resource Authorization profiles, and Creative execution grants.
@@ -1939,7 +1949,7 @@ The native publication failure observer reports only an allowlisted category and
 
 共享 hook 的非預期授權例外會 fail closed，並限制輸出為診斷 ID、穩定原因與 allowlist 例外類別。
 
-The native commit Hook and read-only `aips safety diagnose commit` use the same staged-content scanner. Strict ignore-marker handling, bounded PNG/JPEG/WebP/M4A/MP3/TTF/OTF/WOFF/WOFF2 metadata scans, pre-read Git blob limits, fail-closed unknown binary and scanner errors, redacted structured recovery, and unchanged HEAD/index are verified by `tests/test_safety_diagnostics.py` and `tests/test_font_metadata.py`. This diagnostic surface does not grant commit or publication authority.
+The native commit Hook and read-only `aips safety diagnose commit` use the same staged-content scanner. Strict ignore-marker handling, bounded PNG/JPEG/WebP/AVIF/M4A/MP3/TTF/OTF/WOFF/WOFF2 metadata scans, pre-read Git blob limits, fail-closed unknown binary and scanner errors, redacted structured recovery, and unchanged HEAD/index are verified by `tests/test_safety_diagnostics.py` and `tests/test_font_metadata.py`. This diagnostic surface does not grant commit or publication authority. Scenario 265 covers static AVIF EXIF/XMP extents, metadata redaction and candidate/history/Creative consumers; it does not claim AV1 decode or visual-quality assurance.
 
 ## Scenario 264 — Hash-bound Creative Git Asset Import
 

@@ -12,6 +12,8 @@ It does not infer intent, discover permissions from prose, or grant protected pu
 
 ## Contract
 
+Media-format and EXIF/XMP checks are content-safety decisions; they do not create a Resource Authorization profile or grant provider, filesystem or network access.
+
 Commit font metadata inspection is a content-safety decision; it cannot authorize a tool action, push, merge, or release.
 
 Publication diagnostic bindings and audit records are observational data, not resource grants. They do not infer a selector or operation permission and cannot authorize push, PR creation, merge, or any Creative action.

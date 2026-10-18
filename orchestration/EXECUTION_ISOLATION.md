@@ -292,6 +292,8 @@ Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. 
 
 ## Parallel runtime resource isolation
 
+AVIF parsing is a local content inspection and adds no runtime resource lease, port allocation or shared execution side effect.
+
 Plan41 commit diagnostics read the selected worktree and staged Git objects without writing candidate state. The diagnostic ID is transient output; no new persistent store, external service, process authority or isolation mode is introduced.
 
 An isolation lease does not satisfy Resource Authorization: fixed local ComfyUI reads still validate loopback IP, explicit port, method, path and redirect behavior at the HTTP boundary.

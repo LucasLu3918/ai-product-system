@@ -71,6 +71,8 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+Creative assets using static AVIF pass the bounded EXIF/XMP safety scan described in Runtime Content Safety; this does not establish visual quality or licensing.
+
 Publication failure diagnostics describe Git execution only; they do not establish creative intent or authorize generated assets.
 
 Creative 輸出若要 Git 發布仍須走獨立 publication guard；創作授權不取代發布授權。
@@ -198,6 +200,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
+The staged commit safety Hook also scans bounded AVIF metadata; its denial is a content-safety result and does not grant or change native tool authority.
+
 Claude 的 Bash 失敗觀察位於 managed Harness hook，僅提供執行結果診斷，不改變 Host 權限或發布授權。
 
 Claude Code publication guard 依 host 版本採用 fail-closed hook 設定；安裝指南說明舊版與未知版本的相容行為。
@@ -268,6 +272,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 詳細請看 [Global Harness 與 MCP](HARNESS.md)。
 
 ## Roles、Skills 與重用
+
+The optional Matt Pocock Skill Explorer and its install controls remain separate from media validation; AVIF support adds no Skill, Role, or capability route.
 
 Plan44 沿用既有 Skill Explorer inventory 與列出預設，不新增 Skill、Role 或上游目錄項目。
 
@@ -351,6 +357,8 @@ PR 驗證會把 Gate 與 Repository Health 報告放在 CI runner 的暫存位�
 Installation entrypoint workflow 保留既有 pull request 路徑與平台檢查，並以近期 job P95 加安全倍數設定明確逾時；逾時會作為該 job 的失敗呈現，不改變 required check 或 Human 核准權限。
 
 ## Execution Isolation 與 Runtime Resource
+
+ComfyUI Resource Authorization remains independent of AVIF container inspection and does not authorize reading or transferring media assets.
 
 Resource Authorization requires an explicit matching kind, selector and operation; network actions additionally need a true network grant and matching destination constraints.
 
@@ -633,6 +641,8 @@ Retrieval index persistence is an internal, rebuildable cache boundary in `scrip
 
 ## Git Publication 與 Release
 
+AVIF content-safety checks do not replace the publication mode, Human review or merge approval described here.
+
 Claude Code v2.1.295+ 的 publication guard 在 Hook 啟動失敗時使用 `onFailure: block`；舊版/未知版只回報限制並保留相容設定，diagnostic 不會授權重試或合併。
 
 Commit-safety findings provide recovery guidance only; exact-candidate approval, Required Checks, and Human authority still govern publication and merge.
@@ -813,6 +823,8 @@ Scenario / validation history
 
 Documentation Placement Contract 會檢查 heading hierarchy、version/scenario-style heading 與 changed-line placement。新增功能不得只在 current-behavior 文件尾端追加 `vX.Y` / Scenario 說明；若確實需要新 topic，必須同時把 canonical section 加入 placement contract。
 ## Runtime Content Safety Boundary
+
+Static `.avif` files use bounded EXIF/XMP metadata inspection across staged commit, candidate/history scans, publication preview and Creative raster validation. The existing 8 MiB file and 1 MiB metadata caps apply; animated, malformed, spoofed or unsupported item structures fail closed. Diagnostics distinguish signature mismatch, unsupported features, uninspectable metadata, resource limits and malformed containers, with a safe next step for each. The parser is local and has no optional AVIF inspector dependency. Encoded image data is never decoded as text, and this check does not establish AV1 decodability or visual quality.
 
 PostToolUseFailure 診斷只輸出 allowlist 類別與 exit code，不保存 Host 原始錯誤或命令內容。
 

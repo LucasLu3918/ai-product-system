@@ -211,6 +211,8 @@ The validate workflow may run bounded advisory feedback in parallel with the req
 Publication Preflight lifecycle tests must cover the enabled merge-method response and separately exercise repository-metadata API access failures. Keep network/auth diagnostics redacted, and verify latest-label routing when a newer PR event supersedes an older run.
 ## Content Safety Core Change Evidence
 
+Plan46 binds bounded static AVIF EXIF/XMP extraction, the 8 MiB file and 1 MiB metadata limits, candidate/history scanning, Creative validation and redacted fail-closed diagnostics to Scenario 265.
+
 Plan42 binds bounded TTF/OTF/WOFF/WOFF2 parsing, size-before-read, dependency-failure, metadata-secret, Hook/CLI/publication/history parity and unchanged Git state evidence to Scenario 263 and the exact-candidate matrix.
 
 Runtime Content Safety Boundary changes require detector, sink, publication, provenance and documentation evidence. The active Core Change Matrix must bind the exact candidate changed-file set and include security negative paths.

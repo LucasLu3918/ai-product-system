@@ -63,6 +63,8 @@ Load `SYSTEM_CORE.md` with minimal Harness rules and critical native/project ins
 
 ## Mutation safety
 
+Staged AVIF metadata denials are produced by the content-safety scanner and do not broaden native runtime action interception.
+
 Creative workspace asset import is an explicit local CLI action bound to a reviewed source hash and an absent destination path.
 
 

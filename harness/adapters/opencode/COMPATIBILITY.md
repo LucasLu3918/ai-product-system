@@ -20,6 +20,8 @@ The owned `plugins/aips-opencode.ts` projection is installed only for a positive
 
 ## Readiness and enforcement boundary
 
+Static AVIF metadata checks run at repository commit/publication boundaries and provide no evidence of OpenCode runtime action interception.
+
 Creative Git asset import is a separate AIPS CLI action and is not evidence of OpenCode native permission-hook coverage. Its lifecycle verifies the exact-hash create-only behavior independently.
 
 Creative Runtime diagnostics retain bounded reason, trace and recovery fields after redaction. Local ComfyUI discovery remains read-only, and static MPS metadata does not establish host inference compatibility.

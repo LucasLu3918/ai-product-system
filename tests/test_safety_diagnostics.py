@@ -15,8 +15,12 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
+import check_secret_leakage
 import governance_guard
-from media_metadata import MediaInspectionError, extract_metadata
+import publication_authority
+import publish_preflight
+from creative_image_validation import valid_raster
+from media_metadata import MediaInspectionError, extract_metadata, media_diagnostic_code
 from safety_diagnostics import diagnose_commit
 
 
@@ -27,6 +31,21 @@ def png_chunk(kind: bytes, payload: bytes) -> bytes:
 
 def synchsafe(size: int) -> bytes:
     return bytes(((size >> 21) & 0x7f, (size >> 14) & 0x7f, (size >> 7) & 0x7f, size & 0x7f))
+
+
+def avif_box(kind: bytes, payload: bytes) -> bytes:
+    return struct.pack(">I", len(payload) + 8) + kind + payload
+
+
+def avif_with_exif(value: bytes, *, brand: bytes = b"avif") -> bytes:
+    ftyp = avif_box(b"ftyp", brand + b"\x00\x00\x00\x00" + brand + b"mif1")
+    infe = avif_box(b"infe", b"\x02\x00\x00\x00" + b"\x00\x01\x00\x00Exif\x00")
+    iinf = avif_box(b"iinf", b"\x00\x00\x00\x00\x00\x01" + infe)
+    item = b"\x00\x00\x00\x00" + value
+    iloc_entry = b"\x00\x01\x00\x01\x00\x00\x00\x01" + struct.pack(">II", 0, len(item))
+    iloc = avif_box(b"iloc", b"\x01\x00\x00\x00\x44\x00\x00\x01" + iloc_entry)
+    idat = avif_box(b"idat", item)
+    return ftyp + avif_box(b"meta", b"\x00\x00\x00\x00" + iinf + iloc + idat) + avif_box(b"mdat", b"AV1 payload")
 
 
 class SafetyDiagnosticsTests(unittest.TestCase):
@@ -145,6 +164,82 @@ class SafetyDiagnosticsTests(unittest.TestCase):
         self.assertEqual(extract_metadata(b"\xff\xfb\x90\x64audio", ".mp3"), "")
         with self.assertRaises(MediaInspectionError):
             extract_metadata(b"not png", ".png")
+
+    def test_avif_metadata_is_extracted_and_animation_is_rejected(self) -> None:
+        email = "owner" + chr(64) + "example.test"
+        payload = avif_with_exif(email.encode())
+        self.assertIn(email, extract_metadata(payload, ".avif"))
+        self.assertIn(email, extract_metadata(payload, ".AVIF"))
+        with self.assertRaises(MediaInspectionError):
+            extract_metadata(avif_with_exif(email.encode(), brand=b"avis"), ".avif")
+        with self.assertRaises(MediaInspectionError):
+            extract_metadata(payload + b"trailing", ".avif")
+        with self.assertRaises(MediaInspectionError):
+            extract_metadata(payload[:20], ".avif")
+        wrong_extent = bytearray(payload)
+        iloc_at = wrong_extent.index(b"iloc")
+        wrong_extent[iloc_at + 14:iloc_at + 16] = b"\x00\x00"
+        with self.assertRaises(MediaInspectionError):
+            extract_metadata(bytes(wrong_extent), ".avif")
+        with self.assertRaises(MediaInspectionError):
+            extract_metadata(avif_with_exif(b"x" * (1024 * 1024 + 1)), ".avif")
+
+    def test_avif_failures_have_stable_actionable_diagnostic_categories(self) -> None:
+        cases = (
+            (avif_box(b"free", b"x"), "STAGED_MEDIA_SIGNATURE_MISMATCH"),
+            (avif_with_exif(b"x", brand=b"avis"), "STAGED_MEDIA_UNSUPPORTED_FEATURE"),
+            (avif_with_exif(b"x" * (1024 * 1024 + 1)), "STAGED_MEDIA_RESOURCE_LIMIT"),
+        )
+        for payload, expected in cases:
+            with self.subTest(expected=expected), self.assertRaises(MediaInspectionError) as caught:
+                extract_metadata(payload, ".avif")
+            self.assertEqual(media_diagnostic_code(caught.exception), expected)
+
+        for code in {expected for _payload, expected in cases}:
+            diagnostic = publication_authority.PublicationError("private parser detail", code).diagnostic()
+            self.assertEqual(diagnostic["reason_code"], code)
+            self.assertTrue(diagnostic["next_step_zh"])
+            self.assertNotIn("private parser detail", json.dumps(diagnostic))
+
+    def test_staged_avif_secret_is_blocked_without_echoing_value(self) -> None:
+        token = "ghp_" + "C" * 40
+        (self.root / "metadata.avif").write_bytes(avif_with_exif(("token=" + token).encode()))
+        self.run_git("add", "metadata.avif")
+        result = diagnose_commit(self.root, self.message_file)
+        rendered = json.dumps(result)
+        self.assertEqual(result["decision"], "BLOCK")
+        self.assertEqual(result["diagnostic"]["reason_code"], "CONTENT_SECRET_BLOCKED")
+        self.assertNotIn(token, rendered)
+
+    def test_avif_candidate_history_and_creative_validation_use_shared_registry(self) -> None:
+        token = "ghp_" + "D" * 40
+        payload = avif_with_exif(("token=" + token).encode())
+        image = self.root / "metadata.avif"
+        image.write_bytes(payload)
+        self.assertTrue(valid_raster(image))
+        base = self.run_git("rev-parse", "HEAD")
+        self.run_git("add", "metadata.avif")
+        self.run_git("commit", "-m", "add AVIF")
+        policy, _policy_hash = check_secret_leakage.load_policy(check_secret_leakage.DEFAULT_POLICY)
+        findings, blockers, _base_sha, _head_sha = check_secret_leakage.scan_candidate(self.root, base, "HEAD", policy)
+        rendered = json.dumps({"findings": findings, "blockers": blockers})
+        self.assertTrue(any(item["detector"] == "github-token" for item in findings))
+        self.assertNotIn(token, rendered)
+        self.assertFalse(valid_raster(self.root / "missing.avif"))
+
+    def test_publication_preview_scans_avif_metadata_and_blocks_malformed_container(self) -> None:
+        token = "ghp_" + "E" * 40
+        image = self.root / "preview.avif"
+        image.write_bytes(avif_with_exif(("token=" + token).encode()))
+        base = self.run_git("rev-parse", "HEAD")
+        with patch.object(publish_preflight, "ROOT", self.root):
+            secret_result = publish_preflight.preview_content_safety(base, ["preview.avif"])
+            self.assertEqual(secret_result["status"], "BLOCKED")
+            self.assertNotIn(token, json.dumps(secret_result))
+            image.write_bytes(b"not an AVIF")
+            malformed_result = publish_preflight.preview_content_safety(base, ["preview.avif"])
+        self.assertEqual(malformed_result["status"], "BLOCKED")
+        self.assertTrue(any("STAGED_MEDIA_INVALID" in item for item in malformed_result["blockers"]))
 
 
 if __name__ == "__main__":

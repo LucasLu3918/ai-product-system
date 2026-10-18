@@ -8,6 +8,8 @@ Runtime Context 統一解析驗證 Python 與 cache/config 路徑；它將 Playw
 
 ## Integration model
 
+Commit-time media checks inspect supported AVIF metadata through the existing content-safety path; they do not broaden native runtime interception.
+
 The creative workspace import is an explicit local CLI workflow using the existing AIPS launcher and private metadata cache.
 
 
@@ -53,6 +55,8 @@ AIPS Core
 `aips publish doctor --worktree <root> --worktree-details` provides read-only phase and evidence diagnostics. Runtime adapters may use its recovery guidance, while native permission and Human approval remain separate.
 
 ## Native Runtime Adapters
+
+Adapter action guards remain separate from staged AVIF content-safety diagnostics.
 
 Claude Code v2.1.295+ 的 managed publication PreToolUse guard 設定 `onFailure: block`；舊版/未知版不寫入不相容欄位並發出警示。UserPromptSubmit context hook 不套用此 failure policy。
 獨立的 `PostToolUseFailure:Bash` observer 只回報已開始執行的原生指令失敗分類與可解析 exit code，不回傳原始錯誤、不重試也不授權。

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add bounded static AVIF EXIF/XMP metadata inspection to staged commit, candidate/history scan, publication preflight and Creative raster validation; preserve fail-closed diagnostics and the existing 8 MiB limit.
+
 - Add bounded detail codes for unsupported publication command forms and a Claude `PostToolUseFailure` diagnostic that reports observed native execution phase and exit code without raw host error text; preserve fail-closed authorization and recovery behavior.
 
 - Allow explicitly opted-in, hash-bound, create-only creative asset import to the exact Git worktree root from a non-Git EPHEMERAL source; preserve default Git rejection and never stage or commit.

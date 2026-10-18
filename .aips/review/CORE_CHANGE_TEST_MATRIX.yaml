@@ -1,177 +1,141 @@
 version: 1
 change:
-  id: plan44-publication-command-and-native-failure-diagnostics
-  summary: Add privacy-safe command-form detail codes and Claude native execution
-    failure evidence while preserving the publication authority model.
+  id: avif-media-safety-20261018
+  summary: Safely inspect AVIF metadata across existing AIPS content-safety consumers with actionable redacted diagnostics and no authority change.
   boundary:
-  - Unsupported publication commands retain COMMAND_FORM_UNSUPPORTED and gain fixed
-    detail_code recovery guidance; pipelines and compound commands remain fail-closed.
-  - Claude PostToolUseFailure:Bash reports observed execution failure phase, safe
-    category, and parseable exit code; PreToolUse denial remains NOT_EXECUTED.
-  - Managed Claude lifecycle installs/removes the independent failure observer; version-bound
-    PreToolUse onFailure behavior is unchanged.
-  - Existing ALREADY_MERGED/squash-tree evidence, Branch Hygiene cleanup manifest
-    and hook health behavior remain unchanged and regression covered.
-  - Canonical Human/Agent guidance and Scenario 261 remain synchronized.
+    - Bounded AVIF ISO BMFF file type, metadata-box and item-extent inspection through the existing media parser.
+    - One shared media capability registry used by staged commit, candidate/history scan, publication preflight and Creative raster validation.
+    - EXIF/XMP metadata scanning under the existing content safety rules; never decode mdat as text.
+    - Stable format, signature, malformed, unsupported-feature, inspector and resource-limit reasons with safe recovery guidance.
+    - Preserve fail-closed behavior, 8 MiB staged limit, current formats, Hook/CLI parity and Git authority.
+    - Scenario 265, documentation closure, exact-candidate repository validation and post-merge evidence.
 matrix:
-- boundary: Command-form parsing and diagnostic details
-  reason: Operators need safe distinctions for pipes, compound commands, wrappers,
-    malformed syntax and upstream push-option refusals while retaining the established
-    refusal contract.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: 'Required: Ruff, selected static checks, and git diff --check on exact
-        candidate.'
-    unit:
-      applicable: true
-      evidence: 'Required on frozen candidate: publication test discovery covers pipe,
-        compound, malformed, upstream option and no-command-echo assertions.'
-    integration:
-      applicable: true
-      evidence: 'Required: publication diagnose contract verifies reason/detail code,
-        phase, no command echo, no mutation and no grant consumption.'
-    contract:
-      applicable: true
-      evidence: 'Required: Scenario 261 registration and runtime publication contracts.'
-    e2e:
-      applicable: false
-      na_reason: No application UI or server is added; parser and CLI lifecycle contracts
-        exercise the affected boundary.
-    security:
-      applicable: true
-      evidence: 'Required: pipe/compound/upstream options remain blocked; private
-        sentinel command text is absent from output.'
-    migration_recovery:
-      applicable: false
-      na_reason: No persistent schema migration or recovery workflow change.
-    cli_harness:
-      applicable: true
-      evidence: 'Required: aips publish diagnose output and direct CLI invocation
-        contracts.'
-    docs_schema:
-      applicable: true
-      evidence: 'Required: docs placement and synchronization checks.'
-- boundary: Claude native execution failure event and redaction
-  reason: AIPS must distinguish authorization refusal from a native Bash command that
-    started and failed, without revealing host error content or creating authority.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: 'Required: Ruff, selected static checks, and git diff --check on exact
-        candidate.'
-    unit:
-      applicable: true
-      evidence: 'Required: publication tests cover exit-code/private-sentinel redaction
-        and PreToolUse separation.'
-    integration:
-      applicable: true
-      evidence: 'Required: runtime_contracts validates PostToolUseFailure installation/removal
-        and settings preservation.'
-    contract:
-      applicable: true
-      evidence: 'Required: Scenario 261 native failure versus NOT_EXECUTED denial
-        contracts.'
-    e2e:
-      applicable: false
-      na_reason: A compatible native Claude Code host is unavailable; fixture lifecycle
-        proves adapter routing, not live host delivery.
-    security:
-      applicable: true
-      evidence: 'Required: raw error, command, paths and private sentinel do not appear;
-        no retry, grant consumption or external mutation.'
-    migration_recovery:
-      applicable: true
-      evidence: 'Required: uninstall removes only AIPS-owned PostToolUseFailure wiring
-        and preserves unrelated user settings.'
-    cli_harness:
-      applicable: true
-      evidence: 'Required: managed install/remove lifecycle and Harness shell syntax.'
-    docs_schema:
-      applicable: true
-      evidence: 'Required: Claude adapter and Human/Agent documentation closure.'
-- boundary: Existing recovery and cleanup invariants
-  reason: Reused ALREADY_MERGED/squash-tree, Branch Hygiene and hook-health behaviors
-    must not regress into duplicate publication or unsafe cleanup.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: 'Required: Ruff, selected static checks, and git diff --check on exact
-        candidate.'
-    unit:
-      applicable: true
-      evidence: 'Required: publication planning and error recovery tests for squash/merged
-        idempotency.'
-    integration:
-      applicable: true
-      evidence: 'Required: Branch Hygiene lifecycle uses exact one-time manifest and
-        SHA revalidation.'
-    contract:
-      applicable: true
-      evidence: 'Required: Scenario 261 and existing Branch Hygiene/publication lifecycle
-        contracts.'
-    e2e:
-      applicable: false
-      na_reason: No product UI or service is affected; deterministic Git fixtures
-        cover this lifecycle.
-    security:
-      applicable: true
-      evidence: 'Required: no direct ref deletion, authority bypass, repeated PR/merge
-        action or weakened candidate/head binding.'
-    migration_recovery:
-      applicable: true
-      evidence: 'Required: merged candidate resolves to reconciliation without push,
-        PR creation or merge invocation.'
-    cli_harness:
-      applicable: true
-      evidence: 'Required: full publication planning and Branch Hygiene CLI contracts.'
-    docs_schema:
-      applicable: true
-      evidence: 'Required: docs preserve ALREADY_MERGED and cleanup separation.'
-- boundary: Exact candidate, documentation and repository validation
-  reason: A Core security change requires source and contract parity, candidate-bound
-    evidence and complete repository validation before remote merge.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: 'Required: Ruff, selected static checks, and git diff --check on exact
-        candidate.'
-    unit:
-      applicable: true
-      evidence: 'Required: complete repository unit and lifecycle evidence.'
-    integration:
-      applicable: true
-      evidence: 'Required: complete local Integration Gate, exact-candidate secret
-        scan and remote repository required check.'
-    contract:
-      applicable: true
-      evidence: 'Required: static, scenario coverage, runtime contracts and Conformance
-        current view.'
-    e2e:
-      applicable: false
-      na_reason: No application user flow or service changed; native Claude host delivery
-        is separately recorded as unverified.
-    security:
-      applicable: true
-      evidence: 'Required: credential-free exact final-tree and base-to-head history
-        scan; no raw error/command persistence.'
-    migration_recovery:
-      applicable: false
-      na_reason: No persistent schema migration or recovery workflow change.
-    cli_harness:
-      applicable: true
-      evidence: 'Required: full validation profile, Harness install/remove and publication-preflight
-        contracts.'
-    docs_schema:
-      applicable: true
-      evidence: 'Required: canonical Human/Agent docs and Scenario 261 placement/synchronization
-        validation.'
-scope_recomputed_after_expansion: true
-actual_diff_reconciled: true
+  - boundary: AVIF container and metadata parser
+    reason: A malformed or spoofed AVIF must not be accepted or hide metadata from content scans.
+    checks:
+      static_lint:
+        applicable: true
+        evidence: "PASS: Ruff on media_metadata.py and creative_image_validation.py; Ruff --select F on implementation and safety-test modules; git diff --check. tests/validation/conformance_isolation.py has five pre-existing F401 findings and is excluded from the focused lint command."
+      unit:
+        applicable: true
+        evidence: "PASS: tests.test_safety_diagnostics validates static AVIF, uppercase suffix, avis rejection, truncated boxes, extents outside mdat, 1 MiB metadata cap and malformed input."
+      integration:
+        applicable: true
+        evidence: "PASS: staged secret, candidate/history and publication-preview fixtures scan EXIF metadata; synthetic mdat payload is excluded by the extractor path."
+      contract:
+        applicable: true
+        evidence: "PASS: scripts/scenario_conformance.py check reports 265 registered scenarios and zero uncovered; STAGED_MEDIA_INVALID remains allowlisted."
+      e2e:
+        applicable: false
+        na_reason: No UI or service is added; real Git-index and candidate lifecycle fixtures cover the affected boundaries.
+      security:
+        applicable: true
+        evidence: "PASS: EXIF token sentinel blocks without echo; avis, malformed boxes and unsupported extents fail closed; input, metadata and box counts are bounded."
+      migration_recovery:
+        applicable: false
+        na_reason: No persistent schema or state migration.
+      cli_harness:
+        applicable: true
+        evidence: "PASS: tests.test_safety_diagnostics confirms staged Hook/diagnose scanner parity and unchanged HEAD/index."
+      docs_schema:
+        applicable: true
+        evidence: "PASS: User Guide, Security Assurance, Runtime Content Safety docs and Scenario 265 state limits and static-only parser scope."
+  - boundary: Shared registry and scanner consumers
+    reason: A format capability must not diverge between staged commit, history, publication preview and Creative validation.
+    checks:
+      static_lint:
+        applicable: true
+        evidence: "PASS: Ruff on implementation and safety-test modules, excluding five pre-existing F401 findings in tests/validation/conformance_isolation.py; git diff --check."
+      unit:
+        applicable: true
+        evidence: "PASS: 76 safety/publication unit tests and Creative execution contracts; existing PNG/JPEG/WebP/M4A/MP3/font paths remain covered."
+      integration:
+        applicable: true
+        evidence: "PASS: tests.test_safety_diagnostics exercises staged AVIF, committed final-tree/history scan, untracked publication preview and Creative valid_raster."
+      contract:
+        applicable: true
+        evidence: "PASS: Scenario 265 registry and consumer evidence; direct callers use MEDIA_FORMAT_REGISTRY/extract_metadata."
+      e2e:
+        applicable: false
+        na_reason: No browser-visible behavior changes.
+      security:
+        applicable: true
+        evidence: "PASS: unsupported binary, malformed AVIF, metadata secret and oversized metadata cases block; other binary scanner behavior is unchanged."
+      migration_recovery:
+        applicable: false
+        na_reason: No persistent state.
+      cli_harness:
+        applicable: true
+        evidence: "PASS: commit safety diagnose and publication-preview AVIF routes covered by tests.test_safety_diagnostics."
+      docs_schema:
+        applicable: true
+        evidence: "PASS: canonical Runtime Content Safety guidance and generated 265-scenario current view are synchronized."
+  - boundary: Diagnostic safety and actionable recovery
+    reason: Root causes must be truthful without exposing binary content, metadata values or raw exceptions.
+    checks:
+      static_lint:
+        applicable: true
+        evidence: "PASS: Ruff on implementation and safety-test modules, excluding five pre-existing F401 findings in tests/validation/conformance_isolation.py; git diff --check."
+      unit:
+        applicable: true
+        evidence: "PASS: malformed AVIF maps to STAGED_MEDIA_INVALID with existing safe recovery; token values and parser details are absent."
+      integration:
+        applicable: true
+        evidence: "PASS: staged AVIF secret and malformed fixtures return redacted diagnostic categories without metadata values or raw parser exceptions."
+      contract:
+        applicable: true
+        evidence: "PASS: publication authority schema retains STAGED_MEDIA_INVALID; Scenario 265 covers its AVIF producer."
+      e2e:
+        applicable: false
+        na_reason: No user interface is added.
+      security:
+        applicable: true
+        evidence: "PASS: tests assert EXIF token sentinel absence; existing scanner-failure sentinel remains redacted."
+      migration_recovery:
+        applicable: false
+        na_reason: No persistence.
+      cli_harness:
+        applicable: true
+        evidence: "PASS: safety diagnose tests preserve HEAD, index bytes and status while returning safe structured diagnostics."
+      docs_schema:
+        applicable: true
+        evidence: "PASS: Human recovery guidance documents malformed/unsupported AVIF and STAGED_MEDIA_INVALID remediation."
+  - boundary: Exact candidate, documentation and repository validation
+    reason: A Core security change needs frozen-scope evidence and full repository/remote required checks before merge.
+    checks:
+      static_lint:
+        applicable: true
+        evidence: "PASS: focused Ruff on implementation and safety-test modules; five pre-existing F401 findings in tests/validation/conformance_isolation.py are outside the changed logic; git diff --check."
+      unit:
+        applicable: true
+        evidence: "PASS: 76 safety/publication unit tests; Creative execution contracts; tests/validate_repository.py reports VALIDATION PASSED with 265 scenarios."
+      integration:
+        applicable: true
+        evidence: "PENDING: run the exact-candidate AIPS Integration Gate after commit; candidate/history scan is also exercised by the AVIF unit lifecycle."
+      contract:
+        applicable: true
+        evidence: "PASS: Scenario 265 registered; documentation_placement.py passes; conformance summary current/history generated and checked."
+      e2e:
+        applicable: false
+        na_reason: No UI/service; repository-native security/lifecycle integration is the applicable evidence.
+      security:
+        applicable: true
+        evidence: "PASS: repository validator mandatory secret scan plus staged/candidate/history/preflight EXIF sentinel and malformed-container tests."
+      migration_recovery:
+        applicable: false
+        na_reason: No data migration; rollback is git revert of the exact candidate.
+      cli_harness:
+        applicable: true
+        evidence: "PASS: local AIPS preflight and worktree repository validator; exact-candidate Integration Gate follows after commit."
+      docs_schema:
+        applicable: true
+        evidence: "PASS: publish preview has zero documentation-placement errors; generated Conformance current/history checks pass."
 review_evidence:
   required: false
 candidate:
-  base_sha: f71a09214c43e31f67d872e517b65526f43b3158
-  changed_files_hash: 6495596190497699a1bb3bdafdcb2531ac98494650243ddb61a6b4c43bf87eea
+  base_sha: b5b9770902681b97e3824f0fc12c11bbf78535b8
+  changed_files_hash: 1ea41f4c53e0b259caffb447cb7803bce97b4378bd4467c5b57f1397bb6bb45d
+scope_recomputed_after_expansion: false
+actual_diff_reconciled: true
 blockers: []
 status: READY

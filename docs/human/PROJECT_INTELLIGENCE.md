@@ -428,7 +428,7 @@ Plan44 records bounded manual caller and adapter evidence where the repository g
 Publication hook 發生未預期內部例外時保持 fail closed；診斷只提供 allowlist 類別與安全識別資料，禁止將例外本文寫入 Intelligence。
 Plan42 的 scoped Change Impact 覆蓋字型解析器、staged Hook/CLI、publication preview、候選歷史掃描、依賴與 Scenario 263；全域 Impact Graph 仍是 partial，不推論為完整。
 
-Commit safety reports only a stable reason, phase, category/detector, Diagnostic ID and a sanitized relative file when safe. The Hook and read-only diagnostic CLI share the scanner; findings do not persist matched content or change publication authority.
+Commit safety reports only a stable reason, phase, category/detector, Diagnostic ID and a sanitized relative file when safe. The Hook and read-only diagnostic CLI share the scanner; findings do not persist matched content or change publication authority. Scenario 265 adds bounded AVIF metadata inspection without changing Project Intelligence persistence or freshness.
 
 Publication scanning excludes only validated numeric Git index/mode metadata; paths, added/removed/context lines and unknown headers remain scanned. Branch deletion verifies GitHub RS256 issuer, repository, protected main, workflow SHA, dispatch event and a proposal-bound audience. Runner flags alone grant no authority; tokens remain in memory.
 

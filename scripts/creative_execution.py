@@ -43,6 +43,7 @@ from creative_repair import (
     revision,
     validate_checks,
 )
+from media_metadata import RASTER_SUFFIXES as REGISTERED_RASTER_SUFFIXES
 
 MAX_RETRIES = _creative_trace.MAX_RETRIES
 MAX_TIMEOUT_SECONDS = _creative_trace.MAX_TIMEOUT_SECONDS
@@ -59,7 +60,7 @@ else:
     import fcntl
 
 ROOT = Path(__file__).resolve().parents[1]
-RASTER_SUFFIXES = {".png", ".jpg", ".jpeg", ".webp"}
+RASTER_SUFFIXES = set(REGISTERED_RASTER_SUFFIXES)
 MAX_IMAGE_BYTES = 25 * 1024 * 1024
 MAX_REFERENCE_BYTES = 12 * 1024 * 1024
 MAX_REFERENCE_BATCH_BYTES = 25 * 1024 * 1024

@@ -475,6 +475,8 @@ When publication is blocked, use `aips publish doctor --worktree <candidate-root
 
 ## Runtime Content Safety Boundary
 
+AVIF extends the existing scanner across staged commit, candidate/history, publication preview and Creative raster validation; it does not change Human approval or model routing.
+
 Commit content decisions remain in the existing sink-aware scanner. The Hook and read-only diagnostic CLI share candidate inspection; structured findings stay redacted and cannot authorize Human/Host publication actions.
 
 Runtime Resource Authorization remains default-deny and binds each Hook action to its observed Resource selector and constrained destination; diagnostics are sanitized and cannot grant the denied operation.
