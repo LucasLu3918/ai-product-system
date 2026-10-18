@@ -273,6 +273,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 
 ## Roles、Skills 與重用
 
+Publication scanner diagnostics do not add Skill discovery, routing, installation or ownership behavior; use the Git Publication and Runtime Content Safety sections for their recovery contract.
+
 The optional Matt Pocock Skill Explorer and its install controls remain separate from media validation; AVIF support adds no Skill, Role, or capability route.
 
 Plan44 沿用既有 Skill Explorer inventory 與列出預設，不新增 Skill、Role 或上游目錄項目。
@@ -641,6 +643,8 @@ Retrieval index persistence is an internal, rebuildable cache boundary in `scrip
 
 ## Git Publication 與 Release
 
+Personal publication rejects unsupported literal command forms before candidate inspection and reports scanner policy, Git-object and file-read failures with stable redacted `SECRET_SCAN_*` codes. These failures remain blocked and non-authorizing.
+
 AVIF content-safety checks do not replace the publication mode, Human review or merge approval described here.
 
 Claude Code v2.1.295+ 的 publication guard 在 Hook 啟動失敗時使用 `onFailure: block`；舊版/未知版只回報限制並保留相容設定，diagnostic 不會授權重試或合併。
@@ -773,6 +777,7 @@ Agent、MCP、CI workflow 或 external analyzer 不能因為具有執行能力�
 
 每個 Remote Git publication candidate 都會由 AIPS 內建秘密掃描器檢查 exact final tree 和 base 到 head 的 commit 歷史。找到秘密、歷史或候選內容無法完整掃描、policy 無效時，發布檢查會阻擋並只顯示遮蔽後位置與指紋；修正後須重新驗證。Gitleaks、GitGuardian 與 GitHub Secret Scanning 可作第二層防護，不需要它們的憑證才能通過 AIPS baseline。
 
+
 Core Matrix 的 `changed_files_hash` 必須綁定相同 base/head 的完整變更檔案集合；精確候選通過 preflight 後才可請求 PR review。Integration Gate PASS 是驗證證據，不會代替明確的 merge 授權。
 
 
@@ -823,6 +828,8 @@ Scenario / validation history
 
 Documentation Placement Contract 會檢查 heading hierarchy、version/scenario-style heading 與 changed-line placement。新增功能不得只在 current-behavior 文件尾端追加 `vX.Y` / Scenario 說明；若確實需要新 topic，必須同時把 canonical section 加入 placement contract。
 ## Runtime Content Safety Boundary
+
+Plan45 scanner failures use stable `SECRET_SCAN_*` codes and safe recovery guidance; unsupported literal commands are rejected before scanning and never execute. This preserves the existing fail-closed content-safety policy.
 
 Static `.avif` files use bounded EXIF/XMP metadata inspection across staged commit, candidate/history scans, publication preview and Creative raster validation. The existing 8 MiB file and 1 MiB metadata caps apply; animated, malformed, spoofed or unsupported item structures fail closed. Diagnostics distinguish signature mismatch, unsupported features, uninspectable metadata, resource limits and malformed containers, with a safe next step for each. The parser is local and has no optional AVIF inspector dependency. Encoded image data is never decoded as text, and this check does not establish AV1 decodability or visual quality.
 

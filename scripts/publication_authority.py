@@ -72,8 +72,11 @@ class PublicationError(ValueError):
         result['detail_zh'] = detail_zh
         result['next_step_zh'] = next_step_zh
         error_class = self.context.get('error_class') or type(self).__name__
-        if code == 'INTERNAL_DIAGNOSTIC_GAP' and isinstance(error_class, str) and re.fullmatch(r'[A-Za-z][A-Za-z0-9_.]{0,79}', error_class):
+        if (code == 'INTERNAL_DIAGNOSTIC_GAP' or code.startswith('SECRET_SCAN_')) and isinstance(error_class, str) and re.fullmatch(r'[A-Za-z][A-Za-z0-9_.]{0,79}', error_class):
             result['error_class'] = error_class
+        component = self.context.get('component')
+        if code.startswith('SECRET_SCAN_') and component == 'check_secret_leakage':
+            result['component'] = component
         candidate = self.context.get('candidate_sha')
         if isinstance(candidate, str) and re.fullmatch(r'[0-9a-f]{40,64}', candidate):
             result['candidate_sha'] = candidate
@@ -123,6 +126,13 @@ PUBLICATION_DIAGNOSTICS = {
     'COMMAND_FORM_UNSUPPORTED': ('The publication command form is unsupported.', 'Use the standalone literal native command emitted by the validated plan; do not change it to bypass the guard.', 'command_validation', 'INVALID_ARGUMENT'),
     'PUBLICATION_INPUT_UNBOUND': ('The publication input cannot be bound to the inspected operation.', 'Supply explicit literal input through a supported option or file, then revalidate.', 'command_validation', 'INVALID_ARGUMENT'),
     'PUBLICATION_OPTION_INVALID': ('A required publication option is missing or unsupported.', 'Provide one explicit supported option value and revalidate.', 'command_validation', 'INVALID_ARGUMENT'),
+    'SECRET_SCAN_POLICY_INVALID': ('The required secret-scan policy is invalid.', 'Repair the repository secret-scan policy and rerun publication validation.', 'content_scan.policy_validation', 'POLICY'),
+    'SECRET_SCAN_ALLOWLIST_EXPIRED': ('The secret-scan allowlist contains an expired entry.', 'Remove or renew the expired allowlist entry with its approved fingerprint and rerun validation.', 'content_scan.allowlist_check', 'POLICY'),
+    'SECRET_SCAN_BASE_INVALID': ('The secret-scan base cannot be verified for this candidate.', 'Refresh the candidate base and rerun exact-candidate publication validation.', 'content_scan.base_validation', 'STALE'),
+    'SECRET_SCAN_GIT_OBJECT_MISSING': ('A Git object required by the secret scan is unavailable.', 'Restore or fetch the candidate history in this worktree, then rerun validation.', 'content_scan.git_object_read', 'UNAVAILABLE'),
+    'SECRET_SCAN_FILE_UNREADABLE': ('A candidate file could not be completely inspected by the secret scanner.', 'Restore readable UTF-8 candidate content and rerun exact-candidate validation.', 'content_scan.candidate_file_read', 'UNAVAILABLE'),
+    'SECRET_SCAN_POLICY_UNAVAILABLE': ('The required secret-scan policy could not be read.', 'Restore access to the repository secret-scan policy and rerun validation.', 'content_scan.policy_load', 'UNAVAILABLE'),
+    'SECRET_SCAN_INTERNAL_ERROR': ('The required secret scanner failed safely.', 'Record the Diagnostic ID and error class; repair the local scanner before retrying publication.', 'content_scan.internal', 'INTERNAL'),
     'ISSUER_REQUEST_INVALID': ('The Human issuer rejected an invalid grant request.', 'Review the proposal-bound request fields and submit a new valid request.', 'authority_validation', 'INVALID_ARGUMENT'),
     'ISSUER_PROPOSAL_STATE_INVALID': ('Only a pending publication proposal can be issued.', 'Return the proposal to its valid pending state and obtain Human review.', 'authority_validation', 'POLICY'),
     'ISSUER_PROPOSAL_MISMATCH': ('The grant request does not match the reviewed proposal.', 'Rebuild the request from the exact reviewed proposal and candidate.', 'authority_validation', 'STALE'),
@@ -254,6 +264,13 @@ PUBLICATION_DETAIL_DIAGNOSTICS = {
 }
 
 PUBLICATION_DIAGNOSTICS_ZH = {
+    'SECRET_SCAN_POLICY_INVALID': ('秘密掃描政策格式或欄位無效。', '修復儲存庫的秘密掃描政策後，重新執行發布驗證。'),
+    'SECRET_SCAN_ALLOWLIST_EXPIRED': ('秘密掃描允許清單有已過期項目。', '依核准指紋移除或更新過期項目，再重新驗證。'),
+    'SECRET_SCAN_BASE_INVALID': ('無法確認秘密掃描使用的候選基底。', '更新候選基底，並重新驗證精確候選。'),
+    'SECRET_SCAN_GIT_OBJECT_MISSING': ('秘密掃描需要的 Git 物件目前無法讀取。', '在此工作樹還原或取得候選歷史，再重新驗證。'),
+    'SECRET_SCAN_FILE_UNREADABLE': ('秘密掃描器無法完整檢查候選檔案。', '修復候選內容的讀取或 UTF-8 編碼問題，再重新驗證。'),
+    'SECRET_SCAN_POLICY_UNAVAILABLE': ('無法讀取必要的秘密掃描政策。', '恢復儲存庫秘密掃描政策的讀取權限，再重新驗證。'),
+    'SECRET_SCAN_INTERNAL_ERROR': ('秘密掃描器安全停止，未完成檢查。', '保留診斷 ID 與錯誤類型，修復本機掃描器後再重試。'),
     'INTERNAL_DIAGNOSTIC_GAP': ('AIPS 無法安全分類這項內部發布錯誤。', '保留診斷 ID 與錯誤類型，修正本機 AIPS 診斷映射後再重試。'),
     'PUSH_TARGET_BRANCH_MISMATCH': ('推送目標分支與目前工程分支不一致。', '確認選用的工作樹與完整目標 ref，再重新執行唯讀發布診斷。'),
     'BRANCH_NOT_ALLOWLISTED': ('目前分支不符合允許的工程分支規則。', '在核准的工程分支上重新規劃；不要推送至受保護分支。'),
@@ -588,10 +605,24 @@ def _option(argv: list[str], option: str) -> str:
     return argv[index + 1]
 
 
+def validate_action_form(operation: str, argv: list[str]) -> None:
+    """Reject unsupported executable/subcommand wrappers before candidate inspection."""
+    expected = {
+        'git_push': ['git', 'push'],
+        'git_tag': ['git', 'tag'],
+        'gh_pr_create': ['gh', 'pr', 'create'],
+        'gh_pr_merge': ['gh', 'pr', 'merge'],
+        'gh_release_create': ['gh', 'release', 'create'],
+    }
+    if (operation not in expected or not argv or argv[:len(expected[operation])] != expected[operation]
+            or any('$' in word or '`' in word or '\0' in word for word in argv)):
+        raise PublicationError('use a supported standalone literal publication command',
+                               'COMMAND_FORM_UNSUPPORTED', phase='command_validation')
+
+
 def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: bool = False) -> dict[str, Any]:
     """Observe a supported standalone literal command; implicit/multi-target pushes deny."""
-    if operation not in PUBLICATION_OPERATIONS or not argv or any('$' in word or '`' in word or '\0' in word for word in argv):
-        raise PublicationError('literal publication command required', reason_code='COMMAND_FORM_UNSUPPORTED')
+    validate_action_form(operation, argv)
     root = Path(git(cwd, 'rev-parse', '--show-toplevel')).resolve()
     head = git(root, 'rev-parse', 'HEAD^{commit}')
     if not re.fullmatch(r'[0-9a-f]{40,64}', base):
@@ -837,13 +868,44 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
 
 def validate_personal_action(cwd: Path, operation: str, argv: list[str]) -> dict[str, Any]:
     """Validate personal publication; PR merge returns an exact per-call confirmation binding."""
+    validate_action_form(operation, argv)
     if operation not in PERSONAL_PUBLICATION_OPERATIONS:
         raise PublicationError('operation is unavailable in personal publication mode', reason_code='ASSURANCE_MODE_BLOCKED')
     root = Path(git(cwd, 'rev-parse', '--show-toplevel')).resolve()
     base = _personal_base(root, operation, argv)
     from check_secret_leakage import DEFAULT_POLICY, load_policy, scan_candidate
-    policy, _ = load_policy(DEFAULT_POLICY)
-    findings, blockers, _, _ = scan_candidate(root, base, 'HEAD', policy)
+    try:
+        policy, _ = load_policy(DEFAULT_POLICY)
+    except OSError as exc:
+        raise PublicationError('mandatory candidate secret-scan policy is unavailable',
+            'SECRET_SCAN_POLICY_UNAVAILABLE', phase='content_scan.policy_load',
+            context={'error_class': type(exc).__name__, 'component': 'check_secret_leakage'}) from exc
+    except Exception as exc:
+        from check_secret_leakage import ScanError
+        safe = exc.safe_diagnostic() if isinstance(exc, ScanError) else {
+            'reason_code': 'SECRET_SCAN_INTERNAL_ERROR', 'phase': 'content_scan.policy_load',
+            'component': 'check_secret_leakage', 'error_class': type(exc).__name__}
+        raise PublicationError('mandatory candidate secret-scan policy is invalid',
+            safe['reason_code'], phase=safe['phase'],
+            context={'error_class': safe['error_class'], 'component': safe['component']}) from exc
+    try:
+        scan_diagnostics: list[dict[str, Any]] = []
+        findings, blockers, _, _ = scan_candidate(root, base, 'HEAD', policy, diagnostics=scan_diagnostics)
+    except Exception as exc:
+        from check_secret_leakage import ScanError
+        if isinstance(exc, ScanError):
+            safe = exc.safe_diagnostic()
+        else:
+            safe = {'reason_code': 'SECRET_SCAN_INTERNAL_ERROR', 'phase': 'content_scan.internal',
+                    'component': 'check_secret_leakage', 'error_class': type(exc).__name__}
+        raise PublicationError('mandatory candidate and history secret scan could not complete',
+            safe['reason_code'], phase=safe['phase'],
+            context={'error_class': safe['error_class'], 'component': safe['component']}) from exc
+    if scan_diagnostics:
+        safe = scan_diagnostics[0]
+        raise PublicationError('mandatory candidate and history secret scan could not complete',
+            safe['reason_code'], phase=safe['phase'],
+            context={'error_class': safe['error_class'], 'component': safe['component']})
     if findings or blockers:
         raise PublicationError('mandatory candidate and history secret scan blocked publication', 'CONTENT_SCAN_BLOCKED')
     return action(root, operation, argv, base, personal=True)

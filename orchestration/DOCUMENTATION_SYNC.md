@@ -219,6 +219,8 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 ## Human documentation placement
 
+Publication scanner changes preserve the existing authority topology while updating all Documentation Impact-required placements. Stable scanner failure codes, pre-scan literal validation, redaction and Scenario 261 evidence must stay aligned across Human guides, Harness, architecture and Runtime Content Safety.
+
 Scenario 265 maps AVIF limits and recovery across User Guide, Technology Guide, Security Assurance and the Runtime Content Safety boundary.
 
 Publication guard 的跨 runtime 行為、Claude Code 版本限制與 Scenario 261 證據須同步到對應的 Human 與 adapter 文件。

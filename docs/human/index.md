@@ -49,6 +49,8 @@ GitHub publication troubleshooting and first-time readiness checks are covered b
 
 Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
 
+Plan45 scanner recovery codes and command-order guarantees are described in [Git Publication](USER_GUIDE.md#git-publication-與-release), [Security Assurance](SECURITY_ASSURANCE.md), and [Harness](HARNESS.md); Scenario 261 defines the safe diagnostic contract.
+
 Creative asset import usage lives in USER_GUIDE.md; its reusable workflow and boundaries live in orchestration/CREATIVE_DIRECTION.md.
 
 

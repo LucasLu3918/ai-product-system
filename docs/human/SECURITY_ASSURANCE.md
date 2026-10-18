@@ -223,6 +223,8 @@ Read-only publication diagnosis distinguishes authentication, permission, missin
 
 Specific protected-publication reason codes expose only sanitized underlying categories. Missing Required Checks policy evidence blocks; Host denial, recovery suggestions and green CI do not replace signed grants or per-call Human confirmation.
 
+Plan45 classifies exact-candidate secret-scanner failures (`SECRET_SCAN_POLICY_INVALID`, `SECRET_SCAN_ALLOWLIST_EXPIRED`, `SECRET_SCAN_BASE_INVALID`, `SECRET_SCAN_GIT_OBJECT_MISSING`, `SECRET_SCAN_FILE_UNREADABLE`, `SECRET_SCAN_POLICY_UNAVAILABLE`, `SECRET_SCAN_INTERNAL_ERROR`) with a phase, scanner component, bounded error class and safe recovery step. Raw exception text, candidate paths and secret values are not included in publication diagnostics. Findings and incomplete scans continue to block publication. Unsupported command executables/subcommands are rejected before candidate inspection and scanning; accepted literal forms still pass the complete candidate validation and scan.
+
 Unsupported publication command forms retain the stable refusal code and add only an allowlisted detail code; raw shell input is never included. Claude `PostToolUseFailure` is an observation after native execution starts, and reports a bounded category and parsed exit code without the host error text. It cannot authorize, retry or mutate publication state; PreToolUse denial remains `NOT_EXECUTED`.
 
 Publication diagnostics 只輸出固定 reason code 與安全修復指引。`prepare` 不簽發、消耗 Grant 或執行發布；high-assurance 保留外部單次 Grant，Host 拒絕不得以其他命令重試。
@@ -445,6 +447,8 @@ SAL 2+ default registration requires an independently retained anchor. SAL 4 req
 
 The retention helper never deletes evidence or grants compaction authority. Expiry only creates a Human-review action and a minimal digest record.
 ## Runtime Content Safety Boundary
+
+Personal publication rejects unsupported literal command forms before scanning and reports scanner policy or candidate-read failures through stable redacted reason codes. Both paths remain non-authorizing and fail closed.
 
 The Claude native failure observer excludes raw host errors and command text from diagnostic and durable sinks; only bounded allowlisted fields are reported.
 

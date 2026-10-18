@@ -1,141 +1,129 @@
 version: 1
 change:
-  id: avif-media-safety-20261018
-  summary: Safely inspect AVIF metadata across existing AIPS content-safety consumers with actionable redacted diagnostics and no authority change.
+  id: plan45-publication-scan-diagnostics
+  summary: Map scanner failures to stable redacted publication diagnostics and validate command shape
+    before scanning while preserving fail-closed behavior and existing authority.
   boundary:
-    - Bounded AVIF ISO BMFF file type, metadata-box and item-extent inspection through the existing media parser.
-    - One shared media capability registry used by staged commit, candidate/history scan, publication preflight and Creative raster validation.
-    - EXIF/XMP metadata scanning under the existing content safety rules; never decode mdat as text.
-    - Stable format, signature, malformed, unsupported-feature, inspector and resource-limit reasons with safe recovery guidance.
-    - Preserve fail-closed behavior, 8 MiB staged limit, current formats, Hook/CLI parity and Git authority.
-    - Scenario 265, documentation closure, exact-candidate repository validation and post-merge evidence.
+  - Extend ScanError and publication diagnostics with stable reason, phase, component, retryability and
+    safe recovery; keep raw exception data private.
+  - Validate literal publication command shape before candidate/history scan; all later candidate, remote,
+    PR, safety and authority checks remain mandatory.
+  - Preserve diagnostic ID, optional allowlisted ledger behavior, existing Hook/CLI envelopes, exact candidate
+    binding and Human/merge authority.
+  - Add fault injection, redaction, no-side-effect, Hook/CLI lifecycle and Scenario 261 regression evidence;
+    update canonical docs.
 matrix:
-  - boundary: AVIF container and metadata parser
-    reason: A malformed or spoofed AVIF must not be accepted or hide metadata from content scans.
-    checks:
-      static_lint:
-        applicable: true
-        evidence: "PASS: Ruff on media_metadata.py and creative_image_validation.py; Ruff --select F on implementation and safety-test modules; git diff --check. tests/validation/conformance_isolation.py has five pre-existing F401 findings and is excluded from the focused lint command."
-      unit:
-        applicable: true
-        evidence: "PASS: tests.test_safety_diagnostics validates static AVIF, uppercase suffix, avis rejection, truncated boxes, extents outside mdat, 1 MiB metadata cap and malformed input."
-      integration:
-        applicable: true
-        evidence: "PASS: staged secret, candidate/history and publication-preview fixtures scan EXIF metadata; synthetic mdat payload is excluded by the extractor path."
-      contract:
-        applicable: true
-        evidence: "PASS: scripts/scenario_conformance.py check reports 265 registered scenarios and zero uncovered; STAGED_MEDIA_INVALID remains allowlisted."
-      e2e:
-        applicable: false
-        na_reason: No UI or service is added; real Git-index and candidate lifecycle fixtures cover the affected boundaries.
-      security:
-        applicable: true
-        evidence: "PASS: EXIF token sentinel blocks without echo; avis, malformed boxes and unsupported extents fail closed; input, metadata and box counts are bounded."
-      migration_recovery:
-        applicable: false
-        na_reason: No persistent schema or state migration.
-      cli_harness:
-        applicable: true
-        evidence: "PASS: tests.test_safety_diagnostics confirms staged Hook/diagnose scanner parity and unchanged HEAD/index."
-      docs_schema:
-        applicable: true
-        evidence: "PASS: User Guide, Security Assurance, Runtime Content Safety docs and Scenario 265 state limits and static-only parser scope."
-  - boundary: Shared registry and scanner consumers
-    reason: A format capability must not diverge between staged commit, history, publication preview and Creative validation.
-    checks:
-      static_lint:
-        applicable: true
-        evidence: "PASS: Ruff on implementation and safety-test modules, excluding five pre-existing F401 findings in tests/validation/conformance_isolation.py; git diff --check."
-      unit:
-        applicable: true
-        evidence: "PASS: 76 safety/publication unit tests and Creative execution contracts; existing PNG/JPEG/WebP/M4A/MP3/font paths remain covered."
-      integration:
-        applicable: true
-        evidence: "PASS: tests.test_safety_diagnostics exercises staged AVIF, committed final-tree/history scan, untracked publication preview and Creative valid_raster."
-      contract:
-        applicable: true
-        evidence: "PASS: Scenario 265 registry and consumer evidence; direct callers use MEDIA_FORMAT_REGISTRY/extract_metadata."
-      e2e:
-        applicable: false
-        na_reason: No browser-visible behavior changes.
-      security:
-        applicable: true
-        evidence: "PASS: unsupported binary, malformed AVIF, metadata secret and oversized metadata cases block; other binary scanner behavior is unchanged."
-      migration_recovery:
-        applicable: false
-        na_reason: No persistent state.
-      cli_harness:
-        applicable: true
-        evidence: "PASS: commit safety diagnose and publication-preview AVIF routes covered by tests.test_safety_diagnostics."
-      docs_schema:
-        applicable: true
-        evidence: "PASS: canonical Runtime Content Safety guidance and generated 265-scenario current view are synchronized."
-  - boundary: Diagnostic safety and actionable recovery
-    reason: Root causes must be truthful without exposing binary content, metadata values or raw exceptions.
-    checks:
-      static_lint:
-        applicable: true
-        evidence: "PASS: Ruff on implementation and safety-test modules, excluding five pre-existing F401 findings in tests/validation/conformance_isolation.py; git diff --check."
-      unit:
-        applicable: true
-        evidence: "PASS: malformed AVIF maps to STAGED_MEDIA_INVALID with existing safe recovery; token values and parser details are absent."
-      integration:
-        applicable: true
-        evidence: "PASS: staged AVIF secret and malformed fixtures return redacted diagnostic categories without metadata values or raw parser exceptions."
-      contract:
-        applicable: true
-        evidence: "PASS: publication authority schema retains STAGED_MEDIA_INVALID; Scenario 265 covers its AVIF producer."
-      e2e:
-        applicable: false
-        na_reason: No user interface is added.
-      security:
-        applicable: true
-        evidence: "PASS: tests assert EXIF token sentinel absence; existing scanner-failure sentinel remains redacted."
-      migration_recovery:
-        applicable: false
-        na_reason: No persistence.
-      cli_harness:
-        applicable: true
-        evidence: "PASS: safety diagnose tests preserve HEAD, index bytes and status while returning safe structured diagnostics."
-      docs_schema:
-        applicable: true
-        evidence: "PASS: Human recovery guidance documents malformed/unsupported AVIF and STAGED_MEDIA_INVALID remediation."
-  - boundary: Exact candidate, documentation and repository validation
-    reason: A Core security change needs frozen-scope evidence and full repository/remote required checks before merge.
-    checks:
-      static_lint:
-        applicable: true
-        evidence: "PASS: focused Ruff on implementation and safety-test modules; five pre-existing F401 findings in tests/validation/conformance_isolation.py are outside the changed logic; git diff --check."
-      unit:
-        applicable: true
-        evidence: "PASS: 76 safety/publication unit tests; Creative execution contracts; tests/validate_repository.py reports VALIDATION PASSED with 265 scenarios."
-      integration:
-        applicable: true
-        evidence: "PENDING: run the exact-candidate AIPS Integration Gate after commit; candidate/history scan is also exercised by the AVIF unit lifecycle."
-      contract:
-        applicable: true
-        evidence: "PASS: Scenario 265 registered; documentation_placement.py passes; conformance summary current/history generated and checked."
-      e2e:
-        applicable: false
-        na_reason: No UI/service; repository-native security/lifecycle integration is the applicable evidence.
-      security:
-        applicable: true
-        evidence: "PASS: repository validator mandatory secret scan plus staged/candidate/history/preflight EXIF sentinel and malformed-container tests."
-      migration_recovery:
-        applicable: false
-        na_reason: No data migration; rollback is git revert of the exact candidate.
-      cli_harness:
-        applicable: true
-        evidence: "PASS: local AIPS preflight and worktree repository validator; exact-candidate Integration Gate follows after commit."
-      docs_schema:
-        applicable: true
-        evidence: "PASS: publish preview has zero documentation-placement errors; generated Conformance current/history checks pass."
+- boundary: Scanner failure classification and redaction
+  reason: A scan that cannot finish safely must deny publication with an actionable root cause without
+    leaking private inputs.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'PASS: focused Ruff reports only 7 pre-existing findings in check_secret_leakage.py; touched
+        code compiles and git diff --check passes.'
+    unit:
+      applicable: true
+      evidence: 'PASS: 42 publication-authority tests and 47 subtests cover invalid/expired policy, invalid
+        base, missing head, unreadable file, internal error and redaction.'
+    integration:
+      applicable: true
+      evidence: 'PASS: secret_scan_publication_lifecycle.py blocks exact-tree/history sentinels and reports
+        PASS.'
+    contract:
+      applicable: true
+      evidence: 'PASS: Scenario Conformance reports 265 registered, 0 missing/uncovered; full repository
+        validation passes 101 checks.'
+    e2e:
+      applicable: false
+      na_reason: No user interface or network service is changed; Hook/CLI lifecycle is the affected execution
+        path.
+    security:
+      applicable: true
+      evidence: 'PASS: focused tests assert no raw token, exception text, file path or command leaks through
+        diagnostics.'
+    migration_recovery:
+      applicable: false
+      na_reason: No persisted schema or data migration; existing optional ledger schema is unchanged.
+    cli_harness:
+      applicable: true
+      evidence: 'PASS: focused publication Hook/CLI tests and scanner lifecycle preserve denial/NOT_EXECUTED;
+        no authority granted.'
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: exact-candidate Documentation Impact reports complete=true; all 24 changed paths
+        are covered with zero required additions.'
+- boundary: Static command validation and exact candidate protection
+  reason: Unsupported command syntax should be diagnosed before scan work without weakening any later
+    publication checks.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'PASS: no new Ruff findings; py_compile and git diff --check pass.'
+    unit:
+      applicable: true
+      evidence: 'PASS: unsupported git -C push returns COMMAND_FORM_UNSUPPORTED before candidate Git access
+        or scanner invocation.'
+    integration:
+      applicable: true
+      evidence: 'PASS: focused Hook/CLI tests confirm rejected publication does not execute; strict candidate/history
+        scanner lifecycle passes.'
+    contract:
+      applicable: true
+      evidence: 'PASS: Scenario 261 evidence is registered and all 265 scenarios conform.'
+    e2e:
+      applicable: false
+      na_reason: No browser-visible or deployed behavior changes.
+    security:
+      applicable: true
+      evidence: 'PASS: all accepted forms retain exact candidate, policy, content scan and authority checks.'
+    migration_recovery:
+      applicable: false
+      na_reason: No schema or persistent state change.
+    cli_harness:
+      applicable: true
+      evidence: 'PASS: full repository validation passes 101 checks; exact-candidate prepare/diagnose
+        remains pending.'
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: exact-candidate Documentation Impact reports complete=true; all 24 changed paths
+        are covered with zero required additions.'
+- boundary: Exact candidate, documentation and repository Gate
+  reason: Core publication security changes require evidence tied to the final candidate.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'PASS: focused Ruff (7 existing findings only), py_compile and git diff --check pass.'
+    unit:
+      applicable: true
+      evidence: 'PASS: five focused pytest modules pass: 105 tests and 74 subtests.'
+    integration:
+      applicable: true
+      evidence: 'PASS: full AIPS Core Integration Gate passed on candidate 2adc0bd46eef8838cac1065e8d484d07d8f8c7ec; final matrix-bound candidate will be rerun after recording this evidence.'
+    contract:
+      applicable: true
+      evidence: 'PASS: tests/validate_repository.py passes all 101 checks; Scenario Conformance covers
+        265 scenarios.'
+    e2e:
+      applicable: false
+      na_reason: No UI/service; native Hook and CLI lifecycle evidence applies.
+    security:
+      applicable: true
+      evidence: 'PASS: mandatory exact-candidate base..head scan passed on 2adc0bd46eef8838cac1065e8d484d07d8f8c7ec with no findings or blockers; final matrix-bound candidate will be rescanned.'
+    migration_recovery:
+      applicable: false
+      na_reason: No data migration; revert of exact candidate is the recovery path.
+    cli_harness:
+      applicable: true
+      evidence: 'PASS: read-only push diagnose validated the exact candidate and target branch; authorization and execution remained false. Full publication lifecycle test passed.'
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: Documentation Impact closure complete for all 24 paths with zero required additions; reviewed Core Matrix diff binding is READY.'
 review_evidence:
   required: false
 candidate:
-  base_sha: b5b9770902681b97e3824f0fc12c11bbf78535b8
-  changed_files_hash: 1ea41f4c53e0b259caffb447cb7803bce97b4378bd4467c5b57f1397bb6bb45d
-scope_recomputed_after_expansion: false
+  base_sha: 8965b8e1e9c80043a768556364611b4b5cc940ea
+  changed_files_hash: 14b6676f646d06708070a3064e99cd8587eaf995fd4b94952e4564523cc3407f
+scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 status: READY

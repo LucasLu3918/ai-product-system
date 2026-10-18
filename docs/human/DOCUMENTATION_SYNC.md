@@ -60,6 +60,8 @@ Upstream Skill eligibility follows canonical ID collision: every non-canonical u
 
 Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
 
+Changes to the publication scanner also update the recursive documentation closure for architecture, installation, Project Intelligence, security, technology, conformance, Harness and Runtime Content Safety. Scenario 261 remains the canonical failure and recovery evidence.
+
 The creative workspace import CLI workflow is maintained in USER_GUIDE.md and orchestration/CREATIVE_DIRECTION.md.
 
 

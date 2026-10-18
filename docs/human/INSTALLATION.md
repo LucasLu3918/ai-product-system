@@ -8,6 +8,9 @@ Evolution deterministic pre-analysis ships as an internal Python module with the
 
 No AVIF parser dependency is installed: supported static AVIF metadata uses the bounded built-in scanner, and unsupported structures fail closed.
 
+Personal publication uses the repository's existing secret-scan policy. `SECRET_SCAN_*` diagnostics explain policy or candidate inspection failures without exposing raw errors or paths; unsupported command forms are rejected before scanning. No additional installation dependency or service is required.
+
+
 Claude 的失敗觀察只回報固定類別與解析出的 exit code，不保存原始錯誤文字，也不重試或授權發布。
 
 Claude Code managed publication guard 只有在 v2.1.295 以上使用 `onFailure: block`；舊版或無法辨識版本時仍安裝相容設定並顯示警示。

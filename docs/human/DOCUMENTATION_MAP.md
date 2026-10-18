@@ -33,6 +33,8 @@ Plan41 的 commit 安全診斷由既有 Content Safety kernel、`governance_guar
 
 Publication root-cause diagnostics and the optional Diagnostic ID lookup contract are implemented in the publication authority/planning/diagnostics and governance-audit modules; Human recovery steps live in User Guide, while native adapter and exact scenario boundaries live in Harness and Conformance.
 
+Plan45 secret-scanner failure codes and pre-scan command validation are documented in User Guide, Security Assurance, Architecture Overview and Harness; exact privacy and no-execution behavior is covered by Scenario 261.
+
 Publication Doctor recovery is documented in the User Guide, security authority boundary, Runtime adapter guidance and Scenario 260/261 evidence.
 
 The User Guide remains the Human entry point for publication troubleshooting, while this map preserves canonical Skill Explorer and adapter-document ownership.

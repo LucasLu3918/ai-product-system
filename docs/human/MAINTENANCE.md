@@ -202,6 +202,8 @@ Before readiness, move finalized release notes under the heading matching `VERSI
 
 ## System facts and validation planning
 
+Plan45 keeps publication command syntax validation ahead of candidate scanning. The reviewed exact changed-path set, Core Matrix binding and complete Documentation Impact closure are required before the candidate Gate.
+
 Project Diagnostics 的 Core 候選同步更新公開命令事實、Capability Registry、Scenario 237、Lifecycle evidence 與文件閉包；精確候選仍須執行完整 Integration Gate，診斷 PASS 不代表發布核准。
 
 The validator registry, exact-path CI provisioning plan, full-run Shadow Plan, and Integration Gate profile have separate responsibilities; none may silently omit required validators. Promotion of selective execution requires the complete reviewed shadow cohort.
@@ -525,6 +527,8 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 
 ## Validation architecture consistency
 
+Scenario 261 adds scanner-failure and pre-scan command-order evidence; this is separate from Skill Explorer inventory and runtime lifecycle evidence.
+
 The Matt Pocock Skill Explorer remains a separate validation surface; Scenario 265 covers the AVIF scanner without changing Skill catalog evidence.
 
 Publication diagnostics 的 Core matrix 分開驗證底層錯誤來源、safe hook payload、重試性與 Claude Code 版本路由；hook 內部錯誤必須拒絕操作且不得洩漏例外文字。
@@ -797,3 +801,5 @@ Runtime hook 的診斷輸出採 allowlist；只保留錯誤類別和穩定診斷
 Plan41 adds redacted Hook findings, strict ignore-marker handling and bounded PNG/JPEG/WebP/M4A/MP3 metadata inspection through the existing commit safety boundary. Plan42 extends the same boundary to bounded TTF/OTF/WOFF/WOFF2 metadata, checks staged Git object sizes before reading blobs, and keeps publication preview and exact-candidate history scanning aligned. Scenario 265 adds static AVIF EXIF/XMP within the same 8 MiB media limit and 1 MiB metadata cap; unsupported binaries and incomplete inspection remain fail closed.
 
 Register every new persistence or publication sink in `config/content-safety.yaml`. Preserve the `sanitize → hash → persist` ordering for audit data and update scenarios when detector or sink policy behavior changes.
+
+For Plan45 publication scanning, keep the literal executable/subcommand check ahead of candidate inspection. Classify scanner policy, base, object and candidate-file failures with allowlisted `SECRET_SCAN_*` diagnostics; never include exception messages, paths or secret values. Findings and incomplete scans remain fail-closed. Update Scenario 261 and the Core Change Test Matrix with any new scanner boundary.

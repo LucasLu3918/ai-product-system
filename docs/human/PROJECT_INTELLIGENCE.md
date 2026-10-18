@@ -426,6 +426,8 @@ Project Intelligence follows `orchestration/PROJECT_IDENTITY.md`. EPHEMERAL stor
 Plan44 records bounded manual caller and adapter evidence where the repository graph lacks publication nodes; this does not promote repository-wide graph coverage or change publication authority.
 
 Publication hook 發生未預期內部例外時保持 fail closed；診斷只提供 allowlist 類別與安全識別資料，禁止將例外本文寫入 Intelligence。
+
+Plan45 scanner diagnostics remain runtime publication observations and are not persisted as Project Intelligence facts. Their stable reason and phase identify recovery needs without recording exception text, candidate paths, or secret values.
 Plan42 的 scoped Change Impact 覆蓋字型解析器、staged Hook/CLI、publication preview、候選歷史掃描、依賴與 Scenario 263；全域 Impact Graph 仍是 partial，不推論為完整。
 
 Commit safety reports only a stable reason, phase, category/detector, Diagnostic ID and a sanitized relative file when safe. The Hook and read-only diagnostic CLI share the scanner; findings do not persist matched content or change publication authority. Scenario 265 adds bounded AVIF metadata inspection without changing Project Intelligence persistence or freshness.
