@@ -1087,6 +1087,8 @@ The branch lifecycle report classifies remote branches using current exact-SHA P
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+Plan44 does not alter the upstream Skill inventory or canonical-only default; publication troubleshooting remains outside Skill routing.
+
 Host Skill discovery does not establish native hook enforcement. Publication guard compatibility is verified separately under Scenario 261.
 
 The shared evidence runner contains a distinct creative-import lifecycle; these cases do not alter the Skill Explorer contract.
@@ -1128,6 +1130,8 @@ Git publication diagnostics do not alter ComfyUI discovery, Resource Authorizati
 Scenario 262 locks stage-specific default-deny Profile diagnostics, kind/selector/operation/destination/constraint matching, observed Hook URL binding, and structured redacted Runtime/Creative recovery. It verifies fixed loopback ComfyUI read-only model discovery, HTTP/method/path/redirect denials, shared static asset presets and evidence-only MPS reporting; no inference or external download is performed.
 
 ## Scenario 263 — Commit Safety Diagnostics
+
+Plan44's native failure observer reports bounded execution metadata only; it excludes raw Host errors and does not authorize retry or publication.
 
 Claude Code v2.1.295+ 僅在 managed publication PreToolUse 啟用 `onFailure: block`；舊版或未知版保持設定相容並警示。Hook 和 ledger 不得包含例外文字。
 

@@ -384,6 +384,7 @@ with tempfile.TemporaryDirectory() as tmp:
     install_supported_guard = subprocess.run([
         sys.executable, str(manager), "install-claude-hook", "--settings", str(settings),
         "--command", "AIPS_MANAGED_HOOK=1 echo prompt", "--guard-command", "AIPS_MANAGED_HOOK=1 echo guard",
+        "--failure-command", "AIPS_MANAGED_HOOK=1 echo failure",
         "--runtime-version", "2.1.295 (Claude Code)"], capture_output=True, text=True, check=False)
     settings_doc = json.loads(settings.read_text(encoding="utf-8"))
     pretool_aips = next((group for group in settings_doc["hooks"]["PreToolUse"]
@@ -392,11 +393,18 @@ with tempfile.TemporaryDirectory() as tmp:
     prompt_aips = next((group for group in settings_doc["hooks"]["UserPromptSubmit"]
                         if any("AIPS_MANAGED_HOOK=1" in hook.get("command", "")
                                for hook in group.get("hooks", []))), {})
+    failure_aips = next((group for group in settings_doc["hooks"]["PostToolUseFailure"]
+                         if any("AIPS_MANAGED_HOOK=1" in hook.get("command", "")
+                                for hook in group.get("hooks", []))), {})
     if (install_supported_guard.returncode != 0 or
             (pretool_aips.get("hooks") or [{}])[0].get("onFailure") != "block"):
         errors.append("Claude Code v2.1.295+ publication guard must block when its hook fails")
     if (prompt_aips.get("hooks") or [{}])[0].get("onFailure") is not None:
         errors.append("Claude prompt-context hook must not inherit publication guard failure policy")
+    failure_hook = (failure_aips.get("hooks") or [{}])[0]
+    if (failure_aips.get("matcher") != "Bash" or "echo failure" not in failure_hook.get("command", "") or
+            failure_hook.get("onFailure") is not None):
+        errors.append("Claude native failure diagnostics must install as a bounded Bash PostToolUseFailure hook")
     install_older_guard = subprocess.run([
         sys.executable, str(manager), "install-claude-hook", "--settings", str(settings),
         "--command", "AIPS_MANAGED_HOOK=1 echo prompt", "--guard-command", "AIPS_MANAGED_HOOK=1 echo guard",
@@ -446,6 +454,8 @@ with tempfile.TemporaryDirectory() as tmp:
     settings_doc = json.loads(settings.read_text(encoding="utf-8"))
     if remove_hook.returncode != 0 or "PreToolUse" not in settings_doc.get("hooks", {}) or "UserPromptSubmit" in settings_doc.get("hooks", {}):
         errors.append("Claude hook uninstall must remove only AIPS UserPromptSubmit hook")
+    if "PostToolUseFailure" in settings_doc.get("hooks", {}):
+        errors.append("Claude hook uninstall must remove the managed PostToolUseFailure hook")
 
 
 

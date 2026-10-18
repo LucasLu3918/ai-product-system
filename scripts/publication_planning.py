@@ -264,14 +264,15 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
 
 def diagnose(worktree: Path, command: str) -> dict[str, Any]:
     """Validate a native literal command without execution or grant consumption."""
-    from publication_commands import CommandError, shell_commands
+    from publication_commands import CommandError, command_form_detail, shell_commands
     try:
         root = worktree.expanduser().resolve(strict=True)
         if Path(authority.git(root, 'rev-parse', '--show-toplevel')).resolve() != root:
             raise authority.PublicationError('worktree root mismatch', 'CWD_MISMATCH')
         parsed = shell_commands(command)
         if len(parsed) != 1:
-            raise authority.PublicationError('standalone command required', 'COMMAND_FORM_UNSUPPORTED')
+            raise authority.PublicationError('standalone command required', 'COMMAND_FORM_UNSUPPORTED',
+                                             detail_code=command_form_detail(command))
         argv = parsed[0]
         operation = ('git_push' if argv[:2] == ['git', 'push'] else
                      'gh_pr_create' if argv[:3] == ['gh', 'pr', 'create'] else
@@ -311,7 +312,7 @@ def diagnose(worktree: Path, command: str) -> dict[str, Any]:
     except authority.PublicationError as exc:
         return {'status': 'BLOCKED', 'authorized': False, 'diagnostics': [exc.diagnostic()]}
     except CommandError as exc:
-        item = diagnostic(exc.reason_code)
+        item = authority.PublicationError('', 'COMMAND_FORM_UNSUPPORTED', detail_code=exc.detail_code).diagnostic()
         item['phase'] = 'command_validation'
         return _with_lifecycle({'status': 'BLOCKED', 'authorized': False, 'diagnostics': [item]})
     except (OSError, subprocess.TimeoutExpired) as exc:

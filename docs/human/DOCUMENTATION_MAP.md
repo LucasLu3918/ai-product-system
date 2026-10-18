@@ -22,6 +22,8 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 ## 文件角色
 
+Matt Pocock upstream Skill 的清單與安裝處置由 pinned manifest 和 canonical registry 管理；Plan44 不增加上游 Skill 項目或改變預設路由。
+
 Claude Code publication 的操作步驟位於 User Guide，安裝相容資訊位於 Installation，Agent 契約則位於 Harness adapter 文件。
 
 Creative asset import uses the existing Creative Direction and Harness command surfaces; it does not add a Skill catalog entry or alter Skill Explorer behavior.
@@ -116,6 +118,9 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 Plan36 publication diagnostics preserve this topic's existing behavior and authority boundaries.
 
 ## Agent / machine canonical 文件
+
+Unsupported command details and native execution failure evidence use the existing publication and adapter contracts; they add no separate Runtime or Skill source.
+Character artwork remains governed by Creative Direction and existing Harness adapters; Plan44 does not add a creative generation or asset-import source.
 
 Claude Code publication guard 的版本門檻與安全診斷由 Harness adapter 文件及安裝指南共同記錄；行為驗收以 Scenario 261 為準。
 

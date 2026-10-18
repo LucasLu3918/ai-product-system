@@ -232,6 +232,8 @@ Publication policy states and Claude's bounded recovery behavior are synchronize
 
 Publication diagnostics keep the Human CLI flow, safe failure categories and Agent-native Hook envelope synchronized with Scenarios 260/261 and the registered canonical sections.
 
+Plan44 keeps publication command `detail_code` guidance and Claude's PostToolUseFailure execution observation synchronized across the User Guide, Security Assurance, Maintenance, Claude adapter, both Conformance views and Scenario 261. Preserve raw-error redaction and the distinction between PreToolUse denial and observed native failure.
+
 Cross-file publication diagnostics are reconciled against required canonical Human topics; the deterministic placement check remains fail-closed instead of being disabled.
 
 Native Skill projections share one canonical AIPS source and ownership manifest. Human Installation/User Guide/Harness explain host paths and safe removal; Technology Guide and Scenario 233/235 describe deterministic file/lifecycle evidence without claiming live Codex, Claude Code or Gemini CLI discovery. Keep these distinct from Runtime hook enforcement claims.

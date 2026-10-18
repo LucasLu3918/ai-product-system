@@ -1800,6 +1800,8 @@ The cross-profile quality evidence extension is covered by Scenario 258; this cr
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+Publication diagnostics do not alter Scenario 259's upstream Skill inventory, filtering, or canonical-only default.
+
 Runtime host-specific enforcement limits remain documented separately; Skill discovery does not infer native hook support. See Scenario 261 for Claude Code version-bound publication guard evidence.
 
 The shared OpenCode lifecycle runner also owns a separate Scenario 264 creative-import case; its result does not change Skill Explorer installation or Host acceptance.
@@ -1860,6 +1862,8 @@ Plan40 also verifies explicit reason-code coverage, `INTERNAL_DIAGNOSTIC_GAP` fo
 
 The read-only publication doctor cross-checks `branch.protected` with classic protection/effective rules, distinguishes permission-hidden policy, and preserves sanitized transient HTTP causes. Claude Code Hook runs one bounded Doctor for retryable network, rate-limit and server failures; skipped checks retain GitHub's successful provider outcome while AIPS remains fail-closed. Diagnostics never grant authority. Evidence: `tests/scenarios/261-publication-diagnostics-and-safe-recovery.md` and the linked lifecycle/validation tests.
 
+Plan44 also verifies stable detail codes for unsupported command forms and a separate Claude `PostToolUseFailure` path that reports observed native execution failure and exit code without raw host text. PreToolUse denial remains `NOT_EXECUTED`; no retry or authority is added.
+
 ## Scenario 240 — Personal Publication Default and High-Assurance Opt-In
 
 Merge readiness now consumes fresh Required Checks policy from the same target-branch observer as Doctor; native confirmation and exact candidate binding remain required.
@@ -1901,6 +1905,8 @@ Current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md)
 
 ## Scenario 260 — Publication diagnostics and Doctor
 
+Scenario 260 also preserves personal publication authority: safe detail guidance does not approve or execute a merge.
+
 Claude Code 的版本相容案例驗證 v2.1.295+ 僅在 publication PreToolUse 使用 `onFailure: block`，舊版/未知版本保留設定並警示；敏感例外訊息不得進入 hook payload。
 
 Publication preflight now uses the shared bounded font metadata scanner for candidate previews; safe diagnostics preserve the existing Required Checks and publication approval boundaries.
@@ -1928,6 +1934,8 @@ Publication Diagnostic IDs remain separate from ComfyUI discovery, Resource Auth
 Scenario 262 covers fail-closed Resource Authorization Profile/grant matching, Hook binding to observed URLs, fixed loopback ComfyUI model discovery and safe HTTP recovery, shared creative presets, and static-only MPS compatibility evidence.
 
 ## Scenario 263 — Commit Safety Diagnostics
+
+The native publication failure observer reports only an allowlisted category and parsed exit code; raw Host output remains outside durable findings.
 
 共享 hook 的非預期授權例外會 fail closed，並限制輸出為診斷 ID、穩定原因與 allowlist 例外類別。
 

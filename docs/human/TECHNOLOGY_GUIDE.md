@@ -85,6 +85,14 @@ Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEM
 
 ## Execution
 
+Publication preflight diagnoses literal commands and exact candidates without executing push, PR or merge actions; unsupported forms retain their stable refusal reason with a bounded detail code.
+Security-sensitive hook output is allowlisted and excludes raw command and exception text; native execution failures remain observations without retry or authority.
+The existing deterministic publication planner, squash-tree proof, merged recovery and Branch Hygiene cleanup manifest remain the canonical implementations; Plan44 adds no parallel workflow.
+Claude `PostToolUseFailure:Bash` reports the observed execution phase, fixed category and parsed exit code, while PreToolUse denial remains `NOT_EXECUTED`.
+Creative publication diagnostics remain Git evidence and do not authorize generated assets or change character artwork workflows.
+Personal publication mode remains bound to the approved task, exact candidate and required checks; detail guidance cannot authorize a merge.
+Independent review remains separate from publication diagnostics, which do not establish reviewer isolation or approval.
+
 Claude Code managed publication guard 依實際版本路由：v2.1.295+ 設定 `onFailure: block`，舊版/未知版維持相容設定並警示。
 
 Creative import candidates bind source and destination hashes and write only an absent target; Git imports require explicit opt-in and never stage or commit.
@@ -283,6 +291,8 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+Scenario 259 and the Matt Pocock Skill Explorer inventory remain unchanged; Scenario 261 verifies command detail codes and bounded native failure observations.
 
 Scenario 261 驗證 Claude Code 版本路由、Hook fail-closed 與診斷內容的隱私邊界。
 

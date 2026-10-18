@@ -55,6 +55,7 @@ AIPS Core
 ## Native Runtime Adapters
 
 Claude Code v2.1.295+ 的 managed publication PreToolUse guard 設定 `onFailure: block`；舊版/未知版不寫入不相容欄位並發出警示。UserPromptSubmit context hook 不套用此 failure policy。
+獨立的 `PostToolUseFailure:Bash` observer 只回報已開始執行的原生指令失敗分類與可解析 exit code，不回傳原始錯誤、不重試也不授權。
 Creative asset import remains an explicit CLI operation. OpenCode native file permissions neither authorize nor execute the Git import path; the exact-hash candidate and separate Git publication boundary still apply.
 
 Claude Code commit Hook diagnostics include only safe reason/category/detector data, an optional sanitized repository-relative file, and a Diagnostic ID. `aips safety diagnose commit` invokes the same scanner in read-only mode; this does not add a Host capability or publication permission.

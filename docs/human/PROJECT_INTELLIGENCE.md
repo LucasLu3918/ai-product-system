@@ -423,6 +423,8 @@ Scenario 134 不改 production Retrieval / Turn Context。Local Trial PASS 也�
 Project Intelligence follows `orchestration/PROJECT_IDENTITY.md`. EPHEMERAL storage is workspace-scoped by canonical `workspace_id`; repository-wide writer coordination belongs to the isolation layer and uses `repository_id`.
 ## Runtime Content Safety Boundary
 
+Plan44 records bounded manual caller and adapter evidence where the repository graph lacks publication nodes; this does not promote repository-wide graph coverage or change publication authority.
+
 Publication hook 發生未預期內部例外時保持 fail closed；診斷只提供 allowlist 類別與安全識別資料，禁止將例外本文寫入 Intelligence。
 Plan42 的 scoped Change Impact 覆蓋字型解析器、staged Hook/CLI、publication preview、候選歷史掃描、依賴與 Scenario 263；全域 Impact Graph 仍是 partial，不推論為完整。
 

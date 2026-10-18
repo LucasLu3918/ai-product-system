@@ -220,6 +220,7 @@ Runtime Policy Enforcement Core Changes also reconcile action and policy digest 
 For CLI and validation modularization, the boundary matrix must cover direct source-checkout invocation, installed symlink invocation, argument and exit-status compatibility, validator import order and timing labels, error aggregation order, single-owner lifecycle execution, and publication-policy output equivalence.
 
 Publication diagnostics changes derive tests for every Required Checks state, API/auth failure, stale PR/head evidence, raw-output redaction, no mutation, and no grant consumption. Doctor and merge diagnosis remain read-only; validate their exact candidate through repository validation and the Core Matrix before publication.
+Plan44 additionally binds pipe/compound/upstream-option refusal detail, Claude PostToolUseFailure exit-code redaction, PreToolUse NOT_EXECUTED separation, managed-hook removal and existing merged-PR/Branch Hygiene invariants to Scenario 261 and the exact candidate.
 
 ## Publication Root-Cause Recovery (Plan35)
 

@@ -244,14 +244,21 @@ class PlanningTest(unittest.TestCase):
 
     def test_diagnose_source_ref_options_and_compounds(self):
         cases = [
-            ('git push origin codex/plan30:refs/heads/codex/plan30', 'PUSH_SOURCE_NOT_EXACT_SHA'),
-            ('git push origin ' + self.head + ':codex/plan30', 'INVALID_TARGET_REF'),
-            ('git push -u origin ' + self.head + ':refs/heads/codex/plan30', 'COMMAND_FORM_UNSUPPORTED'),
-            ('pwd; git push origin main', 'COMMAND_FORM_UNSUPPORTED'),
+            ('git push origin codex/plan30:refs/heads/codex/plan30', 'PUSH_SOURCE_NOT_EXACT_SHA', None),
+            ('git push origin ' + self.head + ':codex/plan30', 'INVALID_TARGET_REF', None),
+            ('git push -u origin ' + self.head + ':refs/heads/codex/plan30', 'COMMAND_FORM_UNSUPPORTED', 'PUSH_UPSTREAM_OPTION_UNSUPPORTED'),
+            ('pwd; git push origin main', 'COMMAND_FORM_UNSUPPORTED', 'MULTI_COMMAND_UNSUPPORTED'),
+            ('git push origin main | cat', 'COMMAND_FORM_UNSUPPORTED', 'PIPE_UNSUPPORTED'),
+            ('git push "', 'COMMAND_FORM_UNSUPPORTED', 'SHELL_SYNTAX_UNSUPPORTED'),
         ]
-        for command, code in cases:
+        for command, code, detail_code in cases:
             with self.subTest(command=command):
-                self.assertEqual(planning.diagnose(self.repo, command)['diagnostics'][0]['reason_code'], code)
+                item = planning.diagnose(self.repo, command)['diagnostics'][0]
+                self.assertEqual(item['reason_code'], code)
+                if detail_code:
+                    self.assertEqual(item['detail_code'], detail_code)
+                    self.assertNotIn(command, json.dumps(item))
+
 
     def test_push_target_must_match_current_engineering_branch(self):
         command = 'git push origin ' + self.head + ':refs/heads/codex/another-branch'

@@ -314,6 +314,39 @@ class PublicationDiagnosticsTest(unittest.TestCase):
         self.assertIn('"runtime_version":"0.83.0"', context)
         self.assertIn('authorization_status=DENIED', context)
 
+    def test_claude_native_tool_failure_reports_only_safe_execution_evidence(self):
+        from contextlib import redirect_stdout
+        from io import StringIO
+
+        sentinel = 'PRIVATE_NATIVE_ERROR_SENTINEL'
+        payload = {
+            'hook_event_name': 'PostToolUseFailure', 'tool_name': 'Bash',
+            'tool_input': {'command': 'git push ' + sentinel},
+            'error': f'Command failed with exit code 17: {sentinel}',
+        }
+        output = StringIO()
+        with patch('sys.stdin', StringIO(json.dumps(payload))), redirect_stdout(output):
+            governance_guard.hook('claude-code')
+        text = output.getvalue()
+        self.assertNotIn(sentinel, text)
+        hook = json.loads(text)['hookSpecificOutput']
+        self.assertEqual(hook['hookEventName'], 'PostToolUseFailure')
+        self.assertIn('"phase":"native_tool_execution"', hook['additionalContext'])
+        self.assertIn('"exit_code":17', hook['additionalContext'])
+        self.assertIn('"execution_status":"FAILED"', hook['additionalContext'])
+
+    def test_pretool_denial_is_not_reported_as_native_execution_failure(self):
+        from contextlib import redirect_stdout
+        from io import StringIO
+
+        payload = {'hook_event_name': 'PreToolUse', 'tool_name': 'Bash',
+                   'tool_input': {'command': ''}}
+        output = StringIO()
+        with patch('sys.stdin', StringIO(json.dumps(payload))), redirect_stdout(output):
+            governance_guard.hook('claude-code')
+        self.assertNotIn('native_tool_execution', output.getvalue())
+        self.assertEqual(output.getvalue().strip(), '{}')
+
     def test_diagnostic_lookup_is_explicitly_unconfigured_by_default(self):
         with patch.dict(os.environ, {'AIPS_GOVERNANCE_AUDIT_LEDGER': ''}):
             result = diagnostics.lookup_diagnostic('d2fd1f72-9781-4a52-b220-d474b7e94b2f')

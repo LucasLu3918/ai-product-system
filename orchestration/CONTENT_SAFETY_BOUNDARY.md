@@ -32,6 +32,7 @@ Supported decisions are `ALLOW`, `REDACT`, `BLOCK` and `REVIEW`.
 ## Sink policy
 
 Diagnostic and ephemeral sinks redact sensitive values. Durable or public sinks block and require safe regeneration. `git commit` is content-sensitive but does not require Git Publish Approval. Publish authorization and content safety are separate decisions.
+Plan44's shell-form details and Claude native-failure observation remain outside the content scanner; no content sink is added and raw command or Host error data stays private.
 
 The canonical sink manifest is `config/content-safety.yaml`. Any new persistence or publication sink must be registered there and covered by the deterministic Integration Gate.
 

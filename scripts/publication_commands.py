@@ -7,9 +7,47 @@ from typing import Any
 
 
 class CommandError(ValueError):
-    def __init__(self, message: str, reason_code: str = "UNSUPPORTED_SHELL_SYNTAX"):
+    def __init__(self, message: str, reason_code: str = "UNSUPPORTED_SHELL_SYNTAX", *, detail_code: str | None = None):
         super().__init__(message)
         self.reason_code = reason_code
+        aliases = {
+            "UNSUPPORTED_SHELL_SYNTAX": "SHELL_SYNTAX_UNSUPPORTED",
+            "UNSUPPORTED_WRAPPER": "COMMAND_WRAPPER_UNSUPPORTED",
+            "UNSUPPORTED_INTERPRETER": "COMMAND_WRAPPER_UNSUPPORTED",
+        }
+        self.detail_code = detail_code or aliases.get(reason_code, reason_code)
+
+
+def command_form_detail(source: str) -> str:
+    """Return a stable, input-free classification for a compound shell form."""
+    import bashlex
+
+    try:
+        trees = bashlex.parse(source)
+    except (ValueError, NotImplementedError, bashlex.errors.ParsingError):
+        return "SHELL_SYNTAX_UNSUPPORTED"
+    kinds: set[str] = set()
+
+    def visit(node: Any) -> None:
+        kind = getattr(node, "kind", None)
+        if kind:
+            kinds.add(kind)
+        for value in vars(node).values() if hasattr(node, "__dict__") else ():
+            if isinstance(value, list):
+                for child in value:
+                    visit(child)
+            elif hasattr(value, "kind"):
+                visit(value)
+
+    for tree in trees:
+        visit(tree)
+    if "pipeline" in kinds or "pipe" in kinds:
+        return "PIPE_UNSUPPORTED"
+    if "list" in kinds:
+        return "MULTI_COMMAND_UNSUPPORTED"
+    if len(trees) > 1:
+        return "MULTI_COMMAND_UNSUPPORTED"
+    return "COMMAND_WRAPPER_UNSUPPORTED"
 
 
 def _unquoted_expansion(raw: str) -> bool:

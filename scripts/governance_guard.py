@@ -608,7 +608,7 @@ def deny_hook_input(runtime: str, reason: str, diagnostic: dict[str, Any] | None
         diagnostic = PublicationError("", reason).diagnostic()
     trace_status = _record_publication_diagnostic(diagnostic, runtime)
     safe_fields = {key: diagnostic.get(key) for key in
-                   ("diagnostic_id", "reason_code", "phase", "category", "detail", "detail_zh",
+                   ("diagnostic_id", "reason_code", "detail_code", "phase", "category", "detail", "detail_zh",
                     "blocking_rule", "blocking_rule_id", "source", "retryable", "recovery_mode", "next_step", "next_step_zh",
                     "findings")}
     if diagnostic.get('binding'):
@@ -669,6 +669,32 @@ def hook(runtime: str) -> int:
     if not isinstance(payload, dict):
         logger.warning("Hook input must be a JSON object")
         return deny_hook_input(runtime, "invalid_payload")
+    if payload.get("hook_event_name") == "PostToolUseFailure":
+        if runtime != "claude-code":
+            print("{}")
+            return 0
+        error = payload.get("error")
+        error_text = error[:20000] if isinstance(error, str) else ""
+        exit_match = re.search(r"\bexit(?:ed)?\s+(?:with\s+)?code\s*[:=]?\s*(\d+)\b", error_text, re.IGNORECASE)
+        exit_code = int(exit_match.group(1)) if exit_match and int(exit_match.group(1)) <= 255 else None
+        folded = error_text.casefold()
+        category = ("NETWORK_ERROR" if any(word in folded for word in ("timed out", "timeout", "connection refused", "network is unreachable"))
+                    else "AUTHENTICATION_ERROR" if any(word in folded for word in ("authentication failed", "permission denied", "not authorized"))
+                    else "NATIVE_TOOL_ERROR")
+        if payload.get("tool_name") != "Bash":
+            print("{}")
+            return 0
+        safe = {"status": "FAILED", "execution_status": "FAILED", "phase": "native_tool_execution", "tool": "Bash",
+                "error_category": category, "observed": True, "authorized": False, "executed": True}
+        if exit_code is not None:
+            safe["exit_code"] = exit_code
+        print(json.dumps({"hookSpecificOutput": {
+            "hookEventName": "PostToolUseFailure",
+            "additionalContext": "AIPS observed a native Bash tool failure after execution started: " +
+                json.dumps(safe, ensure_ascii=False, separators=(",", ":")) +
+                ". The host error text is omitted; inspect the native tool result and correct the command before retrying."
+        }}))
+        return 0
     tool_input = payload.get("tool_input")
     if not isinstance(tool_input, dict) and not isinstance(payload.get("aips_runtime_action"), dict):
         logger.warning("Hook input is missing a valid tool_input object")
@@ -738,8 +764,11 @@ def hook(runtime: str) -> int:
     except Exception as exc:
         from publication_commands import CommandError
         if isinstance(exc, CommandError):
-            return deny_hook_input(runtime, exc.reason_code,
-                                   PublicationError("", exc.reason_code).diagnostic())
+            if exc.reason_code == "UNSUPPORTED_SHELL_SYNTAX":
+                return deny_hook_input(runtime, "COMMAND_FORM_UNSUPPORTED",
+                                       PublicationError("", "COMMAND_FORM_UNSUPPORTED",
+                                                        detail_code=exc.detail_code).diagnostic())
+            return deny_hook_input(runtime, exc.reason_code)
         if isinstance(exc, (OSError, ValueError, TypeError, KeyError, IndexError, AttributeError, ImportError, subprocess.TimeoutExpired)):
             return deny_hook_input(runtime, "UNSUPPORTED_SHELL_SYNTAX")
         raise

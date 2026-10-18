@@ -57,6 +57,7 @@ Parallel analysis and review remain allowed. A writable Change Boundary has one 
 Before creating a worktree, AIPS scans active AIPS-owned isolation records for the same repository_id and Change Boundary, including verifiable legacy records from another worktree. A second active writer for that boundary is BLOCKED.
 
 Isolation does not authorize broader scope. Governance, approval binding, Change Impact and test obligations still apply exactly as they do in shared mode.
+The Claude native failure observer reports the host result only; it does not launch a second command, retry the operation or widen the isolated execution boundary.
 
 ## Safe cleanup
 

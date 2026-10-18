@@ -6,9 +6,13 @@ Given a dirty candidate, when publication validation or `aips publish doctor --w
 
 Given any protected publication refusal, when AIPS returns its diagnostic, then it includes a stable reason code, phase, blocker source, retryability, safe recovery mode, candidate SHA when verified, timestamp, and diagnostic ID; raw stderr, headers, credentials, and exception text are not emitted. Push, PR creation, checks, and merge failures remain attributed to their own phases.
 
+Given a publication command uses a shell pipeline, multiple commands, an unsupported wrapper, or `git push -u`, when read-only diagnosis rejects it, then the stable top-level `COMMAND_FORM_UNSUPPORTED` remains compatible and a bounded `detail_code` identifies the form with a safe recovery step. The diagnostic never includes the literal command and pipelines remain blocked.
+
+Given Claude Code emits `PostToolUseFailure` for a started Bash tool, when AIPS receives the failure event, then it reports `phase: native_tool_execution`, `execution_status: FAILED`, a fixed safe category, and the actual exit code when it can parse one. It omits the native error text, command, paths and secrets; it does not retry or authorize the operation. A PreToolUse denial remains `execution_status: NOT_EXECUTED` and never enters this failure path.
+
 Given a known publication rejection, when `PublicationError` is created, then its call site supplies an explicit stable reason code. An unclassified failure returns `INTERNAL_DIAGNOSTIC_GAP` and a safe error class; the class is included in the Claude Code denial context and optional redacted ledger only after allowlist validation. A push target that differs from the current engineering branch returns `PUSH_TARGET_BRANCH_MISMATCH`. Both retain phase, blocking rule, safe recovery guidance, and Traditional Chinese detail without exposing exception text.
 
-Given Claude Code v2.1.295 or later, when AIPS installs its managed PreToolUse publication guard, then it sets `onFailure: "block"` for that guard. Older or unknown versions omit the unsupported setting and report that host-level blocking on hook failure is unavailable; the UserPromptSubmit context hook remains unaffected.
+Given Claude Code v2.1.295 or later, when AIPS installs its managed PreToolUse publication guard, then it sets `onFailure: "block"` for that guard. Older or unknown versions omit the unsupported setting and report that host-level blocking on hook failure is unavailable; the UserPromptSubmit context hook and PostToolUseFailure diagnostic hook remain independent of that policy.
 
 Given Prepare and PreToolUse inspect the same candidate, when their observations are compared, then they expose the same allowlisted worktree ID, candidate SHA, full target ref, publication mode, AIPS version/revision, and binding fingerprint. A changed worktree, SHA, target or runtime version is visible as drift; the fingerprint is observational only and grants no authority.
 
