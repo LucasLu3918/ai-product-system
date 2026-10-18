@@ -298,6 +298,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
+Publication command-form and scanner recovery behavior is covered by the exact candidate Core Matrix and Scenario 261; it does not change the Skill Explorer contract or publication authority.
+
 The Matt Pocock Skill Explorer lifecycle remains independent of the AVIF media-format registry and its security checks.
 
 Scenario 259 and the Matt Pocock Skill Explorer inventory remain unchanged; Scenario 261 verifies command detail codes and bounded native failure observations.
@@ -566,6 +568,8 @@ Official Docs Site 使用 VitePress 1.6.x stable line，提供 sidebar、local s
 
 Documentation Placement 將每個 behavior-bearing source 綁到 canonical Human topic；Technology Guide 的廣域 trigger surface若出現尚未映射的新 source，CI 會 fail closed，要求先更新 placement contract。每條已知 subsystem rule 也明確限制 Technology Guide 可修改的 domain，因此版本新增功能不能再任意 append 到文件尾端。
 ## Runtime Content Safety Boundary
+
+Publication validation checks the literal command form before candidate inspection; the existing scanner then checks the exact tree and reachable history. Stable `SECRET_SCAN_*` failures remain fail-closed and redact raw exception details.
 
 AVIF uses the same 8 MiB media cap and a 1 MiB metadata cap; unsupported or animated structures fail closed and the AV1 payload is not decoded as text.
 

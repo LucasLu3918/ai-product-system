@@ -13,6 +13,8 @@ Plan41 keeps commit inspection inside Runtime Content Safety: the native Hook an
 
 Publication diagnostics use shared reason codes and safe candidate bindings from the existing authority and preflight modules. Prepare, Hook, and Doctor observations remain distinct from Host permission, Human authorization, and execution.
 
+Personal publication validates the literal executable and subcommand before candidate inspection, then requires the existing exact-candidate/history secret scan. Scanner failures use stable redacted diagnostics; no new authority component or path is introduced.
+
 Claude Code publication denials may trigger one bounded read-only Doctor observation for retryable network, rate-limit or GitHub server errors; the existing publication authority remains the only merge decision path.
 
 The publication Doctor uses the shared safe API observation path and keeps the candidate branch distinct from remote target-branch policy evidence.

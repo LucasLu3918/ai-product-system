@@ -1353,6 +1353,7 @@ Scenario 167 驗證 provider-neutral observable trajectory 的 fingerprint、det
 - automated：**167 / 167**
 ## Runtime Content Safety Conformance
 
+
 The read-only Parallel Run Dashboard is covered by Scenario 173 and exposes only sanitized run projection evidence; it does not add publication or control authority.
 
 ## Scenario 174 — EARS Requirement Traceability
@@ -1804,6 +1805,8 @@ The cross-profile quality evidence extension is covered by Scenario 258; this cr
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+Scenario 261 adds publication command-form validation and redacted scanner failure recovery independently of Skill discovery, routing, or inventory behavior.
+
 Scenario 265 adds no Skill Explorer or install behavior; it reuses the existing media scanner.
 
 Publication diagnostics do not alter Scenario 259's upstream Skill inventory, filtering, or canonical-only default.
@@ -1913,6 +1916,10 @@ Current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md)
 
 ## Scenario 260 — Publication diagnostics and Doctor
 
+Scenario 261 verifies unsupported personal publication command forms are rejected before candidate scanning and that scanner policy, Git-object and file-read failures remain blocked with redacted diagnostics.
+
+Scenario 261 extends this publication-diagnostic contract with literal command validation before scanning and stable redacted failure classification; denied commands remain `NOT_EXECUTED`.
+
 Scenario 260 also preserves personal publication authority: safe detail guidance does not approve or execute a merge.
 
 Claude Code 的版本相容案例驗證 v2.1.295+ 僅在 publication PreToolUse 使用 `onFailure: block`，舊版/未知版本保留設定並警示；敏感例外訊息不得進入 hook payload。
@@ -1944,6 +1951,8 @@ Publication Diagnostic IDs remain separate from ComfyUI discovery, Resource Auth
 Scenario 262 covers fail-closed Resource Authorization Profile/grant matching, Hook binding to observed URLs, fixed loopback ComfyUI model discovery and safe HTTP recovery, shared creative presets, and static-only MPS compatibility evidence.
 
 ## Scenario 263 — Commit Safety Diagnostics
+
+The candidate/history publication scanner separately classifies policy, Git-object and file-read failures; Scenario 261 verifies those failures remain blocked without exposing paths or exception text.
 
 The native publication failure observer reports only an allowlisted category and parsed exit code; raw Host output remains outside durable findings.
 

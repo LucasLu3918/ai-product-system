@@ -12,7 +12,7 @@ import re
 import subprocess
 from datetime import date
 from pathlib import Path, PurePosixPath
-from typing import Any, Iterable
+from typing import Any, ClassVar, Iterable
 
 import yaml
 from aips_common import canonical_hash as _aips_canonical_hash
@@ -53,6 +53,33 @@ ASSIGNMENT = re.compile(
 class ScanError(ValueError):
     """A candidate could not be scanned completely or safely."""
 
+    ALLOWED_REASON_CODES: ClassVar[set[str]] = {
+        "SECRET_SCAN_POLICY_INVALID",
+        "SECRET_SCAN_ALLOWLIST_EXPIRED",
+        "SECRET_SCAN_BASE_INVALID",
+        "SECRET_SCAN_GIT_OBJECT_MISSING",
+        "SECRET_SCAN_FILE_UNREADABLE",
+        "SECRET_SCAN_INTERNAL_ERROR",
+        "SECRET_SCAN_POLICY_UNAVAILABLE",
+    }
+
+    def __init__(self, message: str, *, reason_code: str = "SECRET_SCAN_INTERNAL_ERROR",
+                 phase: str = "content_scan", component: str = "check_secret_leakage"):
+        super().__init__(message)
+        self.reason_code = reason_code if reason_code in self.ALLOWED_REASON_CODES else "SECRET_SCAN_INTERNAL_ERROR"
+        self.phase = phase
+        self.component = component
+
+    def safe_diagnostic(self) -> dict[str, Any]:
+        """Return only stable, non-sensitive classification fields."""
+        return {
+            "reason_code": self.reason_code,
+            "phase": self.phase,
+            "component": self.component,
+            "error_class": type(self).__name__,
+            "retryable": False,
+        }
+
 
 def sha256(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
@@ -67,32 +94,42 @@ def load_policy(path: Path) -> tuple[dict[str, Any], str]:
     try:
         policy = yaml.safe_load(raw.decode("utf-8"))
     except (UnicodeError, yaml.YAMLError) as exc:
-        raise ScanError("secret-scan policy is not valid UTF-8 YAML") from exc
+        raise ScanError("secret-scan policy is not valid UTF-8 YAML", reason_code="SECRET_SCAN_POLICY_INVALID",
+                        phase="content_scan.policy_load") from exc
     if not isinstance(policy, dict) or policy.get("version") != 1:
-        raise ScanError("secret-scan policy version must be 1")
+        raise ScanError("secret-scan policy version must be 1", reason_code="SECRET_SCAN_POLICY_INVALID",
+                        phase="content_scan.policy_validation")
     limits = policy.get("limits") or {}
     if not isinstance(limits, dict) or not isinstance(limits.get("max_file_bytes"), int) or limits["max_file_bytes"] < 1:
-        raise ScanError("secret-scan policy requires a positive limits.max_file_bytes")
+        raise ScanError("secret-scan policy requires a positive limits.max_file_bytes",
+                        reason_code="SECRET_SCAN_POLICY_INVALID", phase="content_scan.policy_validation")
     generated = policy.get("generated_paths") or []
     lockfiles = policy.get("lockfiles") or {}
     allowlist = policy.get("allowlist") or []
     if not isinstance(generated, list) or not all(isinstance(x, str) and x for x in generated):
-        raise ScanError("secret-scan policy generated_paths must be a list of globs")
+        raise ScanError("secret-scan policy generated_paths must be a list of globs",
+                        reason_code="SECRET_SCAN_POLICY_INVALID", phase="content_scan.policy_validation")
     if not isinstance(lockfiles, dict) or not isinstance(lockfiles.get("path_patterns"), list) or not isinstance(lockfiles.get("disabled_detectors"), list):
-        raise ScanError("secret-scan policy lockfiles configuration is invalid")
+        raise ScanError("secret-scan policy lockfiles configuration is invalid",
+                        reason_code="SECRET_SCAN_POLICY_INVALID", phase="content_scan.policy_validation")
     if not isinstance(allowlist, list):
-        raise ScanError("secret-scan policy allowlist must be a list")
+        raise ScanError("secret-scan policy allowlist must be a list", reason_code="SECRET_SCAN_POLICY_INVALID",
+                        phase="content_scan.policy_validation")
     for item in allowlist:
         if not isinstance(item, dict) or not all(item.get(key) for key in ("path", "detector", "fingerprint", "reason", "expires")):
-            raise ScanError("each allowlist entry requires path, detector, fingerprint, reason, and expires")
+            raise ScanError("each allowlist entry requires path, detector, fingerprint, reason, and expires",
+                            reason_code="SECRET_SCAN_POLICY_INVALID", phase="content_scan.policy_validation")
         if not re.fullmatch(r"[0-9a-f]{16}", str(item["fingerprint"])):
-            raise ScanError("allowlist fingerprint must be a 16-character lowercase SHA-256 prefix")
+            raise ScanError("allowlist fingerprint must be a 16-character lowercase SHA-256 prefix",
+                            reason_code="SECRET_SCAN_POLICY_INVALID", phase="content_scan.policy_validation")
         try:
             expiry = date.fromisoformat(str(item["expires"]))
         except ValueError as exc:
-            raise ScanError("allowlist expiry must use YYYY-MM-DD") from exc
+            raise ScanError("allowlist expiry must use YYYY-MM-DD", reason_code="SECRET_SCAN_POLICY_INVALID",
+                            phase="content_scan.policy_validation") from exc
         if expiry < date.today():
-            raise ScanError("secret-scan policy contains an expired allowlist entry")
+            raise ScanError("secret-scan policy contains an expired allowlist entry",
+                            reason_code="SECRET_SCAN_ALLOWLIST_EXPIRED", phase="content_scan.policy_validation")
     return policy, sha256(raw)
 
 
@@ -140,7 +177,8 @@ def active_allowlist(path: str, detector: str, value_fingerprint: str, policy: d
     today = date.today()
     for item in policy.get("allowlist", []):
         if item["expires"] < today.isoformat():
-            raise ScanError("secret-scan policy contains an expired allowlist entry")
+            raise ScanError("secret-scan policy contains an expired allowlist entry",
+                            reason_code="SECRET_SCAN_ALLOWLIST_EXPIRED", phase="content_scan.allowlist_check")
         if (
             glob_matches(path, str(item["path"]))
             and item["detector"] == detector
@@ -319,7 +357,8 @@ def scan_worktree(root: Path, policy: dict[str, Any], *, strict: bool, paths: li
 def git(root: Path, *args: str, check: bool = True) -> bytes:
     proc = subprocess.run(["git", *args], cwd=root, capture_output=True)
     if check and proc.returncode:
-        raise ScanError("Git could not resolve the exact publication candidate")
+        raise ScanError("Git could not resolve the exact publication candidate",
+                        reason_code="SECRET_SCAN_GIT_OBJECT_MISSING", phase="content_scan.git_object_read")
     return proc.stdout
 
 
@@ -338,14 +377,24 @@ def decode_tree_paths(raw: bytes) -> list[tuple[str, str, str]]:
     return entries
 
 
-def scan_candidate(root: Path, base: str, head: str, policy: dict[str, Any]) -> tuple[list[dict[str, Any]], list[str], str, str]:
-    base_sha = git_text(root, "rev-parse", "--verify", f"{base}^{{commit}}")
-    head_sha = git_text(root, "rev-parse", "--verify", f"{head}^{{commit}}")
+def scan_candidate(root: Path, base: str, head: str, policy: dict[str, Any], *,
+                   diagnostics: list[dict[str, Any]] | None = None) -> tuple[list[dict[str, Any]], list[str], str, str]:
+    try:
+        base_sha = git_text(root, "rev-parse", "--verify", f"{base}^{{commit}}")
+    except ScanError as exc:
+        raise ScanError(str(exc), reason_code="SECRET_SCAN_BASE_INVALID",
+                        phase="content_scan.base_resolution") from exc
+    try:
+        head_sha = git_text(root, "rev-parse", "--verify", f"{head}^{{commit}}")
+    except ScanError as exc:
+        raise ScanError(str(exc), reason_code="SECRET_SCAN_GIT_OBJECT_MISSING",
+                        phase="content_scan.head_resolution") from exc
     ancestor = subprocess.run(
         ["git", "merge-base", "--is-ancestor", base_sha, head_sha], cwd=root, capture_output=True
     )
     if ancestor.returncode != 0:
-        raise ScanError("candidate base is not an ancestor of candidate head")
+        raise ScanError("candidate base is not an ancestor of candidate head",
+                        reason_code="SECRET_SCAN_BASE_INVALID", phase="content_scan.base_validation")
 
     findings: list[dict[str, Any]] = []
     blockers: list[str] = []
@@ -394,8 +443,15 @@ def scan_candidate(root: Path, base: str, head: str, policy: dict[str, Any]) -> 
             if "\x00" in text:
                 blockers.append(f"candidate file has unknown binary format: {normalize_path(path)}")
                 continue
-        except (ScanError, UnicodeError):
+        except (ScanError, UnicodeError) as exc:
             blockers.append(f"candidate file is unreadable or not UTF-8 text: {normalize_path(path)}")
+            if diagnostics is not None:
+                if isinstance(exc, ScanError) and exc.reason_code == "SECRET_SCAN_GIT_OBJECT_MISSING":
+                    diagnostic = exc.safe_diagnostic()
+                else:
+                    diagnostic = ScanError("candidate file is unreadable", reason_code="SECRET_SCAN_FILE_UNREADABLE",
+                                           phase="content_scan.candidate_file_read").safe_diagnostic()
+                diagnostics.append(diagnostic)
             continue
         scan_text(text, path, policy, strict=True, findings=findings)
 
@@ -457,8 +513,16 @@ def scan_candidate(root: Path, base: str, head: str, policy: dict[str, Any]) -> 
                 if "\x00" in text:
                     blockers.append(f"candidate history file has unknown binary format: {normalize_path(path)}")
                     continue
-            except (ScanError, UnicodeError):
+            except (ScanError, UnicodeError) as exc:
                 blockers.append(f"candidate history file is unreadable or not UTF-8 text: {normalize_path(path)}")
+                if diagnostics is not None:
+                    if isinstance(exc, ScanError) and exc.reason_code == "SECRET_SCAN_GIT_OBJECT_MISSING":
+                        diagnostic = exc.safe_diagnostic()
+                    else:
+                        diagnostic = ScanError("candidate history file is unreadable",
+                                               reason_code="SECRET_SCAN_FILE_UNREADABLE",
+                                               phase="content_scan.history_file_read").safe_diagnostic()
+                    diagnostics.append(diagnostic)
                 continue
             scan_text(text, path, policy, strict=True, findings=findings, revision=commit)
 
@@ -485,6 +549,7 @@ def main() -> int:
     root = Path(args.root).expanduser().resolve()
     findings: list[dict[str, Any]] = []
     blockers: list[str] = []
+    diagnostics: list[dict[str, Any]] = []
     candidate: dict[str, str] | None = None
     try:
         policy_path = args.policy.expanduser().resolve()
@@ -495,13 +560,22 @@ def main() -> int:
             args.head = args.head or os.environ.get("AIPS_GATE_HEAD_SHA")
             if not args.base or not args.head:
                 raise ScanError("publication-candidate mode requires --base and --head")
-            findings, blockers, base_sha, head_sha = scan_candidate(root, args.base, args.head, policy)
+            findings, blockers, base_sha, head_sha = scan_candidate(
+                root, args.base, args.head, policy, diagnostics=diagnostics)
             candidate = {"base_sha": base_sha, "head_sha": head_sha}
         else:
             findings, blockers = scan_worktree(root, policy, strict=strict, paths=args.paths)
         scanner_hash = sha256(Path(__file__).read_bytes())
     except (OSError, UnicodeError, ScanError, yaml.YAMLError, ValueError) as exc:
         blockers.append(str(exc))
+        if isinstance(exc, ScanError):
+            diagnostics.append(exc.safe_diagnostic())
+        elif isinstance(exc, OSError):
+            diagnostics.append(ScanError("scanner input is unavailable", reason_code="SECRET_SCAN_POLICY_UNAVAILABLE",
+                                         phase="content_scan.policy_load").safe_diagnostic())
+        else:
+            diagnostics.append(ScanError("scanner failed", reason_code="SECRET_SCAN_INTERNAL_ERROR",
+                                         phase="content_scan.internal").safe_diagnostic())
         policy_hash = sha256(b"unavailable")
         scanner_hash = sha256(Path(__file__).read_bytes())
 
@@ -515,6 +589,7 @@ def main() -> int:
         "status": status,
         "findings": findings,
         "blockers": blockers,
+        "diagnostics": diagnostics,
         "policy_sha256": policy_hash,
         "scanner_sha256": scanner_hash,
         "note": "Secret values are never emitted; fingerprint is SHA-256 prefix only.",

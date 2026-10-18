@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Classify exact-candidate secret-scan failures with stable redacted diagnostics, and reject unsupported publication command forms before candidate inspection or scanning.
+
 - Add bounded static AVIF EXIF/XMP metadata inspection to staged commit, candidate/history scan, publication preflight and Creative raster validation; preserve fail-closed diagnostics and the existing 8 MiB limit.
 
 - Add bounded detail codes for unsupported publication command forms and a Claude `PostToolUseFailure` diagnostic that reports observed native execution phase and exit code without raw host error text; preserve fail-closed authorization and recovery behavior.

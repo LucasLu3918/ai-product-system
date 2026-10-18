@@ -14,6 +14,8 @@ Static AVIF EXIF/XMP metadata uses the existing media registry and strict scanne
 
 Commit Hook and read-only `aips safety diagnose commit` call the same staged-candidate implementation. Commit scans always use strict ignore-marker behavior. Supported PNG, JPEG, WebP, M4A, MP3, TTF, OTF, WOFF and WOFF2 metadata is bounded and format-aware; font signatures and declared decompressed sizes are checked before fontTools parsing. FontTools/Brotli absence, malformed or spoofed fonts, unsupported binaries and incomplete scans fail closed with redacted structured diagnostics. Git blob sizes are checked before staged contents are loaded. This is a content decision, not publication authority.
 
+Personal publication rejects unsupported literal command forms before candidate inspection, then scans the exact final tree and commit history. Scanner policy, base, Git-object and file-read failures use stable redacted diagnostics and continue to block publication.
+
 All AIPS-owned persistence paths should call:
 
 ```python

@@ -146,6 +146,7 @@ scenarios:
     coverage: lifecycle
     evidence:
       - scripts/publication_authority.py
+      - scripts/check_secret_leakage.py
       - scripts/publication_planning.py
       - scripts/publication_diagnostics.py
       - scripts/governance_audit.py

@@ -371,6 +371,8 @@ Plan36 publication diagnostics preserve this topic's existing behavior and autho
 
 ## Security 與 Governance
 
+Personal Git publication rejects unsupported executable/subcommand forms before inspecting the candidate. Supported forms still pass exact-candidate and history scanning plus the existing publication authority checks; scanner failures expose only stable safe classifications.
+
 AVIF metadata scanning is independent of Human publication grants, independent-review evidence and ComfyUI resource authorization.
 
 Publication detail codes and native failure observations remain non-authorizing across personal publication modes.
@@ -619,6 +621,8 @@ Docs build 與 Pages hosting 分開驗證：PR / main 都能證明 VitePress bui
 
 Documentation Placement 對 behavior-bearing source 採 fail-closed mapping：只要 source 落在 Technology Guide 的廣域同步 surface，就必須先命中 subsystem placement rule。這避免新功能以「文件最後補充說明」逃過 topic architecture。
 ## Runtime Content Safety Boundary
+
+Publication command-form checks run before candidate inspection, followed by the existing exact-tree/history secret scan. Scanner failures stay fail-closed and expose only stable redacted classifications; publication authority is unchanged.
 
 Static AVIF EXIF/XMP metadata is scanned across commit, candidate/history, preflight and Creative validation; the parser does not claim to decode AV1 image data.
 

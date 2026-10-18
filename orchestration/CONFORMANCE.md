@@ -1081,11 +1081,14 @@ Scenario 237 binds reason-code recovery output, format parity, privacy redaction
 
 AIPS retains HTTP status, endpoint, sanitized API error, branch/effective-rules evidence, dirty path groups, and stage-specific blocker attribution. Inaccessible evidence stays UNKNOWN. Exact-head merged recovery routes to post-merge reconciliation without another publication invocation; Human/host authority remains required. Evidence: `tests/scenarios/261-publication-diagnostics-and-safe-recovery.md`.
 
+
 ## Scenario 257 — Branch and PR lifecycle dispositions
 
 The branch lifecycle report classifies remote branches using current exact-SHA PR metadata and local checkout evidence. It distinguishes branches to keep, superseded work, PR branches requiring rebase, and cleanup candidates. These are advisory dispositions only: report generation and the scheduled workflow never delete branches or grant cleanup authorization. Unknown or incomplete evidence fails closed to KEEP. Scenario 257 is covered by `tests/evidence/branch_hygiene_lifecycle.py` and `tests/validation/branch_hygiene_contracts.py`.
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
+
+Scenario 261 publication command validation and scanner recovery do not change the pinned Skill Explorer inventory, routing, or installation contract.
 
 Scenario 265 adds no Skill Explorer or install behavior; it reuses the bounded media scanner.
 
@@ -1134,6 +1137,8 @@ Git publication diagnostics do not alter ComfyUI discovery, Resource Authorizati
 Scenario 262 locks stage-specific default-deny Profile diagnostics, kind/selector/operation/destination/constraint matching, observed Hook URL binding, and structured redacted Runtime/Creative recovery. It verifies fixed loopback ComfyUI read-only model discovery, HTTP/method/path/redirect denials, shared static asset presets and evidence-only MPS reporting; no inference or external download is performed.
 
 ## Scenario 263 — Commit Safety Diagnostics
+
+Plan45 separately checks personal publication command form before scanning and classifies scanner policy, base, Git-object, file-read and internal failures with redacted diagnostics. Scenario 261 verifies rejected publication remains blocked and `NOT_EXECUTED`.
 
 Plan44's native failure observer reports bounded execution metadata only; it excludes raw Host errors and does not authorize retry or publication.
 

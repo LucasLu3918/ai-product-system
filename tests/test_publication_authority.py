@@ -323,6 +323,83 @@ class PublicationTest(unittest.TestCase):
         with self.assertRaisesRegex(auth.PublicationError, 'secret scan blocked'):
             auth.validate_personal_action(self.repo, 'git_push', command)
 
+    def test_unsupported_command_form_is_rejected_before_candidate_or_secret_scan(self):
+        command = ['git', '-C', str(self.repo), 'push', 'origin',
+                   self.head + ':refs/heads/codex/test']
+        with patch('publication_authority.git', side_effect=AssertionError('candidate inspected')), \
+                patch('check_secret_leakage.scan_candidate', side_effect=AssertionError('scanner called')) as scan, \
+                self.assertRaises(auth.PublicationError) as caught:
+            auth.validate_personal_action(self.repo, 'git_push', command)
+        self.assertEqual(caught.exception.reason_code, 'COMMAND_FORM_UNSUPPORTED')
+        scan.assert_not_called()
+
+    def test_secret_scanner_failure_has_stable_redacted_publication_diagnostic(self):
+        raw = 'private token https://secret.invalid/value'
+        command = ['git', 'push', 'origin', self.head + ':refs/heads/codex/test']
+        with patch('publication_authority._personal_base', return_value=self.base), \
+                patch('check_secret_leakage.load_policy', side_effect=secret_scanner.ScanError(
+                    raw, reason_code='SECRET_SCAN_POLICY_INVALID', phase='content_scan.policy_validation')), \
+                self.assertRaises(auth.PublicationError) as caught:
+            auth.validate_personal_action(self.repo, 'git_push', command)
+        diagnostic = caught.exception.diagnostic()
+        self.assertEqual(diagnostic['reason_code'], 'SECRET_SCAN_POLICY_INVALID')
+        self.assertEqual(diagnostic['phase'], 'content_scan.policy_validation')
+        self.assertEqual(diagnostic['component'], 'check_secret_leakage')
+        self.assertEqual(diagnostic['error_class'], 'ScanError')
+        self.assertTrue(diagnostic['diagnostic_id'])
+        self.assertFalse(diagnostic['retryable'])
+        self.assertNotIn(raw, str(diagnostic))
+        self.assertNotIn('secret.invalid', str(diagnostic))
+
+    def test_secret_scanner_policy_failures_have_distinct_stable_codes(self):
+        invalid = self.path / 'invalid-secret-scan.yaml'
+        invalid.write_text('version: 99\n')
+        with self.assertRaises(secret_scanner.ScanError) as caught:
+            secret_scanner.load_policy(invalid)
+        self.assertEqual(caught.exception.reason_code, 'SECRET_SCAN_POLICY_INVALID')
+
+        policy = secret_scanner.yaml.safe_load(secret_scanner.DEFAULT_POLICY.read_text())
+        policy['allowlist'] = [{'path': 'fixture.txt', 'detector': 'assignment',
+            'fingerprint': 'a' * 16, 'reason': 'expired fixture',
+            'expires': (datetime.now(UTC).date() - timedelta(days=1)).isoformat()}]
+        expired = self.path / 'expired-secret-scan.yaml'
+        expired.write_text(secret_scanner.yaml.safe_dump(policy))
+        with self.assertRaises(secret_scanner.ScanError) as caught:
+            secret_scanner.load_policy(expired)
+        self.assertEqual(caught.exception.reason_code, 'SECRET_SCAN_ALLOWLIST_EXPIRED')
+
+    def test_candidate_scan_classifies_invalid_base_missing_head_and_unreadable_file(self):
+        policy, _ = secret_scanner.load_policy(secret_scanner.DEFAULT_POLICY)
+        with self.assertRaises(secret_scanner.ScanError) as caught:
+            secret_scanner.scan_candidate(self.repo, 'missing-base', 'HEAD', policy)
+        self.assertEqual(caught.exception.reason_code, 'SECRET_SCAN_BASE_INVALID')
+        with self.assertRaises(secret_scanner.ScanError) as caught:
+            secret_scanner.scan_candidate(self.repo, self.base, 'missing-head', policy)
+        self.assertEqual(caught.exception.reason_code, 'SECRET_SCAN_GIT_OBJECT_MISSING')
+
+        self.run_git(self.repo, 'switch', '-c', 'codex/unreadable-scan-fixture')
+        (self.repo / 'unreadable.txt').write_bytes(b'\xff\xfe')
+        self.run_git(self.repo, 'add', 'unreadable.txt')
+        self.run_git(self.repo, 'commit', '-m', 'unreadable UTF-8 fixture')
+        diagnostics = []
+        _findings, blockers, _base, _head = secret_scanner.scan_candidate(
+            self.repo, self.base, 'HEAD', policy, diagnostics=diagnostics)
+        self.assertTrue(blockers)
+        self.assertEqual(diagnostics[0]['reason_code'], 'SECRET_SCAN_FILE_UNREADABLE')
+        self.assertNotIn('unreadable.txt', str(diagnostics))
+
+    def test_unexpected_secret_scanner_failure_is_redacted_as_internal_error(self):
+        command = ['git', 'push', 'origin', self.head + ':refs/heads/codex/test']
+        with patch('publication_authority._personal_base', return_value=self.base), \
+                patch('check_secret_leakage.scan_candidate', side_effect=RuntimeError(
+                    'private token https://secret.invalid/value')), \
+                self.assertRaises(auth.PublicationError) as caught:
+            auth.validate_personal_action(self.repo, 'git_push', command)
+        diagnostic = caught.exception.diagnostic()
+        self.assertEqual(diagnostic['reason_code'], 'SECRET_SCAN_INTERNAL_ERROR')
+        self.assertEqual(diagnostic['error_class'], 'RuntimeError')
+        self.assertNotIn('secret.invalid', str(diagnostic))
+
     def test_signature_tamper_unsigned_and_wrong_key(self):
         for mutate in [lambda r: r.pop('signature'), lambda r: r['approval'].update(approved_by='agent'),
                        lambda r: r['scope'].update(target_ref='refs/heads/main'), lambda r: r.update(version=1)]:
