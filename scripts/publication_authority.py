@@ -29,12 +29,14 @@ PERSONAL_BRANCH_PREFIXES = ('agent/', 'bugfix/', 'chore/', 'claude/', 'codex/', 
 
 class PublicationError(ValueError):
     def __init__(self, message: str, reason_code: str | None = None, *,
-                 context: dict[str, Any] | None = None, phase: str | None = None):
+                 context: dict[str, Any] | None = None, phase: str | None = None,
+                 detail_code: str | None = None):
         super().__init__(message)
         self.context = context or {}
         self.reason_code = (reason_code if reason_code not in {None, 'PUBLICATION_REJECTED'}
                             else _reason_for_message(message))
         self.phase = phase
+        self.detail_code = detail_code
 
     def diagnostic(self) -> dict[str, Any]:
         # Never expose exception text: Git/host errors may contain private data.
@@ -59,8 +61,14 @@ class PublicationError(ValueError):
             'redacted': True,
             'recovery_mode': 'HUMAN_OR_HOST_REQUIRED' if source in {'HUMAN_AUTHORITY', 'HOST_PERMISSION'} else 'SAFE_OBSERVATION',
         }
+        detail_code = self.detail_code or self.context.get('detail_code')
+        detail = PUBLICATION_DETAIL_DIAGNOSTICS.get(detail_code) if isinstance(detail_code, str) else None
+        if detail:
+            result.update(detail_code=detail_code, detail=detail[0], next_step=detail[1])
         detail_zh, next_step_zh = PUBLICATION_DIAGNOSTICS_ZH.get(
             code, ('發布驗證未通過。', '檢查此階段的安全診斷，修正後重新執行唯讀驗證。'))
+        if detail:
+            detail_zh, next_step_zh = detail[2], detail[3]
         result['detail_zh'] = detail_zh
         result['next_step_zh'] = next_step_zh
         error_class = self.context.get('error_class') or type(self).__name__
@@ -226,6 +234,19 @@ PUBLICATION_DIAGNOSTICS = {
     'AUTHORITY_ACTION_MISMATCH': ('The requested action differs from the approved scope.', 'Stop and request Human approval for the changed action.'),
     'WORKTREE_STATE_UNAVAILABLE': ('The selected worktree status could not be read.', 'Inspect Git availability and repository state locally; do not infer that the worktree is clean.'),
     'PROTECTION_EVIDENCE_UNAVAILABLE': ('The effective branch policy could not be established from complete GitHub evidence.', 'Review HTTP status and endpoint evidence; ask an administrator for missing read permission or verify with the effective-rules API. Never infer that the branch is unprotected.'),
+}
+
+PUBLICATION_DETAIL_DIAGNOSTICS = {
+    'PIPE_UNSUPPORTED': ('A publication command was combined with a shell pipeline.', 'Run the exact approved publication command by itself; do not pipe it through another command.', '發布指令含有管線。', '單獨執行規劃產生的原生發布指令，不要串接管線。'),
+    'MULTI_COMMAND_UNSUPPORTED': ('A publication command was combined with another shell command.', 'Run one exact approved publication command at a time.', '發布指令與其他 Shell 命令組合。', '一次只執行一個經核准的原生發布指令。'),
+    'COMMAND_WRAPPER_UNSUPPORTED': ('A publication command uses an unsupported shell wrapper.', 'Use the standalone literal command emitted by the validated plan.', '發布指令使用不支援的 Shell 包裝形式。', '使用驗證計畫輸出的獨立原生指令。'),
+    'SHELL_SYNTAX_UNSUPPORTED': ('A publication command uses shell syntax that AIPS cannot safely inspect.', 'Simplify the command to the standalone literal form emitted by the validated plan.', '發布指令使用 AIPS 無法安全檢查的 Shell 語法。', '改用驗證計畫輸出的獨立字面指令。'),
+    'UNSUPPORTED_HEREDOC': ('A publication command uses a heredoc form AIPS cannot safely inspect.', 'Use a quoted heredoc or run the validated publication command separately.', '發布指令使用 AIPS 無法安全檢查的 heredoc 格式。', '改用加引號的 heredoc，或另外執行驗證過的發布指令。'),
+    'PUSH_UPSTREAM_OPTION_UNSUPPORTED': ('The upstream-setting push option is not supported for guarded publication.', 'Use the exact remote and full target ref from the validated plan without -u or --set-upstream.', '受保護的發布流程不支援設定 upstream 的 push 選項。', '依驗證計畫指定 remote 與完整目標 ref 執行，不要使用 -u 或 --set-upstream。'),
+    'PUSH_OPTION_UNSUPPORTED': ('The push command includes an unsupported option.', 'Use only the options emitted by the validated publication plan.', 'Push 指令含有不支援的選項。', '只使用驗證發布計畫輸出的選項。'),
+    'DYNAMIC_EXECUTABLE': ('The publication executable is dynamically selected and cannot be verified.', 'Use a literal executable name from a supported publication workflow.', '發布執行程式由動態內容選取，無法驗證。', '使用支援發布流程中的固定執行程式名稱。'),
+    'DYNAMIC_SUBCOMMAND': ('The publication subcommand is dynamically selected and cannot be verified.', 'Use a literal Git or GitHub CLI subcommand.', '發布子命令由動態內容選取，無法驗證。', '使用固定的 Git 或 GitHub CLI 子命令。'),
+    'DYNAMIC_CLI_OPTION': ('A publication context option is dynamically selected and cannot be bound.', 'Provide a literal repository, branch or worktree option value.', '發布環境選項由動態內容選取，無法綁定。', '提供固定的 repository、branch 或 worktree 選項值。'),
 }
 
 PUBLICATION_DIAGNOSTICS_ZH = {
@@ -598,7 +619,10 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
         while args and args[0].startswith('-'):
             flag, args = args[0], args[1:]
             if flag not in {'--force', '-f', '--delete'} and not flag.startswith('--force-with-lease='):
-                raise PublicationError('unsupported push option', 'COMMAND_FORM_UNSUPPORTED')
+                detail_code = ('PUSH_UPSTREAM_OPTION_UNSUPPORTED'
+                               if flag in {'-u', '--set-upstream'} else 'PUSH_OPTION_UNSUPPORTED')
+                raise PublicationError('unsupported push option', 'COMMAND_FORM_UNSUPPORTED',
+                                       detail_code=detail_code)
             flags.append(flag)
         if len(args) != 2 or not re.fullmatch(r'[A-Za-z0-9_.-]+', args[0]):
             raise PublicationError('one named remote and one explicit refspec required', reason_code='PUSH_METADATA_INVALID')

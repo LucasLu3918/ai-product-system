@@ -25,6 +25,7 @@ Creative Git asset import is a separate AIPS CLI action and is not evidence of O
 Creative Runtime diagnostics retain bounded reason, trace and recovery fields after redaction. Local ComfyUI discovery remains read-only, and static MPS metadata does not establish host inference compatibility.
 
 Publication Required Checks diagnostics share sanitized policy states across runtimes; only Claude Code performs the bounded automatic Doctor call for retryable remote failures.
+Claude Code's PostToolUseFailure event is a separate host contract and does not establish equivalent OpenCode event delivery or enforcement capability.
 
 The creative workspace import is exposed through the AIPS CLI; OpenCode native creative tools retain their separately verified action contract.
 

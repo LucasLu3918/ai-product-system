@@ -22,6 +22,7 @@ The policy evaluator is the Policy Decision Point. Claude `PreToolUse` and Gemin
 ## Shell publication command inspection
 
 The Claude/Gemini publication guard parses supported Bash input with the existing bounded AST parser. It recursively classifies command substitutions in arguments and in unquoted heredoc bodies without executing them. Quoted or escaped heredoc text stays literal. The parser locates Git and GitHub CLI subcommands after supported global options; dynamic executables, subcommands and Git context-option values remain denied. Unsupported syntax fails closed with a stable reason code and a short, sanitized recovery hint. This improves command classification only: protected publication still requires explicit literal arguments and the existing candidate, content-safety and approval checks.
+The Claude PostToolUseFailure event reports bounded evidence after a Bash command starts; it is not a policy decision, does not replay the command and excludes raw Host error text.
 
 Task write authorization is not a substitute for the Runtime Action PEP. `aips run owner` records the task's write set and truthful enforcement capability; `ADVISORY` must never be promoted to `TOOL_GUARDED` based on the presence of a lease alone.
 

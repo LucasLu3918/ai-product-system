@@ -1,147 +1,177 @@
 version: 1
 change:
-  id: plan43-publication-diagnostics-safe-recovery
-  summary: Preserve fail-closed publication diagnostics for unexpected hook authorization
-    failures and configure Claude Code native failure blocking only when the detected
-    runtime supports it.
+  id: plan44-publication-command-and-native-failure-diagnostics
+  summary: Add privacy-safe command-form detail codes and Claude native execution
+    failure evidence while preserving the publication authority model.
   boundary:
-  - Publication hook unexpected-error classification, safe error_class output, optional
-    redacted diagnostic ledger, and unchanged deny/Human authorization behavior.
-  - Claude Code managed PreToolUse hook version detection and onFailure:block compatibility
-    at v2.1.295+, including unaffected UserPromptSubmit behavior.
-  - Canonical Human/Agent documentation closure, Scenario 261/runtime contracts, and
-    exact-candidate repository validation.
+  - Unsupported publication commands retain COMMAND_FORM_UNSUPPORTED and gain fixed
+    detail_code recovery guidance; pipelines and compound commands remain fail-closed.
+  - Claude PostToolUseFailure:Bash reports observed execution failure phase, safe
+    category, and parseable exit code; PreToolUse denial remains NOT_EXECUTED.
+  - Managed Claude lifecycle installs/removes the independent failure observer; version-bound
+    PreToolUse onFailure behavior is unchanged.
+  - Existing ALREADY_MERGED/squash-tree evidence, Branch Hygiene cleanup manifest
+    and hook health behavior remain unchanged and regression covered.
+  - Canonical Human/Agent guidance and Scenario 261 remain synchronized.
 matrix:
-- boundary: Publication hook fail-closed behavior, diagnostics privacy, and authority
-    preservation
-  reason: Unexpected internal exceptions must not escape the hook or reveal exception
-    text; diagnostic metadata may expose only an allowlisted exception class while
-    preserving the existing deny decision.
+- boundary: Command-form parsing and diagnostic details
+  reason: Operators need safe distinctions for pipes, compound commands, wrappers,
+    malformed syntax and upstream push-option refusals while retaining the established
+    refusal contract.
   checks:
     static_lint:
       applicable: true
-      evidence: 'PASS: git diff --check; AIPS publish preview content-safety scan
-        PASS.'
+      evidence: 'Required: Ruff, selected static checks, and git diff --check on exact
+        candidate.'
     unit:
       applicable: true
-      evidence: 'PASS: tests/test_publication_diagnostics.py (15 tests), tests/test_publication_error_recovery.py
-        (7 tests), tests/test_publication_authority.py (37 tests).'
+      evidence: 'Required on frozen candidate: publication test discovery covers pipe,
+        compound, malformed, upstream option and no-command-echo assertions.'
     integration:
       applicable: true
-      evidence: 'PASS: publication hook RuntimeError contract in tests/test_publication_diagnostics.py;
-        runtime contract suite passed.'
+      evidence: 'Required: publication diagnose contract verifies reason/detail code,
+        phase, no command echo, no mutation and no grant consumption.'
     contract:
       applicable: true
-      evidence: 'PASS: tests/scenarios/261-publication-diagnostics-and-safe-recovery.md
-        and tests/validation/runtime_contracts.py.'
+      evidence: 'Required: Scenario 261 registration and runtime publication contracts.'
     e2e:
       applicable: false
-      na_reason: This is a native runtime hook and diagnostic contract with no application
-        UI or server; the hook and runtime lifecycle contracts exercise the supported
-        path.
+      na_reason: No application UI or server is added; parser and CLI lifecycle contracts
+        exercise the affected boundary.
     security:
       applicable: true
-      evidence: 'PASS: RuntimeError with a private sentinel is denied; output and
-        optional ledger retain only the validated error_class and do not expose exception
-        text.'
+      evidence: 'Required: pipe/compound/upstream options remain blocked; private
+        sentinel command text is absent from output.'
     migration_recovery:
       applicable: false
-      na_reason: No persistent schema migration or recovery workflow changes; the
-        optional JSONL ledger adds one allowlisted field compatibly.
+      na_reason: No persistent schema migration or recovery workflow change.
     cli_harness:
       applicable: true
-      evidence: 'PASS: PYTHONPATH=tests python -m validation.runtime_contracts plus
-        Claude hook installation/uninstallation contracts.'
+      evidence: 'Required: aips publish diagnose output and direct CLI invocation
+        contracts.'
     docs_schema:
       applicable: true
-      evidence: 'PASS: AIPS publish preview documentation closure and placement PASS;
-        repository validation runs in exact-candidate Integration Gate.'
-- boundary: Claude Code version-bound native publication guard failure policy
-  reason: Only supported Claude Code versions may receive onFailure:block; old/unknown
-    versions retain compatible settings with a warning, and prompt-context hooks must
-    not inherit the publication policy.
+      evidence: 'Required: docs placement and synchronization checks.'
+- boundary: Claude native execution failure event and redaction
+  reason: AIPS must distinguish authorization refusal from a native Bash command that
+    started and failed, without revealing host error content or creating authority.
   checks:
     static_lint:
       applicable: true
-      evidence: 'PASS: git diff --check; scripts/aips_cli/harness.sh bash syntax check.'
+      evidence: 'Required: Ruff, selected static checks, and git diff --check on exact
+        candidate.'
     unit:
       applicable: true
-      evidence: 'PASS: tests/validation/runtime_contracts.py uses a fake Claude executable
-        to verify automatic 2.1.295 detection and explicit 2.1.294 compatibility.'
+      evidence: 'Required: publication tests cover exit-code/private-sentinel redaction
+        and PreToolUse separation.'
     integration:
       applicable: true
-      evidence: 'PASS: runtime contract installs supported and older guard configurations
-        and verifies managed hook separation.'
+      evidence: 'Required: runtime_contracts validates PostToolUseFailure installation/removal
+        and settings preservation.'
     contract:
       applicable: true
-      evidence: 'PASS: Scenario 261 records v2.1.295+ and old/unknown-version behavior.'
+      evidence: 'Required: Scenario 261 native failure versus NOT_EXECUTED denial
+        contracts.'
     e2e:
       applicable: false
-      na_reason: A Claude Code native host is not installed at the required 2.1.295
-        version; synthetic executable lifecycle covers exact adapter routing but not
-        host execution.
+      na_reason: A compatible native Claude Code host is unavailable; fixture lifecycle
+        proves adapter routing, not live host delivery.
     security:
       applicable: true
-      evidence: 'PASS: only PreToolUse gets onFailure:block on supported versions;
-        old version omits the field and UserPromptSubmit remains unchanged.'
+      evidence: 'Required: raw error, command, paths and private sentinel do not appear;
+        no retry, grant consumption or external mutation.'
     migration_recovery:
-      applicable: false
-      na_reason: Managed settings update is additive and preserves unrelated user
-        settings; no persistent data migration.
+      applicable: true
+      evidence: 'Required: uninstall removes only AIPS-owned PostToolUseFailure wiring
+        and preserves unrelated user settings.'
     cli_harness:
       applicable: true
-      evidence: 'PASS: tests/validation/runtime_contracts.py exercises manage_runtime_adapter.py
-        install and removal.'
+      evidence: 'Required: managed install/remove lifecycle and Harness shell syntax.'
     docs_schema:
       applicable: true
-      evidence: 'PASS: Harness, Installation, and Scenario 261 canonical documentation
-        placement verified by AIPS publish preview.'
-- boundary: Cross-runtime documentation closure and repository-level contracts
-  reason: Publication behavior is shared across adapters and interacts with the existing
-    safety, resource authorization, and documentation contracts; verify exact scenario
-    registration and preserve all approval boundaries.
+      evidence: 'Required: Claude adapter and Human/Agent documentation closure.'
+- boundary: Existing recovery and cleanup invariants
+  reason: Reused ALREADY_MERGED/squash-tree, Branch Hygiene and hook-health behaviors
+    must not regress into duplicate publication or unsafe cleanup.
   checks:
     static_lint:
       applicable: true
-      evidence: 'PASS: AIPS publish preview reports documentation closure and placement
-        PASS, content safety PASS, and approved Git identity PASS.'
+      evidence: 'Required: Ruff, selected static checks, and git diff --check on exact
+        candidate.'
     unit:
-      applicable: false
-      na_reason: Documentation-only additions have no separate unit behavior; exact
-        candidate repository validation checks all schema and conformance contracts.
+      applicable: true
+      evidence: 'Required: publication planning and error recovery tests for squash/merged
+        idempotency.'
     integration:
       applicable: true
-      evidence: 'Required: exact-candidate Core Integration Gate runs scripts/validate_repository.py
-        and configured affected-boundary checks before publication.'
+      evidence: 'Required: Branch Hygiene lifecycle uses exact one-time manifest and
+        SHA revalidation.'
     contract:
       applicable: true
-      evidence: 'PASS: Scenario 261 registration and runtime contracts; exact candidate
-        repository validation will verify generated conformance projections.'
+      evidence: 'Required: Scenario 261 and existing Branch Hygiene/publication lifecycle
+        contracts.'
     e2e:
       applicable: false
-      na_reason: No application user flow or remote side effect is added by the documentation;
-        remote PR required checks remain separate.
+      na_reason: No product UI or service is affected; deterministic Git fixtures
+        cover this lifecycle.
     security:
       applicable: true
-      evidence: 'PASS: AIPS publish preview candidate content scan; exact candidate
-        secret scan is part of the configured Gate.'
+      evidence: 'Required: no direct ref deletion, authority bypass, repeated PR/merge
+        action or weakened candidate/head binding.'
     migration_recovery:
-      applicable: false
-      na_reason: No installation or project-state migration.
+      applicable: true
+      evidence: 'Required: merged candidate resolves to reconciliation without push,
+        PR creation or merge invocation.'
     cli_harness:
       applicable: true
-      evidence: 'PASS: harness shell syntax and runtime contract checks; full repository
-        Gate remains required.'
+      evidence: 'Required: full publication planning and Branch Hygiene CLI contracts.'
     docs_schema:
       applicable: true
-      evidence: 'PASS: recursive documentation impact and placement preview; full
-        repository validator is required in Gate.'
+      evidence: 'Required: docs preserve ALREADY_MERGED and cleanup separation.'
+- boundary: Exact candidate, documentation and repository validation
+  reason: A Core security change requires source and contract parity, candidate-bound
+    evidence and complete repository validation before remote merge.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'Required: Ruff, selected static checks, and git diff --check on exact
+        candidate.'
+    unit:
+      applicable: true
+      evidence: 'Required: complete repository unit and lifecycle evidence.'
+    integration:
+      applicable: true
+      evidence: 'Required: complete local Integration Gate, exact-candidate secret
+        scan and remote repository required check.'
+    contract:
+      applicable: true
+      evidence: 'Required: static, scenario coverage, runtime contracts and Conformance
+        current view.'
+    e2e:
+      applicable: false
+      na_reason: No application user flow or service changed; native Claude host delivery
+        is separately recorded as unverified.
+    security:
+      applicable: true
+      evidence: 'Required: credential-free exact final-tree and base-to-head history
+        scan; no raw error/command persistence.'
+    migration_recovery:
+      applicable: false
+      na_reason: No persistent schema migration or recovery workflow change.
+    cli_harness:
+      applicable: true
+      evidence: 'Required: full validation profile, Harness install/remove and publication-preflight
+        contracts.'
+    docs_schema:
+      applicable: true
+      evidence: 'Required: canonical Human/Agent docs and Scenario 261 placement/synchronization
+        validation.'
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 review_evidence:
   required: false
 candidate:
-  base_sha: 486001968f64bab4f1d05d1922747843f9cf9d74
-  changed_files_hash: abd0baa5da1d3f583ab62851c16e9f4f5fcfdfd4b0f7937d8ed704813d36cfc6
+  base_sha: f71a09214c43e31f67d872e517b65526f43b3158
+  changed_files_hash: 6495596190497699a1bb3bdafdcb2531ac98494650243ddb61a6b4c43bf87eea
 blockers: []
 status: READY

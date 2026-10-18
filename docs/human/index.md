@@ -26,6 +26,8 @@ features:
 
 ## 文件如何組織
 
+Publication troubleshooting lives in User Guide; safe error boundaries and Claude hook semantics are cross-linked from Security Assurance, Harness and Scenario 261.
+
 Claude Code 的版本相容限制見安裝指南與 Harness adapter 說明；診斷契約和驗收案例分別由 Git Publication 指南及 Scenario 261 說明。
 Creative asset import 操作見 [User Guide](USER_GUIDE.md)，邊界與 Scenario 264 見 [Technology Guide](TECHNOLOGY_GUIDE.md) 和 [Conformance](CONFORMANCE.md)。
 

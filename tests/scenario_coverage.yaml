@@ -152,6 +152,8 @@ scenarios:
       - scripts/publication_commands.py
       - scripts/repository_governance_snapshot.py
       - scripts/governance_guard.py
+      - scripts/manage_runtime_adapter.py
+      - scripts/aips_cli/harness.sh
       - scripts/publish_preflight.py
       - tests/test_publication_authority.py
       - tests/test_publication_diagnostics.py
@@ -161,6 +163,7 @@ scenarios:
       - tests/evidence/repository_governance_snapshot_lifecycle.py
       - tests/validation/repository_governance_snapshot_contracts.py
       - tests/validation/publish_preflight_contracts.py
+      - tests/validation/runtime_contracts.py
       - harness/adapters/claude-code/CLAUDE.md
   - id: "240"
     path: tests/scenarios/240-personal-publication-default.md

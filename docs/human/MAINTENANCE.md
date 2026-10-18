@@ -12,6 +12,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+Character artwork keeps its existing source-to-candidate, hash-verification and create-only lifecycle; publication diagnosis adds no asset import or generation behavior.
+
 Scenario 261 的 adapter 版本限制及安全恢復建議應同步到 Human 與 Agent canonical 文件。
 
 Creative import changes map to the User Guide, Creative Direction protocol, Harness and Technology topics, architecture, security guidance, and Scenario 264. Review the exact placement closure while keeping global Impact Graph coverage unchanged.
@@ -533,6 +535,8 @@ Scenario 259 remains the independent contract for upstream Skill inventory and p
 
 Scenario 260/261 lifecycle, focused publication tests and the exact-candidate Integration Gate cover the new policy observation boundary.
 
+Plan44 keeps `COMMAND_FORM_UNSUPPORTED` backward compatible while adding safe `detail_code` guidance for pipes, compound commands, wrappers and unsupported upstream push options. Claude's managed `PostToolUseFailure:Bash` hook reports observed native execution failure and a parsed exit code without raw host text; Scenario 261, runtime contracts, security redaction, exact candidate matrix and Integration Gate cover the boundary. It does not retry, grant authority or alter existing merge, squash-tree or Branch Hygiene cleanup behavior.
+
 The publication validation matrix records the exact candidate, endpoint-status classifications and the no-mutation recovery invariant.
 
 Publication Scenario 260 requires tests for exact merge flags, SHA pinning, Required Checks missing/unconfigured/unknown, privacy redaction and advisory-only Host recovery.
@@ -782,6 +786,8 @@ Protected dispatch 會逐筆重新讀取 merged PR，確認 `merged_at`、head S
 
 
 ## Runtime Content Safety Boundary
+
+The Claude native failure observer emits only bounded allowlisted fields and does not persist raw host errors or command text.
 
 Runtime hook 的診斷輸出採 allowlist；只保留錯誤類別和穩定診斷資料，不記錄原始例外或命令。
 Plan41 adds redacted Hook findings, strict ignore-marker handling and bounded PNG/JPEG/WebP/M4A/MP3 metadata inspection through the existing commit safety boundary. Plan42 extends the same boundary to bounded TTF/OTF/WOFF/WOFF2 metadata, checks staged Git object sizes before reading blobs, and keeps publication preview and exact-candidate history scanning aligned. Unsupported binaries, malformed fonts/media, unavailable dependencies, unreadable Git objects and scanner failures remain explicit fail-closed outcomes; see Scenario 263.

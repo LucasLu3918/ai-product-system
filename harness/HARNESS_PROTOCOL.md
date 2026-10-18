@@ -2,6 +2,7 @@
 
 
 Publication prepare/diagnose planning is read-only and binds an explicit candidate worktree; native tools retain their own permission and authority checks. Doctor separates candidate/source branch from target policy branch and reports allowlisted HTTP/API error classes. Re-observe live Git/PR state before continuation; a planning fingerprint never grants publication or merge authority.
+Unsupported publication shell forms remain denied with safe detail codes. Claude PostToolUseFailure observes only a native failure after command start; PreToolUse denial remains NOT_EXECUTED, and no diagnostic retries or authorizes the command.
 OpenCode composes a managed global instruction block and digest-owned native Skill/Command projections. Adapter Registry drives Host status and ownership; runtime verification remains separate from file integrity. Basic installation keeps MCP client configuration review-only and governance ADVISORY.
 
 OpenCode is currently the only runtime that receives AIPS canonical Skills as native projections through `aips harness install`. Other Hosts load Skills through AIPS MCP Resources (`aips://catalog/skills`, then `aips://skills/{skill_id}`) or read the canonical source on demand; do not claim native Skill installation where no Host projection is implemented. Uninstall may remove only paths recorded in AIPS ownership state whose current digest matches the generated digest. Preserve pre-existing/unowned same-name files and modified owned files, report `CONFLICT`, and retain ownership state for safe retry. Never recommend broad deletion of a Host's native `skills/` directory.
@@ -161,6 +162,7 @@ Publication diagnosis is a read-only capability. Runtime adapters may report the
 ## Publication Root-Cause Recovery (Plan35)
 
 Managed native guard 必須維持拒絕優先。Claude Code 只有 v2.1.295+ 的 publication PreToolUse 使用 `onFailure: block`；舊版/未知版本不注入該欄位並明確警示。
+Claude `PostToolUseFailure` is a separate diagnostic event and does not alter this version-bound blocking rule.
 Plan40 requires stable explicit reason codes and a safe shared candidate/runtime binding across Prepare and native Hook output. Keep planned, AIPS-authorized, Host-decided, and executed states distinct; unknown errors map to `INTERNAL_DIAGNOSTIC_GAP`. An optional Diagnostic ID resolves only allowlisted entries from an explicitly configured hash-chained ledger after verification and never changes publication authority.
 
 Claude Code Hook may invoke the existing read-only Publication Doctor once for explicitly retryable network, rate-limit or GitHub server errors; the observation never retries or authorizes publication.

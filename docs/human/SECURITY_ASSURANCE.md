@@ -221,6 +221,8 @@ Read-only publication diagnosis distinguishes authentication, permission, missin
 
 Specific protected-publication reason codes expose only sanitized underlying categories. Missing Required Checks policy evidence blocks; Host denial, recovery suggestions and green CI do not replace signed grants or per-call Human confirmation.
 
+Unsupported publication command forms retain the stable refusal code and add only an allowlisted detail code; raw shell input is never included. Claude `PostToolUseFailure` is an observation after native execution starts, and reports a bounded category and parsed exit code without the host error text. It cannot authorize, retry or mutate publication state; PreToolUse denial remains `NOT_EXECUTED`.
+
 Publication diagnostics 只輸出固定 reason code 與安全修復指引。`prepare` 不簽發、消耗 Grant 或執行發布；high-assurance 保留外部單次 Grant，Host 拒絕不得以其他命令重試。
 
 Creative asset transfer requires an exact source SHA-256 and a create-only target. Git destinations are rejected by default; an explicit `--allow-git-destination` opt-in is recorded in the hash-bound candidate and is limited to the exact Git worktree root with a non-Git EPHEMERAL source. Candidate metadata is private and excludes asset bytes. Import never stages, commits or publishes the asset.
@@ -439,6 +441,8 @@ SAL 2+ default registration requires an independently retained anchor. SAL 4 req
 
 The retention helper never deletes evidence or grants compaction authority. Expiry only creates a Human-review action and a minimal digest record.
 ## Runtime Content Safety Boundary
+
+The Claude native failure observer excludes raw host errors and command text from diagnostic and durable sinks; only bounded allowlisted fields are reported.
 
 Publication guard 的 hook payload 與選用 ledger 僅接受 allowlist 的錯誤類別，排除例外訊息與命令內容。
 Plan41 preserves Secret, PII and Injection Signal blocking for commits while making denial causes observable without matched content. Protected commit scans use strict marker handling; supported media and TTF/OTF/WOFF/WOFF2 font metadata is inspected with bounded parsers, and unknown/malformed formats or incomplete scans fail closed. The read-only diagnostic CLI shares the Hook path and grants no authority.

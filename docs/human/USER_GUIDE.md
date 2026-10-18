@@ -71,6 +71,8 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+Publication failure diagnostics describe Git execution only; they do not establish creative intent or authorize generated assets.
+
 Creative 輸出若要 Git 發布仍須走獨立 publication guard；創作授權不取代發布授權。
 
 Creative font files pass through the shared bounded metadata scan when staged or included in publication candidates; it screens embedded text and does not approve licenses or visual quality.
@@ -196,6 +198,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
+Claude 的 Bash 失敗觀察位於 managed Harness hook，僅提供執行結果診斷，不改變 Host 權限或發布授權。
+
 Claude Code publication guard 依 host 版本採用 fail-closed hook 設定；安裝指南說明舊版與未知版本的相容行為。
 
 Creative asset import is a dedicated CLI workflow, separate from OpenCode native file permissions. Git destinations require the explicit, hash-bound import opt-in described under Creative Direction.
@@ -264,6 +268,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 詳細請看 [Global Harness 與 MCP](HARNESS.md)。
 
 ## Roles、Skills 與重用
+
+Plan44 沿用既有 Skill Explorer inventory 與列出預設，不新增 Skill、Role 或上游目錄項目。
 
 Runtime adapter 的安全能力依各 host 的實際版本判定，不能由 Skill 或能力目錄推定。
 
@@ -668,6 +674,8 @@ Prepare 與 `aips publish diagnose` 會並列候選驗證、授權與執行狀�
 
 Diagnostic ID 只有在使用者已設定既有 `AIPS_GOVERNANCE_AUDIT_LEDGER` 時，才會寫入 allowlist 欄位並可用 `aips publish diagnose --diagnostic-id <UUID> --format json` 查詢。查詢會驗證 hash chain；未設定時顯示 `NOT_CONFIGURED`，不會自動建立新 ledger。Trace 寫入失敗不會改變 Hook 的允許／拒絕決定，也不輸出原始指令或例外內容。
 
+`aips publish diagnose` 對 pipe、多重命令、Shell 包裝語法與 `git push -u` 維持拒絕，並在既有 `COMMAND_FORM_UNSUPPORTED` 下提供 `detail_code` 與安全修正指引。Claude Code 的 `PostToolUseFailure:Bash` 另外回報已開始執行的原生工具失敗階段、固定錯誤分類及可解析的 exit code；原始 Host 錯誤與命令不會進診斷，Hook 不會重試或授權。PreToolUse 拒絕仍標示 `NOT_EXECUTED`。
+
 `branch-hygiene.yml` 的報告會依 branch SHA、目前 main、local checkout 與 PR 狀態列出 `KEEP`、`SUPERSEDED`、`REBASE_REQUIRED` 或 `CLEANUP_CANDIDATE`。這些分類供維護者檢視，不會自動 merge、rebase、關閉 PR 或刪除 branch；清理仍須逐筆核准 exact manifest。
 
 預設個人模式會在程式修改與驗證完成後，自行推送工程分支並建立／更新指向遠端預設分支的 PR；不需設定簽發服務。只有使用者明確要求 local-only／不發布時才停在本機。一般 PR merge 時，Claude Code 會顯示原生確認並列出 PR、base/head SHA 與 required checks；Gemini CLI 透過互動式 extension policy 每次要求確認。若目前任務明確授權合併，且 `gh pr merge --auto` 通過相同候選驗證，Claude Code 可啟用 GitHub auto-merge 而不再要求第二次 Claude 確認；GitHub 仍會等待 checks 與 repository policy，Gemini 仍逐次詢問。Codex Hook 仍是 advisory，無法保證攔截直接 merge 命令。直接推送保護分支、刪除分支與發行不屬於個人模式。
@@ -805,6 +813,8 @@ Scenario / validation history
 
 Documentation Placement Contract 會檢查 heading hierarchy、version/scenario-style heading 與 changed-line placement。新增功能不得只在 current-behavior 文件尾端追加 `vX.Y` / Scenario 說明；若確實需要新 topic，必須同時把 canonical section 加入 placement contract。
 ## Runtime Content Safety Boundary
+
+PostToolUseFailure 診斷只輸出 allowlist 類別與 exit code，不保存 Host 原始錯誤或命令內容。
 
 Hook 對非預期授權例外 fail closed，僅顯示安全診斷 ID 與 allowlist 例外類別，不顯示原始例外文字。
 

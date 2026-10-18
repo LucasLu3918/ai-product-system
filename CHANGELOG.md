@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add bounded detail codes for unsupported publication command forms and a Claude `PostToolUseFailure` diagnostic that reports observed native execution phase and exit code without raw host error text; preserve fail-closed authorization and recovery behavior.
+
 - Allow explicitly opted-in, hash-bound, create-only creative asset import to the exact Git worktree root from a non-Git EPHEMERAL source; preserve default Git rejection and never stage or commit.
 
 - Preserve specific publication rejection codes; add safe Prepare/Hook binding and lifecycle fields, Traditional Chinese recovery guidance, and optional verified Diagnostic ID lookup through the existing configured governance audit ledger.

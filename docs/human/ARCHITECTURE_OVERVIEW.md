@@ -133,6 +133,8 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 ## Creative Workflow
 
+Creative file changes retain their existing authorization boundary; publication diagnostics provide no creative-file grant.
+
 Creative 任務與 Git publication 維持分離；發布 guard 的版本相容性與拒絕決策不受 creative grant 影響。
 
 Creative asset import is a separate local flow from generation: Git destinations require explicit user opt-in, hash-bound source and destination checks, create-only writes, and no automatic staging or commit.
@@ -194,6 +196,8 @@ Plan36 publication diagnostics preserve this topic's existing behavior and autho
 
 ## Planning 與 Product Delivery
 
+Plan44's exact candidate matrix binds diagnostic and adapter evidence to the final changed-file set.
+
 Claude Code 的 managed publication PreToolUse guard 僅在 v2.1.295 以上設定 `onFailure: block`；舊版或未知版本保留相容設定並警示。共用 guard 遇到非預期授權例外仍拒絕操作，只回報診斷 ID 與 allowlist 例外類別。
 
 Merge readiness shares fresh policy evidence for the PR target branch between Doctor and the publication authority.
@@ -240,6 +244,8 @@ Phase 4 在這條實作流程加入可選的 OpenAPI client generator adapter：
 Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行報告與目前 Profile、契約、工具、輸入、產物、Git 歷史及 Phase 3 provenance 交叉核對；舊 Profile 不受影響。共用 Widgets 參考專案執行本機 HTTP 服務與產生的 client，驗證工作流程及該案例行為。各真實產品的契約、測試和證據仍留在產品專案。
 
 ## Deterministic Execution
+
+Claude native failure evidence is observational and never schedules retries or mutates the candidate.
 
 Transient publication recovery collects bounded evidence once and performs no workflow rerun or remote mutation.
 
@@ -361,6 +367,8 @@ Plan36 publication diagnostics preserve this topic's existing behavior and autho
 
 ## Security 與 Governance
 
+Publication detail codes and native failure observations remain non-authorizing across personal publication modes.
+
 Commit diagnostics remain a content-safety observation; they do not alter independent-review evidence, Resource Authorization, or publication authority.
 
 未知或不受支援的 publication reason code 會回報 `INTERNAL_DIAGNOSTIC_GAP`，並提供階段與安全恢復指引；diagnostic ID 僅能讀取已設定且通過 hash-chain 驗證的 allowlisted ledger event。
@@ -451,6 +459,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 
 ## Maintenance governance
+
+Publication diagnosis keeps its existing read-only recovery flow while adding safe details for unsupported command forms.
 
 Scenario 264 and the creative import guidance are registered with the existing documentation and conformance controls; this scoped addition does not upgrade repository-wide Impact Graph coverage.
 
@@ -599,6 +609,8 @@ Docs build 與 Pages hosting 分開驗證：PR / main 都能證明 VitePress bui
 
 Documentation Placement 對 behavior-bearing source 採 fail-closed mapping：只要 source 落在 Technology Guide 的廣域同步 surface，就必須先命中 subsystem placement rule。這避免新功能以「文件最後補充說明」逃過 topic architecture。
 ## Runtime Content Safety Boundary
+
+The native failure observer emits a fixed category and parsed exit code only; raw host errors and commands remain private.
 
 Hook 診斷只傳遞 allowlist 的錯誤類別與診斷欄位，不回傳原始例外文字或命令內容。
 Commit、publication preview 與候選歷史掃描共用 TTF/OTF/WOFF/WOFF2 metadata scanner；staged Git blob 會先檢查大小，診斷只輸出安全路徑或雜湊指紋。

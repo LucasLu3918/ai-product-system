@@ -4,6 +4,8 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ## Runtime flow
 
+Plan44 extends the existing flow with allowlisted shell-form detail and Claude-only native failure evidence; it adds no authority service, retry path or architecture component.
+
 The shared publication guard fails closed on unexpected authorization exceptions and returns a diagnostic ID plus an allowlisted exception class without exception text. Claude Code `onFailure: block` is enabled only for managed publication hooks on v2.1.295 or later; older or unknown versions retain compatible settings and receive a warning.
 Plan41 keeps commit inspection inside Runtime Content Safety: the native Hook and `aips safety diagnose commit` share one scanner, findings grant no authority, and unsupported binary or incomplete scans remain fail-closed.
 

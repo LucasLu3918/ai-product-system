@@ -47,6 +47,8 @@ Publication recovery documentation must be updated within existing canonical H2 
 
 Publication diagnostics and Doctor are one shared behavior across Human guidance and Claude Code, Codex and OpenCode adapters. Keep Required Checks state names, GitHub provider outcomes, redaction, read-only behavior, Claude's single retryable Doctor observation, and the no-policy-mutation/no-merge-authority boundary aligned with Scenario 260.
 
+Plan44 also synchronizes stable unsupported-command `detail_code` values and Claude's distinct `PostToolUseFailure` native-execution observation across User Guide, Security Assurance, Maintenance, Claude adapter guidance and Scenario 261. Keep raw Host errors private and preserve the PreToolUse `NOT_EXECUTED` state.
+
 Documentation rules match concrete behavior-bearing paths and map them to their owning topics. Shared registries such as `tests/scenario_coverage.yaml` do not by themselves imply that unrelated product domains changed; use scenario-specific rules when one scenario owns the behavior. CLI facade files follow the command group they route, not every feature that happens to use the same facade.
 
 Native Agent Skill projection changes map `scripts/native_skill_projection.py`, its CLI consumers and ownership tests to Installation / User Guide setup, Harness host behavior, Technology Guide implementation boundaries, and Scenario 233/235 evidence. Documentation must separate generated-file lifecycle guarantees from live Host discovery and invocation acceptance.
