@@ -795,6 +795,8 @@ Protected dispatch 會逐筆重新讀取 merged PR，確認 `merged_at`、head S
 
 ## Runtime Content Safety Boundary
 
+保留即時處理流程與所有安全檢查，僅調整偵測精確度；policy 變更需以固定良性／惡意樣本比較新舊結果，並驗證例外期限與精確範圍、診斷隱私、Git index/HEAD 不變性及 exact-candidate Gate。
+
 The Claude native failure observer emits only bounded allowlisted fields and does not persist raw host errors or command text.
 
 Runtime hook 的診斷輸出採 allowlist；只保留錯誤類別和穩定診斷資料，不記錄原始例外或命令。

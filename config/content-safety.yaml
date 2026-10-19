@@ -66,3 +66,20 @@ sinks:
       SECRET: {action: BLOCK, confidence: 0.99}
       PII: {action: BLOCK, confidence: 0.90}
       INJECTION_SIGNAL: {action: REVIEW, confidence: 0.60}
+injection_rules:
+  injection.override.v2:
+    confidence: 0.99
+    purpose: Classify high-confidence hierarchy replacement attempts.
+    actions: {default: REVIEW, git_commit: BLOCK, github_pr: BLOCK, release_notes: BLOCK, source_artifact: BLOCK}
+  injection.exfiltration.v2:
+    confidence: 0.99
+    purpose: Identify requests to expose protected instruction and authentication material.
+    actions: {default: REVIEW, git_commit: BLOCK, github_pr: BLOCK, release_notes: BLOCK, source_artifact: BLOCK}
+  injection.agent_execution.v2:
+    confidence: 0.95
+    purpose: Identify execution directives aimed at an automated actor.
+    actions: {default: REVIEW, git_commit: BLOCK, github_pr: BLOCK, release_notes: BLOCK, source_artifact: BLOCK}
+  injection.ambiguous.v2:
+    action: REVIEW
+    confidence: 0.60
+    purpose: Flag context-poor operational language for review.

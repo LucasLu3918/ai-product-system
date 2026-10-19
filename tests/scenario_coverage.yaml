@@ -2144,3 +2144,16 @@ scenarios:
       - scripts/publish_preflight.py
       - scripts/creative_image_validation.py
       - tests/test_safety_diagnostics.py
+  - id: "266"
+    path: tests/scenarios/266-content-safety-injection-context.md
+    coverage: lifecycle
+    evidence:
+      - tests/scenarios/266-content-safety-injection-context.md
+      - tests/fixtures/content-safety/corpus.json
+      - scripts/content_safety.py
+      - scripts/governance_guard.py
+      - scripts/safety_diagnostics.py
+      - config/content-safety.yaml
+      - config/content-safety-exceptions.yaml
+      - tests/test_content_safety.py
+      - tests/test_safety_diagnostics.py

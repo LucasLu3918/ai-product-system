@@ -291,6 +291,7 @@ The exact-candidate scanner inspects static AVIF EXIF/XMP metadata under the sam
 The exact candidate scan applies the shared bounded font parser to the final tree and changed history blobs, with stable redacted failures and no change to publication authority.
 
 The Integration Gate runs the content-safety lifecycle for affected candidates and requires the canonical sink manifest. Durable/public content safety failures are blocking; diagnostic redaction remains a safe degraded path.
+Scenario 266 verifies publication-diff injection classification uses added lines while Secret/PII checks retain the complete candidate diff; deleted or unchanged instruction-like text cannot block an unrelated edit.
 
 Runtime Policy changes require deterministic evaluator and native-hook lifecycle checks plus the mandatory exact-candidate secret scan. Live external sandbox/provider credentials are not baseline gate dependencies; absent verification must continue to produce a blocking runtime decision.
 

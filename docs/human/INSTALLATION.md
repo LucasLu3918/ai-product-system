@@ -85,6 +85,8 @@ Maintainer 的發布前入口為 `aips docs impact` 與 `aips publish plan|prefl
 
 `aips doctor` 會檢查 system checkout、Python environment、必要的 PyYAML／MCP runtime dependencies、CLI、Harness 與 MCP availability；必要依賴不完整時會回傳失敗並提示重新執行 `aips install`。`aips update` 與 `aips preflight` 會在 managed installation 缺少必要依賴時自動依 `requirements.txt` 修復。Maintainer 若要執行完整 repository validation，使用 `aips validate`；正式 PR / main 仍以 GitHub Actions 的 Janitor / repository checks 為準。
 
+Runtime Content Safety 規則與限期例外由 repository config 管理，不需安裝額外 parser 或外部服務。遇到 commit 阻擋時，使用 `aips safety diagnose commit` 檢視安全原因與建議；不可略過 Hook 或提交整個路徑免掃例外。
+
 OpenAPI tooling 是選用相依套件，不會隨基本安裝自動下載。使用前執行 `aips openapi doctor`；若狀態為 `NOT_INSTALLED`，明確執行 `aips openapi install`，由 AIPS managed venv 安裝 `requirements-openapi.txt` 中的固定版本。基本 `aips doctor` 會顯示此選用能力狀態，但缺少它不會使一般 AIPS 安裝失敗。完成後可在產品 repository 執行 `aips openapi validate <spec> --repo-root .`。
 
 Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需要額外安裝 Neo4j、外部資料庫或 provider credential。

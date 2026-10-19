@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Replace broad content-injection keyword pairing with versioned, source-aware rules; preserve full staged Secret/PII scanning, add exact expiring exceptions, and return redacted actionable commit diagnostics.
+
 - Classify exact-candidate secret-scan failures with stable redacted diagnostics, and reject unsupported publication command forms before candidate inspection or scanning.
 
 - Add bounded static AVIF EXIF/XMP metadata inspection to staged commit, candidate/history scan, publication preflight and Creative raster validation; preserve fail-closed diagnostics and the existing 8 MiB limit.

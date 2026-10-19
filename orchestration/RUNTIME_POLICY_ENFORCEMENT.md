@@ -42,6 +42,7 @@ AVIF metadata findings remain in the content-safety scanner and are not Runtime 
 
 Publication authorization 的未預期內部例外一律轉為 deny；診斷僅回報安全類別與識別資料。Claude Code `onFailure: block` 僅對 v2.1.295+ managed publication PreToolUse 設定。
 Plan41 commit findings are produced by the existing Content Safety policy, not the Runtime Policy decision envelope. Its read-only CLI shares the Hook scanner and cannot create an allow decision, mutate Git or grant publication authority.
+Scenario 266 records added-line injection classification and safe recovery for this scanner; full-blob secret/PII scanning and Runtime Policy decisions remain independent.
 
 Publication diagnostics share safe failure classifications with native policy reporting but remain read-only. A diagnostic lookup or trace write cannot change a policy decision, create a grant, or claim the Host executed an action.
 

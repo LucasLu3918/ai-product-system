@@ -466,6 +466,8 @@ The Parallel Run Dashboard is loopback-only and read-only. Its projection cannot
 
 AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned content is persisted or before candidate publication content is approved. Secrets are redacted from diagnostic sinks and blocked from durable/public sinks; deterministic PII is context- and sink-aware; external content is marked with provenance and prompt injection is reported as a signal. This boundary does not replace Human Authority, Publish Approval, native runtime hooks or repository-side secret protection.
 
+Commit scanning uses versioned injection rule IDs and changed-line context; Secret and PII checks still cover the full staged blob. Ambiguous injection signals remain blocked until resolved by human review. Any exception must match one rule, file, finding fingerprint and sink, expire on a declared date, and carry approval evidence. It never applies to Secret, PII, unsupported formats or scanner errors.
+
 ## Runtime Policy Enforcement
 
 ComfyUI Resource Authorization remains separate from AVIF container validation and does not grant access to image payloads.

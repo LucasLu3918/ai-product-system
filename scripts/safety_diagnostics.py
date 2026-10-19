@@ -17,6 +17,27 @@ from governance_guard import commit_safety
 from publication_authority import PublicationError
 
 
+def _recovery_payload(diagnostic: dict[str, Any]) -> dict[str, Any]:
+    evidence = []
+    for finding in diagnostic.get("findings") or []:
+        if not isinstance(finding, dict):
+            continue
+        safe = {key: finding[key] for key in
+                ("category", "detector", "rule_id", "file", "line", "finding_fingerprint")
+                if key in finding}
+        if safe:
+            evidence.append(safe)
+    next_step = diagnostic.get("next_step_zh") or diagnostic.get("next_step")
+    return {
+        "summary": diagnostic.get("detail_zh") or diagnostic.get("detail"),
+        "blocking_phase": diagnostic.get("phase"),
+        "evidence": evidence,
+        "next_steps": [next_step] if next_step else [],
+        "human_approval_required": diagnostic.get("reason_code") == "CONTENT_REVIEW_REQUIRED",
+        "matched_content_included": False,
+    }
+
+
 def diagnose_commit(worktree: Path, message_file: Path) -> dict[str, Any]:
     """Inspect staged blobs and a message file using the native Hook implementation."""
     root = worktree.resolve()
@@ -26,11 +47,13 @@ def diagnose_commit(worktree: Path, message_file: Path) -> dict[str, Any]:
         result = commit_safety(root, command)
     except PublicationError as exc:
         diagnostic = exc.diagnostic()
+        diagnostic["recovery"] = _recovery_payload(diagnostic)
         return {"decision": "BLOCK", "diagnostic": diagnostic}
     except Exception as exc:  # noqa: BLE001 - unexpected scanner errors are safe, closed denials.
         diagnostic = PublicationError("internal commit scanner failure", "CONTENT_SCANNER_FAILED",
                                       context={"error_class": type(exc).__name__},
                                       phase="content_scan").diagnostic()
+        diagnostic["recovery"] = _recovery_payload(diagnostic)
         return {"decision": "BLOCK", "diagnostic": diagnostic}
     if result.get("decision") == "BLOCK":
         finding_fields = {key: result.get(key) for key in
@@ -38,6 +61,7 @@ def diagnose_commit(worktree: Path, message_file: Path) -> dict[str, Any]:
         diagnostic = PublicationError("", result.get("reason_code") or "CONTENT_SAFETY_BLOCKED",
                                       phase=result.get("phase") or "content_scan").diagnostic()
         diagnostic.update({key: value for key, value in finding_fields.items() if value is not None})
+        diagnostic["recovery"] = _recovery_payload(diagnostic)
         return {"decision": "BLOCK", "diagnostic": diagnostic}
     # Never serialize commit text or scanner payloads in a read-only report.
     return {"decision": "ALLOW", "diagnostic": None}

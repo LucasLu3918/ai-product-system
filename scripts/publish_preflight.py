@@ -518,16 +518,20 @@ def remote_policy(branch: str, offline: bool) -> dict[str, Any]:
 def content_safety_plan(args: argparse.Namespace, base: str, head: str) -> dict[str, Any]:
     checks: list[dict[str, Any]] = []
 
-    def check(sink: str, payload: Any, label: str) -> None:
-        result = safe_emit(sink=sink, payload=payload)
+    def check(sink: str, payload: Any, label: str, context: dict[str, Any] | None = None) -> None:
+        result = safe_emit(sink=sink, payload=payload, context=context)
         checks.append({"label": label, "sink": sink, "decision": result["decision"], "findings": result["findings"]})
 
     messages = git("log", "--format=%B", f"{base}..{head}")
     check("git_commit", messages, "commit_messages")
     diff = git("diff", "--no-ext-diff", "--unified=0", base, head)
-    from content_safety import git_diff_payload
+    from content_safety import git_diff_payload_with_added_lines
 
-    check("source_artifact", git_diff_payload(diff), "candidate_diff")
+    diff_payload, added_lines = git_diff_payload_with_added_lines(diff)
+    check("source_artifact", diff_payload, "candidate_diff", {
+        "source_path": "<candidate-diff>",
+        "injection_changed_lines": sorted(added_lines),
+    })
     if args.commit_message:
         check("git_commit", args.commit_message, "explicit_commit_message")
     if args.body:

@@ -216,6 +216,7 @@ Plan46 binds bounded static AVIF EXIF/XMP extraction, the 8 MiB file and 1 MiB m
 Plan42 binds bounded TTF/OTF/WOFF/WOFF2 parsing, size-before-read, dependency-failure, metadata-secret, Hook/CLI/publication/history parity and unchanged Git state evidence to Scenario 263 and the exact-candidate matrix.
 
 Runtime Content Safety Boundary changes require detector, sink, publication, provenance and documentation evidence. The active Core Change Matrix must bind the exact candidate changed-file set and include security negative paths.
+Plan47 additionally verifies that commit and publication-candidate injection checks inspect added diff lines, while Secret/PII scanning retains complete staged blobs and candidate diffs; Scenario 266 records the false-positive and malicious-addition regressions.
 
 Runtime Policy Enforcement Core Changes also reconcile action and policy digest binding, approval expiry/scope drift, runtime capability truthfulness, high-risk sandbox fail-closed behavior, semantic deny/escalate monotonicity, audit redaction and the exact candidate file-set binding.
 

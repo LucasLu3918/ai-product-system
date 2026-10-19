@@ -204,6 +204,8 @@ Readers continue using the last valid generation.
 
 ## Retrieval relationships and impact traversal
 
+Scenario 266 content-safety changes include the versioned configuration, Guard and publication-preflight consumers, stable diagnostics, tests and documentation in scoped impact reconciliation. These relationships remain advisory evidence and do not create an instruction-authority edge or promote repository-wide graph coverage.
+
 
 
 

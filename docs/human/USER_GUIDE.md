@@ -841,4 +841,6 @@ Hook 對非預期授權例外 fail closed，僅顯示安全診斷 ID 與 allowli
 
 本機可用 `aips safety diagnose commit --worktree <repo> --message-file <path> [--format json|text]` 查詢 commit 安全結果。它與 Hook 共用掃描器且只讀暫存候選；拒絕摘要不含命中值，Secret／PII／Injection 仍阻擋，未知格式或掃描不完整仍拒絕。
 
+一般程式碼中的 `run`、`data` 等名稱不再單獨觸發 Injection；commit 與 publication candidate 的 Injection 判斷依新增 diff 行與來源上下文進行，Secret 和 PII 仍掃描完整暫存檔或候選 diff。診斷會列出安全的原因、階段、規則／指紋、檔案與行號及排除步驟。模糊訊號需人工審查；核准例外僅限單一規則、檔案、指紋、sink 與期限。
+
 Commit, pull request and release content is scanned before durable/public publication. A blocked result requires regenerating safe content; it is not silently rewritten. Runtime capability remains truthful: AIPS-owned sinks are enforced, native hooks may be tool-guarded, and unsupported host tools are advisory.

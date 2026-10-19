@@ -58,8 +58,8 @@ content_safety_check = next(
     (item for item in (profile.get("checks") or []) if isinstance(item, dict) and item.get("id") == "content-safety-lifecycle"),
     None,
 )
-if not content_safety_check or content_safety_check.get("expected_test_count") != 5:
-    errors.append("content-safety-lifecycle must assert that all five tests were collected")
+if not content_safety_check or content_safety_check.get("expected_test_count") != 16:
+    errors.append("content-safety-lifecycle must assert that all sixteen tests were collected")
 
 cli = (ROOT / "bin/aips").read_text(encoding="utf-8") + "\n" + cli_implementation(ROOT)
 for phrase in ("aips scheduler --graph", "aips integration-gate --profile", "integration-gate|janitor)", "scripts/deterministic_scheduler.py", "scripts/integration_gate.py"):

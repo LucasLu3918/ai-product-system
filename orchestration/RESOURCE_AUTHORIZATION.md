@@ -68,6 +68,7 @@ Protected operations such as publication, administration and destructive deletio
 
 Shared publication guard 的非預期授權例外會拒絕操作，輸出只包含 allowlist 例外類別與診斷 ID；這不改變任何資源 grant。
 Commit Content Safety is a separate content boundary, not a Resource Authorization profile or grant. Plan41 adds only read-only diagnostics and preserves all existing Human Authority, Required Checks and Git Publish Approval decisions.
+Scenario 266 further records versioned injection signals and exact expiring exceptions in that content boundary; neither changes Resource grants, Human approval, or publication decisions.
 
 Resource Authorization emits `status`, `phase`, `reason_code`, `source`, `retryable`, `trace_id` and `recovery.action` alongside its decision evidence. Profile absence, missing/unreadable files, malformed YAML/schema, and grant-scope mismatches retain separate stable reason codes. Local filesystem paths and raw parser errors are not emitted.
 

@@ -333,7 +333,7 @@ def operation_for(command: str):
 
 def commit_safety(cwd: Path, command: str) -> dict:
     """Scan actual commit messages and staged blobs; exempt only final author email metadata."""
-    from content_safety import scan_payload
+    from content_safety import added_line_numbers_from_diff, scan_payload
     from publication_authority import PublicationError
     from publication_commands import shell_commands
     commands = shell_commands(command)
@@ -375,9 +375,10 @@ def commit_safety(cwd: Path, command: str) -> dict:
         raise PublicationError("explicit commit message required", reason_code='PUBLICATION_INPUT_UNBOUND')
     message = '\n\n'.join(messages)
     try:
-        original = scan_payload(message, sink='git_commit', strict=True)
+        original = scan_payload(message, sink='git_commit', context={'source_path': '<commit-message>'}, strict=True)
     except Exception as exc:  # Any scanner error blocks the candidate.
-        raise PublicationError("commit message scanner failed", 'CONTENT_SCANNER_FAILED',
+        reason_code = getattr(exc, 'reason_code', 'CONTENT_SCANNER_FAILED')
+        raise PublicationError("commit message scanner failed", reason_code,
                                context={'error_class': type(exc).__name__}, phase='commit_message') from exc
     if any(item.type == 'SECRET' and item.action == 'BLOCK' for item in original):
         return _commit_block([item.as_dict() for item in original], 'commit_message', None)
@@ -387,11 +388,13 @@ def commit_safety(cwd: Path, command: str) -> dict:
         blocks[-1] = '\n'.join(trailer.sub(r'\1git-email-metadata\3', line) for line in blocks[-1].splitlines())
         message = '\n\n'.join(blocks)
     try:
-        safety = safe_emit(sink='git_commit', payload={'message': message}, strict=True)
+        safety = safe_emit(sink='git_commit', payload={'message': message},
+                           context={'source_path': '<commit-message>'}, strict=True)
     except Exception as exc:  # Scanner failures must fail closed with a safe class.
-        raise PublicationError("commit message scanner failed", 'CONTENT_SCANNER_FAILED',
+        reason_code = getattr(exc, 'reason_code', 'CONTENT_SCANNER_FAILED')
+        raise PublicationError("commit message scanner failed", reason_code,
                                context={'error_class': type(exc).__name__}, phase='commit_message') from exc
-    if safety['decision'] == 'BLOCK':
+    if safety['decision'] in {'BLOCK', 'REVIEW'}:
         return _commit_block(safety['findings'], 'commit_message', None)
     try:
         root_proc = subprocess.run(['git', 'rev-parse', '--show-toplevel'], cwd=cwd, env=READ_ONLY_GIT_ENV,
@@ -500,11 +503,28 @@ def commit_safety(cwd: Path, command: str) -> dict:
                 raise PublicationError("staged binary format is unsupported", "STAGED_CONTENT_UNSUPPORTED_BINARY",
                                        context={'error_class': type(exc).__name__}, phase='staged_blob') from exc
         try:
-            result = safe_emit(sink='git_commit', payload={'staged_blob': staged_text}, strict=True)
+            diff = subprocess.run(
+                ['git', '--literal-pathspecs', 'diff', '--cached', '--no-ext-diff', '--no-renames',
+                 '--unified=0', '--', relative],
+                cwd=root, env=READ_ONLY_GIT_ENV, capture_output=True, timeout=10, check=False,
+            )
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            raise PublicationError("staged diff unavailable for injection context", "STAGED_DIFF_UNAVAILABLE",
+                                   context={'error_class': type(exc).__name__}, phase='staged_diff') from exc
+        if diff.returncode:
+            raise PublicationError("staged diff unavailable for injection context", "STAGED_DIFF_UNAVAILABLE",
+                                   phase='staged_diff')
+        changed_lines = sorted(added_line_numbers_from_diff(diff.stdout.decode('utf-8', errors='replace')))
+        try:
+            result = safe_emit(
+                sink='git_commit', payload={'staged_blob': staged_text},
+                context={'source_path': relative, 'injection_changed_lines': changed_lines}, strict=True,
+            )
         except Exception as exc:  # Scanner failures fail closed.
-            raise PublicationError("staged content scanner failed", 'CONTENT_SCANNER_FAILED',
+            reason_code = getattr(exc, 'reason_code', 'CONTENT_SCANNER_FAILED')
+            raise PublicationError("staged content scanner failed", reason_code,
                                    context={'error_class': type(exc).__name__}, phase='content_scan') from exc
-        if result['decision'] == 'BLOCK':
+        if result['decision'] in {'BLOCK', 'REVIEW'}:
             return _commit_block(result['findings'], 'staged_blob', relative)
     return safety
 
@@ -515,12 +535,18 @@ def _commit_block(findings: list[dict[str, Any]], source: str, path: str | None)
                 'INJECTION_SIGNAL': 'CONTENT_INJECTION_BLOCKED'}
     safe_findings = []
     for finding in findings:
-        if not isinstance(finding, dict) or finding.get('action') != 'BLOCK':
+        if not isinstance(finding, dict) or finding.get('action') not in {'BLOCK', 'REVIEW'}:
             continue
+        reason_code = ('CONTENT_REVIEW_REQUIRED' if finding.get('action') == 'REVIEW'
+                       else code_for.get(finding.get('type'), 'CONTENT_SAFETY_BLOCKED'))
         item = {'reason_code': code_for.get(finding.get('type'), 'CONTENT_SAFETY_BLOCKED'),
                 'category': finding.get('type') if finding.get('type') in code_for else 'CONTENT',
                 'detector': finding.get('detector') if isinstance(finding.get('detector'), str) else 'unknown',
                 'source': source}
+        item['reason_code'] = reason_code
+        for field in ('rule_id', 'finding_fingerprint', 'confidence', 'action'):
+            if field in finding and isinstance(finding[field], (str, int, float)):
+                item[field] = finding[field]
         if isinstance(finding.get('line'), int) and finding['line'] > 0:
             item['line'] = finding['line']
         if path:

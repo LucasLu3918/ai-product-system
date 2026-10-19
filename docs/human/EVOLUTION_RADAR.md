@@ -54,6 +54,8 @@ External Agent/provider credentials 永遠是 optional enhancement；缺少 cred
 
 ## Effectiveness Feedback
 
+Scenario 266 tracks versioned runtime injection classification and added-line publication scanning; its deterministic corpus and exact-candidate checks are safety evidence, not Evolution Radar effectiveness or adoption evidence.
+
 Publication release evidence remains candidate-bound; retryable Doctor observations are diagnostic input and do not count as a passing Gate.
 
 Publication diagnostics effectiveness is evaluated by whether users can identify the failed observation phase and safe next step; retry guidance only re-collects transient evidence and never performs publication.

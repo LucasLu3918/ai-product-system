@@ -37,6 +37,7 @@ AVIF content-safety behavior is synchronized across User Guide, Security Assuran
 Creative Git asset import is mapped to the User Guide Creative Direction section, Technology Guide Execution, Architecture Overview Creative Workflow, Agent Creative Direction protocol, and Scenario 264.
 
 Plan41 synchronizes the shared commit scanner, strict marker behavior, supported media metadata parsing, redacted denial fields, read-only CLI and fail-closed errors across the Content Safety topic, Hook/CLI guidance, Scenario 263 and both Conformance views. Plan42 adds bounded TTF/OTF/WOFF/WOFF2 metadata parsing, fontTools/Brotli dependency installation, pre-read staged blob sizing and publication/history parity to the same placements. Human Authority, Required Checks and Git Publish Approval remain unchanged.
+Plan47 adds versioned injection rules and scans added lines for injection while preserving full staged-blob secret/PII scanning; exact expiring exceptions, safe recovery and regression evidence are synchronized through Scenario 266 and both Conformance views.
 
 Plan40 keeps reason-code mapping, candidate/runtime binding, diagnostic trace privacy, and separate planning/authorization/Host/execution states aligned across the User Guide, Maintenance, Claude and OpenCode adapter guidance, and Scenario 261. Diagnostic lookup reads only an explicitly configured, hash-chain-verified allowlisted event; it creates no ledger and grants no authority.
 

@@ -578,4 +578,6 @@ The shared commit candidate scanner backs both the native Hook and `aips safety 
 
 The provider-neutral `scripts/content_safety.py` kernel supplies deterministic secret and baseline PII detection, provenance-aware injection signals, and sink-aware `ALLOW`, `REDACT`, `BLOCK` and `REVIEW` decisions without requiring an external model or API credential.
 
+Versioned injection rules distinguish instruction override, exfiltration, agent execution and ambiguous wording. Git commit scanning evaluates changed lines with source context, while Secret/PII checks cover the full staged blob. The shared read-only diagnostic returns stable rule/finding IDs and actionable recovery without matched text. Exact, expiring exceptions require approval evidence and cannot bypass Secret, PII or scanner-failure blocks.
+
 Commit 與發布掃描支援有界的 TTF/OTF/WOFF/WOFF2 metadata；fontTools/Brotli 缺失、格式偽裝、解析錯誤或資源超限都 fail closed。

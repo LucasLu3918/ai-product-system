@@ -186,6 +186,9 @@ PUBLICATION_DIAGNOSTICS = {
     'CONTENT_SECRET_BLOCKED': ('A secret detector blocked commit content.', 'Remove or rotate the possible secret, then rerun the read-only commit safety diagnosis.', 'content_scan', 'SECRET'),
     'CONTENT_PII_BLOCKED': ('A personal-information detector blocked commit content.', 'Remove or redact the personal information according to policy, then rerun the diagnosis.', 'content_scan', 'PII'),
     'CONTENT_INJECTION_BLOCKED': ('An instruction-pattern detector blocked commit content.', 'Revise the instruction-like content, then rerun the read-only commit safety diagnosis.', 'content_scan', 'INJECTION_SIGNAL'),
+    'CONTENT_REVIEW_REQUIRED': ('An ambiguous instruction-like signal requires human review.', 'Review the rule, changed source path, line and fingerprint; add an exact, approved, unexpired exception only when the content is confirmed safe.', 'content_scan', 'INJECTION_REVIEW'),
+    'CONTENT_EXCEPTION_INVALID': ('The content-safety exception policy is malformed or incomplete.', 'Correct the exact rule/path/fingerprint/sink scope and approval fields, then rerun the read-only diagnosis.', 'content_exception', 'INVALID'),
+    'CONTENT_EXCEPTION_EXPIRED': ('A content-safety exception has expired and no longer applies.', 'Remove or renew the exact exception through the approved review process, then rerun the read-only diagnosis.', 'content_exception', 'EXPIRED'),
     'CONTENT_SAFETY_BLOCKED': ('The commit content safety policy blocked a candidate.', 'Review the safe finding categories, correct the candidate, then rerun the diagnosis.', 'content_scan', 'POLICY'),
     'CONTENT_INSPECTION_UNAVAILABLE': ('The content inspection step could not complete.', 'Check the local scanner and Git state, then retry without bypassing the guard.'),
     'AUTO_MERGE_REQUIRES_INTENT': ('Automatic merge planning requires explicit merge intent.', 'Re-run prepare with --merge-intent or --auto-merge only after reviewing the exact candidate.', 'authority', 'POLICY'),
@@ -307,6 +310,9 @@ PUBLICATION_DIAGNOSTICS_ZH = {
     'CONTENT_SECRET_BLOCKED': ('commit 內容觸發可能的密鑰偵測規則。', '移除或輪替可能的密鑰，再重新執行唯讀 commit 安全診斷。'),
     'CONTENT_PII_BLOCKED': ('commit 內容觸發個人資料偵測規則。', '依政策移除或遮蔽個人資料，再重新執行唯讀診斷。'),
     'CONTENT_INJECTION_BLOCKED': ('commit 內容觸發指令樣式偵測規則。', '修改類似指令的內容，再重新執行唯讀 commit 安全診斷。'),
+    'CONTENT_REVIEW_REQUIRED': ('commit 內容包含尚未確認的指令樣式訊號，需人工審查。', '檢查規則、變更檔案、行號與指紋；確認內容安全後，才可建立精確且未過期的核准例外。'),
+    'CONTENT_EXCEPTION_INVALID': ('內容安全例外政策格式錯誤或缺少必要欄位。', '修正精確規則、路徑、指紋、sink 與核准資料，再重新執行唯讀診斷。'),
+    'CONTENT_EXCEPTION_EXPIRED': ('內容安全例外已過期，不再生效。', '依核准流程移除或續期該筆精確例外，再重新執行唯讀診斷。'),
     'CONTENT_SAFETY_BLOCKED': ('commit 內容未通過安全政策。', '查看不含內容的分類摘要、修正候選後重新執行診斷。'),
 }
 

@@ -1963,3 +1963,7 @@ The native commit Hook and read-only `aips safety diagnose commit` use the same 
 ## Scenario 264 — Hash-bound Creative Git Asset Import
 
 The lifecycle verifies default Git destination rejection, explicit exact-root opt-in, hash revalidation, create-only writes, and unchanged Git index bytes. The source remains a non-Git EPHEMERAL workspace; import does not stage or commit.
+
+## Scenario 266 — Content Safety Injection Context and Recovery
+
+The fixed benign/malicious corpus verifies that common JavaScript data references pass, strong injection rules still block, ambiguous findings require review, and removed or unchanged staged lines do not block an unrelated edit. Publication-candidate injection checks inspect added diff lines while Secret/PII scanning retains the complete diff. Full staged Secret/PII coverage, exact expiring exceptions, safe reason/phase/fingerprint/recovery output, Hook parity and unchanged Git index/HEAD are covered by `tests/test_content_safety.py` and `tests/test_safety_diagnostics.py`.

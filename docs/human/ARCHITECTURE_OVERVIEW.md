@@ -636,4 +636,4 @@ Plan41 extends the existing boundary with structured, redacted commit-denial dia
 Telemetry additions use bounded allowlisted fields and exclude prompts, images, credentials and private reasoning.
 
 
-Before AIPS persists or publishes content, the sink-aware Runtime Content Safety Boundary applies deterministic secret/PII detection and records untrusted-content provenance. Diagnostic sinks redact; durable or public sinks block. This boundary complements, and does not replace, Human Authority and Git Publish Approval.
+Before AIPS persists or publishes content, the sink-aware Runtime Content Safety Boundary applies deterministic secret/PII detection and records untrusted-content provenance. Commit-time injection checks use changed-line context, while Secret and PII scanning covers the full staged blob; unresolved review findings remain blocked. Diagnostic sinks redact; durable or public sinks block. This boundary complements, and does not replace, Human Authority and Git Publish Approval.

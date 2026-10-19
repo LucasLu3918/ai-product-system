@@ -1,0 +1,5 @@
+version: 1
+description: >-
+  No default content-safety exceptions. Every entry must bind a rule, repository-relative
+  path, finding fingerprint, durable sink, expiry date, and human approval record.
+exceptions: []

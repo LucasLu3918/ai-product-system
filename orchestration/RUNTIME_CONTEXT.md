@@ -4,6 +4,8 @@ Runtime Context is the bounded, deterministic view of the active AIPS runtime, t
 
 ## Interpreter resolution
 
+Content-safety rules are versioned project configuration consumed by the shared runtime scanner and publication Guard; detected instruction-like content remains untrusted data and cannot gain Runtime Context or action authority.
+
 The creative import subcommands use the existing AIPS CLI Python selection and revalidate the exact source file before copying.
 
 

@@ -1152,3 +1152,7 @@ The canonical Skill registry and pinned upstream manifest classify the complete 
 ## Scenario 264 — Hash-bound Creative Git Asset Import
 
 tests/evidence/opencode_integration_lifecycle.py verifies the AIPS creative import candidate and CLI flow, source/candidate hash checks, no overwrite or path escape, explicit Git-root opt-in, and unchanged Git index bytes. It uses synthetic local assets and does not stage or commit.
+
+## Scenario 266 — Content Safety Injection Context and Recovery
+
+Versioned injection rules reject the former generic-keyword false positives while preserving strong override, exfiltration and agent-execution blocks. Commit and publication-candidate injection checks overlap added diff lines; Secret and PII checks remain full-blob/full-diff. Removed or unchanged suspicious content does not block an unrelated edit. Ambiguous signals require review and remain denied until an exact approved, unexpired exception applies. Tests verify scope/expiry, safe structured recovery, no matched-content output and unchanged Git index/HEAD.

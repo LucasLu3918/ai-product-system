@@ -439,3 +439,5 @@ Publication scanning excludes only validated numeric Git index/mode metadata; pa
 Run Dashboard projections consume only sanitized, allowlisted operational facts; prompts, reasoning, raw output, secrets and raw workspace paths remain excluded.
 
 Project Intelligence outputs are AIPS-owned durable content and must pass the Runtime Content Safety Boundary before persistence. Secret findings remain fingerprint-only and never include the detected value.
+
+Git commit diagnostics retain stable rule and finding fingerprints, safe file/line evidence and next-step guidance. Injection is evaluated on changed staged lines; Secret and PII scanning stays full-blob. An ambiguous finding is not an implicit allow, and a narrow expiring exception remains separate from Human publication authority.

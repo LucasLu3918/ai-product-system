@@ -33,6 +33,10 @@ Supported decisions are `ALLOW`, `REDACT`, `BLOCK` and `REVIEW`.
 - External content carries provenance such as `trust: UNTRUSTED`. Prompt injection is reported as `INJECTION_SIGNAL`, not as a claim of confirmed compromise.
 - A detector failure is fail-closed for commit, PR, release and high-assurance audit sinks, and degraded/drop behavior for low-risk diagnostic sinks.
 
+Injection rules have stable IDs for instruction override, credential exfiltration, agent-directed execution and ambiguous imperative wording. Ordinary identifiers such as `run` and `data` are not injection evidence by themselves. Commit-time and publication-candidate injection classification uses added diff lines; Secret and PII detectors continue to scan the complete staged blob or full candidate diff. Comments and strings remain inspectable, and no source extension is allowlisted.
+
+An unresolved `REVIEW` finding blocks commit, PR and release sinks. A repository exception must match one rule ID, repository-relative path, stable finding fingerprint and sink, include a future expiry plus approver/reference, and is rejected when malformed or expired. Exceptions cannot suppress Secret, PII, unsupported-binary or scanner-failure findings. The read-only diagnostic reports a reason, phase, safe evidence, next step and whether human review is required; it never includes matched content or grants publication authority.
+
 ## Sink policy
 
 Diagnostic and ephemeral sinks redact sensitive values. Durable or public sinks block and require safe regeneration. `git commit` is content-sensitive but does not require Git Publish Approval. Publish authorization and content safety are separate decisions.
