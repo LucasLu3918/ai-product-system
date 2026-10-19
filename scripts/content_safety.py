@@ -4,10 +4,10 @@
 from __future__ import annotations
 
 import argparse
+import datetime as dt
 import hashlib
 import json
 import re
-import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -18,22 +18,19 @@ try:
     from check_secret_leakage import (
         ASSIGNMENT,
         PATTERNS,
-        entropy,
-        placeholder,
         scan_text,
     )
 except ModuleNotFoundError:  # imported as a repository module
     from scripts.check_secret_leakage import (
         ASSIGNMENT,
         PATTERNS,
-        entropy,
-        placeholder,
         scan_text,
     )
 
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = ROOT / "config/content-safety.yaml"
+DEFAULT_EXCEPTIONS = ROOT / "config/content-safety-exceptions.yaml"
 GIT_DIFF_METADATA = re.compile(
     r"(?:index [0-9a-f]{4,64}\.\.[0-9a-f]{4,64}(?: [0-7]{6})?"
     r"|(?:old|new|deleted file|new file) mode [0-7]{6}"
@@ -49,18 +46,62 @@ def git_diff_payload(diff: str) -> list[str]:
     return [line for line in diff.splitlines() if not GIT_DIFF_METADATA.fullmatch(line)]
 
 
-EMAIL_RE = re.compile(r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", re.I)
+def git_diff_payload_with_added_lines(diff: str) -> tuple[str, set[int]]:
+    """Return the complete diff for secret/PII checks and its added-line indexes for injection checks."""
+    payload: list[str] = []
+    added_lines: set[int] = set()
+    in_hunk = False
+    for line in diff.splitlines():
+        if GIT_DIFF_METADATA.fullmatch(line):
+            continue
+        payload.append(line)
+        if line.startswith("diff --git "):
+            in_hunk = False
+        elif line.startswith("@@ "):
+            in_hunk = True
+        elif in_hunk and line.startswith("+") and not line.startswith("+++"):
+            added_lines.add(len(payload))
+    return "\n".join(payload), added_lines
+
+
+EMAIL_RE = re.compile(r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", re.IGNORECASE)
 PHONE_RE = re.compile(r"(?<!\d)(?:\+886[- ]?|0)9\d{2}[- ]?\d{3}[- ]?\d{3}(?!\d)")
 # Do not treat the numeric prefix of a hexadecimal Git SHA as a payment card.
 # A card candidate must be delimited from hexadecimal characters as well as
 # decimal digits; real card numbers in prose remain unchanged.
 CARD_RE = re.compile(r"(?<![0-9A-Fa-f])(?:\d[ -]?){13,19}(?![0-9A-Fa-f])")
-TAIWAN_ID_RE = re.compile(r"(?<![A-Z0-9])[A-Z][12]\d{8}(?![A-Z0-9])", re.I)
-INJECTION_RE = re.compile(
-    r"(?ix)\b(?:ignore|disregard|override|bypass)\b.{0,80}\b(?:previous|prior|system|developer|instructions?)\b"
-    r"|\b(?:reveal| disclose|print|show|upload|exfiltrate)\b.{0,80}\b(?:system prompt|secret|credential|token|password)\b"
-    r"|\b(?:execute|run|push|send)\b.{0,80}\b(?:command|repository|secret|credential|data)\b"
+TAIWAN_ID_RE = re.compile(r"(?<![A-Z0-9])[A-Z][12]\d{8}(?![A-Z0-9])", re.IGNORECASE)
+INJECTION_RULES = (
+    ("injection.override.v2", re.compile(
+        r"(?i)\b(?:ignore|disregard|override|bypass)\b.{0,80}"
+        r"\b(?:previous|prior|system|developer)\s+instructions?\b"
+    )),
+    ("injection.exfiltration.v2", re.compile(
+        r"(?i)\b(?:reveal|disclose|print|show|upload|exfiltrate|send)\b.{0,80}"
+        r"\b(?:system\s+prompt|secrets?|credentials?|tokens?|passwords?)\b"
+    )),
+    ("injection.agent_execution.v2", re.compile(
+        r"(?i)\b(?:agent|assistant|model|copilot|claude|gpt)\b.{0,60}"
+        r"\b(?:execute|run|push|send)\b.{0,80}"
+        r"\b(?:commands?|repositories|secrets?|credentials?|tokens?|passwords?|data)\b"
+    )),
+    ("injection.ambiguous.v2", re.compile(
+        r"(?i)\b(?:please|must|should|do\s+not|don't)\b.{0,40}"
+        r"\b(?:execute|run|push|send)\b.{0,80}"
+        r"\b(?:commands?|repositories|secrets?|credentials?|tokens?|passwords?|data)\b"
+    )),
 )
+STRONG_INJECTION_RULES = frozenset({
+    "injection.override.v2", "injection.exfiltration.v2", "injection.agent_execution.v2",
+})
+DURABLE_SINKS = frozenset({"git_commit", "github_pr", "release_notes", "source_artifact"})
+DIFF_HUNK_RE = re.compile(r"^@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@")
+
+
+class ContentSafetyExceptionError(ValueError):
+    def __init__(self, reason_code: str, message: str) -> None:
+        super().__init__(message)
+        self.reason_code = reason_code
 
 
 @dataclass(frozen=True)
@@ -73,6 +114,8 @@ class Finding:
     action: str
     confidence: float
     line: int | None = None
+    rule_id: str | None = None
+    finding_fingerprint: str | None = None
 
     def as_dict(self) -> dict[str, Any]:
         return self.__dict__.copy()
@@ -80,6 +123,86 @@ class Finding:
 
 def _fingerprint(value: str) -> str:
     return "sha256:" + hashlib.sha256(value.encode("utf-8", errors="replace")).hexdigest()[:16]
+
+
+def _stable_finding_fingerprint(rule_id: str, value: str, source_path: str) -> str:
+    normalized = " ".join(value.casefold().split())
+    identity = "\0".join((rule_id, source_path.replace("\\", "/"), normalized))
+    return "sha256:" + hashlib.sha256(identity.encode("utf-8", errors="replace")).hexdigest()
+
+
+def added_line_numbers_from_diff(diff: str) -> set[int]:
+    """Return new-file line numbers introduced by a unified Git diff."""
+    added: set[int] = set()
+    new_line: int | None = None
+    for line in diff.splitlines():
+        hunk = DIFF_HUNK_RE.match(line)
+        if hunk:
+            new_line = int(hunk.group(1))
+            continue
+        if line.startswith(("+++", "---")):
+            continue
+        if new_line is None:
+            continue
+        if line.startswith("+"):
+            added.add(new_line)
+            new_line += 1
+        elif line.startswith(" "):
+            new_line += 1
+        elif line.startswith("-"):
+            continue
+    return added
+
+
+def _validate_exceptions(path: Path, *, today: dt.date | None = None) -> list[dict[str, Any]]:
+    if not path.exists():
+        return []
+    try:
+        document = yaml.safe_load(path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        raise ContentSafetyExceptionError("CONTENT_EXCEPTION_INVALID", "content safety exception policy is invalid") from exc
+    if not isinstance(document, dict) or document.get("version") != 1 or not isinstance(document.get("exceptions"), list):
+        raise ContentSafetyExceptionError(
+            "CONTENT_EXCEPTION_INVALID", "content safety exception policy must be a version 1 mapping with an exceptions list"
+        )
+    today = today or dt.datetime.now(dt.UTC).date()
+    allowed_sinks = {"git_commit", "github_pr", "release_notes"}
+    for index, item in enumerate(document["exceptions"]):
+        if not isinstance(item, dict):
+            raise ContentSafetyExceptionError("CONTENT_EXCEPTION_INVALID", f"content safety exception {index} must be a mapping")
+        rule_id, path_value = item.get("rule_id"), item.get("path")
+        fingerprint, sink, expires = item.get("finding_fingerprint"), item.get("sink"), item.get("expires_on")
+        approval = item.get("approval_reference")
+        approver = item.get("approved_by")
+        if not isinstance(rule_id, str) or not re.fullmatch(r"injection\.(?:override|exfiltration|agent_execution|ambiguous)\.v2", rule_id):
+            raise ContentSafetyExceptionError("CONTENT_EXCEPTION_INVALID", f"content safety exception {index} has an invalid rule_id")
+        if (not isinstance(path_value, str) or not path_value or len(path_value) > 240
+                or path_value.startswith("/") or ".." in Path(path_value).parts or "\\" in path_value):
+            raise ContentSafetyExceptionError("CONTENT_EXCEPTION_INVALID", f"content safety exception {index} has an invalid repository-relative path")
+        if not re.fullmatch(r"[A-Za-z0-9._/-]+", path_value) or path_value in {".", ".."}:
+            raise ContentSafetyExceptionError("CONTENT_EXCEPTION_INVALID", f"content safety exception {index} has an invalid repository-relative path")
+        if not isinstance(fingerprint, str) or not re.fullmatch(r"sha256:[0-9a-f]{64}", fingerprint):
+            raise ContentSafetyExceptionError("CONTENT_EXCEPTION_INVALID", f"content safety exception {index} has an invalid finding fingerprint")
+        if sink not in allowed_sinks:
+            raise ContentSafetyExceptionError("CONTENT_EXCEPTION_INVALID", f"content safety exception {index} has an invalid sink")
+        try:
+            expiry = dt.date.fromisoformat(str(expires))
+        except ValueError as exc:
+            raise ContentSafetyExceptionError("CONTENT_EXCEPTION_INVALID", f"content safety exception {index} has an invalid expiry") from exc
+        if expiry <= today:
+            raise ContentSafetyExceptionError("CONTENT_EXCEPTION_EXPIRED", f"content safety exception {index} is expired")
+        if not isinstance(approval, str) or not approval.strip() or not isinstance(approver, str) or not approver.strip():
+            raise ContentSafetyExceptionError("CONTENT_EXCEPTION_INVALID", f"content safety exception {index} requires human approval evidence")
+    return document["exceptions"]
+
+
+def _exception_applies(exceptions: list[dict[str, Any]], *, rule_id: str, path: str, sink: str,
+                       finding_fingerprint: str) -> bool:
+    return any(
+        item["rule_id"] == rule_id and item["path"] == path and item["sink"] == sink
+        and item["finding_fingerprint"] == finding_fingerprint
+        for item in exceptions
+    )
 
 
 def _luhn(value: str) -> bool:
@@ -116,10 +239,20 @@ def _policy(config: dict[str, Any], sink: str, kind: str) -> dict[str, Any]:
 
 
 def _finding(kind: str, detector: str, location: str, value: str, config: dict[str, Any], sink: str,
-             line: int | None = None) -> Finding:
+             line: int | None = None, *, rule_id: str | None = None, action: str | None = None,
+             confidence: float | None = None, source_path: str = "<root>") -> Finding:
     rule = _policy(config, sink, kind)
-    return Finding(kind, detector, location, _fingerprint(value), len(value), str(rule.get("action", "ALLOW")),
-                   float(rule.get("confidence", 1.0)), line)
+    identity_rule = rule_id or (f"{kind.lower()}.{detector}.v1" if kind in {"SECRET", "PII"} else None)
+    matched_rule = config.get("injection_rules", {}).get(identity_rule, {}) if identity_rule else {}
+    rule_actions = matched_rule.get("actions") or {}
+    selected_action = (action or rule_actions.get(sink) or rule_actions.get("default")
+                       or matched_rule.get("action") or rule.get("action", "ALLOW"))
+    if rule_id in STRONG_INJECTION_RULES and sink in DURABLE_SINKS:
+        selected_action = "BLOCK"
+    selected_confidence = confidence or matched_rule.get("confidence") or rule.get("confidence", 1.0)
+    return Finding(kind, detector, location, _fingerprint(value), len(value), str(selected_action),
+                   float(selected_confidence), line, identity_rule,
+                   _stable_finding_fingerprint(identity_rule, value, source_path) if identity_rule else None)
 
 
 def _walk(value: Any, prefix: str = ""):
@@ -136,13 +269,20 @@ def _walk(value: Any, prefix: str = ""):
 def scan_payload(payload: Any, *, sink: str, config: dict[str, Any] | None = None,
                  context: dict[str, Any] | None = None, strict: bool = False) -> list[Finding]:
     config = config or load_config()
+    context = context or {}
+    source_path = str(context.get("source_path") or "<root>")
+    changed_lines_value = context.get("injection_changed_lines")
+    changed_lines = set(changed_lines_value) if isinstance(changed_lines_value, (set, list, tuple)) else None
     findings: list[Finding] = []
     for location, text in _walk(payload):
         for item in scan_text(text, location, strict=strict):
             rule = _policy(config, sink, "SECRET")
+            secret_rule_id = f"secret.{item['detector']}.v1"
             findings.append(Finding(
                 "SECRET", item["detector"], location, str(item["fingerprint"]), int(item["secret_length"]),
                 str(rule.get("action", "ALLOW")), float(rule.get("confidence", 1.0)), int(item.get("line", 1)),
+                secret_rule_id,
+                _stable_finding_fingerprint(secret_rule_id, str(item["fingerprint"]), source_path),
             ))
         for match in EMAIL_RE.finditer(text):
             findings.append(_finding("PII", "email", location, match.group(0), config, sink, text.count("\n", 0, match.start()) + 1))
@@ -155,9 +295,24 @@ def scan_payload(payload: Any, *, sink: str, config: dict[str, Any] | None = Non
         for match in TAIWAN_ID_RE.finditer(text):
             if _taiwan_id(match.group(0)):
                 findings.append(_finding("PII", "taiwan-id-checksum", location, match.group(0), config, sink, text.count("\n", 0, match.start()) + 1))
-        for match in INJECTION_RE.finditer(text):
-            findings.append(_finding("INJECTION_SIGNAL", "instruction-pattern", location, match.group(0), config, sink, text.count("\n", 0, match.start()) + 1))
-    trust = (context or {}).get("trust") or (context or {}).get("source", {}).get("trust")
+        exceptions = _validate_exceptions(DEFAULT_EXCEPTIONS) if sink in {"git_commit", "github_pr", "release_notes"} else []
+        for rule_id, pattern in INJECTION_RULES:
+            for match in pattern.finditer(text):
+                first_line = text.count("\n", 0, match.start()) + 1
+                last_line = text.count("\n", 0, match.end()) + 1
+                if changed_lines is not None and not any(first_line <= line <= last_line for line in changed_lines):
+                    continue
+                action = "REVIEW" if rule_id == "injection.ambiguous.v2" else None
+                finding = _finding("INJECTION_SIGNAL", rule_id, location, match.group(0), config, sink,
+                                   first_line, rule_id=rule_id, action=action, source_path=source_path)
+                if (sink in {"git_commit", "github_pr", "release_notes"} and source_path != "<root>"
+                        and _exception_applies(exceptions, rule_id=rule_id, path=source_path, sink=sink,
+                                               finding_fingerprint=finding.finding_fingerprint or "")):
+                    finding = Finding(finding.type, finding.detector, finding.location, finding.fingerprint,
+                                      finding.length, "ALLOW", finding.confidence, finding.line,
+                                      finding.rule_id, finding.finding_fingerprint)
+                findings.append(finding)
+    trust = context.get("trust") or context.get("source", {}).get("trust")
     if trust == "UNTRUSTED":
         findings.append(_finding("UNTRUSTED_CONTENT", "provenance", "context", "UNTRUSTED_CONTENT", config, sink))
     return findings
@@ -172,19 +327,26 @@ def _redact_text(text: str, findings: list[Finding], location: str) -> str:
     for finding in findings:
         if finding.location != location or finding.type not in {"SECRET", "PII", "UNTRUSTED_CONTENT"}:
             continue
+        replacement = _replacement(finding.type)
         pattern = PATTERNS_BY_DETECTOR.get(finding.detector)
         if pattern:
-            result = pattern.sub(_replacement(finding.type), result)
+            result = pattern.sub(replacement, result)
         elif finding.detector == "generic-secret-assignment":
-            result = ASSIGNMENT.sub(lambda match: match.group(0).replace(match.group(2), _replacement(finding.type)), result)
+            result = ASSIGNMENT.sub(
+                lambda match, value=replacement: match.group(0).replace(match.group(2), value), result
+            )
         elif finding.detector == "email":
-            result = EMAIL_RE.sub(_replacement(finding.type), result)
+            result = EMAIL_RE.sub(replacement, result)
         elif finding.detector == "phone":
-            result = PHONE_RE.sub(_replacement(finding.type), result)
+            result = PHONE_RE.sub(replacement, result)
         elif finding.detector == "credit-card-luhn":
-            result = CARD_RE.sub(lambda m: _replacement(finding.type) if _luhn(m.group(0)) else m.group(0), result)
+            result = CARD_RE.sub(
+                lambda match, value=replacement: value if _luhn(match.group(0)) else match.group(0), result
+            )
         elif finding.detector == "taiwan-id-checksum":
-            result = TAIWAN_ID_RE.sub(lambda m: _replacement(finding.type) if _taiwan_id(m.group(0)) else m.group(0), result)
+            result = TAIWAN_ID_RE.sub(
+                lambda match, value=replacement: value if _taiwan_id(match.group(0)) else match.group(0), result
+            )
     return result
 
 

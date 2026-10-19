@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import check_secret_leakage
+import content_safety
 import governance_guard
 import publication_authority
 import publish_preflight
@@ -130,6 +131,128 @@ class SafetyDiagnosticsTests(unittest.TestCase):
         rendered = json.dumps(scanner_failure, ensure_ascii=False)
         self.assertEqual(scanner_failure["diagnostic"]["reason_code"], "CONTENT_SCANNER_FAILED")
         self.assertNotIn("private scanner details", rendered)
+
+    def test_ordinary_staged_javascript_is_allowed_by_native_diagnostic(self) -> None:
+        source = "const state = { run: data };\nrun.endingId = data.endingId;\n"
+        (self.root / "runtime.mjs").write_text(source, encoding="utf-8")
+        self.run_git("add", "runtime.mjs")
+        result = diagnose_commit(self.root, self.message_file)
+        self.assertEqual(result["decision"], "ALLOW", result)
+
+    def test_unchanged_injection_context_does_not_block_unrelated_staged_line(self) -> None:
+        fixture_path = ROOT / "tests/fixtures/content-safety/corpus.json"
+        corpus = json.loads(fixture_path.read_text(encoding="utf-8"))
+        prior_text = bytes.fromhex(corpus["malicious_hex"][0]).decode("utf-8")
+        path = self.root / "runtime.mjs"
+        path.write_text(prior_text + "\nconst version = 1;\n", encoding="utf-8")
+        self.run_git("add", "runtime.mjs")
+        self.run_git("commit", "-m", "baseline")
+        path.write_text(prior_text + "\nconst version = 2;\n", encoding="utf-8")
+        self.run_git("add", "runtime.mjs")
+        result = diagnose_commit(self.root, self.message_file)
+        self.assertEqual(result["decision"], "ALLOW", result)
+
+    def test_full_staged_blob_keeps_secret_scan_and_diagnostic_is_actionable(self) -> None:
+        marker = "synthetic-secret-canary"
+        path = self.root / "payload.txt"
+        path.write_text("token=" + marker + "\nversion=1\n", encoding="utf-8")
+        self.run_git("add", "payload.txt")
+        self.run_git("commit", "-m", "baseline")
+        path.write_text("token=" + marker + "\nversion=2\n", encoding="utf-8")
+        self.run_git("add", "payload.txt")
+
+        def synthetic_secret_scan(text: str, location: str, *, strict: bool = False) -> list[dict[str, object]]:
+            del location, strict
+            if marker not in text:
+                return []
+            return [{"detector": "synthetic-secret", "fingerprint": "test-fingerprint",
+                     "secret_length": len(marker), "line": 1}]
+
+        with patch("content_safety.scan_text", side_effect=synthetic_secret_scan):
+            result = diagnose_commit(self.root, self.message_file)
+        diagnostic = result["diagnostic"]
+        self.assertEqual(diagnostic["reason_code"], "CONTENT_SECRET_BLOCKED")
+        self.assertEqual(diagnostic["findings"][0]["file"], "payload.txt")
+        self.assertIn("finding_fingerprint", diagnostic["findings"][0])
+        self.assertNotIn(marker, json.dumps(result))
+
+    def test_ambiguous_signal_returns_review_reason_and_safe_fingerprint(self) -> None:
+        corpus = json.loads((ROOT / "tests/fixtures/content-safety/corpus.json").read_text(encoding="utf-8"))
+        source = bytes.fromhex(corpus["ambiguous_hex"]).decode("utf-8")
+        (self.root / "notes.txt").write_text(source + "\n", encoding="utf-8")
+        self.run_git("add", "notes.txt")
+        result = diagnose_commit(self.root, self.message_file)
+        diagnostic = result["diagnostic"]
+        self.assertEqual(result["decision"], "BLOCK")
+        self.assertEqual(diagnostic["reason_code"], "CONTENT_REVIEW_REQUIRED")
+        self.assertEqual(diagnostic["findings"][0]["rule_id"], "injection.ambiguous.v2")
+        self.assertEqual(diagnostic["findings"][0]["file"], "notes.txt")
+        self.assertIn("finding_fingerprint", diagnostic["findings"][0])
+        self.assertTrue(diagnostic["recovery"]["human_approval_required"])
+        self.assertEqual(diagnostic["recovery"]["blocking_phase"], "content_scan")
+        self.assertFalse(diagnostic["recovery"]["matched_content_included"])
+        self.assertTrue(diagnostic["recovery"]["next_steps"])
+        self.assertNotIn(source, json.dumps(result))
+
+    def test_strong_injection_is_still_blocked_with_rule_identity(self) -> None:
+        corpus = json.loads((ROOT / "tests/fixtures/content-safety/corpus.json").read_text(encoding="utf-8"))
+        source = bytes.fromhex(corpus["malicious_hex"][0]).decode("utf-8")
+        (self.root / "notes.txt").write_text(source + "\n", encoding="utf-8")
+        self.run_git("add", "notes.txt")
+        result = diagnose_commit(self.root, self.message_file)
+        finding = result["diagnostic"]["findings"][0]
+        self.assertEqual(result["decision"], "BLOCK")
+        self.assertEqual(finding["reason_code"], "CONTENT_INJECTION_BLOCKED")
+        self.assertIn(finding["rule_id"], {"injection.override.v2", "injection.exfiltration.v2"})
+        self.assertTrue(finding["finding_fingerprint"].startswith("sha256:"))
+        self.assertNotIn(source, json.dumps(result))
+
+    def test_exact_exception_allows_only_approved_injection_finding(self) -> None:
+        corpus = json.loads((ROOT / "tests/fixtures/content-safety/corpus.json").read_text(encoding="utf-8"))
+        source = bytes.fromhex(corpus["ambiguous_hex"]).decode("utf-8")
+        context = {"source_path": "notes.txt"}
+        finding = next(item for item in content_safety.scan_payload(source, sink="git_commit", context=context)
+                       if item.rule_id == "injection.ambiguous.v2")
+        (self.root / "notes.txt").write_text(source + "\n", encoding="utf-8")
+        self.run_git("add", "notes.txt")
+        exception_file = Path(self.temp.name) / "exceptions.yaml"
+        exception_file.write_text(
+            "version: 1\nexceptions:\n"
+            "  - rule_id: injection.ambiguous.v2\n"
+            "    path: notes.txt\n"
+            f"    finding_fingerprint: {finding.finding_fingerprint}\n"
+            "    sink: git_commit\n"
+            "    expires_on: '2099-01-01'\n"
+            "    approved_by: reviewer\n"
+            "    approval_reference: PR-123\n",
+            encoding="utf-8",
+        )
+        with patch.object(content_safety, "DEFAULT_EXCEPTIONS", exception_file):
+            result = diagnose_commit(self.root, self.message_file)
+        self.assertEqual(result["decision"], "ALLOW", result)
+
+    def test_expired_exception_returns_specific_recovery_reason(self) -> None:
+        (self.root / "notes.txt").write_text("ordinary content\n", encoding="utf-8")
+        self.run_git("add", "notes.txt")
+        exception_file = Path(self.temp.name) / "exceptions.yaml"
+        exception_file.write_text(
+            "version: 1\nexceptions:\n"
+            "  - rule_id: injection.ambiguous.v2\n"
+            "    path: notes.txt\n"
+            "    finding_fingerprint: sha256:" + "0" * 64 + "\n"
+            "    sink: git_commit\n"
+            "    expires_on: '2000-01-01'\n"
+            "    approved_by: reviewer\n"
+            "    approval_reference: PR-123\n",
+            encoding="utf-8",
+        )
+        with patch.object(content_safety, "DEFAULT_EXCEPTIONS", exception_file):
+            result = diagnose_commit(self.root, self.message_file)
+        diagnostic = result["diagnostic"]
+        self.assertEqual(diagnostic["reason_code"], "CONTENT_EXCEPTION_EXPIRED")
+        self.assertEqual(diagnostic["phase"], "commit_message")
+        self.assertIn("過期", diagnostic["next_step_zh"] + diagnostic["detail_zh"])
+        self.assertNotIn("2000-01-01", json.dumps(result))
 
     def test_metadata_extractors_validate_format_boundaries(self) -> None:
         png_text = b"Comment\x00api_key=" + b"A" * 32

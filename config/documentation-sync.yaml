@@ -459,3 +459,35 @@ rules:
       - tests/evidence/resource_authorization_lifecycle.py
       - tests/evidence/runtime_policy_lifecycle.py
       - tests/evidence/creative_execution_lifecycle.py
+
+  - id: content-safety-injection-classification
+    triggers:
+      - config/content-safety.yaml
+      - config/content-safety-exceptions.yaml
+      - config/integration-gate.yaml
+      - scripts/content_safety.py
+      - scripts/governance_guard.py
+      - scripts/publish_preflight.py
+      - scripts/safety_diagnostics.py
+      - scripts/publication_authority.py
+      - tests/test_content_safety.py
+      - tests/test_safety_diagnostics.py
+      - tests/validation/scheduler_gate_contracts.py
+      - tests/fixtures/content-safety/corpus.json
+      - tests/scenarios/266-content-safety-injection-context.md
+    human_docs:
+      - docs/human/ARCHITECTURE_OVERVIEW.md
+      - docs/human/CONFORMANCE.md
+      - docs/human/INSTALLATION.md
+      - docs/human/MAINTENANCE.md
+      - docs/human/PROJECT_INTELLIGENCE.md
+      - docs/human/SECURITY_ASSURANCE.md
+      - docs/human/TECHNOLOGY_GUIDE.md
+      - docs/human/USER_GUIDE.md
+    agent_docs:
+      - orchestration/CONTENT_SAFETY_BOUNDARY.md
+      - orchestration/CONFORMANCE.md
+    evidence:
+      - tests/scenarios/266-content-safety-injection-context.md
+      - tests/test_content_safety.py
+      - tests/test_safety_diagnostics.py

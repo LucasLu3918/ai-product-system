@@ -1,129 +1,68 @@
 version: 1
 change:
-  id: plan45-publication-scan-diagnostics
-  summary: Map scanner failures to stable redacted publication diagnostics and validate command shape
-    before scanning while preserving fail-closed behavior and existing authority.
+  id: plan47-content-safety-classification
+  summary: Reduce ordinary-code injection false positives while preserving full-blob secret scanning, blocking high-confidence attacks, requiring review for ambiguous signals, and returning safe recovery diagnostics.
   boundary:
-  - Extend ScanError and publication diagnostics with stable reason, phase, component, retryability and
-    safe recovery; keep raw exception data private.
-  - Validate literal publication command shape before candidate/history scan; all later candidate, remote,
-    PR, safety and authority checks remain mandatory.
-  - Preserve diagnostic ID, optional allowlisted ledger behavior, existing Hook/CLI envelopes, exact candidate
-    binding and Human/merge authority.
-  - Add fault injection, redaction, no-side-effect, Hook/CLI lifecycle and Scenario 261 regression evidence;
-    update canonical docs.
+    - Versioned injection rule classification and fixed-corpus comparison
+    - Added-line staged injection inspection with full staged-blob secret and PII scanning
+    - Exact expiring exception validation and safe commit diagnostics
+    - Documentation, scenario conformance, repository integration, and publication lifecycle
 matrix:
-- boundary: Scanner failure classification and redaction
-  reason: A scan that cannot finish safely must deny publication with an actionable root cause without
-    leaking private inputs.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: 'PASS: focused Ruff reports only 7 pre-existing findings in check_secret_leakage.py; touched
-        code compiles and git diff --check passes.'
-    unit:
-      applicable: true
-      evidence: 'PASS: 42 publication-authority tests and 47 subtests cover invalid/expired policy, invalid
-        base, missing head, unreadable file, internal error and redaction.'
-    integration:
-      applicable: true
-      evidence: 'PASS: secret_scan_publication_lifecycle.py blocks exact-tree/history sentinels and reports
-        PASS.'
-    contract:
-      applicable: true
-      evidence: 'PASS: Scenario Conformance reports 265 registered, 0 missing/uncovered; full repository
-        validation passes 101 checks.'
-    e2e:
-      applicable: false
-      na_reason: No user interface or network service is changed; Hook/CLI lifecycle is the affected execution
-        path.
-    security:
-      applicable: true
-      evidence: 'PASS: focused tests assert no raw token, exception text, file path or command leaks through
-        diagnostics.'
-    migration_recovery:
-      applicable: false
-      na_reason: No persisted schema or data migration; existing optional ledger schema is unchanged.
-    cli_harness:
-      applicable: true
-      evidence: 'PASS: focused publication Hook/CLI tests and scanner lifecycle preserve denial/NOT_EXECUTED;
-        no authority granted.'
-    docs_schema:
-      applicable: true
-      evidence: 'PASS: exact-candidate Documentation Impact reports complete=true; all 24 changed paths
-        are covered with zero required additions.'
-- boundary: Static command validation and exact candidate protection
-  reason: Unsupported command syntax should be diagnosed before scan work without weakening any later
-    publication checks.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: 'PASS: no new Ruff findings; py_compile and git diff --check pass.'
-    unit:
-      applicable: true
-      evidence: 'PASS: unsupported git -C push returns COMMAND_FORM_UNSUPPORTED before candidate Git access
-        or scanner invocation.'
-    integration:
-      applicable: true
-      evidence: 'PASS: focused Hook/CLI tests confirm rejected publication does not execute; strict candidate/history
-        scanner lifecycle passes.'
-    contract:
-      applicable: true
-      evidence: 'PASS: Scenario 261 evidence is registered and all 265 scenarios conform.'
-    e2e:
-      applicable: false
-      na_reason: No browser-visible or deployed behavior changes.
-    security:
-      applicable: true
-      evidence: 'PASS: all accepted forms retain exact candidate, policy, content scan and authority checks.'
-    migration_recovery:
-      applicable: false
-      na_reason: No schema or persistent state change.
-    cli_harness:
-      applicable: true
-      evidence: 'PASS: full repository validation passes 101 checks; exact-candidate prepare/diagnose
-        remains pending.'
-    docs_schema:
-      applicable: true
-      evidence: 'PASS: exact-candidate Documentation Impact reports complete=true; all 24 changed paths
-        are covered with zero required additions.'
-- boundary: Exact candidate, documentation and repository Gate
-  reason: Core publication security changes require evidence tied to the final candidate.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: 'PASS: focused Ruff (7 existing findings only), py_compile and git diff --check pass.'
-    unit:
-      applicable: true
-      evidence: 'PASS: five focused pytest modules pass: 105 tests and 74 subtests.'
-    integration:
-      applicable: true
-      evidence: 'PASS: full AIPS Core Integration Gate passed on candidate 2adc0bd46eef8838cac1065e8d484d07d8f8c7ec; final matrix-bound candidate will be rerun after recording this evidence.'
-    contract:
-      applicable: true
-      evidence: 'PASS: tests/validate_repository.py passes all 101 checks; Scenario Conformance covers
-        265 scenarios.'
-    e2e:
-      applicable: false
-      na_reason: No UI/service; native Hook and CLI lifecycle evidence applies.
-    security:
-      applicable: true
-      evidence: 'PASS: mandatory exact-candidate base..head scan passed on 2adc0bd46eef8838cac1065e8d484d07d8f8c7ec with no findings or blockers; final matrix-bound candidate will be rescanned.'
-    migration_recovery:
-      applicable: false
-      na_reason: No data migration; revert of exact candidate is the recovery path.
-    cli_harness:
-      applicable: true
-      evidence: 'PASS: read-only push diagnose validated the exact candidate and target branch; authorization and execution remained false. Full publication lifecycle test passed.'
-    docs_schema:
-      applicable: true
-      evidence: 'PASS: Documentation Impact closure complete for all 24 paths with zero required additions; reviewed Core Matrix diff binding is READY.'
-review_evidence:
-  required: false
-candidate:
-  base_sha: 8965b8e1e9c80043a768556364611b4b5cc940ea
-  changed_files_hash: 14b6676f646d06708070a3064e99cd8587eaf995fd4b94952e4564523cc3407f
+  - boundary: Injection classification and false-positive control
+    reason: Generic run/send patterns blocked ordinary JavaScript; versioned rules must reduce false positives without losing attack detection.
+    checks:
+      static_lint: {applicable: true, evidence: "PASS: Python compilation, Ruff, quality ratchet, and git diff --check passed."}
+      unit: {applicable: true, evidence: "PASS: 16 content safety unit tests passed, including fixed corpus old/new and publication diff comparison."}
+      integration: {applicable: true, evidence: "PASS: staged diagnostic regressions passed in the focused diagnostics suite."}
+      contract: {applicable: true, evidence: "PASS: repository validator reports 266 registered scenarios, zero uncovered; full validation passed."}
+      e2e: {applicable: false, na_reason: No browser UI or deployed service is changed.}
+      security: {applicable: true, evidence: "PASS: high-confidence override, exfiltration, and agent execution fixtures remain blocked."}
+      migration_recovery: {applicable: false, na_reason: No persistent data migration; rollback is a PR revert.}
+      cli_harness: {applicable: true, evidence: "PASS: ordinary staged JavaScript allowed and strong injection denied."}
+      docs_schema: {applicable: true, evidence: "PASS: exact candidate Documentation Impact is complete for 51 changed paths with zero required additions."}
+  - boundary: Staged-line classification and full-blob secret coverage
+    reason: Limit injection false positives to added staged lines while retaining complete staged content coverage for secrets and PII.
+    checks:
+      static_lint: {applicable: true, evidence: "PASS: Python compilation and git diff --check passed."}
+      unit: {applicable: true, evidence: "PASS: changed-line, context, and secret-scan regressions passed."}
+      integration: {applicable: true, evidence: "PASS: commit diagnostic tests cover unchanged suspicious lines and full-blob secret detection."}
+      contract: {applicable: true, evidence: "PASS: full repository validator passed; the Scenario 266 registry and projections are current."}
+      e2e: {applicable: false, na_reason: No browser UI or deployed service is changed.}
+      security: {applicable: true, evidence: "PASS: secret and PII checks still receive the full staged blob."}
+      migration_recovery: {applicable: false, na_reason: No persistent data migration; rollback is a PR revert.}
+      cli_harness: {applicable: true, evidence: "PASS: git index and HEAD immutability regression passed."}
+      docs_schema: {applicable: true, evidence: "PASS: exact candidate Documentation Impact is complete for 51 changed paths with zero required additions."}
+  - boundary: Exceptions and redacted recovery diagnostics
+    reason: Exceptions need exact scope and expiry, and failures need stable actionable reasons without echoing matched content.
+    checks:
+      static_lint: {applicable: true, evidence: "PASS: YAML policy files parse and Python compilation passes."}
+      unit: {applicable: true, evidence: "PASS: exact, malformed, expired, and secret non-suppression exception regressions passed."}
+      integration: {applicable: true, evidence: "PASS: safe diagnostic and expired-exception recovery tests passed."}
+      contract: {applicable: true, evidence: "PASS: full repository validator passed; the Scenario 266 registry and projections are current."}
+      e2e: {applicable: false, na_reason: No browser UI or deployed service is changed.}
+      security: {applicable: true, evidence: "PASS: diagnostics omit matched values; exceptions cannot suppress secrets or PII."}
+      migration_recovery: {applicable: false, na_reason: Static exception manifest defaults to no entries and has no data migration.}
+      cli_harness: {applicable: true, evidence: "PASS: native commit diagnostic lifecycle tests passed."}
+      docs_schema: {applicable: true, evidence: "PASS: exact candidate Documentation Impact is complete for 51 changed paths with zero required additions."}
+  - boundary: Documentation, repository gate, and publication candidate
+    reason: The security boundary change must be documented, scenario-covered, fully validated, and bound to the exact publication candidate.
+    checks:
+      static_lint: {applicable: true, evidence: "PASS: full repository validator, Python compilation, YAML parsing, and git diff --check passed."}
+      unit: {applicable: true, evidence: "PASS: 33 focused unit tests passed (16 content safety, 17 diagnostics)."}
+      integration: {applicable: true, evidence: "PASS: full repository validator passed with 266 scenarios; exact-candidate Core Integration Gate is the final publication check."}
+      contract: {applicable: true, evidence: "PASS: full repository validator passed with 266 scenarios, zero missing or uncovered."}
+      e2e: {applicable: false, na_reason: No external UI or service; commit Hook and CLI lifecycle are covered.}
+      security: {applicable: true, evidence: "PASS: focused high-confidence attack, exception, full-blob secret and PII regressions passed; exact-candidate strict scan runs before publication."}
+      migration_recovery: {applicable: false, na_reason: No data migration; rollback is a PR revert.}
+      cli_harness: {applicable: true, evidence: "PASS: read-only publication plan and Core Gate are bound to this exact candidate before publication."}
+      docs_schema: {applicable: true, evidence: "PASS: exact candidate Documentation Impact is complete for 51 changed paths with zero required additions."}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
-blockers: []
+candidate:
+  base_sha: b95a4ecaa5a901d5a054b8ef42f4c06b408d9a6a
+  changed_files_hash: 7ccd1cd4f5fb46a3d65f7d0be17637870c2651943ae3be9c1f0f27ed69c1710c
+blockers:
+  []
+review_evidence:
+  required: false
 status: READY

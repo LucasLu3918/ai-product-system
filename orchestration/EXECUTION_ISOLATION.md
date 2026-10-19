@@ -292,6 +292,9 @@ Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. 
 
 ## Parallel runtime resource isolation
 
+Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
+
+
 AVIF parsing is a local content inspection and adds no runtime resource lease, port allocation or shared execution side effect.
 
 Plan41 commit diagnostics read the selected worktree and staged Git objects without writing candidate state. The diagnostic ID is transient output; no new persistent store, external service, process authority or isolation mode is introduced.

@@ -117,6 +117,7 @@ Each retained section maps to its existing anchor. Human versioned baselines rem
 | [## Scenario 262 — ComfyUI Resource Authorization and Diagnostics](CONFORMANCE.md#scenario-262-comfyui-resource-authorization-and-diagnostics) | Current Human guidance |
 | [## Scenario 263 — Commit Safety Diagnostics](CONFORMANCE.md#scenario-263-commit-safety-diagnostics) | Current Human guidance |
 | [## Scenario 264 — Hash-bound Creative Git Asset Import](CONFORMANCE.md#scenario-264-hash-bound-creative-git-asset-import) | Current Human guidance |
+| [## Scenario 266 — Content Safety Injection Context and Recovery](CONFORMANCE.md#scenario-266-content-safety-injection-context-and-recovery) | Current Human guidance |
 | [# Scenario Conformance](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-conformance) | Normative rule |
 | [## Purpose](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#purpose) | Normative rule |
 | [## Registry](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#registry) | Normative rule |
@@ -201,5 +202,6 @@ Each retained section maps to its existing anchor. Human versioned baselines rem
 | [## Scenario 262 — ComfyUI Resource Authorization and Diagnostics](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-262-comfyui-resource-authorization-and-diagnostics) | Normative rule |
 | [## Scenario 263 — Commit Safety Diagnostics](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-263-commit-safety-diagnostics) | Normative rule |
 | [## Scenario 264 — Hash-bound Creative Git Asset Import](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-264-hash-bound-creative-git-asset-import) | Normative rule |
+| [## Scenario 266 — Content Safety Injection Context and Recovery](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-266-content-safety-injection-context-and-recovery) | Normative rule |
 
 The crosswalk preserves source anchors. Edit the source documents for content changes, then regenerate this index.

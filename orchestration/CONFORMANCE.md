@@ -967,6 +967,9 @@ The size audit measures tracked text/evidence files against 50,000 bytes and rep
 
 ## Scenarios 202–209 — Plan13 current and provenance evidence
 
+Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
+
+
 Plan29 #6 keeps its exact candidate, scoped Change Impact, and required repository Gate evidence together for review.
 
 
@@ -1088,6 +1091,9 @@ The branch lifecycle report classifies remote branches using current exact-SHA P
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+Content-safety controls remain separate from skill discovery, installation, and author trust decisions.
+
+
 Scenario 261 publication command validation and scanner recovery do not change the pinned Skill Explorer inventory, routing, or installation contract.
 
 Scenario 265 adds no Skill Explorer or install behavior; it reuses the bounded media scanner.
@@ -1152,3 +1158,7 @@ The canonical Skill registry and pinned upstream manifest classify the complete 
 ## Scenario 264 — Hash-bound Creative Git Asset Import
 
 tests/evidence/opencode_integration_lifecycle.py verifies the AIPS creative import candidate and CLI flow, source/candidate hash checks, no overwrite or path escape, explicit Git-root opt-in, and unchanged Git index bytes. It uses synthetic local assets and does not stage or commit.
+
+## Scenario 266 — Content Safety Injection Context and Recovery
+
+Versioned injection rules reject the former generic-keyword false positives while preserving strong override, exfiltration and agent-execution blocks. Commit and publication-candidate injection checks overlap added diff lines; Secret and PII checks remain full-blob/full-diff. Removed or unchanged suspicious content does not block an unrelated edit. Ambiguous signals require review and remain denied until an exact approved, unexpired exception applies. Tests verify scope/expiry, safe structured recovery, no matched-content output and unchanged Git index/HEAD.

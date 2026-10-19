@@ -4,6 +4,8 @@
 
 ## Inputs
 
+The content-safety publication preflight evaluates added candidate lines for injection while retaining full-diff Secret/PII scanning. Its stable diagnostics and candidate-bound result are local Gate inputs; they do not change GitHub policy snapshots, required checks or merge authority.
+
 For merge readiness, `branch.protected` is cross-checked with classic protection and effective rules; a permission-hidden policy remains UNKNOWN and blocks Required Checks decisions.
 
 Read-only publication policy evidence uses the remote default branch unless an explicit target branch is supplied; it reports authentication, permission, contextual not-found, rate-limit, server and network failures separately.

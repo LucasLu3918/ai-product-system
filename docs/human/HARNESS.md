@@ -56,6 +56,9 @@ AIPS Core
 
 ## Native Runtime Adapters
 
+Content-safety controls remain separate from skill discovery, installation, and author trust decisions.
+
+
 Personal publication Hook denials preserve stable `SECRET_SCAN_*` reason/phase metadata without raw exception text or candidate paths. Unsupported literal command forms are denied before scanner work; the Hook does not authorize retry or execution.
 
 Adapter action guards remain separate from staged AVIF content-safety diagnostics.

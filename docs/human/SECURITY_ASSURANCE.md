@@ -111,6 +111,12 @@ The Security Engineer records the floor and rationale.
 
 ## Product baseline vs change impact
 
+Scenario 266 provides local deterministic safety evidence; it does not substitute for independent review or grant approval.
+
+
+Scenario 266 binds injection review to added candidate lines while Secret/PII scanning still covers the full candidate diff.
+
+
 Plan38 treats incomplete target-branch policy evidence as a security boundary and validates the exact candidate before publication.
 
 創作可靠性 Core candidate 保留完整 Gate、媒材拒絕及取消授權回歸。損壞 PNG fixture 必須失敗；合成測試不能替代真實模型與人工品質驗收。
@@ -214,6 +220,9 @@ Review actual:
 - tests and failure paths.
 
 ## Release Security Gate
+
+Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
+
 
 Publication preflight applies the AVIF metadata safety check before candidate scanning; this remains independent of branch protection and merge authorization.
 
@@ -466,7 +475,12 @@ The Parallel Run Dashboard is loopback-only and read-only. Its projection cannot
 
 AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned content is persisted or before candidate publication content is approved. Secrets are redacted from diagnostic sinks and blocked from durable/public sinks; deterministic PII is context- and sink-aware; external content is marked with provenance and prompt injection is reported as a signal. This boundary does not replace Human Authority, Publish Approval, native runtime hooks or repository-side secret protection.
 
+Commit scanning uses versioned injection rule IDs and changed-line context; Secret and PII checks still cover the full staged blob. Ambiguous injection signals remain blocked until resolved by human review. Any exception must match one rule, file, finding fingerprint and sink, expire on a declared date, and carry approval evidence. It never applies to Secret, PII, unsupported formats or scanner errors.
+
 ## Runtime Policy Enforcement
+
+Content-safety PASS is candidate evidence only and does not authorize PR merge or change publication mode.
+
 
 ComfyUI Resource Authorization remains separate from AVIF container validation and does not grant access to image payloads.
 

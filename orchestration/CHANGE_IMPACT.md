@@ -108,6 +108,8 @@ When traversal validation reports `affected node lacks a final disposition`, ins
 
 ## Diff reconciliation
 
+For Scenario 266 content-safety changes, reconcile the versioned rule/configuration, scanner and Guard consumers, diagnostic outputs, fixtures, conformance scenario, and documentation. Added-line injection checks must preserve complete-diff Secret/PII scanning; this scoped evidence does not upgrade global Impact Graph coverage.
+
 For publication authority changes, manually inspect the bounded Doctor, snapshot, merge-authority and Hook call graph when Impact Graph coverage is partial; record its exact candidate and consumer paths.
 
 For publication diagnostics, reconcile the exact touched CLI, snapshot, planning and Hook consumers, but keep repository-wide Impact Graph coverage partial unless dynamic callers and consumers are independently established.

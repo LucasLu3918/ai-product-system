@@ -9,6 +9,9 @@ Retrieval relation candidates are built by a small standard-library module behin
 
 ## Runtime & Integration
 
+Scenario 266 findings remain untrusted content and do not grant Runtime Context or action authority.
+
+
 Harness commit hooks route staged AVIF through the shared metadata safety scanner; native runtime enforcement remains bounded to each adapter's documented capabilities.
 
 The creative import CLI is routed by the existing AIPS command facade. Its explicit Git destination opt-in is independent of OpenCode native permission acceptance.
@@ -86,6 +89,15 @@ Local hybrid retrieval 組合 lexical、symbols、structural relation、tests、
 Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEMENTATION_APPROVED` 進入核准範圍；實作後對帳 actual diff 與 declared impact，只有完整記錄 reconciliation evidence 才能標記 `READY`。
 
 ## Execution
+
+Content-safety PASS is candidate evidence only and does not authorize PR merge or change publication mode.
+
+
+Scenario 266 provides local deterministic safety evidence; it does not substitute for independent review or grant approval.
+
+
+Scenario 266 binds injection review to added candidate lines while Secret/PII scanning still covers the full candidate diff.
+
 
 The publication preflight scans bounded AVIF EXIF/XMP metadata, while Creative raster validation accepts only structures supported by the shared registry; ComfyUI Resource Authorization remains a separate boundary.
 
@@ -297,6 +309,12 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
+
+
+Content-safety controls remain separate from skill discovery, installation, and author trust decisions.
+
 
 Publication command-form and scanner recovery behavior is covered by the exact candidate Core Matrix and Scenario 261; it does not change the Skill Explorer contract or publication authority.
 
@@ -511,6 +529,9 @@ The publication doctor normalizes branch existence, effective GitHub rules, clas
 
 ## Product Delivery
 
+Scenario 266 covers versioned injection classification, added-line checks, full-blob secret/PII scanning, and safe recovery diagnostics.
+
+
 The current lucas-lab main policy requires pull requests and the `verify` and `visual-audit` checks, and disallows force pushes and deletion.
 
 Publication guidance separates target policy evidence from candidate identity and never treats diagnostic recovery as authorization to publish.
@@ -577,5 +598,7 @@ AVIF uses the same 8 MiB media cap and a 1 MiB metadata cap; unsupported or anim
 The shared commit candidate scanner backs both the native Hook and `aips safety diagnose commit`. Format-aware metadata extraction is bounded for PNG, JPEG, WebP, M4A and MP3; unknown binary and scanner failures return stable safe diagnostics and fail closed.
 
 The provider-neutral `scripts/content_safety.py` kernel supplies deterministic secret and baseline PII detection, provenance-aware injection signals, and sink-aware `ALLOW`, `REDACT`, `BLOCK` and `REVIEW` decisions without requiring an external model or API credential.
+
+Versioned injection rules distinguish instruction override, exfiltration, agent execution and ambiguous wording. Git commit scanning evaluates changed lines with source context, while Secret/PII checks cover the full staged blob. The shared read-only diagnostic returns stable rule/finding IDs and actionable recovery without matched text. Exact, expiring exceptions require approval evidence and cannot bypass Secret, PII or scanner-failure blocks.
 
 Commit 與發布掃描支援有界的 TTF/OTF/WOFF/WOFF2 metadata；fontTools/Brotli 缺失、格式偽裝、解析錯誤或資源超限都 fail closed。

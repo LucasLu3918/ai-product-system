@@ -52,6 +52,8 @@ READY never bypasses human/security/governance approval.
 
 ## Candidate integrity
 
+Content-safety classification and publication scanning are part of exact-candidate integrity: injection detection uses added lines, while Secret/PII scanning covers the complete candidate diff. Stable reason codes aid diagnosis but do not authorize publication or relax required checks.
+
 Version and release notes for core publication changes are finalized only after exact-candidate validation and required remote checks pass.
 
 Read-only publication evidence identifies the candidate branch and policy target independently. It cannot replace fresh exact PR/head/base/check observations or explicit Human merge intent.

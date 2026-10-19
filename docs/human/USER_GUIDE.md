@@ -172,6 +172,9 @@ Plan36 publication diagnostics preserve this topic's existing authority boundari
 
 ## 需求釐清與 Planning
 
+Scenario 266 binds injection review to added candidate lines while Secret/PII scanning still covers the full candidate diff.
+
+
 
 需求階段可載入產品研究與遊戲設計技能；先釐清平台、輸入、核心循環、進程、失敗／重試與可及性。研究或 playtest 規劃須先定義參與同意、資料最小化與證據限制。
 
@@ -272,6 +275,9 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 詳細請看 [Global Harness 與 MCP](HARNESS.md)。
 
 ## Roles、Skills 與重用
+
+Content-safety controls remain separate from skill discovery, installation, and author trust decisions.
+
 
 Publication scanner diagnostics do not add Skill discovery, routing, installation or ownership behavior; use the Git Publication and Runtime Content Safety sections for their recovery contract.
 
@@ -413,6 +419,12 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 詳見 [Security Assurance](SECURITY_ASSURANCE.md)。
 
 ## Quality 與 Review
+
+Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
+
+
+Scenario 266 provides local deterministic safety evidence; it does not substitute for independent review or grant approval.
+
 
 Commit diagnostics expose redacted evidence only; any independent review remains governed by the candidate Core Change Matrix.
 
@@ -643,6 +655,9 @@ Retrieval index persistence is an internal, rebuildable cache boundary in `scrip
 
 ## Git Publication 與 Release
 
+Content-safety PASS is candidate evidence only and does not authorize PR merge or change publication mode.
+
+
 Personal publication rejects unsupported literal command forms before candidate inspection and reports scanner policy, Git-object and file-read failures with stable redacted `SECRET_SCAN_*` codes. These failures remain blocked and non-authorizing.
 
 AVIF content-safety checks do not replace the publication mode, Human review or merge approval described here.
@@ -840,5 +855,7 @@ Hook 對非預期授權例外 fail closed，僅顯示安全診斷 ID 與 allowli
 字型檔案會先核對 TTF、OTF、WOFF 或 WOFF2 簽章、副檔名與解壓上限，再以有界解析器掃描名稱及廠商中繼資料；格式偽裝、解析錯誤、缺少套件、超限或命中 Secret／PII／Injection 都會 fail closed。這項內容檢查不授予 Git 或執行權限。
 
 本機可用 `aips safety diagnose commit --worktree <repo> --message-file <path> [--format json|text]` 查詢 commit 安全結果。它與 Hook 共用掃描器且只讀暫存候選；拒絕摘要不含命中值，Secret／PII／Injection 仍阻擋，未知格式或掃描不完整仍拒絕。
+
+一般程式碼中的 `run`、`data` 等名稱不再單獨觸發 Injection；commit 與 publication candidate 的 Injection 判斷依新增 diff 行與來源上下文進行，Secret 和 PII 仍掃描完整暫存檔或候選 diff。診斷會列出安全的原因、階段、規則／指紋、檔案與行號及排除步驟。模糊訊號需人工審查；核准例外僅限單一規則、檔案、指紋、sink 與期限。
 
 Commit, pull request and release content is scanned before durable/public publication. A blocked result requires regenerating safe content; it is not silently rewritten. Runtime capability remains truthful: AIPS-owned sinks are enforced, native hooks may be tool-guarded, and unsupported host tools are advisory.

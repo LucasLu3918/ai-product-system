@@ -167,6 +167,15 @@ Multi-file changes should normally be assembled into one coherent remote branch 
 
 ## Versioning
 
+Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
+
+
+Scenario 266 provides local deterministic safety evidence; it does not substitute for independent review or grant approval.
+
+
+Scenario 266 binds injection review to added candidate lines while Secret/PII scanning still covers the full candidate diff.
+
+
 The 0.83.0 candidate records shared Required Checks policy evidence and bounded Claude Code publication diagnostics.
 
 Plan29 #6 is validated as an exact Core Change candidate with its own matrix and required repository check.
@@ -527,6 +536,9 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 
 ## Validation architecture consistency
 
+Content-safety controls remain separate from skill discovery, installation, and author trust decisions.
+
+
 Scenario 261 adds scanner-failure and pre-scan command-order evidence; this is separate from Skill Explorer inventory and runtime lifecycle evidence.
 
 The Matt Pocock Skill Explorer remains a separate validation surface; Scenario 265 covers the AVIF scanner without changing Skill catalog evidence.
@@ -794,6 +806,8 @@ Protected dispatch 會逐筆重新讀取 merged PR，確認 `merged_at`、head S
 
 
 ## Runtime Content Safety Boundary
+
+保留即時處理流程與所有安全檢查，僅調整偵測精確度；policy 變更需以固定良性／惡意樣本比較新舊結果，並驗證例外期限與精確範圍、診斷隱私、Git index/HEAD 不變性及 exact-candidate Gate。
 
 The Claude native failure observer emits only bounded allowlisted fields and does not persist raw host errors or command text.
 

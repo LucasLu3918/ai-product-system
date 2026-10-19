@@ -86,6 +86,9 @@ Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Det
 
 ## Change Impact
 
+Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
+
+
 Plan38 records the publication authority, Doctor, snapshot and Claude Hook callers; the repository-wide Impact Graph remains partial and the scoped paths were manually reviewed.
 
 Publication changes retain the recorded bounded traversal and direct consumer review; repository-wide API, data, event and consumer graph coverage remains partial and must not be inferred from the local path graph.
@@ -439,3 +442,5 @@ Publication scanning excludes only validated numeric Git index/mode metadata; pa
 Run Dashboard projections consume only sanitized, allowlisted operational facts; prompts, reasoning, raw output, secrets and raw workspace paths remain excluded.
 
 Project Intelligence outputs are AIPS-owned durable content and must pass the Runtime Content Safety Boundary before persistence. Secret findings remain fingerprint-only and never include the detected value.
+
+Git commit diagnostics retain stable rule and finding fingerprints, safe file/line evidence and next-step guidance. Injection is evaluated on changed staged lines; Secret and PII scanning stays full-blob. An ambiguous finding is not an implicit allow, and a narrow expiring exception remains separate from Human publication authority.

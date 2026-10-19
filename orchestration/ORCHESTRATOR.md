@@ -10,6 +10,9 @@ The orchestrator coordinates work. It is not a super-role and cannot override go
 
 ## Minimal algorithm
 
+Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
+
+
 The publication workflow may use safe Prepare and Diagnostic ID observations during planning; they do not satisfy Human Authority, native Host confirmation, a required check, or the observed-execution condition.
 
 For an explicit creative asset transfer, review the hash-bound import candidate and invoke the exact-hash CLI import only after the destination check passes.
@@ -486,5 +489,6 @@ Project Diagnostics may recommend inspection or a specific recovery action but n
 After merge, use the updated checkout CLI `publish post-merge --fetch --sync-installed --apply` to verify target main and the registered installed system. Installed synchronization refuses dirty/wrong-branch, different remote, stale target and divergent history; it never resets the installation or grants publication authority.
 
 The orchestrator routes AIPS-owned persistence through `safe_emit` and keeps content safety separate from publish authorization. Untrusted external content carries provenance and cannot grant protected tool authority.
+Scenario 266 specifies that durable commit injection checks use changed staged lines, keep secret/PII scanning on the full blob, and deny unresolved review unless a narrow approved exception matches.
 
 `bin/aips` is the public thin launcher: it resolves the repository root and forwards arguments to `scripts/aips_cli.sh`. Keep command dispatch, installed-link behavior, exit status, and user-visible output compatible while implementation modules are extracted incrementally.

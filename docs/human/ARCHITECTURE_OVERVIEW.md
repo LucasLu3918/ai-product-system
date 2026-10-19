@@ -7,6 +7,9 @@ AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前�
 
 ## Runtime 與接入層
 
+Scenario 266 findings remain untrusted content and do not grant Runtime Context or action authority.
+
+
 The creative import CLI uses the existing command dispatcher and remains independent of OpenCode native file-permission decisions.
 
 Publication `prepare`、Hook 與 `diagnose` 共用安全候選綁定與穩定原因碼；觀察結果分開呈現規劃、AIPS 授權、Host 決策與實際執行，不合併成單一成功狀態。
@@ -63,6 +66,12 @@ Skill 跨 Host 載入可透過 MCP Resource `aips://catalog/skills` 查目錄並
 OpenCode V2 的 managed plugin 在 primary model dispatch 前注入精簡 Turn Context，並在 permission evaluation 階段檢查支援的直接檔案操作。L1 僅允許非 Git workspace 中受限路徑的新創意資產；L2 需要 Project Intelligence READY、freshness CURRENT 與無待解權威衝突；L3 外部效果沿用既有 Human approval gate。Shell 僅保留有限唯讀命令，並額外提供固定參數的 AIPS 診斷。`creative_execution` 是唯一有界自訂工具：它綁定當前 EPHEMERAL Session，可建立不覆寫的角色／風格 Profile 與未設定引擎的 Creative Bundle，也可對既有 Bundle 執行唯讀預檢及明確要求的本機生成。其他 MCP/custom tools 和繞過 OpenCode 的寫入仍不在 guard 範圍。Plugin 安裝與 hook discovery 不足以證明執行防護；完成 runtime permission acceptance 前，治理保持 ADVISORY。
 
 ## Project Intelligence 與 Retrieval
+
+Scenario 266 provides local deterministic safety evidence; it does not substitute for independent review or grant approval.
+
+
+Scenario 266 binds injection review to added candidate lines while Secret/PII scanning still covers the full candidate diff.
+
 
 Publication Change Impact records the exact candidate and changed-path evidence before remote publication; diagnostic recovery remains read-only.
 
@@ -371,6 +380,9 @@ Plan36 publication diagnostics preserve this topic's existing behavior and autho
 
 ## Security 與 Governance
 
+Content-safety PASS is candidate evidence only and does not authorize PR merge or change publication mode.
+
+
 Personal Git publication rejects unsupported executable/subcommand forms before inspecting the candidate. Supported forms still pass exact-candidate and history scanning plus the existing publication authority checks; scanner failures expose only stable safe classifications.
 
 AVIF metadata scanning is independent of Human publication grants, independent-review evidence and ComfyUI resource authorization.
@@ -469,6 +481,9 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 
 ## Maintenance governance
+
+Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
+
 
 Publication diagnosis keeps its existing read-only recovery flow while adding safe details for unsupported command forms.
 
@@ -636,4 +651,4 @@ Plan41 extends the existing boundary with structured, redacted commit-denial dia
 Telemetry additions use bounded allowlisted fields and exclude prompts, images, credentials and private reasoning.
 
 
-Before AIPS persists or publishes content, the sink-aware Runtime Content Safety Boundary applies deterministic secret/PII detection and records untrusted-content provenance. Diagnostic sinks redact; durable or public sinks block. This boundary complements, and does not replace, Human Authority and Git Publish Approval.
+Before AIPS persists or publishes content, the sink-aware Runtime Content Safety Boundary applies deterministic secret/PII detection and records untrusted-content provenance. Commit-time injection checks use changed-line context, while Secret and PII scanning covers the full staged blob; unresolved review findings remain blocked. Diagnostic sinks redact; durable or public sinks block. This boundary complements, and does not replace, Human Authority and Git Publish Approval.

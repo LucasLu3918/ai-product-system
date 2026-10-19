@@ -30,6 +30,7 @@ Creative asset import uses the existing Creative Direction and Harness command s
 
 
 Plan41 的 commit 安全診斷由既有 Content Safety kernel、`governance_guard.py` 與唯讀 `safety_diagnostics.py` 共用實作；Human 操作與安全邊界由 User Guide、Security Assurance、Harness 及 Scenario 263 說明。
+Plan47 的 injection rule、staged-line 範圍、例外與安全 recovery 仍由同一 scanner 實作；canonical boundary 在 `orchestration/CONTENT_SAFETY_BOUNDARY.md`，Scenario 266 記錄分類與完整密鑰掃描不變式。
 
 Publication root-cause diagnostics and the optional Diagnostic ID lookup contract are implemented in the publication authority/planning/diagnostics and governance-audit modules; Human recovery steps live in User Guide, while native adapter and exact scenario boundaries live in Harness and Conformance.
 
