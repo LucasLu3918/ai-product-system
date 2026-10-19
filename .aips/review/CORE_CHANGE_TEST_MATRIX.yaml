@@ -72,12 +72,12 @@ matrix:
       cli_harness: {applicable: false, na_reason: No CLI change.}
       docs_schema: {applicable: true, evidence: "PASS: documentation placement closure in aips publish preview; 11 canonical docs updated within allowed sections."}
 scope_recomputed_after_expansion: true
-actual_diff_reconciled: false
+actual_diff_reconciled: true
 candidate:
   base_sha: df79357e3c260c450645e40d7af27321c8627757
-  changed_files_hash: 6dbf84a2abd763d57b40886eeaf47ca2caf327d2d81a07b6f26876a283cdda07
+  changed_files_hash: b6c893363b06c689a6100ccb8d36157c488895729c0629af47a302a53bb81a7e
 blockers:
-  - candidate binding refreshed; review scope and evidence before marking READY
+  []
 review_evidence:
   required: false
-status: DRAFT
+status: READY
