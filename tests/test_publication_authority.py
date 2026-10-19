@@ -1020,9 +1020,9 @@ class GuardFalseDenialTest(unittest.TestCase):
                 self.assertEqual(self.hook(unsupported)['permissionDecision'], 'deny')
 
     def test_unstaged_content_that_the_commit_includes_is_scanned(self):
-        secret = scanner_fixture_assignment() + '\n'
+        fixture_assignment = scanner_fixture_assignment() + '\n'
         (self.repo / 'sub').mkdir()
-        (self.repo / 'sub/leak.txt').write_text(secret)
+        (self.repo / 'sub/leak.txt').write_text(fixture_assignment)
         for command, cwd in [('git add leak.txt && git commit -m add', self.repo / 'sub'),
                              ('git add -A && git commit -m add', self.repo),
                              ('git add . && ' + self.HEREDOC.format(body='add'), self.repo)]:
@@ -1031,11 +1031,11 @@ class GuardFalseDenialTest(unittest.TestCase):
                 self.assertEqual(response['permissionDecision'], 'deny')
                 self.assertIn('CONTENT_SECRET_BLOCKED', response['permissionDecisionReason'])
         (self.repo / 'sub/leak.txt').unlink()
-        (self.repo / 'file.txt').write_text(secret)
+        (self.repo / 'file.txt').write_text(fixture_assignment)
         for command in ['git commit -a -m change', 'git commit -am change']:
             with self.subTest(command=command):
                 self.assertIn('CONTENT_SECRET_BLOCKED', self.hook(command)['permissionDecisionReason'])
-        self.assertEqual(self.hook(self.HEREDOC.format(body=secret.strip()))['permissionDecision'], 'deny')
+        self.assertEqual(self.hook(self.HEREDOC.format(body=fixture_assignment.strip()))['permissionDecision'], 'deny')
 
     def test_ambiguous_injection_review_still_blocks_commit(self):
         # Push-time candidate scanning covers secrets only, so commit is the local injection gate.
