@@ -46,6 +46,8 @@ $XDG_DATA_HOME/aips/system
 
 可用 AIPS_INSTALL_DIR 覆寫。
 
+commit Hook 使用已安裝的 AIPS runtime；內容安全規則（例如 `pii.email.v2`）的更新要等重新安裝或更新 runtime 後才會生效於本機 Hook。
+
 ## Windows
 
 目前正式支援 **Windows + WSL**，不宣稱 native PowerShell runtime 已完成。

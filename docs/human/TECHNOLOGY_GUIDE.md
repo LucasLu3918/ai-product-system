@@ -310,6 +310,8 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
+Content-safety detector changes are versioned (for example `pii.email.v2`) and bound to Scenario 266 with a fixed corpus; they never add a PII exception path.
+
 ## Quality & Verification
 
 Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
@@ -604,3 +606,5 @@ The provider-neutral `scripts/content_safety.py` kernel supplies deterministic s
 Versioned injection rules distinguish instruction override, exfiltration, agent execution and ambiguous wording. Git commit scanning evaluates changed lines with source context, while Secret/PII checks cover the full staged blob. The shared read-only diagnostic returns stable rule/finding IDs and actionable recovery without matched text. Exact, expiring exceptions require approval evidence and cannot bypass Secret, PII or scanner-failure blocks.
 
 Commit 與發布掃描支援有界的 TTF/OTF/WOFF/WOFF2 metadata；fontTools/Brotli 缺失、格式偽裝、解析錯誤或資源超限都 fail closed。
+
+`pii.email.v2` is a deterministic regex plus Git remote grammar check: only the exact ASCII `git` userinfo of an scp-like or `ssh://` remote is excluded, and PII has no exception path.

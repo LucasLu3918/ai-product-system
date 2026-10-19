@@ -1963,6 +1963,8 @@ Scenario 260 verifies stable, redacted diagnostics for publication blockers, rea
 
 Scenario 099 also covers the publication guard read-only allow list and stable command-classification reason codes through `tests/test_publication_authority.py`; untracked-only worktrees are reported without blocking.
 
+Publication diagnostics keep reporting `CONTENT_PII_BLOCKED` for real addresses; Git remote `git` userinfo no longer produces that code under `pii.email.v2` (Scenario 266).
+
 ## Scenario 262 — ComfyUI Resource Authorization and Diagnostics
 
 ComfyUI authorization remains separate from AVIF metadata and Creative raster validity checks.
@@ -1992,3 +1994,5 @@ The lifecycle verifies default Git destination rejection, explicit exact-root op
 The fixed benign/malicious corpus verifies that common JavaScript data references pass, strong injection rules still block, ambiguous findings require review, and removed or unchanged staged lines do not block an unrelated edit. Publication-candidate injection checks inspect added diff lines while Secret/PII scanning retains the complete diff. Full staged Secret/PII coverage, exact expiring exceptions, safe reason/phase/fingerprint/recovery output, Hook parity and unchanged Git index/HEAD are covered by `tests/test_content_safety.py` and `tests/test_safety_diagnostics.py`.
 
 Scenario 169 covers commit-form scanning of not-yet-staged content and unchanged commit-time `REVIEW` blocking.
+
+The `pii.email.v2` corpus proves Git remote `git` userinfo (scp-like, `ssh://`, quoted prefixes and template paths) passes while true addresses, personal remote users, confusables and adjacent addresses block, with redaction parity and rejected `pii.*` exceptions.

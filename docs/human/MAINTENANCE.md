@@ -821,3 +821,5 @@ Register every new persistence or publication sink in `config/content-safety.yam
 For Plan45 publication scanning, keep the literal executable/subcommand check ahead of candidate inspection. Classify scanner policy, base, object and candidate-file failures with allowlisted `SECRET_SCAN_*` diagnostics; never include exception messages, paths or secret values. Findings and incomplete scans remain fail-closed. Update Scenario 261 and the Core Change Test Matrix with any new scanner boundary.
 
 Commit-form changes in the publication guard must prove that content not yet staged is scanned and that commit-time `REVIEW` findings still block.
+
+Changes to PII detector grammar need a versioned rule ID, a hex-encoded positive/negative corpus with a v1/v2 comparison, shared detection/redaction predicates, and no PII exception path. Code-level `chr(64)` workarounds for Git remotes can be removed once the installed runtime carries `pii.email.v2`.

@@ -656,3 +656,5 @@ Telemetry additions use bounded allowlisted fields and exclude prompts, images, 
 Before AIPS persists or publishes content, the sink-aware Runtime Content Safety Boundary applies deterministic secret/PII detection and records untrusted-content provenance. Commit-time injection checks use changed-line context, while Secret and PII scanning covers the full staged blob; unresolved review findings remain blocked. Diagnostic sinks redact; durable or public sinks block. This boundary complements, and does not replace, Human Authority and Git Publish Approval.
 
 The commit guard accepts quoted-delimiter heredoc messages, literal `git add` commands joined by `&&`, `-a`/`-am` and `--amend`, and scans worktree content the commit would include; secret, PII and ambiguous injection (`REVIEW`) findings still block at commit (Scenario 169).
+
+Email rule `pii.email.v2` treats the `git` service user of an scp-like or `ssh://` Git remote as a host address, not an email; detection and redaction share that predicate and every other address still blocks.

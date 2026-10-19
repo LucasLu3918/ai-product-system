@@ -446,3 +446,5 @@ Project Intelligence outputs are AIPS-owned durable content and must pass the Ru
 Git commit diagnostics retain stable rule and finding fingerprints, safe file/line evidence and next-step guidance. Injection is evaluated on changed staged lines; Secret and PII scanning stays full-blob. An ambiguous finding is not an implicit allow, and a narrow expiring exception remains separate from Human publication authority.
 
 Publication guard classification changes do not change Project Intelligence inputs, storage or authority.
+
+The `pii.email.v2` Git remote grammar changes only commit and publication PII findings; Project Intelligence inputs, storage and authority are unchanged, and redacted context still removes real addresses.

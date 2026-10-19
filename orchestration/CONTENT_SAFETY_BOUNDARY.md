@@ -30,6 +30,7 @@ Supported decisions are `ALLOW`, `REDACT`, `BLOCK` and `REVIEW`.
 
 - Secrets reuse the deterministic detectors from `scripts/check_secret_leakage.py`.
 - PII starts with deterministic email, phone, checksum-valid card and Taiwan ID detection. It is sink- and context-aware; an email is not automatically a violation.
+- Email rule `pii.email.v2` does not report the exact ASCII `git` service user of an scp-like (`host:path`) or `ssh://` Git remote; that is remote grammar, not an exception. Every other regex match, including personal remote users, case variants and confusables, is reported independently, and redaction uses the same predicate. PII never accepts repository exceptions.
 - External content carries provenance such as `trust: UNTRUSTED`. Prompt injection is reported as `INJECTION_SIGNAL`, not as a claim of confirmed compromise.
 - A detector failure is fail-closed for commit, PR, release and high-assurance audit sinks, and degraded/drop behavior for low-risk diagnostic sinks.
 
