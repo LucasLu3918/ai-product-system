@@ -153,7 +153,7 @@ class SafetyDiagnosticsTests(unittest.TestCase):
         self.assertEqual(result["decision"], "ALLOW", result)
 
     def test_full_staged_blob_keeps_secret_scan_and_diagnostic_is_actionable(self) -> None:
-        secret = "ghp_" + "C" * 40
+        secret = "ghp_" + hashlib.sha256(b"content-safety-test-token").hexdigest()[:36]
         path = self.root / "payload.txt"
         path.write_text("token=" + secret + "\nversion=1\n", encoding="utf-8")
         self.run_git("add", "payload.txt")
