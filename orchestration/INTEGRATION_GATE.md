@@ -24,6 +24,9 @@ The Gate is deterministic code. It has no Human approval, merge or release autho
 
 ## Exact-candidate binding
 
+Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
+
+
 Publication diagnostics changes require the Core Change Matrix to bind the exact source, tests, scenario and documentation file set before the local Gate runs.
 Plan44's matrix separately verifies fail-closed command details, Claude native failure redaction and unchanged ALREADY_MERGED/Branch Hygiene recovery before publication.
 
@@ -291,7 +294,6 @@ The exact-candidate scanner inspects static AVIF EXIF/XMP metadata under the sam
 The exact candidate scan applies the shared bounded font parser to the final tree and changed history blobs, with stable redacted failures and no change to publication authority.
 
 The Integration Gate runs the content-safety lifecycle for affected candidates and requires the canonical sink manifest. Durable/public content safety failures are blocking; diagnostic redaction remains a safe degraded path.
-Scenario 266 verifies publication-diff injection classification uses added lines while Secret/PII checks retain the complete candidate diff; deleted or unchanged instruction-like text cannot block an unrelated edit.
 
 Runtime Policy changes require deterministic evaluator and native-hook lifecycle checks plus the mandatory exact-candidate secret scan. Live external sandbox/provider credentials are not baseline gate dependencies; absent verification must continue to produce a blocking runtime decision.
 

@@ -9,6 +9,9 @@ Retrieval relation candidates are built by a small standard-library module behin
 
 ## Runtime & Integration
 
+Scenario 266 findings remain untrusted content and do not grant Runtime Context or action authority.
+
+
 Harness commit hooks route staged AVIF through the shared metadata safety scanner; native runtime enforcement remains bounded to each adapter's documented capabilities.
 
 The creative import CLI is routed by the existing AIPS command facade. Its explicit Git destination opt-in is independent of OpenCode native permission acceptance.
@@ -86,6 +89,15 @@ Local hybrid retrieval 組合 lexical、symbols、structural relation、tests、
 Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEMENTATION_APPROVED` 進入核准範圍；實作後對帳 actual diff 與 declared impact，只有完整記錄 reconciliation evidence 才能標記 `READY`。
 
 ## Execution
+
+Content-safety PASS is candidate evidence only and does not authorize PR merge or change publication mode.
+
+
+Scenario 266 provides local deterministic safety evidence; it does not substitute for independent review or grant approval.
+
+
+Scenario 266 binds injection review to added candidate lines while Secret/PII scanning still covers the full candidate diff.
+
 
 The publication preflight scans bounded AVIF EXIF/XMP metadata, while Creative raster validation accepts only structures supported by the shared registry; ComfyUI Resource Authorization remains a separate boundary.
 
@@ -297,6 +309,12 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
+
+
+Content-safety controls remain separate from skill discovery, installation, and author trust decisions.
+
 
 Publication command-form and scanner recovery behavior is covered by the exact candidate Core Matrix and Scenario 261; it does not change the Skill Explorer contract or publication authority.
 
@@ -510,6 +528,9 @@ The observation collector reports readiness separately from collection health: `
 The publication doctor normalizes branch existence, effective GitHub rules, classic protection, ruleset, and worktree evidence into phase-specific diagnostics. Its JSON remains observational and keeps Human and native-host authority outside the diagnostic result.
 
 ## Product Delivery
+
+Scenario 266 covers versioned injection classification, added-line checks, full-blob secret/PII scanning, and safe recovery diagnostics.
+
 
 The current lucas-lab main policy requires pull requests and the `verify` and `visual-audit` checks, and disallows force pushes and deletion.
 

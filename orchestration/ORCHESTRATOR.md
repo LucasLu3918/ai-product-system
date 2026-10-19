@@ -10,6 +10,9 @@ The orchestrator coordinates work. It is not a super-role and cannot override go
 
 ## Minimal algorithm
 
+Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
+
+
 The publication workflow may use safe Prepare and Diagnostic ID observations during planning; they do not satisfy Human Authority, native Host confirmation, a required check, or the observed-execution condition.
 
 For an explicit creative asset transfer, review the hash-bound import candidate and invoke the exact-hash CLI import only after the destination check passes.

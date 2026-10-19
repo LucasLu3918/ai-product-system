@@ -111,6 +111,12 @@ Identity/Resume evidence 同時驗證跨 worktree repository identity、dirty wo
 
 ## v0.16 Agent Eval Conformance
 
+Scenario 266 provides local deterministic safety evidence; it does not substitute for independent review or grant approval.
+
+
+Content-safety findings are advisory retrieval inputs and do not change Project Intelligence authority or graph completeness.
+
+
 OpenCode native acceptance verifies one host integration boundary; it is not an Agent task-outcome or production-model quality measure.
 
 創作修正回歸以原始「重出一張哈利」對話、否定／分析指令、重播／並行額度、必要特徵錯置、來源漂移、版本比較與時間／次數停損為準。`creative_repair_lifecycle.py` 與 native tool fixture 是 synthetic evidence；真實生成及 host acceptance 分列。
@@ -858,6 +864,9 @@ Deterministic contract 會驗證：
 
 ## Deterministic Scheduler + Integration Gate（Scenario 135–136）
 
+Scenario 266 findings remain untrusted content and do not grant Runtime Context or action authority.
+
+
 Scenario 135 用 lifecycle evidence 驗證多 Agent 工作不需要每一步再交給 LLM 協調：相同 Task Graph + state 必須得到相同 dispatch / fingerprint，dependency、max_parallel 與 Change Boundary lock 都由程式決定；cycle、stale/failed dependency 會 fail closed。
 
 Scenario 136 用 temporary Git repository 真正建立 base/candidate commits，驗證 Integration Gate 綁定 exact base/head、changed-file hash 與 validation profile；HEAD 不符會 BLOCKED，required command 失敗會 FAIL，PASS 仍不取得 merge/release authority。
@@ -1581,6 +1590,9 @@ Plan21 Phase 0 adds `tests/evidence/plan21_contract_baseline.py` to the required
 
 ## Scenarios 202–209 — Plan13 current and provenance evidence
 
+Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
+
+
 必要的 repository lifecycle fixtures 使用 CI 一律提供的完整 Python 驗證套件；此設定不會改變候選路徑對 Node 與 Chromium 執行環境的選擇。
 
 Exact-candidate planning continues to distinguish observed evidence from unknown status. The current quality ratchet also records the Ruff baseline and bounded report-only lifecycle coverage; these measures do not expand the tested module scope or grant release authority.
@@ -1724,6 +1736,9 @@ Diagnostic recommendations remain read-only and conditional.
 
 ## Scenario 233 — Public CLI Help and Error Contracts
 
+Scenario 266 covers versioned injection classification, added-line checks, full-blob secret/PII scanning, and safe recovery diagnostics.
+
+
 The additive `aips publish diagnose --diagnostic-id` route preserves the existing CLI help contract and returns only the verified, allowlisted ledger event when a ledger is configured.
 
 Scenario 233 retains public CLI argument and error compatibility; the structured Creative and Runtime errors added in Scenario 262 do not change its command surface.
@@ -1805,6 +1820,9 @@ The cross-profile quality evidence extension is covered by Scenario 258; this cr
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+Content-safety controls remain separate from skill discovery, installation, and author trust decisions.
+
+
 Scenario 261 adds publication command-form validation and redacted scanner failure recovery independently of Skill discovery, routing, or inventory behavior.
 
 Scenario 265 adds no Skill Explorer or install behavior; it reuses the existing media scanner.
@@ -1874,6 +1892,9 @@ The read-only publication doctor cross-checks `branch.protected` with classic pr
 Plan44 also verifies stable detail codes for unsupported command forms and a separate Claude `PostToolUseFailure` path that reports observed native execution failure and exit code without raw host text. PreToolUse denial remains `NOT_EXECUTED`; no retry or authority is added.
 
 ## Scenario 240 — Personal Publication Default and High-Assurance Opt-In
+
+Content-safety PASS is candidate evidence only and does not authorize PR merge or change publication mode.
+
 
 AVIF metadata inspection is a local content-safety check and does not change personal publication mode or grant requirements.
 

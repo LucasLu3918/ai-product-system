@@ -967,6 +967,9 @@ The size audit measures tracked text/evidence files against 50,000 bytes and rep
 
 ## Scenarios 202–209 — Plan13 current and provenance evidence
 
+Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
+
+
 Plan29 #6 keeps its exact candidate, scoped Change Impact, and required repository Gate evidence together for review.
 
 
@@ -1087,6 +1090,9 @@ AIPS retains HTTP status, endpoint, sanitized API error, branch/effective-rules 
 The branch lifecycle report classifies remote branches using current exact-SHA PR metadata and local checkout evidence. It distinguishes branches to keep, superseded work, PR branches requiring rebase, and cleanup candidates. These are advisory dispositions only: report generation and the scheduled workflow never delete branches or grant cleanup authorization. Unknown or incomplete evidence fails closed to KEEP. Scenario 257 is covered by `tests/evidence/branch_hygiene_lifecycle.py` and `tests/validation/branch_hygiene_contracts.py`.
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
+
+Content-safety controls remain separate from skill discovery, installation, and author trust decisions.
+
 
 Scenario 261 publication command validation and scanner recovery do not change the pinned Skill Explorer inventory, routing, or installation contract.
 

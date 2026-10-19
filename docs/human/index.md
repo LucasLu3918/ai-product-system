@@ -34,7 +34,7 @@ Creative asset import 操作見 [User Guide](USER_GUIDE.md)，邊界與 Scenario
 AVIF metadata safety guidance is in the [User Guide](USER_GUIDE.md#runtime-content-safety-boundary), with limits and evidence in [Security Assurance](SECURITY_ASSURANCE.md#runtime-content-safety-boundary) and Scenario 265.
 
 Commit Content Safety 的操作說明見 [User Guide](USER_GUIDE.md#runtime-content-safety-boundary)，權限與 fail-closed 邊界見 [Security Assurance](SECURITY_ASSURANCE.md#runtime-content-safety-boundary)，驗證證據見 Scenario 263。
-Injection false-positive handling, exact expiring exceptions, and full staged-blob secret coverage are recorded in Scenario 266 and the canonical [Content Safety boundary](../../orchestration/CONTENT_SAFETY_BOUNDARY.md).
+Injection false-positive handling, exact expiring exceptions, and full staged-blob secret coverage are recorded in Scenario 266 and the published User Guide and Security Assurance sections.
 
 Resource Authorization and local Creative execution behavior are documented in the User Guide, Security Assurance, and Scenario 262; implementation ownership and placement remain in the Agent-facing orchestration references.
 

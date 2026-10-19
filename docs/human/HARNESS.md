@@ -56,6 +56,9 @@ AIPS Core
 
 ## Native Runtime Adapters
 
+Content-safety controls remain separate from skill discovery, installation, and author trust decisions.
+
+
 Personal publication Hook denials preserve stable `SECRET_SCAN_*` reason/phase metadata without raw exception text or candidate paths. Unsupported literal command forms are denied before scanner work; the Hook does not authorize retry or execution.
 
 Adapter action guards remain separate from staged AVIF content-safety diagnostics.
@@ -218,7 +221,6 @@ Independent review uses the canonical Scheduler and Integration Gate contracts t
 若執行環境已有獨立且受信任的簽發者，可將外部 trust store 交給 review validator／Integration Gate 驗證 Ed25519 receipt；trust store 不得放在候選 repository。AIPS 不簽發執行隔離或唯讀權限證明，也不因只有合法簽章格式就認定審查獨立。
 
 Runtime Content Safety Boundary 只在 AIPS-owned sink 或已驗證 native hook 上宣稱強制能力；MCP-only 或 unsupported host tools 維持 ADVISORY。安全掃描不會取得 Host-native tool interception 或 Human Authority。
-Scenario 266 records the staged-line injection classification, full-blob secret scan, and exact exception behavior of the existing commit Hook and read-only diagnostic CLI.
 
 - The release-readiness check is evidence only: it never grants runtime capability or tag-writing authority.
 ## Progressive disclosure

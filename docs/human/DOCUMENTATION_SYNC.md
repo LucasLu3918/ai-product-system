@@ -249,6 +249,9 @@ Getting Started / Installation / User Guide 以 task-oriented方式導覽；Arch
 
 ## Deterministic protection
 
+Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
+
+
 Scenario 263, its registered lifecycle, and the regenerated conformance projections are synchronized as one candidate-bound documentation change.
 
 The Claude Code Doctor recovery description remains limited to one read-only observation for retryable network, rate-limit or GitHub server failures.

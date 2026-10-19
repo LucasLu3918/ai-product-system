@@ -204,7 +204,6 @@ Readers continue using the last valid generation.
 
 ## Retrieval relationships and impact traversal
 
-Scenario 266 content-safety changes include the versioned configuration, Guard and publication-preflight consumers, stable diagnostics, tests and documentation in scoped impact reconciliation. These relationships remain advisory evidence and do not create an instruction-authority edge or promote repository-wide graph coverage.
 
 
 
@@ -617,6 +616,9 @@ Do not claim the project has been initialized merely from directory/file-name in
 
 ## Existing-project automatic behavior
 
+Content-safety findings are advisory retrieval inputs and do not change Project Intelligence authority or graph completeness.
+
+
 Security-boundary Change Impact may use a manually reviewed publication caller/consumer scope when the repository-wide Impact Graph is partial; unknown paths remain explicit.
 
 
@@ -654,6 +656,9 @@ Architecture and DDD classifications require behavioral/dependency evidence, not
 The CLI commands are deterministic building blocks used by the Agent/Harness and remain available for debugging.
 
 ## Retrieval relationships and impact traversal
+
+Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
+
 
 Publication security-boundary changes record manually reviewed callers and consumers when the repository-wide relation graph is partial.
 

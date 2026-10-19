@@ -167,6 +167,15 @@ Multi-file changes should normally be assembled into one coherent remote branch 
 
 ## Versioning
 
+Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
+
+
+Scenario 266 provides local deterministic safety evidence; it does not substitute for independent review or grant approval.
+
+
+Scenario 266 binds injection review to added candidate lines while Secret/PII scanning still covers the full candidate diff.
+
+
 The 0.83.0 candidate records shared Required Checks policy evidence and bounded Claude Code publication diagnostics.
 
 Plan29 #6 is validated as an exact Core Change candidate with its own matrix and required repository check.
@@ -526,6 +535,9 @@ When public repository hardening changes, review together:
 Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功，再分別模擬 loopback 與 browser 失敗，確保環境阻擋診斷不受 optional module availability 干擾；這不變更 runtime 行為。
 
 ## Validation architecture consistency
+
+Content-safety controls remain separate from skill discovery, installation, and author trust decisions.
+
 
 Scenario 261 adds scanner-failure and pre-scan command-order evidence; this is separate from Skill Explorer inventory and runtime lifecycle evidence.
 

@@ -33,7 +33,6 @@ Resolution accepts an explicit data class and minimum isolation class. The initi
 The optional E2B smoke test handles synthetic content only and emits a bounded receipt. The protected-main `workflow_dispatch` requires explicit confirmation that the provider's prior written testing consent was obtained. PRs do not receive `E2B_API_KEY`; missing credentials report `SKIPPED_NOT_CONFIGURED`. Smoke-test success does not enable the registry or attest the provider's underlying hypervisor. General task-file staging/execution remains disabled pending explicit data-scope authorization and implementation of its adapter; the registry's `integration_status` must be `AVAILABLE` before resolution can report `AVAILABLE`.
 
 Guest artifacts must be treated as untrusted: validate relative paths and contents on the host, bind import to the source revision and Change Boundary, and run the existing Integration/Security Gate before Git operations. Sandbox capability grants no Git publication or deployment authority.
-The same content boundary applies after import: Scenario 266 records added-line injection checks, full staged-blob secret/PII scanning, and exact expiring exceptions without extending sandbox or publication authority.
 Regardless of workspace isolation mode, every Remote Git publication candidate must also pass the built-in strict secret scan over its final tree and full `base..head` history; a sandbox does not replace this publication check.
 
 ## Worktree ownership
@@ -292,6 +291,9 @@ Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. 
 
 
 ## Parallel runtime resource isolation
+
+Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
+
 
 AVIF parsing is a local content inspection and adds no runtime resource lease, port allocation or shared execution side effect.
 

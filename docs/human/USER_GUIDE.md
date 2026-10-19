@@ -172,6 +172,9 @@ Plan36 publication diagnostics preserve this topic's existing authority boundari
 
 ## 需求釐清與 Planning
 
+Scenario 266 binds injection review to added candidate lines while Secret/PII scanning still covers the full candidate diff.
+
+
 
 需求階段可載入產品研究與遊戲設計技能；先釐清平台、輸入、核心循環、進程、失敗／重試與可及性。研究或 playtest 規劃須先定義參與同意、資料最小化與證據限制。
 
@@ -272,6 +275,9 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 詳細請看 [Global Harness 與 MCP](HARNESS.md)。
 
 ## Roles、Skills 與重用
+
+Content-safety controls remain separate from skill discovery, installation, and author trust decisions.
+
 
 Publication scanner diagnostics do not add Skill discovery, routing, installation or ownership behavior; use the Git Publication and Runtime Content Safety sections for their recovery contract.
 
@@ -413,6 +419,12 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 詳見 [Security Assurance](SECURITY_ASSURANCE.md)。
 
 ## Quality 與 Review
+
+Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
+
+
+Scenario 266 provides local deterministic safety evidence; it does not substitute for independent review or grant approval.
+
 
 Commit diagnostics expose redacted evidence only; any independent review remains governed by the candidate Core Change Matrix.
 
@@ -642,6 +654,9 @@ Just-in-Time Retrieval 只帶入本次任務相關的 code、symbols、tests、h
 Retrieval index persistence is an internal, rebuildable cache boundary in `scripts/retrieval_storage.py`; existing commands and imports continue through the `retrieval_intelligence.py` compatibility facade.
 
 ## Git Publication 與 Release
+
+Content-safety PASS is candidate evidence only and does not authorize PR merge or change publication mode.
+
 
 Personal publication rejects unsupported literal command forms before candidate inspection and reports scanner policy, Git-object and file-read failures with stable redacted `SECRET_SCAN_*` codes. These failures remain blocked and non-authorizing.
 
