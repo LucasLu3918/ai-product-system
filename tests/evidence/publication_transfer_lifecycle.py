@@ -108,7 +108,7 @@ def main() -> int:
             "remote",
             "set-url",
             "origin",
-            "git" + chr(64) + f"github.com:{REPOSITORY}.git",
+            f"git@github.com:{REPOSITORY}.git",
         )
         large.write_text(
             large.read_text(encoding="utf-8") + "dirty\n", encoding="utf-8"
