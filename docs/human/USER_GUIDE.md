@@ -865,3 +865,5 @@ Commit, pull request and release content is scanned before durable/public public
 The commit guard accepts quoted-delimiter heredoc messages, literal `git add` commands joined by `&&`, `-a`/`-am` and `--amend`, and scans worktree content the commit would include; secret, PII and ambiguous injection (`REVIEW`) findings still block at commit (Scenario 169).
 
 守衛現在放行唯讀指令與 Claude Code 標準的 commit 寫法（引號定界符 heredoc、`git add … && git commit`、`-a`、`--amend`），即將加入 commit 的內容仍會被掃描。只有未追蹤檔時不再出現 `WORKTREE_DIRTY`；已追蹤檔有未提交修改時仍會阻擋發布。
+
+含 Git 遠端字串（例如 scp 寫法的 `git` 服務帳號）的檔案不再因 `CONTENT_PII_BLOCKED` 被擋（規則 `pii.email.v2`）；其他 email、個人帳號的遠端與相似字元仍會阻擋，不需要也不允許用 `chr(64)` 等寫法繞過。

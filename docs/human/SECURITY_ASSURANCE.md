@@ -481,6 +481,8 @@ The commit guard accepts quoted-delimiter heredoc messages, literal `git add` co
 
 發布守衛只放行判定為非發布的指令形式；可能發布的形式仍一律拒絕。commit 階段的 `REVIEW` 注入訊號仍會阻擋，因為發布時的候選掃描只涵蓋密鑰。
 
+Email rule `pii.email.v2` reads only the exact ASCII `git` userinfo of an scp-like or `ssh://` Git remote as a host address. Personal remote users, `https` userinfo, case variants, confusables and any address next to or inside a remote stay blocked; secret scanning is unchanged and PII still has no exception path.
+
 ## Runtime Policy Enforcement
 
 Content-safety PASS is candidate evidence only and does not authorize PR merge or change publication mode.

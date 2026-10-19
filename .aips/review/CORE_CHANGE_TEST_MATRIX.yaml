@@ -1,69 +1,81 @@
 version: 1
 change:
-  id: guard-false-denials-20261020
-  summary: Stop the publication guard from denying read-only commands and standard commit forms, keep publication-capable
-    forms denied, make untracked files non-blocking for publication, and report stable classification reason codes.
+  id: pii-email-git-remote-20261020
+  summary: Replace pii.email.v1 with pii.email.v2 so the exact `git` service user of scp-like and ssh:// Git remotes is
+    not reported as an email, while every other address, personal remote user and confusable remains blocked, detection
+    and redaction share one predicate, and PII exceptions stay impossible.
   boundary:
-    - Shell command classification for read-only Git/GitHub forms and Git aliases
-    - Commit content inspection for heredoc messages, chained git add, -a/-am and --amend
-    - Publication worktree validation for untracked files
-    - Command-classification diagnostics and documentation closure
+    - Email detection rule semantics (pii.email.v2)
+    - Redaction parity for REDACT sinks
+    - Commit Hook, diagnose and publication preview/plan consumers
+    - Secret and exception invariants
+    - Documentation and scenario closure
 matrix:
-  - boundary: Shell command classification for read-only Git/GitHub forms and Git aliases
-    reason: The guard denied read-only commands with dynamic context, gh api GET, git lfs and aliases; every newly allowed
-      form needs a still-denied publication-capable counterpart.
+  - boundary: Email detection rule semantics (pii.email.v2)
+    reason: The rule blocks durable sinks; narrowing it must not let any non-remote address through.
     checks:
-      static_lint: {applicable: true, evidence: "PASS: ruff critical selection and quality ratchet passed; git diff --check clean."}
-      unit: {applicable: true, evidence: "PASS: tests/test_publication_authority.py 50 tests, including GuardFalseDenialTest classification and alias tables."}
-      integration: {applicable: true, evidence: "PASS: governance_command_guard, runtime_policy contract and native hook lifecycle evidence."}
-      contract: {applicable: true, evidence: "PASS: full repository validator with 266 registered scenarios; Scenario 099 updated and evidence registered."}
-      e2e: {applicable: false, na_reason: No browser UI or deployed service is changed; the native hook is exercised through its CLI.}
-      security: {applicable: true, evidence: "PASS: dynamic git/gh/shell executables, dynamic -c/--config-env/--exec-path, API writes, LFS push/lock and publication aliases stay denied."}
+      static_lint: {applicable: true, evidence: "PASS: ruff check on changed Python files; git diff --check clean."}
+      unit: {applicable: true, evidence: "PASS: tests/test_content_safety.py 16 tests (new cases folded into existing methods); 17 hex Git remote samples ALLOW, 21 hex true-address samples BLOCK with rule_id pii.email.v2."}
+      integration: {applicable: true, evidence: "PASS: tests/test_safety_diagnostics.py 17 tests and tests/test_publication_planning.py 30 tests."}
+      contract: {applicable: true, evidence: "PASS: v1/v2 corpus comparison test; v1 flags all 38 samples, v2 flags only the 21 true-address samples."}
+      e2e: {applicable: false, na_reason: No browser UI or deployed service is changed.}
+      security: {applicable: true, evidence: "PASS: case variants, dotless-i confusable, personal scp user, ssh:// personal user, https userinfo, address adjacent to or inside a remote path, and combolist form stay blocked."}
       migration_recovery: {applicable: false, na_reason: No persistent data or configuration migration; rollback is a PR revert.}
-      cli_harness: {applicable: true, evidence: "PASS: claude-code hook subprocess allows read-only forms and denies publication forms with stable codes."}
-      docs_schema: {applicable: true, evidence: "PASS: exact-candidate Documentation Impact complete with zero required additions."}
-  - boundary: Commit content inspection for heredoc messages, chained git add, -a/-am and --amend
-    reason: Standard commit forms were denied; supporting them must not skip content that the commit would include or let a
-      heredoc hide commands.
+      cli_harness: {applicable: true, evidence: "PASS: aips publish preview (core) content_safety PASS and documentation placement complete for the candidate."}
+      docs_schema: {applicable: true, evidence: "PASS: Content Safety Boundary, Security Assurance and Scenario 266 describe the rule."}
+  - boundary: Redaction parity for REDACT sinks
+    reason: Detection and redaction previously used separate regex application; they must agree.
     checks:
-      static_lint: {applicable: true, evidence: "PASS: ruff critical selection and quality ratchet passed."}
-      unit: {applicable: true, evidence: "PASS: heredoc inlining, delimiter-line, comment and unquoted-delimiter cases; literal backticks and $ allowed, expansions denied."}
-      integration: {applicable: true, evidence: "PASS: staged and worktree secrets block through git add chains, subdirectory pathspecs, -a and -am."}
-      contract: {applicable: true, evidence: "PASS: Scenario 169 updated; content safety suite 16 tests and safety diagnostics 17 tests passed."}
-      e2e: {applicable: false, na_reason: No browser UI or deployed service is changed.}
-      security: {applicable: true, evidence: "PASS: ambiguous injection REVIEW still blocks message and staged content with CONTENT_REVIEW_REQUIRED; heredoc delimiter injection denied."}
-      migration_recovery: {applicable: false, na_reason: No persistent data migration; rollback is a PR revert.}
-      cli_harness: {applicable: true, evidence: "PASS: hook subprocess allows the standard heredoc commit and denies unsupported chains."}
-      docs_schema: {applicable: true, evidence: "PASS: Content Safety Boundary and runtime docs record the commit forms and unchanged REVIEW blocking."}
-  - boundary: Publication worktree validation for untracked files
-    reason: Untracked files are never part of a pushed candidate, but blocked push and PR as WORKTREE_DIRTY.
+      static_lint: {applicable: true, evidence: "PASS: ruff check on changed Python files; git diff --check clean."}
+      unit: {applicable: true, evidence: "PASS: runtime_log redacts the address and keeps the adjacent Git remote; a remote alone is ALLOW."}
+      integration: {applicable: true, evidence: "PASS: safe_emit REDACT path shared by governance_audit, observable_event and project_intelligence callers."}
+      contract: {applicable: true, evidence: "PASS: finding shape unchanged; values never emitted."}
+      e2e: {applicable: false, na_reason: No UI.}
+      security: {applicable: true, evidence: "PASS: real addresses in the same location are still redacted."}
+      migration_recovery: {applicable: false, na_reason: No stored data changes.}
+      cli_harness: {applicable: false, na_reason: Library behavior only; CLI uses safe_emit unchanged.}
+      docs_schema: {applicable: true, evidence: "PASS: Content Safety Boundary states the shared predicate."}
+  - boundary: Commit Hook, diagnose and publication preview/plan consumers
+    reason: governance_guard, safety_diagnostics, publish_preflight and publication_authority consume email findings.
     checks:
-      static_lint: {applicable: true, evidence: "PASS: ruff critical selection and quality ratchet passed."}
-      unit: {applicable: true, evidence: "PASS: worktree_dirty_details reports untracked paths with CLEAN status and DIRTY for tracked edits."}
-      integration: {applicable: true, evidence: "PASS: tests/test_publication_planning.py 30 tests, including an untracked-only push plan and tracked-edit WORKTREE_DIRTY."}
-      contract: {applicable: true, evidence: "PASS: publication diagnostics suite 17 tests; Integration Gate clean-worktree requirement unchanged."}
-      e2e: {applicable: false, na_reason: No browser UI or deployed service is changed.}
-      security: {applicable: true, evidence: "PASS: uncommitted tracked changes still block push, PR and post-merge reconciliation."}
-      migration_recovery: {applicable: false, na_reason: The diagnostic adds one field; no stored data changes.}
-      cli_harness: {applicable: true, evidence: "PASS: publication prepare plans a push with only untracked files present."}
-      docs_schema: {applicable: true, evidence: "PASS: User Guide, Integration Gate and Security Assurance record the semantics."}
-  - boundary: Command-classification diagnostics and documentation closure
-    reason: Classification denials surfaced INTERNAL_DIAGNOSTIC_GAP instead of the denial's own reason code.
+      static_lint: {applicable: true, evidence: "PASS: ruff check on changed Python files; git diff --check clean."}
+      unit: {applicable: true, evidence: "PASS: safety diagnostics suite 17 tests."}
+      integration: {applicable: true, evidence: "PASS: tests/validate_repository.py VALIDATION PASSED (266 scenarios); safety diagnostics 17 and publication planning 30 tests."}
+      contract: {applicable: true, evidence: "PASS: full repository validator; finding shape and CONTENT_PII_BLOCKED reason code unchanged."}
+      e2e: {applicable: false, na_reason: No UI.}
+      security: {applicable: true, evidence: "PASS: CONTENT_PII_BLOCKED reason code and fail-closed behavior unchanged."}
+      migration_recovery: {applicable: false, na_reason: The installed runtime keeps v1 until updated; no data migration.}
+      cli_harness: {applicable: true, evidence: "PASS: aips publish preview (core) content_safety PASS and documentation placement complete for the candidate."}
+      docs_schema: {applicable: true, evidence: "PASS: Scenario 266 updated."}
+  - boundary: Secret and exception invariants
+    reason: The change must not weaken secret scanning or open a PII exception path.
     checks:
-      static_lint: {applicable: true, evidence: "PASS: ruff critical selection and quality ratchet passed."}
-      unit: {applicable: true, evidence: "PASS: every CommandError reason code maps to PUBLICATION_DIAGNOSTICS with Traditional Chinese detail."}
-      integration: {applicable: true, evidence: "PASS: hook denial text and additionalContext report the same reason code."}
-      contract: {applicable: true, evidence: "PASS: full repository validator and exact-candidate Documentation Impact."}
-      e2e: {applicable: false, na_reason: No browser UI or deployed service is changed.}
-      security: {applicable: true, evidence: "PASS: diagnostics stay redacted and never echo command text."}
-      migration_recovery: {applicable: false, na_reason: No persistent data migration.}
-      cli_harness: {applicable: true, evidence: "PASS: claude-code hook subprocess diagnostics."}
-      docs_schema: {applicable: true, evidence: "PASS: Documentation Impact complete for the exact candidate."}
+      static_lint: {applicable: true, evidence: "PASS: ruff check on changed Python files; git diff --check clean."}
+      unit: {applicable: true, evidence: "PASS: secret next to a Git remote still BLOCK; a pii.email.v2 exception record is rejected as invalid rule_id."}
+      integration: {applicable: true, evidence: "PASS: check_secret_leakage untouched; candidate/history secret scan unchanged."}
+      contract: {applicable: true, evidence: "PASS: config/content-safety.yaml and content-safety-exceptions.yaml unchanged."}
+      e2e: {applicable: false, na_reason: No UI.}
+      security: {applicable: true, evidence: "PASS: secret next to a Git remote still BLOCK; pii.* exception rejected; check_secret_leakage and sink policy unchanged."}
+      migration_recovery: {applicable: false, na_reason: No migration.}
+      cli_harness: {applicable: false, na_reason: No CLI change.}
+      docs_schema: {applicable: true, evidence: "PASS: Content Safety Boundary repeats that PII never accepts exceptions."}
+  - boundary: Documentation and scenario closure
+    reason: Detector semantics are documented in canonical and human docs and Scenario 266.
+    checks:
+      static_lint: {applicable: true, evidence: "PASS: ruff check on changed Python files; git diff --check clean."}
+      unit: {applicable: false, na_reason: Documentation only.}
+      integration: {applicable: true, evidence: "PASS: tests/validate_repository.py VALIDATION PASSED (266 scenarios); safety diagnostics 17 and publication planning 30 tests."}
+      contract: {applicable: true, evidence: "PASS: full repository validator; finding shape and CONTENT_PII_BLOCKED reason code unchanged."}
+      e2e: {applicable: false, na_reason: No UI.}
+      security: {applicable: false, na_reason: Documentation only.}
+      migration_recovery: {applicable: false, na_reason: No migration.}
+      cli_harness: {applicable: false, na_reason: No CLI change.}
+      docs_schema: {applicable: true, evidence: "PASS: documentation placement closure in aips publish preview; 11 canonical docs updated within allowed sections."}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 candidate:
-  base_sha: 51df5a76ddcdd029b801cef5525800fa5d33175f
-  changed_files_hash: 0ee05981122dbba2ba881fedf7a0e70c2a44960bd25dfd66b3105f7e1c578b62
+  base_sha: df79357e3c260c450645e40d7af27321c8627757
+  changed_files_hash: b6c893363b06c689a6100ccb8d36157c488895729c0629af47a302a53bb81a7e
 blockers:
   []
 review_evidence:
