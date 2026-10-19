@@ -191,6 +191,24 @@ PUBLICATION_DIAGNOSTICS = {
     'CONTENT_EXCEPTION_EXPIRED': ('A content-safety exception has expired and no longer applies.', 'Remove or renew the exact exception through the approved review process, then rerun the read-only diagnosis.', 'content_exception', 'EXPIRED'),
     'CONTENT_SAFETY_BLOCKED': ('The commit content safety policy blocked a candidate.', 'Review the safe finding categories, correct the candidate, then rerun the diagnosis.', 'content_scan', 'POLICY'),
     'CONTENT_INSPECTION_UNAVAILABLE': ('The content inspection step could not complete.', 'Check the local scanner and Git state, then retry without bypassing the guard.'),
+    # Hook command-classification denials (stable codes shared with governance_guard.deny_hook_input).
+    'UNSUPPORTED_SHELL_SYNTAX': ('A command uses shell syntax AIPS cannot safely inspect.', 'Simplify the command into literal words and retry.', 'command_validation', 'INVALID_ARGUMENT'),
+    'UNSUPPORTED_HEREDOC': ('A command uses a heredoc form AIPS cannot safely inspect.', 'Use a quoted heredoc delimiter or a separate literal command.', 'command_validation', 'INVALID_ARGUMENT'),
+    'DYNAMIC_EXECUTABLE': ('A Git, GitHub or shell executable is selected dynamically and cannot be verified.', 'Use a literal executable name or path.', 'command_validation', 'INVALID_ARGUMENT'),
+    'DYNAMIC_SUBCOMMAND': ('A Git or GitHub subcommand is selected dynamically and cannot be classified.', 'Use a literal subcommand.', 'command_validation', 'INVALID_ARGUMENT'),
+    'DYNAMIC_CLI_OPTION': ('A publication command uses a dynamically selected context option.', 'Use a literal repository, directory or branch option value for publication commands.', 'command_validation', 'INVALID_ARGUMENT'),
+    'UNSUPPORTED_WRAPPER': ('A command wrapper hides the effective command from inspection.', 'Run the literal command without the wrapper.', 'command_validation', 'INVALID_ARGUMENT'),
+    'UNSUPPORTED_INTERPRETER': ('A shell reads commands from a file or stdin that AIPS cannot inspect.', 'Run the literal commands, or remove publication commands from the script.', 'command_validation', 'INVALID_ARGUMENT'),
+    'UNSUPPORTED_GIT_PLUMBING': ('A low-level Git remote-ref command bypasses the guarded push workflow.', 'Use the exact approved git push workflow.', 'command_validation', 'POLICY'),
+    'UNKNOWN_GIT_COMMAND': ('A Git verb, alias or external command cannot be classified.', 'Use a built-in Git command, or an alias defined in the repository configuration.', 'command_validation', 'INVALID_ARGUMENT'),
+    'GIT_ALIAS_PUBLICATION_UNSUPPORTED': ('A Git alias expands to a guarded commit or publication command.', 'Run the literal git commit, git push or GitHub command instead of the alias.', 'command_validation', 'POLICY'),
+    'UNSUPPORTED_GIT_LFS_COMMAND': ('This git-lfs subcommand may publish, lock remote files or rewrite history.', 'Use git push for LFS uploads; run other remote LFS operations outside the guarded agent session.', 'command_validation', 'POLICY'),
+    'UNBOUND_GITHUB_API_MUTATION': ('A GitHub API request may write data outside a guarded workflow.', 'Use a read-only GET request or a supported publication command.', 'command_validation', 'POLICY'),
+    'AMBIGUOUS_GITHUB_API_REQUEST': ('A GitHub API request method or payload is ambiguous.', 'Use one explicit GET method without request fields.', 'command_validation', 'INVALID_ARGUMENT'),
+    'UNSUPPORTED_GITHUB_MUTATION': ('This GitHub mutation has no guarded workflow.', 'Perform it through the GitHub UI or another reviewed path.', 'command_validation', 'POLICY'),
+    'CONTENT_CANDIDATE_UNAVAILABLE': ('The publication content could not be collected for inspection.', 'Resolve the local inspection error, then retry.', 'content_scan', 'INTERNAL'),
+    'M4A_TOO_LARGE': ('An M4A file exceeds the 8 MiB repository limit.', 'Use Git LFS or external asset storage and keep only the pointer here.', 'content_scan', 'POLICY'),
+    'M4A_INVALID': ('An .m4a file could not be verified as valid M4A audio.', 'Use a correctly encoded file with a matching extension.', 'content_scan', 'INVALID_ARGUMENT'),
     'AUTO_MERGE_REQUIRES_INTENT': ('Automatic merge planning requires explicit merge intent.', 'Re-run prepare with --merge-intent or --auto-merge only after reviewing the exact candidate.', 'authority', 'POLICY'),
     'REQUIRED_CHECKS_UNCONFIGURED': ('No required checks were returned for this PR.', 'Ask a repository administrator to review Required Checks; empty evidence never permits merge.', 'checks', 'POLICY'),
     'REQUIRED_CHECKS_FAILING': ('One or more required checks failed.', 'Resolve the failed checks and rerun the read-only diagnosis.', 'checks', 'FAILING'),
@@ -313,6 +331,26 @@ PUBLICATION_DIAGNOSTICS_ZH = {
     'CONTENT_REVIEW_REQUIRED': ('commit 內容包含尚未確認的指令樣式訊號，需人工審查。', '檢查規則、變更檔案、行號與指紋；確認內容安全後，才可建立精確且未過期的核准例外。'),
     'CONTENT_EXCEPTION_INVALID': ('內容安全例外政策格式錯誤或缺少必要欄位。', '修正精確規則、路徑、指紋、sink 與核准資料，再重新執行唯讀診斷。'),
     'CONTENT_EXCEPTION_EXPIRED': ('內容安全例外已過期，不再生效。', '依核准流程移除或續期該筆精確例外，再重新執行唯讀診斷。'),
+    'UNSUPPORTED_SHELL_SYNTAX': ('指令使用 AIPS 無法安全檢查的 shell 語法。', '改寫成字面值指令後重試。'),
+    'UNSUPPORTED_HEREDOC': ('指令使用 AIPS 無法安全檢查的 heredoc 形式。', '改用加引號的 heredoc 分隔符，或拆成獨立字面指令。'),
+    'DYNAMIC_EXECUTABLE': ('Git、GitHub 或 shell 執行檔由動態內容選取，無法驗證。', '改用字面值的執行檔名稱或路徑。'),
+    'DYNAMIC_SUBCOMMAND': ('Git 或 GitHub 子指令由動態內容選取，無法分類。', '改用字面值子指令。'),
+    'DYNAMIC_CLI_OPTION': ('發布指令使用動態選取的環境選項。', '發布指令請使用字面值的 repository、目錄或分支選項。'),
+    'UNSUPPORTED_WRAPPER': ('指令包裝器遮蔽了實際執行的指令。', '移除包裝器，直接執行字面指令。'),
+    'UNSUPPORTED_INTERPRETER': ('shell 從檔案或 stdin 讀取指令，AIPS 無法檢查。', '直接執行字面指令，或把發布指令移出腳本。'),
+    'UNSUPPORTED_GIT_PLUMBING': ('低階 Git 遠端 ref 指令會繞過受保護的 push 流程。', '使用核准的 git push 流程。'),
+    'UNKNOWN_GIT_COMMAND': ('無法分類此 Git 動詞、別名或外部指令。', '改用內建 Git 指令，或使用 repository 設定中定義的別名。'),
+    'GIT_ALIAS_PUBLICATION_UNSUPPORTED': ('Git 別名會展開成受保護的 commit 或發布指令。', '改用字面的 git commit、git push 或 GitHub 指令，不要透過別名執行。'),
+    'UNSUPPORTED_GIT_LFS_COMMAND': ('此 git-lfs 子指令可能發布、鎖定遠端檔案或改寫歷史。', 'LFS 上傳請使用 git push；其他遠端 LFS 操作請在受保護的 agent session 之外執行。'),
+    'UNBOUND_GITHUB_API_MUTATION': ('GitHub API 請求可能在受保護流程之外寫入資料。', '改用唯讀 GET 請求或支援的發布指令。'),
+    'AMBIGUOUS_GITHUB_API_REQUEST': ('GitHub API 請求的方法或內容不明確。', '使用單一明確的 GET 方法，且不帶請求欄位。'),
+    'UNSUPPORTED_GITHUB_MUTATION': ('此 GitHub 寫入操作沒有受保護的流程。', '改由 GitHub 網頁或其他已審查的方式執行。'),
+    'CONTENT_CANDIDATE_UNAVAILABLE': ('無法收集發布內容進行檢查。', '排除本機檢查錯誤後重試。'),
+    'STAGED_CONTENT_UNAVAILABLE': ('無法讀取暫存檔案進行內容檢查。', '檢查暫存區與檔案狀態，重新暫存後重試。'),
+    'STAGED_CONTENT_TOO_LARGE': ('暫存檔案超過內容檢查上限。', '拆分或移除過大的暫存檔案後重試。'),
+    'M4A_TOO_LARGE': ('M4A 檔案超過 8 MiB 上限。', '改用 Git LFS 或外部儲存，這裡只保留指標。'),
+    'M4A_INVALID': ('無法驗證 .m4a 為有效的 M4A 音訊。', '改用正確編碼且副檔名相符的檔案。'),
+    'CONTENT_INSPECTION_UNAVAILABLE': ('內容檢查步驟未能完成。', '檢查本機 scanner 與 Git 狀態後重試，不要繞過保護。'),
     'CONTENT_SAFETY_BLOCKED': ('commit 內容未通過安全政策。', '查看不含內容的分類摘要、修正候選後重新執行診斷。'),
 }
 
@@ -486,9 +524,14 @@ def worktree_dirty_details(root: Path) -> dict[str, Any]:
                 groups['modified'].append(value)
     for values in groups.values():
         values.sort()
-    return {'status': 'DIRTY' if any(groups.values()) else 'CLEAN', 'paths': groups,
-            'path_count': sum(map(len, groups.values())),
-            'next_step': 'Review the listed paths and decide what belongs to the candidate; preserve unknown files. No files were changed.'}
+    # Publication sends commits, never untracked files, so they are reported but do not block.
+    dirty = any(groups[name] for name in ('staged', 'modified', 'deleted'))
+    return {'status': 'DIRTY' if dirty else 'CLEAN', 'paths': groups,
+            'path_count': sum(map(len, groups.values())), 'untracked_count': len(groups['untracked']),
+            'next_step': ('Review the listed paths and decide what belongs to the candidate; preserve unknown files. No files were changed.'
+                          if dirty else
+                          'Untracked paths are not part of the candidate; add any that belong to it before publishing. No files were changed.'
+                          if groups['untracked'] else 'No uncommitted tracked changes.')}
 
 
 def publication_mode(config_path: Path | None = None) -> str:
@@ -637,7 +680,7 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
         git(root, 'merge-base', '--is-ancestor', base, head)
     except PublicationError as exc:
         raise PublicationError('base is not a candidate ancestor', 'BASE_NOT_ANCESTOR') from exc
-    if git(root, 'status', '--porcelain', '--untracked-files=all'):
+    if worktree_dirty_details(root)['status'] == 'DIRTY':
         raise PublicationError('publication requires a clean worktree', 'WORKTREE_DIRTY',
                                context={'worktree': root, 'candidate_sha': head}, phase='candidate_validation')
     diff = subprocess.run(['git', 'diff', '--binary', base, head, '--'], cwd=root, capture_output=True, timeout=15, check=False)

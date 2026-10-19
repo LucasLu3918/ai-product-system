@@ -98,6 +98,8 @@ Scenario 266 provides local deterministic safety evidence; it does not substitut
 
 Scenario 266 binds injection review to added candidate lines while Secret/PII scanning still covers the full candidate diff.
 
+Guard classification stays syntax-only: bashlex parses the command, quoted-delimiter `$(cat <<'EOF' …)` messages are inlined as literal words, `git add --dry-run` previews what a chained `git add` would stage, and `git config --get alias.<name>` reads alias definitions. None of these write the index, configuration or remote.
+
 
 The publication preflight scans bounded AVIF EXIF/XMP metadata, while Creative raster validation accepts only structures supported by the shared registry; ComfyUI Resource Authorization remains a separate boundary.
 

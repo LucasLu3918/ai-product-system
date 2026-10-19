@@ -477,6 +477,10 @@ AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned cont
 
 Commit scanning uses versioned injection rule IDs and changed-line context; Secret and PII checks still cover the full staged blob. Ambiguous injection signals remain blocked until resolved by human review. Any exception must match one rule, file, finding fingerprint and sink, expire on a declared date, and carry approval evidence. It never applies to Secret, PII, unsupported formats or scanner errors.
 
+The commit guard accepts quoted-delimiter heredoc messages, literal `git add` commands joined by `&&`, `-a`/`-am` and `--amend`, and scans worktree content the commit would include; secret, PII and ambiguous injection (`REVIEW`) findings still block at commit (Scenario 169).
+
+發布守衛只放行判定為非發布的指令形式；可能發布的形式仍一律拒絕。commit 階段的 `REVIEW` 注入訊號仍會阻擋，因為發布時的候選掃描只涵蓋密鑰。
+
 ## Runtime Policy Enforcement
 
 Content-safety PASS is candidate evidence only and does not authorize PR merge or change publication mode.
@@ -645,3 +649,5 @@ Publication Preflight 的環境診斷 lifecycle 會隔離 Python module probe，
 Repository validation 的時間 artifact 只記錄檢查名稱、結果和耗時，不儲存測試輸出或秘密。早期候選秘密掃描、Gate 內的強制掃描及 PR/main 的完整驗證均維持必要條件。
 
 Publication diagnosis follows the same fail-closed authority model: `aips publish doctor` and literal merge diagnosis return sanitized observations only. They never execute publication, consume signed grants, bypass Required Checks, or write GitHub policy; unavailable evidence remains blocking. See Scenario 260.
+
+The publication guard protects against accidental publication by a cooperative agent; it is not an interpreter sandbox, because a script interpreter can already run Git. The Claude/Gemini publication guard denies only command forms that could commit or publish: read-only commands with a dynamic directory or repository option, a dynamic path to a literal non-Git executable, `gh api` GET requests, local `git lfs` subcommands and repository-defined read-only Git aliases pass, while dynamic git/gh/shell executables, dynamic `-c`/`--config-env`/`--exec-path` values, API writes, publishing LFS subcommands and aliases that expand to commit or publication still fail closed (Scenario 099). Untracked files are listed in publication diagnostics but no longer make the worktree `DIRTY`; uncommitted tracked changes still block push and PR.

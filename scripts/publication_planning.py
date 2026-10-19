@@ -162,7 +162,7 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
         if merged:
             # A squash merge need not make the feature HEAD an ancestor of main.
             # Bind the exact PR head and verify its GitHub merge commit in the live base.
-            if authority.git(root, 'status', '--porcelain', '--untracked-files=all'):
+            if authority.worktree_dirty_details(root)['status'] == 'DIRTY':
                 raise authority.PublicationError('dirty candidate', 'WORKTREE_DIRTY',
                     context={'worktree': root, 'candidate_sha': head}, phase='post_merge_reconciliation')
             commit = (merged[-1].get('mergeCommit') or {}).get('oid', '')

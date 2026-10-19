@@ -37,6 +37,8 @@ Injection rules have stable IDs for instruction override, credential exfiltratio
 
 An unresolved `REVIEW` finding blocks commit, PR and release sinks. A repository exception must match one rule ID, repository-relative path, stable finding fingerprint and sink, include a future expiry plus approver/reference, and is rejected when malformed or expired. Exceptions cannot suppress Secret, PII, unsupported-binary or scanner-failure findings. The read-only diagnostic reports a reason, phase, safe evidence, next step and whether human review is required; it never includes matched content or grants publication authority.
 
+The commit sink also covers worktree content that a chained literal `git add`, `-a`/`-am` or `--amend` would include before it is staged, and quoted-delimiter heredoc messages. Commit remains the local injection gate because publication-time candidate scanning covers secrets only.
+
 ## Sink policy
 
 Diagnostic and ephemeral sinks redact sensitive values. Durable or public sinks block and require safe regeneration. `git commit` is content-sensitive but does not require Git Publish Approval. Publish authorization and content safety are separate decisions.

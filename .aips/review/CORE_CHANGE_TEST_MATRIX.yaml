@@ -1,66 +1,69 @@
 version: 1
 change:
-  id: plan47-content-safety-classification
-  summary: Reduce ordinary-code injection false positives while preserving full-blob secret scanning, blocking high-confidence attacks, requiring review for ambiguous signals, and returning safe recovery diagnostics.
+  id: guard-false-denials-20261020
+  summary: Stop the publication guard from denying read-only commands and standard commit forms, keep publication-capable
+    forms denied, make untracked files non-blocking for publication, and report stable classification reason codes.
   boundary:
-    - Versioned injection rule classification and fixed-corpus comparison
-    - Added-line staged injection inspection with full staged-blob secret and PII scanning
-    - Exact expiring exception validation and safe commit diagnostics
-    - Documentation, scenario conformance, repository integration, and publication lifecycle
+    - Shell command classification for read-only Git/GitHub forms and Git aliases
+    - Commit content inspection for heredoc messages, chained git add, -a/-am and --amend
+    - Publication worktree validation for untracked files
+    - Command-classification diagnostics and documentation closure
 matrix:
-  - boundary: Injection classification and false-positive control
-    reason: Generic run/send patterns blocked ordinary JavaScript; versioned rules must reduce false positives without losing attack detection.
+  - boundary: Shell command classification for read-only Git/GitHub forms and Git aliases
+    reason: The guard denied read-only commands with dynamic context, gh api GET, git lfs and aliases; every newly allowed
+      form needs a still-denied publication-capable counterpart.
     checks:
-      static_lint: {applicable: true, evidence: "PASS: Python compilation, Ruff, quality ratchet, and git diff --check passed."}
-      unit: {applicable: true, evidence: "PASS: 16 content safety unit tests passed, including fixed corpus old/new and publication diff comparison."}
-      integration: {applicable: true, evidence: "PASS: staged diagnostic regressions passed in the focused diagnostics suite."}
-      contract: {applicable: true, evidence: "PASS: repository validator reports 266 registered scenarios, zero uncovered; full validation passed."}
+      static_lint: {applicable: true, evidence: "PASS: ruff critical selection and quality ratchet passed; git diff --check clean."}
+      unit: {applicable: true, evidence: "PASS: tests/test_publication_authority.py 50 tests, including GuardFalseDenialTest classification and alias tables."}
+      integration: {applicable: true, evidence: "PASS: governance_command_guard, runtime_policy contract and native hook lifecycle evidence."}
+      contract: {applicable: true, evidence: "PASS: full repository validator with 266 registered scenarios; Scenario 099 updated and evidence registered."}
+      e2e: {applicable: false, na_reason: No browser UI or deployed service is changed; the native hook is exercised through its CLI.}
+      security: {applicable: true, evidence: "PASS: dynamic git/gh/shell executables, dynamic -c/--config-env/--exec-path, API writes, LFS push/lock and publication aliases stay denied."}
+      migration_recovery: {applicable: false, na_reason: No persistent data or configuration migration; rollback is a PR revert.}
+      cli_harness: {applicable: true, evidence: "PASS: claude-code hook subprocess allows read-only forms and denies publication forms with stable codes."}
+      docs_schema: {applicable: true, evidence: "PASS: exact-candidate Documentation Impact complete with zero required additions."}
+  - boundary: Commit content inspection for heredoc messages, chained git add, -a/-am and --amend
+    reason: Standard commit forms were denied; supporting them must not skip content that the commit would include or let a
+      heredoc hide commands.
+    checks:
+      static_lint: {applicable: true, evidence: "PASS: ruff critical selection and quality ratchet passed."}
+      unit: {applicable: true, evidence: "PASS: heredoc inlining, delimiter-line, comment and unquoted-delimiter cases; literal backticks and $ allowed, expansions denied."}
+      integration: {applicable: true, evidence: "PASS: staged and worktree secrets block through git add chains, subdirectory pathspecs, -a and -am."}
+      contract: {applicable: true, evidence: "PASS: Scenario 169 updated; content safety suite 16 tests and safety diagnostics 17 tests passed."}
       e2e: {applicable: false, na_reason: No browser UI or deployed service is changed.}
-      security: {applicable: true, evidence: "PASS: high-confidence override, exfiltration, and agent execution fixtures remain blocked."}
+      security: {applicable: true, evidence: "PASS: ambiguous injection REVIEW still blocks message and staged content with CONTENT_REVIEW_REQUIRED; heredoc delimiter injection denied."}
       migration_recovery: {applicable: false, na_reason: No persistent data migration; rollback is a PR revert.}
-      cli_harness: {applicable: true, evidence: "PASS: ordinary staged JavaScript allowed and strong injection denied."}
-      docs_schema: {applicable: true, evidence: "PASS: exact candidate Documentation Impact is complete for 51 changed paths with zero required additions."}
-  - boundary: Staged-line classification and full-blob secret coverage
-    reason: Limit injection false positives to added staged lines while retaining complete staged content coverage for secrets and PII.
+      cli_harness: {applicable: true, evidence: "PASS: hook subprocess allows the standard heredoc commit and denies unsupported chains."}
+      docs_schema: {applicable: true, evidence: "PASS: Content Safety Boundary and runtime docs record the commit forms and unchanged REVIEW blocking."}
+  - boundary: Publication worktree validation for untracked files
+    reason: Untracked files are never part of a pushed candidate, but blocked push and PR as WORKTREE_DIRTY.
     checks:
-      static_lint: {applicable: true, evidence: "PASS: Python compilation and git diff --check passed."}
-      unit: {applicable: true, evidence: "PASS: changed-line, context, and secret-scan regressions passed."}
-      integration: {applicable: true, evidence: "PASS: commit diagnostic tests cover unchanged suspicious lines and full-blob secret detection."}
-      contract: {applicable: true, evidence: "PASS: full repository validator passed; the Scenario 266 registry and projections are current."}
+      static_lint: {applicable: true, evidence: "PASS: ruff critical selection and quality ratchet passed."}
+      unit: {applicable: true, evidence: "PASS: worktree_dirty_details reports untracked paths with CLEAN status and DIRTY for tracked edits."}
+      integration: {applicable: true, evidence: "PASS: tests/test_publication_planning.py 30 tests, including an untracked-only push plan and tracked-edit WORKTREE_DIRTY."}
+      contract: {applicable: true, evidence: "PASS: publication diagnostics suite 17 tests; Integration Gate clean-worktree requirement unchanged."}
       e2e: {applicable: false, na_reason: No browser UI or deployed service is changed.}
-      security: {applicable: true, evidence: "PASS: secret and PII checks still receive the full staged blob."}
-      migration_recovery: {applicable: false, na_reason: No persistent data migration; rollback is a PR revert.}
-      cli_harness: {applicable: true, evidence: "PASS: git index and HEAD immutability regression passed."}
-      docs_schema: {applicable: true, evidence: "PASS: exact candidate Documentation Impact is complete for 51 changed paths with zero required additions."}
-  - boundary: Exceptions and redacted recovery diagnostics
-    reason: Exceptions need exact scope and expiry, and failures need stable actionable reasons without echoing matched content.
+      security: {applicable: true, evidence: "PASS: uncommitted tracked changes still block push, PR and post-merge reconciliation."}
+      migration_recovery: {applicable: false, na_reason: The diagnostic adds one field; no stored data changes.}
+      cli_harness: {applicable: true, evidence: "PASS: publication prepare plans a push with only untracked files present."}
+      docs_schema: {applicable: true, evidence: "PASS: User Guide, Integration Gate and Security Assurance record the semantics."}
+  - boundary: Command-classification diagnostics and documentation closure
+    reason: Classification denials surfaced INTERNAL_DIAGNOSTIC_GAP instead of the denial's own reason code.
     checks:
-      static_lint: {applicable: true, evidence: "PASS: YAML policy files parse and Python compilation passes."}
-      unit: {applicable: true, evidence: "PASS: exact, malformed, expired, and secret non-suppression exception regressions passed."}
-      integration: {applicable: true, evidence: "PASS: safe diagnostic and expired-exception recovery tests passed."}
-      contract: {applicable: true, evidence: "PASS: full repository validator passed; the Scenario 266 registry and projections are current."}
+      static_lint: {applicable: true, evidence: "PASS: ruff critical selection and quality ratchet passed."}
+      unit: {applicable: true, evidence: "PASS: every CommandError reason code maps to PUBLICATION_DIAGNOSTICS with Traditional Chinese detail."}
+      integration: {applicable: true, evidence: "PASS: hook denial text and additionalContext report the same reason code."}
+      contract: {applicable: true, evidence: "PASS: full repository validator and exact-candidate Documentation Impact."}
       e2e: {applicable: false, na_reason: No browser UI or deployed service is changed.}
-      security: {applicable: true, evidence: "PASS: diagnostics omit matched values; exceptions cannot suppress secrets or PII."}
-      migration_recovery: {applicable: false, na_reason: Static exception manifest defaults to no entries and has no data migration.}
-      cli_harness: {applicable: true, evidence: "PASS: native commit diagnostic lifecycle tests passed."}
-      docs_schema: {applicable: true, evidence: "PASS: exact candidate Documentation Impact is complete for 51 changed paths with zero required additions."}
-  - boundary: Documentation, repository gate, and publication candidate
-    reason: The security boundary change must be documented, scenario-covered, fully validated, and bound to the exact publication candidate.
-    checks:
-      static_lint: {applicable: true, evidence: "PASS: full repository validator, Python compilation, YAML parsing, and git diff --check passed."}
-      unit: {applicable: true, evidence: "PASS: 33 focused unit tests passed (16 content safety, 17 diagnostics)."}
-      integration: {applicable: true, evidence: "PASS: full repository validator passed with 266 scenarios; exact-candidate Core Integration Gate is the final publication check."}
-      contract: {applicable: true, evidence: "PASS: full repository validator passed with 266 scenarios, zero missing or uncovered."}
-      e2e: {applicable: false, na_reason: No external UI or service; commit Hook and CLI lifecycle are covered.}
-      security: {applicable: true, evidence: "PASS: focused high-confidence attack, exception, full-blob secret and PII regressions passed; exact-candidate strict scan runs before publication."}
-      migration_recovery: {applicable: false, na_reason: No data migration; rollback is a PR revert.}
-      cli_harness: {applicable: true, evidence: "PASS: read-only publication plan and Core Gate are bound to this exact candidate before publication."}
-      docs_schema: {applicable: true, evidence: "PASS: exact candidate Documentation Impact is complete for 51 changed paths with zero required additions."}
+      security: {applicable: true, evidence: "PASS: diagnostics stay redacted and never echo command text."}
+      migration_recovery: {applicable: false, na_reason: No persistent data migration.}
+      cli_harness: {applicable: true, evidence: "PASS: claude-code hook subprocess diagnostics."}
+      docs_schema: {applicable: true, evidence: "PASS: Documentation Impact complete for the exact candidate."}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 candidate:
-  base_sha: b95a4ecaa5a901d5a054b8ef42f4c06b408d9a6a
-  changed_files_hash: 7ccd1cd4f5fb46a3d65f7d0be17637870c2651943ae3be9c1f0f27ed69c1710c
+  base_sha: 51df5a76ddcdd029b801cef5525800fa5d33175f
+  changed_files_hash: 0ee05981122dbba2ba881fedf7a0e70c2a44960bd25dfd66b3105f7e1c578b62
 blockers:
   []
 review_evidence:

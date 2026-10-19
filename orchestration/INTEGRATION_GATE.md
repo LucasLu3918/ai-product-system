@@ -26,6 +26,8 @@ The Gate is deterministic code. It has no Human approval, merge or release autho
 
 Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
 
+The local Integration Gate still requires a completely clean worktree for the candidate it validates; the untracked-file relaxation applies only to publication authorization.
+
 
 Publication diagnostics changes require the Core Change Matrix to bind the exact source, tests, scenario and documentation file set before the local Gate runs.
 Plan44's matrix separately verifies fail-closed command details, Claude native failure redaction and unchanged ALREADY_MERGED/Branch Hygiene recovery before publication.

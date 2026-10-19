@@ -1002,6 +1002,7 @@ scenarios:
     evidence:
       - tests/evidence/governance_command_guard.py
       - scripts/governance_guard.py
+      - tests/test_publication_authority.py
       - tests/validate_repository.py
   - id: "100"
     path: tests/scenarios/100-routing-explanation-structured.md
@@ -1644,6 +1645,7 @@ scenarios:
       - scripts/governance_guard.py
       - scripts/publish_preflight.py
       - tests/test_content_safety.py
+      - tests/test_publication_authority.py
   - id: "170"
     path: tests/scenarios/170-runtime-content-safety-provenance.md
     coverage: lifecycle

@@ -1162,3 +1162,5 @@ tests/evidence/opencode_integration_lifecycle.py verifies the AIPS creative impo
 ## Scenario 266 — Content Safety Injection Context and Recovery
 
 Versioned injection rules reject the former generic-keyword false positives while preserving strong override, exfiltration and agent-execution blocks. Commit and publication-candidate injection checks overlap added diff lines; Secret and PII checks remain full-blob/full-diff. Removed or unchanged suspicious content does not block an unrelated edit. Ambiguous signals require review and remain denied until an exact approved, unexpired exception applies. Tests verify scope/expiry, safe structured recovery, no matched-content output and unchanged Git index/HEAD.
+
+Scenarios 099 and 169 bind the guard read-only allow list, commit-form scanning and unchanged commit-time `REVIEW` blocking to `tests/test_publication_authority.py`.

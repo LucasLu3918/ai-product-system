@@ -145,6 +145,56 @@ def _embedded_substitutions(raw: str) -> list[str]:
     return results
 
 
+# Claude Code's standard commit-message form. A quoted delimiter keeps the body literal, so the
+# substitution is exactly the body without trailing newlines.
+_LITERAL_HEREDOC_SUBSTITUTION = re.compile(
+    r"\"\$\(cat[ \t]+<<(?P<tabs>-?)[ \t]*'(?P<delim>[A-Za-z_][A-Za-z0-9_]*)'[ \t]*\n"
+    r"(?P<body>.*?)\n(?P<indent>\t*)(?P=delim)\n\)\"", re.DOTALL)
+
+
+def inline_literal_heredocs(source: str) -> str:
+    """Replace `"$(cat <<'EOF' ... EOF\n)"` with the equivalent single-quoted literal word.
+
+    Only a prefix of plain words and quotes is scanned; any expansion, backtick, comment or other
+    heredoc before a candidate stops inlining, because quoting there cannot be tracked exactly.
+    A body line equal to the delimiter would end the heredoc early, so that candidate is left as is.
+    """
+    parts: list[str] = []
+    copied = 0
+    i = 0
+    quote = None
+    while i < len(source):
+        char = source[i]
+        if quote == "'":
+            if char == "'":
+                quote = None
+            i += 1
+            continue
+        if quote is None and char == '"':
+            match = _LITERAL_HEREDOC_SUBSTITUTION.match(source, i)
+            if match:
+                tabs = bool(match['tabs'])
+                lines = match['body'].split('\n')
+                if tabs:
+                    lines = [line.lstrip('\t') for line in lines]
+                if (not tabs and match['indent']) or match['delim'] in lines:
+                    break
+                parts.extend([source[copied:i], shlex.quote('\n'.join(lines).rstrip('\n'))])
+                copied = i = match.end()
+                continue
+        if char == '\\':
+            i += 2
+            continue
+        if char == '`' or (char == '#' and quote is None) or source.startswith(('$(', '${', "$'", '<<'), i):
+            break
+        if char == '"':
+            quote = None if quote == '"' else '"'
+        elif char == "'" and quote is None:
+            quote = "'"
+        i += 1
+    return ''.join(parts) + source[copied:]
+
+
 def _mask_heredocs(source: str) -> tuple[str, list[str]]:
     lines = source.splitlines(keepends=True)
     result: list[str] = []
@@ -196,13 +246,17 @@ def _mask_heredocs(source: str) -> tuple[str, list[str]]:
     return "".join(result), expansions
 
 
-def shell_commands(source: str) -> list[list[str]]:
-    """Return executable command nodes, including command/process substitutions."""
+def shell_commands(source: str, *, mark_dynamic: bool = False) -> list[list[str]]:
+    """Return executable command nodes, including command/process substitutions.
+
+    With ``mark_dynamic`` every word that Bash would expand is prefixed with NUL, so callers can
+    tell a literal ``$`` or backtick inside single quotes from a real expansion.
+    """
     import bashlex
 
     if not source.strip():
         return []
-    normalized, heredoc_expansions = _mask_heredocs(source)
+    normalized, heredoc_expansions = _mask_heredocs(inline_literal_heredocs(source))
     try:
         trees = bashlex.parse(normalized)
     except (ValueError, NotImplementedError, bashlex.errors.ParsingError) as exc:
@@ -229,8 +283,8 @@ def shell_commands(source: str) -> list[list[str]]:
                 # Dynamic executable/arguments cannot bind an exact publication action.
                 if _unquoted_expansion(raw):
                     argv.append('\0shell-expansion:' + raw)
-                elif getattr(word, "parts", None):
-                    argv.append(raw)
+                elif getattr(word, "parts", None) or (mark_dynamic and raw.startswith("$'")):
+                    argv.append('\0' + raw if mark_dynamic else raw)
                 else:
                     try:
                         values = shlex.split(raw)

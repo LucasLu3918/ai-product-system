@@ -436,6 +436,8 @@ Validation Observation keeps evidence readiness separate from operational failur
 
 Plan42 routes TTF/OTF/WOFF/WOFF2 font metadata through the existing strict content-safety scanner; diagnostics stay redacted and separate from Resource Authorization and publication approval.
 
+The Claude/Gemini publication guard denies only command forms that could commit or publish: read-only commands with a dynamic directory or repository option, a dynamic path to a literal non-Git executable, `gh api` GET requests, local `git lfs` subcommands and repository-defined read-only Git aliases pass, while dynamic git/gh/shell executables, dynamic `-c`/`--config-env`/`--exec-path` values, API writes, publishing LFS subcommands and aliases that expand to commit or publication still fail closed (Scenario 099). Untracked files are listed in publication diagnostics but no longer make the worktree `DIRTY`; uncommitted tracked changes still block push and PR.
+
 ## Scenario Conformance 與 Agent Eval
 
 Scenario 265 records AVIF metadata safety and preserves the distinction between deterministic container checks and visual-quality evidence.
@@ -652,3 +654,5 @@ Telemetry additions use bounded allowlisted fields and exclude prompts, images, 
 
 
 Before AIPS persists or publishes content, the sink-aware Runtime Content Safety Boundary applies deterministic secret/PII detection and records untrusted-content provenance. Commit-time injection checks use changed-line context, while Secret and PII scanning covers the full staged blob; unresolved review findings remain blocked. Diagnostic sinks redact; durable or public sinks block. This boundary complements, and does not replace, Human Authority and Git Publish Approval.
+
+The commit guard accepts quoted-delimiter heredoc messages, literal `git add` commands joined by `&&`, `-a`/`-am` and `--amend`, and scans worktree content the commit would include; secret, PII and ambiguous injection (`REVIEW`) findings still block at commit (Scenario 169).

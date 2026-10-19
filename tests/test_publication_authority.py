@@ -571,8 +571,12 @@ class PublicationTest(unittest.TestCase):
                 self.assertRaises(auth.PublicationError) as oversized:
             guard.commit_safety(self.repo, command)
         self.assertEqual(oversized.exception.reason_code, 'STAGED_CONTENT_TOO_LARGE')
-        with self.assertRaises(auth.PublicationError):
-            guard.commit_safety(self.repo, 'git commit -a -m candidate')
+        # `-a` is supported; it inspects the tracked worktree content the commit would include.
+        self.assertEqual(guard.commit_safety(self.repo, 'git commit -a -m candidate')['decision'], 'BLOCK')
+        for unsupported in ['git commit file.txt -m candidate', 'git commit --only -m candidate',
+                            'git commit -p -m candidate', 'git commit --no-edit -m candidate']:
+            with self.subTest(command=unsupported), self.assertRaises(auth.PublicationError):
+                guard.commit_safety(self.repo, unsupported)
         for dynamic in ['git commit -m "$MSG"', "git commit -m $'encoded\\x41message'", 'git commit -F ~/message',
                         'git commit -m author\\\n' + '@' + 'example.test', 'git commit -m {hello,world}']:
             with self.subTest(command=dynamic), self.assertRaises(auth.PublicationError):
@@ -866,10 +870,16 @@ class ShellTest(unittest.TestCase):
                         'cat <<EOF\n\\`git push origin main\\`\nEOF\n']:
             with self.subTest(command=command):
                 self.assertEqual(guard.operations_for(command), [])
+        # A dynamic directory/repository is allowed for read-only commands only.
+        for command in ['git -C "$(pwd)" status', 'gh --repo "$(printf owner/project)" pr view']:
+            with self.subTest(command=command):
+                self.assertEqual(guard.operations_for(command), [])
         for command, code in [('git "$(printf status)"', 'DYNAMIC_SUBCOMMAND'),
                               ('gh pr "$(printf view)"', 'DYNAMIC_SUBCOMMAND'),
-                              ('git -C "$(pwd)" status', 'DYNAMIC_CLI_OPTION'),
-                              ('gh --repo "$(printf owner/project)" pr view', 'DYNAMIC_CLI_OPTION')]:
+                              ('git -C "$(pwd)" push origin main', 'DYNAMIC_CLI_OPTION'),
+                              ('gh --repo "$(printf owner/project)" pr create --title x', 'DYNAMIC_CLI_OPTION'),
+                              ('git -c "$KEY" status', 'DYNAMIC_CLI_OPTION'),
+                              ('git --exec-path="$DIR" status', 'DYNAMIC_CLI_OPTION')]:
             with self.subTest(command=command), self.assertRaises(CommandError) as raised:
                 guard.operations_for(command)
             self.assertEqual(raised.exception.reason_code, code)
@@ -906,6 +916,170 @@ class ShellTest(unittest.TestCase):
         self.assertNotEqual(literal, expanded)
         self.assertIn('\0', expanded[0][-1])
         self.assertIn('\0', shell_commands('gh pr create --body ~/body')[0][-1])
+
+
+class GuardFalseDenialTest(unittest.TestCase):
+    """Read-only and standard commit forms are allowed; publication-capable forms stay denied."""
+
+    HEREDOC = "git commit -m \"$(cat <<'EOF'\n{body}\nEOF\n)\""
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.repo = Path(self.temp.name)
+        for args in (['init', '-q', '-b', 'main'], ['config', 'user.name', 'Fixture'],
+                     ['config', 'user.email', 'fixture' + '@' + 'users.noreply.github.com']):
+            self.git(*args)
+        (self.repo / 'file.txt').write_text('initial\n')
+        self.git('add', 'file.txt')
+        self.git('commit', '-qm', 'base')
+        corpus = (ROOT / 'tests/fixtures/content-safety/corpus.json').read_text(encoding='utf-8')
+        import json
+        self.ambiguous = bytes.fromhex(json.loads(corpus)['ambiguous_hex']).decode('utf-8')
+
+    def git(self, *args, cwd=None):
+        return subprocess.run(['git', *args], cwd=cwd or self.repo, capture_output=True, text=True, check=True).stdout
+
+    def hook(self, command, cwd=None):
+        import json
+        payload = {'hook_event_name': 'PreToolUse', 'tool_name': 'Bash', 'cwd': str(cwd or self.repo),
+                   'tool_input': {'command': command}}
+        proc = subprocess.run([sys.executable, str(ROOT / 'scripts/governance_guard.py'), 'hook', '--runtime', 'claude-code'],
+                              input=json.dumps(payload), text=True, capture_output=True, check=False)
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        return json.loads(proc.stdout).get('hookSpecificOutput', {})
+
+    def test_read_only_classification_table(self):
+        allowed = ['git -C $PWD status', 'gh --repo "$(printf a/b)" pr view', '$TOOLS/.venv/bin/python x.py',
+                   'gh api repos/a/b', 'gh api -X GET repos/a/b', 'gh api --method=GET repos/a/b --paginate',
+                   'git lfs pull', 'git lfs ls-files', 'git lfs track "*.psd"']
+        for command in allowed:
+            with self.subTest(command=command):
+                self.assertEqual(guard.operations_for(command, self.repo), [])
+        denied = {'$X push': 'DYNAMIC_EXECUTABLE', '"$x" push': 'DYNAMIC_EXECUTABLE', '$D/git push': 'DYNAMIC_EXECUTABLE',
+                  '$D/gh pr create': 'DYNAMIC_EXECUTABLE', '$D/bash -c x': 'DYNAMIC_EXECUTABLE',
+                  'git -C $X push origin main': 'DYNAMIC_CLI_OPTION', 'git --config-env=$X status': 'DYNAMIC_CLI_OPTION',
+                  'gh api repos/a/b -X POST': 'UNBOUND_GITHUB_API_MUTATION', 'gh api -XPATCH repos/a': 'UNBOUND_GITHUB_API_MUTATION',
+                  'gh api graphql -f query=x': 'UNBOUND_GITHUB_API_MUTATION', 'gh api --input body.json repos/a': 'UNBOUND_GITHUB_API_MUTATION',
+                  'gh api -X "$M" repos/a': 'AMBIGUOUS_GITHUB_API_REQUEST',
+                  'git lfs push origin main': 'UNSUPPORTED_GIT_LFS_COMMAND', 'git lfs lock x': 'UNSUPPORTED_GIT_LFS_COMMAND'}
+        for command, code in denied.items():
+            with self.subTest(command=command), self.assertRaises(CommandError) as raised:
+                guard.operations_for(command, self.repo)
+            self.assertEqual(raised.exception.reason_code, code)
+
+    def test_git_aliases_expand_only_to_read_only_commands(self):
+        for name, value in {'st': 'status -sb', 'lg': '!git log --oneline', 'pub': 'push origin main',
+                            'ci': 'commit -m x', 'shpub': '!git push origin main', 'nest': 'pub', 'loop': '!git loop'}.items():
+            self.git('config', 'alias.' + name, value)
+        self.assertEqual(guard.operations_for('git st', self.repo), [])
+        self.assertEqual(guard.operations_for('git lg', self.repo), [])
+        for command, code in {'git pub': 'GIT_ALIAS_PUBLICATION_UNSUPPORTED', 'git ci': 'GIT_ALIAS_PUBLICATION_UNSUPPORTED',
+                              'git shpub': 'GIT_ALIAS_PUBLICATION_UNSUPPORTED', 'git nest': 'GIT_ALIAS_PUBLICATION_UNSUPPORTED',
+                              'git loop': 'UNKNOWN_GIT_COMMAND', 'git nosuch': 'UNKNOWN_GIT_COMMAND',
+                              # Global options can change which configuration defines the alias.
+                              'git -C . st': 'UNKNOWN_GIT_COMMAND',
+                              'git -c alias.publish=push publish origin main': 'UNKNOWN_GIT_COMMAND'}.items():
+            with self.subTest(command=command), self.assertRaises(CommandError) as raised:
+                guard.operations_for(command, self.repo)
+            self.assertEqual(raised.exception.reason_code, code)
+
+    def test_literal_heredoc_message_is_inlined_only_when_bash_would_keep_it_literal(self):
+        message = 'fix: `quoted` costs $5\n\nCo-Authored-By: Claude <noreply' + '@' + 'anthropic.com>'
+        command = self.HEREDOC.format(body=message)
+        self.assertEqual(shell_commands(command, mark_dynamic=True), [['git', 'commit', '-m', message]])
+        self.assertEqual(guard.operations_for(command), ['git_commit'])
+        tabbed = "git commit -m \"$(cat <<-'EOF'\n\tline\n\tEOF\n)\""
+        self.assertEqual(shell_commands(tabbed), [['git', 'commit', '-m', 'line']])
+        # The heredoc would end early, after a comment or with an unquoted delimiter: never treat as literal.
+        unsafe = ["git commit -m \"$(cat <<'EOF'\nmsg\nEOF\ngit push origin main\nEOF\n)\"",
+                  "git commit -m x # \"$(cat <<'EOF'\ngit push origin main\nEOF\n)\"",
+                  "git commit -m \"$(cat <<'EOF'\nmsg\n\tEOF\n)\""]
+        for item in unsafe:
+            with self.subTest(command=item), self.assertRaises(CommandError):
+                guard.operations_for(item)
+        self.assertIn('git_push', guard.operations_for("git commit -m \"$(cat <<EOF\n$(git push origin main)\nEOF\n)\""))
+
+    def test_standard_commit_forms_are_scanned_not_denied(self):
+        self.git('config', 'user.email', 'fixture' + '@' + 'users.noreply.github.com')
+        (self.repo / 'file.txt').write_text('clean change\n')
+        self.git('add', 'file.txt')
+        self.assertEqual(self.hook(self.HEREDOC.format(body='fix: clean `change`'))['permissionDecision'], 'allow')
+        self.assertEqual(self.hook("git commit -m 'literal `ticks` and $HOME'")['permissionDecision'], 'allow')
+        self.assertEqual(self.hook('git commit -m "$MSG"')['permissionDecision'], 'deny')
+        self.assertEqual(guard.commit_safety(self.repo, 'git commit --amend -m amended')['decision'], 'ALLOW')
+        self.assertEqual(guard.commit_safety(self.repo, 'git commit --amend --no-edit')['decision'], 'ALLOW')
+        self.git('reset', '-q')
+        (self.repo / 'sub').mkdir()
+        (self.repo / 'sub/new.txt').write_text('new\n')
+        self.assertEqual(self.hook('git add new.txt && git commit -m add', cwd=self.repo / 'sub')['permissionDecision'], 'allow')
+        self.assertEqual(self.hook('git add -A && ' + self.HEREDOC.format(body='add all'))['permissionDecision'], 'allow')
+        for unsupported in ['git add -p && git commit -m x', 'git add x; git commit -m x', 'git status && git commit -m x',
+                            'git add x && git commit -m x && git push origin main']:
+            with self.subTest(command=unsupported):
+                self.assertEqual(self.hook(unsupported)['permissionDecision'], 'deny')
+
+    def test_unstaged_content_that_the_commit_includes_is_scanned(self):
+        secret = scanner_fixture_assignment() + '\n'
+        (self.repo / 'sub').mkdir()
+        (self.repo / 'sub/leak.txt').write_text(secret)
+        for command, cwd in [('git add leak.txt && git commit -m add', self.repo / 'sub'),
+                             ('git add -A && git commit -m add', self.repo),
+                             ('git add . && ' + self.HEREDOC.format(body='add'), self.repo)]:
+            with self.subTest(command=command):
+                response = self.hook(command, cwd=cwd)
+                self.assertEqual(response['permissionDecision'], 'deny')
+                self.assertIn('CONTENT_SECRET_BLOCKED', response['permissionDecisionReason'])
+        (self.repo / 'sub/leak.txt').unlink()
+        (self.repo / 'file.txt').write_text(secret)
+        for command in ['git commit -a -m change', 'git commit -am change']:
+            with self.subTest(command=command):
+                self.assertIn('CONTENT_SECRET_BLOCKED', self.hook(command)['permissionDecisionReason'])
+        self.assertEqual(self.hook(self.HEREDOC.format(body=secret.strip()))['permissionDecision'], 'deny')
+
+    def test_ambiguous_injection_review_still_blocks_commit(self):
+        # Push-time candidate scanning covers secrets only, so commit is the local injection gate.
+        (self.repo / 'notes.md').write_text(self.ambiguous)
+        self.git('add', 'notes.md')
+        staged = guard.commit_safety(self.repo, 'git commit -m notes')
+        self.assertEqual(staged['decision'], 'BLOCK')
+        self.assertEqual(staged['reason_code'], 'CONTENT_REVIEW_REQUIRED')
+        response = self.hook('git commit -m notes')
+        self.assertEqual(response['permissionDecision'], 'deny')
+        self.assertIn('CONTENT_REVIEW_REQUIRED', response['permissionDecisionReason'])
+        self.git('reset', '-q')
+        import shlex
+        message = guard.commit_safety(self.repo, 'git commit --allow-empty -m ' + shlex.quote(self.ambiguous))
+        self.assertEqual(message['decision'], 'BLOCK')
+        self.assertEqual(message['reason_code'], 'CONTENT_REVIEW_REQUIRED')
+
+    def test_command_classification_denials_have_stable_diagnostics(self):
+        import re
+        source = (ROOT / 'scripts/governance_guard.py').read_text() + (ROOT / 'scripts/publication_commands.py').read_text()
+        codes = set(re.findall(r"""CommandError\([^)]*?['"]([A-Z][A-Z_]{5,})['"]\)""", source))
+        self.assertTrue({'DYNAMIC_EXECUTABLE', 'UNKNOWN_GIT_COMMAND', 'GIT_ALIAS_PUBLICATION_UNSUPPORTED'} <= codes, codes)
+        for code in sorted(codes):
+            with self.subTest(code=code):
+                self.assertIn(code, auth.PUBLICATION_DIAGNOSTICS)
+                self.assertEqual(auth.PublicationError('', code).diagnostic()['reason_code'], code)
+        for command, code in {'$X push': 'DYNAMIC_EXECUTABLE', 'git nosuch': 'UNKNOWN_GIT_COMMAND',
+                              'gh api repos/a -X POST': 'UNBOUND_GITHUB_API_MUTATION'}.items():
+            with self.subTest(command=command):
+                import json
+                response = self.hook(command)
+                self.assertIn('[' + code + ']', response['permissionDecisionReason'])
+                context = json.loads(response['additionalContext'].split('AIPS diagnostic: ', 1)[1])
+                self.assertEqual(context['reason_code'], code)
+                self.assertTrue(context['detail_zh'])
+
+    def test_untracked_files_are_reported_but_do_not_block_publication(self):
+        (self.repo / 'draft.md').write_text('local notes\n')
+        details = auth.worktree_dirty_details(self.repo)
+        self.assertEqual(details['status'], 'CLEAN')
+        self.assertEqual(details['untracked_count'], 1)
+        self.assertEqual(details['paths']['untracked'], ['draft.md'])
+        (self.repo / 'file.txt').write_text('tracked edit\n')
+        self.assertEqual(auth.worktree_dirty_details(self.repo)['status'], 'DIRTY')
 
 
 if __name__ == '__main__':
