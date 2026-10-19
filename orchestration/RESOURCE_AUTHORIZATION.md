@@ -70,6 +70,8 @@ Shared publication guard 的非預期授權例外會拒絕操作，輸出只包�
 Commit Content Safety is a separate content boundary, not a Resource Authorization profile or grant. Plan41 adds only read-only diagnostics and preserves all existing Human Authority, Required Checks and Git Publish Approval decisions.
 Scenario 266 further records versioned injection signals and exact expiring exceptions in that content boundary; neither changes Resource grants, Human approval, or publication decisions.
 
+Publication guard command classification is not a Resource Authorization decision and cannot create a grant.
+
 Resource Authorization emits `status`, `phase`, `reason_code`, `source`, `retryable`, `trace_id` and `recovery.action` alongside its decision evidence. Profile absence, missing/unreadable files, malformed YAML/schema, and grant-scope mismatches retain separate stable reason codes. Local filesystem paths and raw parser errors are not emitted.
 
 `scripts/resource_authorization.py` produces **PRE_EXECUTION_EVIDENCE**. It does not claim that every runtime can mechanically intercept every tool call.

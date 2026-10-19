@@ -8,6 +8,8 @@ Evolution deterministic pre-analysis ships as an internal Python module with the
 
 Scenario 266 verifies versioned injection rules, added-line checks, complete secret/PII coverage, and safe diagnostics.
 
+The live Claude/Gemini hooks run from the installed AIPS system copy, so publication guard classification changes take effect only after the normal AIPS update.
+
 
 No AVIF parser dependency is installed: supported static AVIF metadata uses the bounded built-in scanner, and unsupported structures fail closed.
 

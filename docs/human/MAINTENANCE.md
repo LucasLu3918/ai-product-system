@@ -175,6 +175,8 @@ Scenario 266 provides local deterministic safety evidence; it does not substitut
 
 Scenario 266 binds injection review to added candidate lines while Secret/PII scanning still covers the full candidate diff.
 
+When the publication guard changes, keep every newly allowed command form paired with a still-denied publication-capable counterpart in `GuardFalseDenialTest`, and keep the live hook in sync by updating the installed AIPS system after merge.
+
 
 The 0.83.0 candidate records shared Required Checks policy evidence and bounded Claude Code publication diagnostics.
 
@@ -817,3 +819,5 @@ Plan41 adds redacted Hook findings, strict ignore-marker handling and bounded PN
 Register every new persistence or publication sink in `config/content-safety.yaml`. Preserve the `sanitize → hash → persist` ordering for audit data and update scenarios when detector or sink policy behavior changes.
 
 For Plan45 publication scanning, keep the literal executable/subcommand check ahead of candidate inspection. Classify scanner policy, base, object and candidate-file failures with allowlisted `SECRET_SCAN_*` diagnostics; never include exception messages, paths or secret values. Findings and incomplete scans remain fail-closed. Update Scenario 261 and the Core Change Test Matrix with any new scanner boundary.
+
+Commit-form changes in the publication guard must prove that content not yet staged is scanned and that commit-time `REVIEW` findings still block.

@@ -805,6 +805,8 @@ Preview 也會在昂貴驗證前檢查候選內容安全與允許的 Git email �
 Release model 與版本歷史以 repository 的 current policy / CHANGELOG 為準。
 
 - A release candidate is not readiness evidence while `CHANGELOG.md` has entries under `## Unreleased`. After finalized notes move under the matching `VERSION` heading, the read-only check can establish readiness; tag publication remains a separate explicit decision.
+
+The Claude/Gemini publication guard denies only command forms that could commit or publish: read-only commands with a dynamic directory or repository option, a dynamic path to a literal non-Git executable, `gh api` GET requests, local `git lfs` subcommands and repository-defined read-only Git aliases pass, while dynamic git/gh/shell executables, dynamic `-c`/`--config-env`/`--exec-path` values, API writes, publishing LFS subcommands and aliases that expand to commit or publication still fail closed (Scenario 099). Untracked files are listed in publication diagnostics but no longer make the worktree `DIRTY`; uncommitted tracked changes still block push and PR.
 ## Evolution Radar
 
 Technology Intelligence 位於 maintenance plane，不在一般工程 Turn hot path。
@@ -859,3 +861,7 @@ Hook 對非預期授權例外 fail closed，僅顯示安全診斷 ID 與 allowli
 一般程式碼中的 `run`、`data` 等名稱不再單獨觸發 Injection；commit 與 publication candidate 的 Injection 判斷依新增 diff 行與來源上下文進行，Secret 和 PII 仍掃描完整暫存檔或候選 diff。診斷會列出安全的原因、階段、規則／指紋、檔案與行號及排除步驟。模糊訊號需人工審查；核准例外僅限單一規則、檔案、指紋、sink 與期限。
 
 Commit, pull request and release content is scanned before durable/public publication. A blocked result requires regenerating safe content; it is not silently rewritten. Runtime capability remains truthful: AIPS-owned sinks are enforced, native hooks may be tool-guarded, and unsupported host tools are advisory.
+
+The commit guard accepts quoted-delimiter heredoc messages, literal `git add` commands joined by `&&`, `-a`/`-am` and `--amend`, and scans worktree content the commit would include; secret, PII and ambiguous injection (`REVIEW`) findings still block at commit (Scenario 169).
+
+守衛現在放行唯讀指令與 Claude Code 標準的 commit 寫法（引號定界符 heredoc、`git add … && git commit`、`-a`、`--amend`），即將加入 commit 的內容仍會被掃描。只有未追蹤檔時不再出現 `WORKTREE_DIRTY`；已追蹤檔有未提交修改時仍會阻擋發布。

@@ -127,6 +127,8 @@ CI 在這項掃描通過後以相同 base/head 執行 repository preflight，再
 
 Protected publication command classification remains in the runtime guard: its bounded Bash AST walks argument and unquoted-heredoc command substitutions without executing them. Scheduler readiness and candidate Gate evidence do not replace literal scope, content-safety or Human approval requirements.
 
+Read-only command forms and standard commit forms that the guard now allows do not change scheduler ownership, task readiness or candidate Gate requirements.
+
 The same workflow uses a committed npm lockfile, `npm ci`, and lockfile-keyed dependency caching for the VitePress docs build. Publication Preflight may report repository-enabled merge methods as operator guidance; the Scheduler and preflight do not select or execute a merge.
 
 Preflight 也驗證候選 checkout 與 Core Matrix changed-files hash；若工作樹 dirty、HEAD 不符或 browser smoke probe 失敗，應在 lifecycle 前回報明確的 `BLOCKED`／`ENVIRONMENT_BLOCKED` 原因。

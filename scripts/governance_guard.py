@@ -44,6 +44,15 @@ GIT_GLOBAL_WITH_VALUE = {
 GH_GLOBAL_WITH_VALUE = {"-R", "--repo", "--hostname"}
 ENV_WITH_VALUE = {"-u", "--unset", "-C", "--chdir", "-S", "--split-string"}
 SUDO_WITH_VALUE = {"-u", "--user", "-g", "--group", "-h", "--host", "-p", "--prompt", "-C", "--close-from"}
+# A dynamic path prefix is acceptable only when its literal basename cannot reach Git/GitHub publication.
+CLASSIFIED_EXECUTABLES = {"bash", "sh", "zsh", "dash", "ksh", "fish", "env", "sudo", "command", "eval", "exec"}
+# git-lfs subcommands that only read, or change local files/config; lfs push and history rewrites stay denied.
+GIT_LFS_LOCAL = {"checkout", "env", "ext", "fetch", "fsck", "install", "locks", "logs", "ls-files", "pointer",
+                 "prune", "pull", "status", "track", "uninstall", "untrack", "version"}
+GIT_ALIAS_MAX_DEPTH = 5
+# Dynamic values for these options can redefine what a built-in Git verb executes.
+DYNAMIC_FORBIDDEN_OPTIONS = {"-c", "--config-env", "--exec-path"}
+GH_API_WRITE_FLAGS = ("-f", "-F", "--field", "--raw-field", "--input")
 
 
 def canonicalize(value: Any, key: str | None = None) -> Any:
@@ -236,7 +245,7 @@ def _after_global_options(tokens: list[str], with_value: set[str]) -> list[str]:
     return []
 
 
-def _direct_operations(tokens: list[str]) -> list[str]:
+def _direct_operations(tokens: list[str], cwd: Path | None = None, depth: int = 0) -> list[str]:
     tokens = _unwrap(tokens)
     if not tokens:
         return []
@@ -245,50 +254,22 @@ def _direct_operations(tokens: list[str]) -> list[str]:
     if exe in {"bash", "sh", "zsh"}:
         for i, token in enumerate(tokens[1:], start=1):
             if token == "-c" and i + 1 < len(tokens):
-                return operations_for(tokens[i + 1])
+                return operations_for(tokens[i + 1], cwd, depth)
             if re.fullmatch(r'-[A-Za-z]*c[A-Za-z]*', token) and i + 1 < len(tokens):
-                return operations_for(tokens[i + 1])
+                return operations_for(tokens[i + 1], cwd, depth)
         from publication_commands import CommandError
         raise CommandError('interpreter file/stdin execution cannot be classified; use literal standalone commands', 'UNSUPPORTED_INTERPRETER')
 
     if exe == "eval" and len(tokens) > 1:
-        return operations_for(" ".join(tokens[1:]))
+        return operations_for(" ".join(tokens[1:]), cwd, depth)
 
     if exe == "git":
-        args = _strip_options(tokens[1:], GIT_GLOBAL_WITH_VALUE)
-        if not args:
-            return []
-        if args[0] == "push":
-            return ["git_push"]
-        if args[0] == "commit":
-            return ["git_commit"]
-        if args[0] in {'send-pack', 'http-push', 'receive-pack'}:
-            from publication_commands import CommandError
-            raise CommandError('Git remote-ref plumbing is unsupported; use the exact signed push workflow', 'UNSUPPORTED_GIT_PLUMBING')
-        if args[0] == "tag":
-            query = args[1:]
-            read_flags = {"--list", "-l", "--verify", "-v", "--contains", "--no-contains",
-                          "--merged", "--no-merged", "--points-at", "--sort", "--format", "--column", "--no-column"}
-            if not query or (any(x.split("=")[0] in read_flags or re.fullmatch(r"-n\d*", x) for x in query)
-                             and all(not x.startswith("-") or x.split("=")[0] in read_flags or re.fullmatch(r"-n\d*", x) for x in query)):
-                return []
-            return ["git_tag"]
-        # A Git alias may run shell code or publish; unknown verbs are not read-only evidence.
-        builtin = subprocess.run(['git', '--list-cmds=builtins'], capture_output=True, text=True, timeout=5, check=False)
-        if builtin.returncode or args[0] not in builtin.stdout.split():
-            from publication_commands import CommandError
-            raise CommandError('unknown Git verb or alias cannot be classified', 'UNKNOWN_GIT_COMMAND')
-        return []
+        return _git_operations(tokens, cwd, depth)
 
     if exe == "gh":
         args = _strip_options(tokens[1:], GH_GLOBAL_WITH_VALUE)
         if args and args[0] == 'api':
-            from publication_commands import CommandError
-            # API writes may change Git refs without invoking git push/gh pr merge.
-            if '--method' not in args or args.count('--method') != 1 or args[args.index('--method') + 1:args.index('--method') + 2] != ['GET']:
-                raise CommandError('unbound GitHub API mutation is unsupported', 'UNBOUND_GITHUB_API_MUTATION')
-            if any(x.startswith(('-f', '-F', '--field', '--raw-field', '--input', '-X', '--method=')) for x in args):
-                raise CommandError('ambiguous GitHub API request is unsupported', 'AMBIGUOUS_GITHUB_API_REQUEST')
+            _check_gh_api_read(args[1:])
         if len(args) >= 2 and args[0:2] == ["pr", "create"]:
             return ["gh_pr_create"]
         if len(args) >= 2 and args[0:2] == ["pr", "merge"]:
@@ -303,24 +284,166 @@ def _direct_operations(tokens: list[str]) -> list[str]:
     return []
 
 
-def operations_for(command: str) -> list[str]:
+def _check_gh_api_read(args: list[str]) -> None:
+    """Allow only GitHub API reads: default/explicit GET without request fields or an input body."""
+    from publication_commands import CommandError
+    method = None
+    writes = False
+    i = 0
+    while i < len(args):
+        token = args[i]
+        value = None
+        if token in {'-X', '--method'}:
+            if i + 1 >= len(args):
+                raise CommandError('GitHub API method value is missing', 'AMBIGUOUS_GITHUB_API_REQUEST')
+            value = args[i + 1]
+            i += 1
+        elif token.startswith('--method='):
+            value = token.split('=', 1)[1]
+        elif token.startswith('-X') and len(token) > 2:
+            value = token[2:]
+        elif token in GH_API_WRITE_FLAGS or token.startswith(('--field=', '--raw-field=', '--input=')) \
+                or re.fullmatch(r'-[fF].+', token):
+            writes = True
+        if value is not None:
+            if method is not None or _dynamic_word(value):
+                raise CommandError('ambiguous GitHub API request is unsupported', 'AMBIGUOUS_GITHUB_API_REQUEST')
+            method = value
+        i += 1
+    # gh api switches to POST when fields or an input body are present, so any of them is a write.
+    if writes or (method is not None and method.upper() != 'GET'):
+        raise CommandError('unbound GitHub API mutation is unsupported', 'UNBOUND_GITHUB_API_MUTATION')
+
+
+def _git_alias(global_options: list[str], verb: str, cwd: Path | None) -> str | None:
+    """Read one alias definition from the caller's repository configuration.
+
+    Any global option (-C, -c, --git-dir, --work-tree, --config-env, ...) can change which
+    configuration defines the alias, so aliases are resolved only for plain `git <alias>`.
+    """
+    if global_options or not re.fullmatch(r'[A-Za-z0-9][A-Za-z0-9._-]*', verb):
+        return None
+    proc = subprocess.run(['git', 'config', '--get', 'alias.' + verb], cwd=cwd,
+                          env=READ_ONLY_GIT_ENV, capture_output=True, text=True, timeout=5, check=False)
+    value = proc.stdout.strip()
+    return value if proc.returncode == 0 and value else None
+
+
+def _alias_publication_error():
+    from publication_commands import CommandError
+    return CommandError('Git alias resolves to a guarded publication command; run the literal command',
+                        'GIT_ALIAS_PUBLICATION_UNSUPPORTED')
+
+
+def _git_operations(tokens: list[str], cwd: Path | None, depth: int) -> list[str]:
+    from publication_commands import CommandError
+    args = _strip_options(tokens[1:], GIT_GLOBAL_WITH_VALUE)
+    if not args:
+        return []
+    global_options = tokens[1:len(tokens) - len(args)]
+    if args[0] == "push":
+        return ["git_push"]
+    if args[0] == "commit":
+        return ["git_commit"]
+    if args[0] in {'send-pack', 'http-push', 'receive-pack'}:
+        raise CommandError('Git remote-ref plumbing is unsupported; use the exact signed push workflow', 'UNSUPPORTED_GIT_PLUMBING')
+    if args[0] == "tag":
+        query = args[1:]
+        read_flags = {"--list", "-l", "--verify", "-v", "--contains", "--no-contains",
+                      "--merged", "--no-merged", "--points-at", "--sort", "--format", "--column", "--no-column"}
+        if not query or (any(x.split("=")[0] in read_flags or re.fullmatch(r"-n\d*", x) for x in query)
+                         and all(not x.startswith("-") or x.split("=")[0] in read_flags or re.fullmatch(r"-n\d*", x) for x in query)):
+            return []
+        return ["git_tag"]
+    if args[0] == "lfs":
+        subcommand = next((x for x in args[1:] if not x.startswith("-")), None)
+        if subcommand is None or subcommand in GIT_LFS_LOCAL:
+            return []
+        raise CommandError('git-lfs subcommand may publish or rewrite history', 'UNSUPPORTED_GIT_LFS_COMMAND')
+    builtin = subprocess.run(['git', '--list-cmds=builtins'], capture_output=True, text=True, timeout=5, check=False)
+    if builtin.returncode == 0 and args[0] in builtin.stdout.split():
+        return []
+    # A Git alias may run shell code or publish; classify its expansion and allow only read-only results.
+    alias = _git_alias(global_options, args[0], cwd) if depth < GIT_ALIAS_MAX_DEPTH else None
+    if alias is None:
+        raise CommandError('unknown Git verb or alias cannot be classified', 'UNKNOWN_GIT_COMMAND')
+    if alias.startswith('!'):
+        # Shell aliases receive the remaining arguments positionally; only the body itself is classified.
+        expanded_operations = operations_for(alias[1:], cwd, depth + 1)
+    else:
+        try:
+            expanded = shlex.split(alias)
+        except ValueError as exc:
+            raise CommandError('Git alias cannot be parsed', 'UNKNOWN_GIT_COMMAND') from exc
+        expanded_operations = _direct_operations(['git', *expanded, *args[1:]], cwd, depth + 1)
+    if expanded_operations:
+        raise _alias_publication_error()
+    return []
+
+
+def _dynamic_executable_is_unclassified(word: str) -> bool:
+    """True when a dynamic path prefix ends in a literal basename that cannot reach Git/GitHub."""
+    if "\0" in word or "/" not in word:
+        return False
+    name = word.rsplit("/", 1)[1].strip("\"'")
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._+-]*", name):
+        return False
+    return name not in CLASSIFIED_EXECUTABLES and not name.startswith(("git", "gh"))
+
+
+def _global_options(tokens: list[str], with_value: set[str]) -> tuple[list[str], bool]:
+    """Return the CLI words after global options and whether a context option was dynamic.
+
+    A dynamic directory or repository is acceptable for read-only commands, but a dynamic
+    configuration or exec path can redefine what a built-in verb runs, so it always denies.
+    """
+    from publication_commands import CommandError
+    try:
+        return _after_global_options(tokens, with_value), False
+    except CommandError as exc:
+        if exc.reason_code != "DYNAMIC_CLI_OPTION":
+            raise
+        index = 0
+        while index < len(tokens) and tokens[index].startswith("-") and tokens[index] != "-":
+            option, _, inline = tokens[index].partition("=")
+            value = inline if inline else (tokens[index + 1] if option in with_value and index + 1 < len(tokens) else "")
+            if option in DYNAMIC_FORBIDDEN_OPTIONS and (_dynamic_word(tokens[index]) or _dynamic_word(value)):
+                raise
+            index += 2 if option in with_value and not inline else 1
+        return _strip_options(tokens, with_value), True
+
+
+def operations_for(command: str, cwd: Path | None = None, depth: int = 0) -> list[str]:
     from publication_commands import CommandError
     operations: list[str] = []
     for segment in _segments(command):
         effective = _unwrap(segment)
         if effective and _dynamic_word(effective[0]):
+            if _dynamic_executable_is_unclassified(effective[0]):
+                continue
             raise CommandError('dynamic executable cannot be classified', 'DYNAMIC_EXECUTABLE')
+        dynamic_option = False
         if effective and Path(effective[0]).name == 'git':
-            args = _after_global_options(effective[1:], GIT_GLOBAL_WITH_VALUE)
+            args, dynamic_option = _global_options(effective[1:], GIT_GLOBAL_WITH_VALUE)
             if args and _dynamic_word(args[0]):
                 raise CommandError('dynamic Git subcommand cannot be classified', 'DYNAMIC_SUBCOMMAND')
         if effective and Path(effective[0]).name == 'gh':
-            args = _after_global_options(effective[1:], GH_GLOBAL_WITH_VALUE)
+            args, dynamic_option = _global_options(effective[1:], GH_GLOBAL_WITH_VALUE)
             if any(_dynamic_word(word) for word in args[:2]):
                 raise CommandError('dynamic GitHub CLI command cannot be classified', 'DYNAMIC_SUBCOMMAND')
         if effective and Path(effective[0]).name in {'bash', 'sh', 'zsh'} and '<<' in command:
             raise CommandError('shell heredoc execution requires an inspected standalone command', 'UNSUPPORTED_HEREDOC')
-        for operation in _direct_operations(segment):
+        try:
+            segment_operations = _direct_operations(segment, cwd, depth)
+        except CommandError as exc:
+            # Alias and verb lookups cannot be trusted when the target repository is dynamic.
+            if dynamic_option and exc.reason_code == 'UNKNOWN_GIT_COMMAND':
+                raise CommandError('dynamic CLI global option cannot bind a stable target', 'DYNAMIC_CLI_OPTION') from exc
+            raise
+        # A dynamic repository/directory only matters when it would select a publication target.
+        if dynamic_option and segment_operations:
+            raise CommandError('dynamic CLI global option cannot bind a stable target', 'DYNAMIC_CLI_OPTION')
+        for operation in segment_operations:
             if operation not in operations:
                 operations.append(operation)
     return operations
@@ -331,28 +454,93 @@ def operation_for(command: str):
     return operations[0] if operations else None
 
 
+COMMIT_ADD_OPTIONS = {'-A', '--all', '-u', '--update', '-f', '--force', '--'}
+COMMIT_FLAG_OPTIONS = {'--allow-empty', '--allow-empty-message', '--no-verify', '--signoff', '-s', '--quiet', '-q'}
+
+
+def _commit_chain(command: str) -> tuple[list[list[str]], list[str]]:
+    """Return literal `git add` commands joined by && before one final `git commit`.
+
+    Words Bash would expand carry a NUL marker, so literal `$` or backticks in quoted text stay allowed.
+    """
+    import bashlex
+    from publication_commands import inline_literal_heredocs, shell_commands
+    unsupported = PublicationError("commit must be standalone or follow literal git add commands joined by &&",
+                                   reason_code='COMMAND_FORM_UNSUPPORTED')
+    normalized = inline_literal_heredocs(command)
+    commands = shell_commands(normalized, mark_dynamic=True)
+    if len(commands) == 1:
+        if commands[0][:2] != ['git', 'commit']:
+            raise unsupported
+        return [], commands[0]
+    if '<<' in normalized:
+        raise unsupported
+    try:
+        trees = bashlex.parse(normalized)
+    except (ValueError, NotImplementedError, bashlex.errors.ParsingError) as exc:
+        raise unsupported from exc
+    if len(trees) != 1 or trees[0].kind != 'list':
+        raise unsupported
+    parts = trees[0].parts
+    operators = [part.op for part in parts if part.kind == 'operator']
+    # Any substitution, pipe or other connector adds commands that the operators cannot account for.
+    if (any(part.kind not in {'command', 'operator'} for part in parts) or any(op != '&&' for op in operators)
+            or len(operators) != len(commands) - 1):
+        raise unsupported
+    *adds, commit = commands
+    if commit[:2] != ['git', 'commit'] or any(add[:2] != ['git', 'add'] for add in adds):
+        raise unsupported
+    for add in adds:
+        for word in add[2:]:
+            if '\0' in word:
+                raise PublicationError("git add pathspecs must be literal", reason_code='PUBLICATION_INPUT_UNBOUND')
+            if word.startswith('-') and word not in COMMIT_ADD_OPTIONS:
+                raise unsupported
+    return adds, commit
+
+
+def _git_add_paths(cwd: Path, add: list[str]) -> tuple[set[str], set[str]]:
+    """Resolve what `git add` would stage without writing the index or object database."""
+    try:
+        proc = subprocess.run(['git', '-c', 'core.quotePath=false', 'add', '--dry-run', *add[2:]], cwd=cwd,
+                              env=READ_ONLY_GIT_ENV, capture_output=True, text=True, timeout=10, check=False)
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        raise PublicationError("git add preview unavailable", "CONTENT_INSPECTION_UNAVAILABLE",
+                               context={'error_class': type(exc).__name__}, phase='staged_index') from exc
+    if proc.returncode:
+        raise PublicationError("git add preview failed", "CONTENT_INSPECTION_UNAVAILABLE", phase='staged_index')
+    added: set[str] = set()
+    removed: set[str] = set()
+    for line in proc.stdout.splitlines():
+        match = re.fullmatch(r"(add|remove) '(.+)'", line)
+        if not match:
+            raise PublicationError("git add preview is ambiguous", "CONTENT_INSPECTION_UNAVAILABLE", phase='staged_index')
+        (added if match[1] == 'add' else removed).add(match[2])
+    return added, removed
+
+
 def commit_safety(cwd: Path, command: str) -> dict:
-    """Scan actual commit messages and staged blobs; exempt only final author email metadata."""
+    """Scan actual commit messages and candidate content; exempt only final author email metadata."""
     from content_safety import added_line_numbers_from_diff, scan_payload
     from publication_authority import PublicationError
-    from publication_commands import shell_commands
-    commands = shell_commands(command)
-    if len(commands) != 1 or commands[0][:2] != ["git", "commit"]:
-        raise PublicationError("commit must be standalone without context-changing wrappers", reason_code='COMMAND_FORM_UNSUPPORTED')
-    args = commands[0][2:]
-    if any('$' in word or '`' in word or '\0' in word for word in args):
+    adds, commit = _commit_chain(command)
+    args = commit[2:]
+    if any('\0' in word for word in args):
         raise PublicationError("commit message/file must be literal without shell expansion", reason_code='PUBLICATION_INPUT_UNBOUND')
     # Alternate index/worktree environment can change what Git commits.
     if any(os.environ.get(key) for key in ['GIT_INDEX_FILE', 'GIT_DIR', 'GIT_WORK_TREE']):
         raise PublicationError("alternate Git commit environment unsupported", reason_code='ALTERNATE_GIT_ENVIRONMENT')
     messages = []
+    commit_all = amend = no_edit = False
     i = 0
     while i < len(args):
         word = args[i]
-        if word in {'-m', '--message', '-F', '--file'}:
+        if word in {'-m', '--message', '-F', '--file', '-am'}:
             if i + 1 >= len(args):
                 raise PublicationError("commit message value missing", reason_code='PUBLICATION_OPTION_INVALID', phase='commit_message')
             value = args[i + 1]
+            if word == '-am':
+                commit_all = True
             if word in {'-F', '--file'}:
                 if value == '-':
                     raise PublicationError("stdin commit message cannot be inspected", reason_code='CONTENT_INSPECTION_UNAVAILABLE')
@@ -366,11 +554,41 @@ def commit_safety(cwd: Path, command: str) -> dict:
         elif word.startswith('--message=') or word.startswith('-m') and len(word) > 2:
             messages.append(word.split('=', 1)[1] if word.startswith('--message=') else word[2:])
             i += 1
-        elif word in {'--allow-empty', '--allow-empty-message', '--no-verify', '--signoff', '-s', '--quiet', '-q'}:
+        elif word in {'-a', '--all'}:
+            commit_all = True
+            i += 1
+        elif word == '--amend':
+            amend = True
+            i += 1
+        elif word == '--no-edit':
+            no_edit = True
+            i += 1
+        elif word in COMMIT_FLAG_OPTIONS:
             i += 1
         else:
-            # -a, --only, --amend, re-use/editor messages and path selection change the candidate.
+            # --only, re-use/editor messages and path selection change the candidate.
             raise PublicationError("unsupported commit option requires an explicit inspected staged commit", reason_code='COMMAND_FORM_UNSUPPORTED')
+    if no_edit and not amend:
+        raise PublicationError("--no-edit is supported only with --amend", reason_code='COMMAND_FORM_UNSUPPORTED')
+    try:
+        root_proc = subprocess.run(['git', 'rev-parse', '--show-toplevel'], cwd=cwd, env=READ_ONLY_GIT_ENV,
+                                   capture_output=True, text=True, timeout=10, check=False)
+        if root_proc.returncode:
+            raise OSError('repository root unavailable')
+        root = Path(root_proc.stdout.strip())
+        if not messages and amend and no_edit:
+            # The amended commit keeps HEAD's message; inspect it like an explicit message.
+            reused = subprocess.run(['git', 'log', '-1', '--format=%B'], cwd=root, env=READ_ONLY_GIT_ENV,
+                                    capture_output=True, text=True, timeout=10, check=False)
+            if reused.returncode:
+                raise OSError('amended commit message unavailable')
+            messages.append(reused.stdout.rstrip('\n'))
+    except subprocess.TimeoutExpired as exc:
+        raise PublicationError("staged index inspection timed out", "STAGED_INDEX_UNAVAILABLE",
+                               context={'error_class': type(exc).__name__}, phase='staged_index') from exc
+    except OSError as exc:
+        raise PublicationError("repository index unavailable", "STAGED_INDEX_UNAVAILABLE",
+                               context={'error_class': type(exc).__name__}, phase='staged_index') from exc
     if not messages:
         raise PublicationError("explicit commit message required", reason_code='PUBLICATION_INPUT_UNBOUND')
     message = '\n\n'.join(messages)
@@ -394,14 +612,23 @@ def commit_safety(cwd: Path, command: str) -> dict:
         reason_code = getattr(exc, 'reason_code', 'CONTENT_SCANNER_FAILED')
         raise PublicationError("commit message scanner failed", reason_code,
                                context={'error_class': type(exc).__name__}, phase='commit_message') from exc
+    # Commit is the only local injection gate: the push-time candidate scan covers secrets only.
     if safety['decision'] in {'BLOCK', 'REVIEW'}:
         return _commit_block(safety['findings'], 'commit_message', None)
+    # Worktree paths whose current file content becomes part of the commit (git add / commit -a).
+    worktree_paths: set[str] = set()
+    removed_paths: set[str] = set()
+    for add in adds:
+        added, removed = _git_add_paths(cwd, add)
+        worktree_paths |= added
+        removed_paths |= removed
     try:
-        root_proc = subprocess.run(['git', 'rev-parse', '--show-toplevel'], cwd=cwd, env=READ_ONLY_GIT_ENV,
-                                   capture_output=True, text=True, timeout=10, check=False)
-        if root_proc.returncode:
-            raise OSError('repository root unavailable')
-        root = Path(root_proc.stdout.strip())
+        if commit_all:
+            tracked = subprocess.run(['git', 'diff', '--name-only', '-z', '--diff-filter=ACMRT'], cwd=root,
+                                     env=READ_ONLY_GIT_ENV, capture_output=True, timeout=10, check=False)
+            if tracked.returncode:
+                raise OSError('tracked worktree changes unavailable')
+            worktree_paths |= {os.fsdecode(name) for name in tracked.stdout.split(b'\0') if name}
         staged = subprocess.run(['git', 'diff', '--cached', '--name-only', '-z', '--diff-filter=ACMR'], cwd=root,
                                 env=READ_ONLY_GIT_ENV, capture_output=True, timeout=10, check=False)
         index = subprocess.run(['git', 'ls-files', '--stage', '-z'], cwd=root, env=READ_ONLY_GIT_ENV,
@@ -424,56 +651,71 @@ def commit_safety(cwd: Path, command: str) -> dict:
         fields = header.split()
         if separator and len(fields) == 3:
             index_modes.setdefault(index_path, set()).add(fields[0])
-    for name in staged.stdout.split(b'\0'):
-        if not name:
-            continue
+    candidates = [name for name in staged.stdout.split(b'\0') if name and os.fsdecode(name) not in removed_paths]
+    candidates += [os.fsencode(path) for path in sorted(worktree_paths) if os.fsencode(path) not in candidates]
+    for name in candidates:
+        relative = os.fsdecode(name)
+        from_worktree = relative in worktree_paths
         if b'160000' in index_modes.get(name, set()):
             raise PublicationError("staged submodule content cannot be inspected", "STAGED_CONTENT_UNSUPPORTED_BINARY",
                                    phase='staged_blob')
-        relative = os.fsdecode(name)
         suffix = PurePosixPath(relative).suffix.lower()
         font_suffixes = {'.ttf', '.otf', '.woff', '.woff2'}
         from media_metadata import MEDIA_SUFFIXES
         media_suffixes = MEDIA_SUFFIXES
-        try:
-            size = subprocess.run(['git', 'cat-file', '-s', ':' + relative], cwd=root, env=READ_ONLY_GIT_ENV,
-                                  capture_output=True, timeout=10, check=False)
-        except (OSError, subprocess.TimeoutExpired) as exc:
-            raise PublicationError("staged blob size unavailable", "STAGED_BLOB_UNAVAILABLE",
-                                   context={'error_class': type(exc).__name__}, phase='staged_blob') from exc
-        if size.returncode:
-            raise PublicationError("staged blob size unavailable", "STAGED_BLOB_UNAVAILABLE", phase='staged_blob')
-        try:
-            blob_size = int(size.stdout.strip())
-        except ValueError as exc:
-            raise PublicationError("staged blob size invalid", "STAGED_BLOB_UNAVAILABLE", phase='staged_blob') from exc
         limit = 8 * 1024 * 1024
-        if blob_size > limit:
-            reason = "M4A_TOO_LARGE" if suffix == '.m4a' else (
-                "STAGED_FONT_RESOURCE_LIMIT" if suffix in font_suffixes else
-                "STAGED_MEDIA_RESOURCE_LIMIT" if suffix in media_suffixes else
-                "STAGED_CONTENT_TOO_LARGE"
-            )
-            raise PublicationError("staged blob exceeds inspection limit", reason,
-                                   context={'file': relative, 'format': suffix[1:]}, phase='staged_blob')
-        try:
-            blob = subprocess.run(['git', 'show', ':' + relative], cwd=root, env=READ_ONLY_GIT_ENV,
-                                  capture_output=True, timeout=10, check=False)
-        except subprocess.TimeoutExpired as exc:
-            raise PublicationError("staged blob inspection timed out", "STAGED_BLOB_UNAVAILABLE",
-                                   context={'error_class': type(exc).__name__}, phase='staged_blob') from exc
-        except OSError as exc:
-            raise PublicationError("staged blob process unavailable", "STAGED_BLOB_UNAVAILABLE",
-                                   context={'error_class': type(exc).__name__}, phase='staged_blob') from exc
-        if blob.returncode:
-            raise PublicationError("staged blob unavailable", "STAGED_BLOB_UNAVAILABLE", phase='staged_blob')
-        if len(blob.stdout) > limit:
-            reason = "M4A_TOO_LARGE" if suffix == '.m4a' else (
-                "STAGED_FONT_RESOURCE_LIMIT" if suffix in font_suffixes else
-                "STAGED_MEDIA_RESOURCE_LIMIT" if suffix in media_suffixes else
-                "STAGED_CONTENT_TOO_LARGE"
-            )
-            raise PublicationError("staged blob exceeds inspection limit", reason,
+        too_large = ("M4A_TOO_LARGE" if suffix == '.m4a' else
+                     "STAGED_FONT_RESOURCE_LIMIT" if suffix in font_suffixes else
+                     "STAGED_MEDIA_RESOURCE_LIMIT" if suffix in media_suffixes else
+                     "STAGED_CONTENT_TOO_LARGE")
+        if from_worktree:
+            path = root / relative
+            if not os.path.lexists(path):
+                continue  # A deletion adds no content.
+            try:
+                if path.is_symlink():
+                    content = os.fsencode(os.readlink(path))
+                elif not path.is_file():
+                    raise PublicationError("worktree directory or submodule content cannot be inspected",
+                                           "STAGED_CONTENT_UNSUPPORTED_BINARY", phase='staged_blob')
+                elif path.stat().st_size > limit:
+                    raise PublicationError("worktree file exceeds inspection limit", too_large,
+                                           context={'file': relative, 'format': suffix[1:]}, phase='staged_blob')
+                else:
+                    content = path.read_bytes()
+            except OSError as exc:
+                raise PublicationError("worktree file unavailable", "STAGED_CONTENT_UNAVAILABLE",
+                                       context={'error_class': type(exc).__name__}, phase='staged_blob') from exc
+        else:
+            try:
+                size = subprocess.run(['git', 'cat-file', '-s', ':' + relative], cwd=root, env=READ_ONLY_GIT_ENV,
+                                      capture_output=True, timeout=10, check=False)
+            except (OSError, subprocess.TimeoutExpired) as exc:
+                raise PublicationError("staged blob size unavailable", "STAGED_BLOB_UNAVAILABLE",
+                                       context={'error_class': type(exc).__name__}, phase='staged_blob') from exc
+            if size.returncode:
+                raise PublicationError("staged blob size unavailable", "STAGED_BLOB_UNAVAILABLE", phase='staged_blob')
+            try:
+                blob_size = int(size.stdout.strip())
+            except ValueError as exc:
+                raise PublicationError("staged blob size invalid", "STAGED_BLOB_UNAVAILABLE", phase='staged_blob') from exc
+            if blob_size > limit:
+                raise PublicationError("staged blob exceeds inspection limit", too_large,
+                                       context={'file': relative, 'format': suffix[1:]}, phase='staged_blob')
+            try:
+                blob = subprocess.run(['git', 'show', ':' + relative], cwd=root, env=READ_ONLY_GIT_ENV,
+                                      capture_output=True, timeout=10, check=False)
+            except subprocess.TimeoutExpired as exc:
+                raise PublicationError("staged blob inspection timed out", "STAGED_BLOB_UNAVAILABLE",
+                                       context={'error_class': type(exc).__name__}, phase='staged_blob') from exc
+            except OSError as exc:
+                raise PublicationError("staged blob process unavailable", "STAGED_BLOB_UNAVAILABLE",
+                                       context={'error_class': type(exc).__name__}, phase='staged_blob') from exc
+            if blob.returncode:
+                raise PublicationError("staged blob unavailable", "STAGED_BLOB_UNAVAILABLE", phase='staged_blob')
+            content = blob.stdout
+        if len(content) > limit:
+            raise PublicationError("staged blob exceeds inspection limit", too_large,
                                    context={'file': relative, 'format': suffix[1:]}, phase='staged_blob')
         if suffix in media_suffixes | font_suffixes:
             from media_metadata import (
@@ -482,7 +724,7 @@ def commit_safety(cwd: Path, command: str) -> dict:
                 media_diagnostic_code,
             )
             try:
-                staged_text = extract_metadata(blob.stdout, suffix)
+                staged_text = extract_metadata(content, suffix)
             except MediaInspectionError as exc:
                 raw_reason = getattr(exc, 'reason_code', str(exc))
                 reason = raw_reason if raw_reason.startswith('STAGED_FONT_') else (
@@ -496,25 +738,31 @@ def commit_safety(cwd: Path, command: str) -> dict:
                                        phase='font_metadata' if suffix in font_suffixes else 'media_metadata') from exc
         else:
             try:
-                if b'\x00' in blob.stdout:
+                if b'\x00' in content:
                     raise UnicodeError('binary NUL')
-                staged_text = blob.stdout.decode('utf-8', errors='strict')
+                staged_text = content.decode('utf-8', errors='strict')
             except UnicodeError as exc:
                 raise PublicationError("staged binary format is unsupported", "STAGED_CONTENT_UNSUPPORTED_BINARY",
                                        context={'error_class': type(exc).__name__}, phase='staged_blob') from exc
+        # Injection context uses the lines this commit adds; worktree content is compared with HEAD.
+        diff_args = (['diff', 'HEAD'] if from_worktree else ['diff', '--cached'])
         try:
             diff = subprocess.run(
-                ['git', '--literal-pathspecs', 'diff', '--cached', '--no-ext-diff', '--no-renames',
+                ['git', '--literal-pathspecs', *diff_args, '--no-ext-diff', '--no-renames',
                  '--unified=0', '--', relative],
                 cwd=root, env=READ_ONLY_GIT_ENV, capture_output=True, timeout=10, check=False,
             )
         except (OSError, subprocess.TimeoutExpired) as exc:
             raise PublicationError("staged diff unavailable for injection context", "STAGED_DIFF_UNAVAILABLE",
                                    context={'error_class': type(exc).__name__}, phase='staged_diff') from exc
-        if diff.returncode:
+        if from_worktree and (diff.returncode or not diff.stdout):
+            # New file or no HEAD yet: every line is added by this commit.
+            changed_lines = list(range(1, staged_text.count('\n') + 2))
+        elif diff.returncode:
             raise PublicationError("staged diff unavailable for injection context", "STAGED_DIFF_UNAVAILABLE",
                                    phase='staged_diff')
-        changed_lines = sorted(added_line_numbers_from_diff(diff.stdout.decode('utf-8', errors='replace')))
+        else:
+            changed_lines = sorted(added_line_numbers_from_diff(diff.stdout.decode('utf-8', errors='replace')))
         try:
             result = safe_emit(
                 sink='git_commit', payload={'staged_blob': staged_text},
@@ -620,6 +868,8 @@ def deny_hook_input(runtime: str, reason: str, diagnostic: dict[str, Any] | None
         "UNSUPPORTED_INTERPRETER": "AIPS cannot inspect commands read from a Shell file or stdin; use an inspected literal command.",
         "UNSUPPORTED_GIT_PLUMBING": "AIPS blocks this low-level Git publication path; use the exact approved push workflow.",
         "UNKNOWN_GIT_COMMAND": "AIPS cannot classify this Git verb or alias; use a supported built-in command.",
+        "GIT_ALIAS_PUBLICATION_UNSUPPORTED": "AIPS blocks Git aliases that expand to commit or publication commands; run the literal command.",
+        "UNSUPPORTED_GIT_LFS_COMMAND": "AIPS blocks git-lfs subcommands that can publish, lock remote files or rewrite history.",
         "UNBOUND_GITHUB_API_MUTATION": "AIPS cannot bind this GitHub API write to an approved operation; use a supported explicit workflow.",
         "AMBIGUOUS_GITHUB_API_REQUEST": "AIPS cannot determine whether this GitHub API request writes data; use an explicit supported request.",
         "UNSUPPORTED_GITHUB_MUTATION": "AIPS requires a separately reviewed workflow for this GitHub mutation.",
@@ -803,7 +1053,7 @@ def hook(runtime: str) -> int:
             print(json.dumps({"decision": "deny", "reason": reason}))
         return 0
     try:
-        operations = operations_for(command)
+        operations = operations_for(command, Path(str(payload.get("cwd") or os.getcwd())).resolve())
     except Exception as exc:
         from publication_commands import CommandError
         if isinstance(exc, CommandError):

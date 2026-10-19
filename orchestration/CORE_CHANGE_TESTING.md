@@ -55,6 +55,8 @@ Before implementation, start from `templates/review/CORE_CHANGE_TEST_MATRIX.yaml
 
 Publication guard changes cover staged-content inspection failure codes, allowlisted branch prefixes, exact-head `--auto` parsing, empty/pending/failing required-check rejection, and unchanged native Human authorization.
 
+Guard relaxations pair each newly allowed form with a still-denied publication-capable counterpart, and commit-form changes prove that not-yet-staged content is scanned.
+
 M4A publication boundaries include the early `publish_preflight.py` content-safety preview, staged commit guard, and exact-candidate final-tree/history scanner. Validate real container structure and metadata secrets without reading `mdat` as text; malformed/spoofed and >8 MiB candidates fail closed with safe LFS/external-storage guidance, while existing media extensions retain their behavior.
 
 Assess each materially affected boundary against applicable evidence:

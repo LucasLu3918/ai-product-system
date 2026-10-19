@@ -492,3 +492,5 @@ The orchestrator routes AIPS-owned persistence through `safe_emit` and keeps con
 Scenario 266 specifies that durable commit injection checks use changed staged lines, keep secret/PII scanning on the full blob, and deny unresolved review unless a narrow approved exception matches.
 
 `bin/aips` is the public thin launcher: it resolves the repository root and forwards arguments to `scripts/aips_cli.sh`. Keep command dispatch, installed-link behavior, exit status, and user-visible output compatible while implementation modules are extracted incrementally.
+
+Agents may use the standard commit forms and read-only Git/GitHub commands directly; a guard allow decision is classification evidence only and never grants publication or merge approval.

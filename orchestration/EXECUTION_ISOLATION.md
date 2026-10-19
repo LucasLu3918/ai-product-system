@@ -170,6 +170,8 @@ Because it performs no trial workspace mutation, it does not require a managed w
 
 The evaluation cannot widen Resource Authorization, Change Boundary or Human authority and cannot automatically remediate observed anomalies.
 
+Publication guard command classification does not change Execution Isolation modes or Resource Authorization write sets.
+
 ## Observable-event integration Trial isolation
 
 Scenario 140 executes deterministic replay only. It does not invoke an Agent to mutate a Trial worktree and does not attach a capture hook to a live runtime, so its Trial execution is read-only evidence generation over committed sanitized fixtures.
