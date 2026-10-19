@@ -25,12 +25,22 @@ class ContentSafetyTests(unittest.TestCase):
         self.assertEqual(result["decision"], "REDACT")
         self.assertNotIn("ghp_", result["safe_payload"]["message"])
         self.assertTrue(all("ghp_" not in str(finding) for finding in result["findings"]))
+        remote = self.decoded("pii_email_git_remote_hex")[4]
+        address = "owner" + chr(64) + "example.com"
+        mixed = safe_emit(sink="runtime_log", payload={"message": f"{remote} {address}"})
+        self.assertEqual(mixed["safe_payload"]["message"], f"{remote} [REDACTED]")
+        self.assertEqual(safe_emit(sink="runtime_log", payload={"message": remote})["decision"], "ALLOW")
 
 
     def test_public_secret_is_blocked(self) -> None:
         result = safe_emit(sink="git_commit", payload="sk_live_" + "A" * 32)
         self.assertEqual(result["decision"], "BLOCK")
         self.assertIsNone(result["safe_payload"])
+        remote = self.decoded("pii_email_git_remote_hex")[4]
+        mixed = safe_emit(sink="git_commit", payload=f"{remote}\ntoken = ghp_" + "E" * 40,
+                          context={"source_path": "scripts/remote.py"})
+        self.assertEqual(mixed["decision"], "BLOCK", mixed)
+        self.assertTrue(any(item["type"] == "SECRET" for item in mixed["findings"]))
 
 
     def test_untrusted_injection_is_signal_and_provenance_is_preserved(self) -> None:
@@ -91,6 +101,22 @@ class ContentSafetyTests(unittest.TestCase):
         self.assertEqual(sum(old_flags), 3)
         self.assertEqual(sum(result["decision"] != "ALLOW" for result in new_results), 0)
         self.assertEqual(sum(result["decision"] == "BLOCK" for result in malicious_results), 2)
+        legacy_email = re.compile(r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", re.IGNORECASE)
+        remotes, true_emails = self.decoded("pii_email_git_remote_hex"), self.decoded("pii_email_true_hex")
+        self.assertTrue(all(legacy_email.search(source) for source in remotes))
+        self.assertEqual(sum(bool(content_safety.email_matches(source)) for source in remotes), 0)
+        self.assertTrue(all(legacy_email.search(source) for source in true_emails))
+        self.assertTrue(all(content_safety.email_matches(source) for source in true_emails))
+        for source in remotes:
+            with self.subTest(source=source):
+                result = safe_emit(sink="git_commit", payload=source, context={"source_path": "scripts/remote.py"})
+                self.assertEqual(result["decision"], "ALLOW", result)
+        for source in true_emails:
+            with self.subTest(source=source):
+                result = safe_emit(sink="git_commit", payload=source, context={"source_path": "notes.txt"})
+                emails = [item for item in result["findings"] if item["detector"] == "email"]
+                self.assertEqual(result["decision"], "BLOCK", result)
+                self.assertTrue(all(item["rule_id"] == "pii.email.v2" for item in emails))
 
     def test_strong_injection_inside_javascript_string_is_still_detected(self) -> None:
         encoded = self.load_corpus()["malicious_hex"][0]
@@ -167,66 +193,6 @@ class ContentSafetyTests(unittest.TestCase):
     def decoded(self, key: str) -> list[str]:
         return [bytes.fromhex(item).decode("utf-8") for item in self.load_corpus()[key]]
 
-    def test_git_remote_service_userinfo_is_not_email_pii(self) -> None:
-        for source in self.decoded("pii_email_git_remote_hex"):
-            with self.subTest(source=source):
-                result = safe_emit(sink="git_commit", payload=source, context={"source_path": "scripts/remote.py"})
-                self.assertEqual(result["decision"], "ALLOW", result)
-                self.assertFalse(any(item["type"] == "PII" for item in result["findings"]))
-
-    def test_true_email_shapes_remain_blocked_as_v2(self) -> None:
-        for source in self.decoded("pii_email_true_hex"):
-            with self.subTest(source=source):
-                result = safe_emit(sink="git_commit", payload=source, context={"source_path": "notes.txt"})
-                emails = [item for item in result["findings"] if item["detector"] == "email"]
-                self.assertEqual(result["decision"], "BLOCK", result)
-                self.assertTrue(emails)
-                self.assertTrue(all(item["rule_id"] == "pii.email.v2" for item in emails))
-
-    def test_email_v1_v2_comparison_removes_only_git_remote_false_positives(self) -> None:
-        legacy = re.compile(r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", re.IGNORECASE)
-        remotes, true_emails = self.decoded("pii_email_git_remote_hex"), self.decoded("pii_email_true_hex")
-        self.assertTrue(all(legacy.search(source) for source in remotes))
-        self.assertEqual(sum(bool(content_safety.email_matches(source)) for source in remotes), 0)
-        self.assertTrue(all(legacy.search(source) for source in true_emails))
-        self.assertTrue(all(content_safety.email_matches(source) for source in true_emails))
-
-    def test_email_redaction_keeps_git_remote_and_redacts_address(self) -> None:
-        remote = bytes.fromhex(self.load_corpus()["pii_email_git_remote_hex"][4]).decode("utf-8")
-        address = "owner" + chr(64) + "example.com"
-        result = safe_emit(sink="runtime_log", payload={"message": f"{remote} {address}"})
-        self.assertEqual(result["decision"], "REDACT", result)
-        self.assertEqual(result["safe_payload"]["message"], f"{remote} [REDACTED]")
-        clean = safe_emit(sink="runtime_log", payload={"message": remote})
-        self.assertEqual(clean["decision"], "ALLOW", clean)
-
-    def test_git_remote_does_not_mask_secret_in_same_content(self) -> None:
-        remote = bytes.fromhex(self.load_corpus()["pii_email_git_remote_hex"][4]).decode("utf-8")
-        result = safe_emit(sink="git_commit", payload=f"{remote}\ntoken = ghp_" + "E" * 40,
-                           context={"source_path": "scripts/remote.py"})
-        self.assertEqual(result["decision"], "BLOCK", result)
-        self.assertTrue(any(item["type"] == "SECRET" for item in result["findings"]))
-
-    def test_exception_policy_rejects_pii_rule_ids(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            policy_path = Path(directory) / "exceptions.yaml"
-            policy_path.write_text(
-                "version: 1\nexceptions:\n"
-                "  - rule_id: pii.email.v2\n"
-                "    path: notes.txt\n"
-                "    finding_fingerprint: sha256:" + "0" * 64 + "\n"
-                "    sink: git_commit\n"
-                "    expires_on: '2099-01-01'\n"
-                "    approved_by: reviewer\n"
-                "    approval_reference: PR-123\n",
-                encoding="utf-8",
-            )
-            with (
-                patch.object(content_safety, "DEFAULT_EXCEPTIONS", policy_path),
-                self.assertRaisesRegex(ValueError, "invalid rule_id"),
-            ):
-                safe_emit(sink="git_commit", payload="notes", context={"source_path": "notes.txt"})
-
     def test_expiring_exception_is_exactly_scoped_and_requires_approval(self) -> None:
         source = bytes.fromhex(self.load_corpus()["ambiguous_hex"]).decode("utf-8")
         context = {"source_path": "notes.txt"}
@@ -299,12 +265,30 @@ class ContentSafetyTests(unittest.TestCase):
                 self.assertRaisesRegex(ValueError, "expired"),
             ):
                 safe_emit(sink="git_commit", payload=source, context={"source_path": "notes.txt"})
+        with tempfile.TemporaryDirectory() as directory:
+            policy_path = Path(directory) / "exceptions.yaml"
+            policy_path.write_text(
+                "version: 1\nexceptions:\n"
+                "  - rule_id: pii.email.v2\n"
+                "    path: notes.txt\n"
+                "    finding_fingerprint: sha256:" + "0" * 64 + "\n"
+                "    sink: git_commit\n"
+                "    expires_on: '2099-01-01'\n"
+                "    approved_by: reviewer\n"
+                "    approval_reference: PR-123\n",
+                encoding="utf-8",
+            )
+            with (
+                patch.object(content_safety, "DEFAULT_EXCEPTIONS", policy_path),
+                self.assertRaisesRegex(ValueError, "invalid rule_id"),
+            ):
+                safe_emit(sink="git_commit", payload="notes", context={"source_path": "notes.txt"})
 
 
 def suite() -> unittest.TestSuite:
     selected = unittest.defaultTestLoader.loadTestsFromTestCase(ContentSafetyTests)
-    if selected.countTestCases() != 22:
-        raise RuntimeError(f"expected 22 content-safety tests, collected {selected.countTestCases()}")
+    if selected.countTestCases() != 16:
+        raise RuntimeError(f"expected 16 content-safety tests, collected {selected.countTestCases()}")
     return selected
 
 

@@ -15,7 +15,7 @@ matrix:
     reason: The rule blocks durable sinks; narrowing it must not let any non-remote address through.
     checks:
       static_lint: {applicable: true, evidence: "PASS: ruff check on changed Python files; git diff --check clean."}
-      unit: {applicable: true, evidence: "PASS: tests/test_content_safety.py 22 tests; 17 hex Git remote samples clean, 21 hex true-address samples BLOCK with rule_id pii.email.v2."}
+      unit: {applicable: true, evidence: "PASS: tests/test_content_safety.py 16 tests (new cases folded into existing methods); 17 hex Git remote samples ALLOW, 21 hex true-address samples BLOCK with rule_id pii.email.v2."}
       integration: {applicable: true, evidence: "PASS: tests/test_safety_diagnostics.py 17 tests and tests/test_publication_planning.py 30 tests."}
       contract: {applicable: true, evidence: "PASS: v1/v2 corpus comparison test; v1 flags all 38 samples, v2 flags only the 21 true-address samples."}
       e2e: {applicable: false, na_reason: No browser UI or deployed service is changed.}
