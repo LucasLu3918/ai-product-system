@@ -153,19 +153,28 @@ class SafetyDiagnosticsTests(unittest.TestCase):
         self.assertEqual(result["decision"], "ALLOW", result)
 
     def test_full_staged_blob_keeps_secret_scan_and_diagnostic_is_actionable(self) -> None:
-        secret = "ghp_" + hashlib.sha256(b"content-safety-test-token").hexdigest()[:36]
+        marker = "synthetic-secret-canary"
         path = self.root / "payload.txt"
-        path.write_text("token=" + secret + "\nversion=1\n", encoding="utf-8")
+        path.write_text("token=" + marker + "\nversion=1\n", encoding="utf-8")
         self.run_git("add", "payload.txt")
         self.run_git("commit", "-m", "baseline")
-        path.write_text("token=" + secret + "\nversion=2\n", encoding="utf-8")
+        path.write_text("token=" + marker + "\nversion=2\n", encoding="utf-8")
         self.run_git("add", "payload.txt")
-        result = diagnose_commit(self.root, self.message_file)
+
+        def synthetic_secret_scan(text: str, location: str, *, strict: bool = False) -> list[dict[str, object]]:
+            del location, strict
+            if marker not in text:
+                return []
+            return [{"detector": "synthetic-secret", "fingerprint": "test-fingerprint",
+                     "secret_length": len(marker), "line": 1}]
+
+        with patch("content_safety.scan_text", side_effect=synthetic_secret_scan):
+            result = diagnose_commit(self.root, self.message_file)
         diagnostic = result["diagnostic"]
         self.assertEqual(diagnostic["reason_code"], "CONTENT_SECRET_BLOCKED")
         self.assertEqual(diagnostic["findings"][0]["file"], "payload.txt")
         self.assertIn("finding_fingerprint", diagnostic["findings"][0])
-        self.assertNotIn(secret, json.dumps(result))
+        self.assertNotIn(marker, json.dumps(result))
 
     def test_ambiguous_signal_returns_review_reason_and_safe_fingerprint(self) -> None:
         corpus = json.loads((ROOT / "tests/fixtures/content-safety/corpus.json").read_text(encoding="utf-8"))
