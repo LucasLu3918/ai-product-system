@@ -4,6 +4,8 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ## Runtime flow
 
+OpenCode direct local L2 writes use the Project Intelligence readiness and instruction checks; READY freshness that is STALE remains visible but is not a standalone denial for a confined source target. UNKNOWN, non-READY and independent guard conditions remain blocking.
+
 Staged media content is inspected by the existing bounded safety scanner; AVIF adds metadata extraction without changing Harness authority or provider execution, creative provenance or licensing, personal publication approval, or ComfyUI resource authorization.
 
 Plan44 extends the existing flow with allowlisted shell-form detail and Claude-only native failure evidence; it adds no authority service, retry path or architecture component.

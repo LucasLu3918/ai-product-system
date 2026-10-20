@@ -2159,3 +2159,13 @@ scenarios:
       - config/content-safety-exceptions.yaml
       - tests/test_content_safety.py
       - tests/test_safety_diagnostics.py
+  - id: "267"
+    path: tests/scenarios/267-ready-stale-intelligence-advisory.md
+    coverage: lifecycle
+    evidence:
+      - tests/scenarios/267-ready-stale-intelligence-advisory.md
+      - scripts/project_intelligence.py
+      - scripts/opencode_native_guard.py
+      - tests/evidence/intelligence_context_lifecycle.py
+      - tests/evidence/opencode_integration_lifecycle.py
+      - tests/validation/opencode_integration_contracts.py

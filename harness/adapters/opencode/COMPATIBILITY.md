@@ -20,6 +20,8 @@ The owned `plugins/aips-opencode.ts` projection is installed only for a positive
 
 ## Readiness and enforcement boundary
 
+The native write guard treats READY+STALE Project Intelligence as advisory for a confined local L2 source target. UNKNOWN, non-READY, instruction conflicts and path escapes remain denied; external actions retain the Human approval boundary.
+
 Static AVIF metadata checks run at repository commit/publication boundaries and provide no evidence of OpenCode runtime action interception.
 
 Creative Git asset import is a separate AIPS CLI action and is not evidence of OpenCode native permission-hook coverage. Its lifecycle verifies the exact-hash create-only behavior independently.

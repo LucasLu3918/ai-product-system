@@ -31,6 +31,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+OpenCode READY+STALE advisory behavior is documented with Project Intelligence and Harness current behavior; Scenario 267 and its lifecycle evidence are the executable contract.
+
 AVIF content-safety behavior is synchronized across User Guide, Security Assurance, Runtime Content Safety protocol and Scenario 265; no AV1 decode or visual-quality claim is implied.
 
 跨 runtime 的 publication guard 變更須同步共享診斷契約、受影響的 native adapter 版本限制，以及 Scenario 261 的相容性證據。

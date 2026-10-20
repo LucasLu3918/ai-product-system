@@ -618,6 +618,8 @@ Do not claim the project has been initialized merely from directory/file-name in
 
 Content-safety findings are advisory retrieval inputs and do not change Project Intelligence authority or graph completeness.
 
+When readiness is READY and freshness is STALE, preserve freshness and targeted refresh guidance but treat staleness as advisory for confined local L2 source writes. Non-READY readiness, UNKNOWN freshness, unavailable canonical protocols, unresolved instruction authority, path escape, creative writes and external/high-risk actions retain their existing stop conditions.
+
 
 Security-boundary Change Impact may use a manually reviewed publication caller/consumer scope when the repository-wide Impact Graph is partial; unknown paths remain explicit.
 

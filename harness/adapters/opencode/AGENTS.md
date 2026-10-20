@@ -1,5 +1,7 @@
 # AIPS Global Turn Harness
 
+Direct local L2 source writes may use READY Project Intelligence with STALE freshness as advisory context; keep the stale state visible and preserve every independent guard denial.
+
 The dedicated aips creative import-candidate / import CLI is separate from OpenCode native file actions. Git destinations remain denied unless the user explicitly selects the hash-bound create-only import flow.
 
 

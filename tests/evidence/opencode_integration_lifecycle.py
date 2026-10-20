@@ -215,7 +215,22 @@ def native_guard_cases(base):
     target = git_root / "src.py"
     assert native_guard.evaluate_write(tool="edit", resources=[str(target)], root=str(git_root), manifest=ready)["decision"] == "ALLOW"
     ready["freshness"] = {"status": "STALE"}
+    stale_decision = native_guard.evaluate_write(tool="edit", resources=[str(target)], root=str(git_root), manifest=ready)
+    assert stale_decision["decision"] == "ALLOW" and "stale but advisory" in stale_decision["reason"], stale_decision
+    ready["fail_policy"] = {"mode": "closed", "reasons": ["intelligence_stale"]}
+    assert native_guard.evaluate_write(tool="edit", resources=[str(target)], root=str(git_root), manifest=ready)["decision"] == "ALLOW"
+    ready["fail_policy"] = {"mode": "closed", "reasons": ["intelligence_stale", "unresolved_authority_conflict"]}
     assert native_guard.evaluate_write(tool="edit", resources=[str(target)], root=str(git_root), manifest=ready)["decision"] == "DENY"
+    ready["fail_policy"] = {"mode": "soft"}
+    ready["instruction_resolution"] = {"requires_resolution": True}
+    assert native_guard.evaluate_write(tool="edit", resources=[str(target)], root=str(git_root), manifest=ready)["decision"] == "DENY"
+    ready["instruction_resolution"] = {"requires_resolution": False}
+    ready["intelligence"] = {"readiness": "PARTIAL"}
+    assert native_guard.evaluate_write(tool="edit", resources=[str(target)], root=str(git_root), manifest=ready)["decision"] == "DENY"
+    ready["intelligence"] = {"readiness": "READY"}
+    ready["freshness"] = {"status": "UNKNOWN"}
+    assert native_guard.evaluate_write(tool="edit", resources=[str(target)], root=str(git_root), manifest=ready)["decision"] == "DENY"
+    ready["freshness"] = {"status": "STALE"}
     ready["freshness"] = {"status": "CURRENT"}
     assert native_guard.evaluate_write(tool="external_action", resources=[str(target)], root=str(git_root), manifest=ready)["level"] == "L3"
     assert native_guard.evaluate_shell(command="git status --short", cwd=str(git_root), root=str(git_root))["decision"] == "ALLOW"

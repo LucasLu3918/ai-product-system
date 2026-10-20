@@ -1149,7 +1149,10 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
             fail_closed_reasons.append("system_protocol_routes_unavailable")
         if initialize:
             fail_closed_reasons.append("intelligence_missing")
-        if fr["status"] == "STALE":
+        # READY Intelligence remains useful as advisory context for a confined
+        # local L2 write. Keep freshness and targeted refresh facts visible,
+        # but do not let staleness alone deny that write.
+        if fr["status"] == "STALE" and readiness != "READY":
             fail_closed_reasons.append("intelligence_stale")
         if fr["status"] == "UNKNOWN":
             fail_closed_reasons.append("intelligence_freshness_unknown")

@@ -1,58 +1,155 @@
 version: 1
 change:
-  id: documentation-sync-dot-prefix-20261020
-  summary: Documentation Sync removes only a single leading "./" from changed paths instead of lstrip("./"), so every
-    .github/** trigger in config/documentation-sync.yaml is enforced; pure dependency updates stay exempt through
-    evaluate_candidate.
+  id: project-intelligence-stale-advisory-20261020
+  summary: READY Project Intelligence STALE freshness is advisory for confined local
+    L2 source writes; every independent stop remains enforced.
   boundary:
-    - Documentation Sync path normalization
-    - Repository preflight documentation consistency
-    - Repository delivery and documentation closure
+  - Turn Context stale readiness fail policy
+  - OpenCode direct native write authorization
+  - Project Intelligence and Harness policy documentation
+  - Repository delivery and remote required check
 matrix:
-  - boundary: Documentation Sync path normalization
-    reason: evaluate_changes normalized with lstrip("./"), stripping the leading dot of .github/** and disabling the
-      Technology Guide and rule-specific workflow triggers.
-    checks:
-      static_lint: {applicable: true, evidence: "PASS: ruff reports only the 4 pre-existing findings (EXE001, I001, PLW1510 x2) on unchanged lines; git diff --check clean."}
-      unit: {applicable: true, evidence: "PASS: contracts assert .github/workflows/evolution-radar.yml requires the Technology Guide and evolution-radar docs, ./-prefixed complete update passes, and .github/workflows/docs-site.yml triggers documentation-platform."}
-      integration: {applicable: true, evidence: "PASS: documentation_sync.py --files .github/workflows/docs-site.yml returns valid false with Technology Guide and documentation-platform errors; the base (172128e8..3832eab9) evaluator returns valid true for the same input."}
-      contract: {applicable: true, evidence: "PASS: validation.documentation_sync_contracts reports no documentation sync errors."}
-      e2e: {applicable: false, na_reason: No browser UI or deployed service is changed.}
-      security: {applicable: true, evidence: "PASS: fail-closed direction only; the pure dependency exemption and its equality guard are unchanged."}
-      migration_recovery: {applicable: false, na_reason: "No persistent state; rollback is reverting one line."}
-      cli_harness: {applicable: true, evidence: "PASS: documentation_sync.py CLI --files and --base-ref modes."}
-      docs_schema: {applicable: true, evidence: "PASS: DOCUMENTATION_SYNC (Human and Agent), TECHNOLOGY_GUIDE, DOCUMENTATION_MAP and Scenario 221 describe the normalization."}
-  - boundary: Repository preflight documentation consistency
-    reason: repository_preflight inherits the stricter evaluator; Dependabot workflow PRs must remain exempt.
-    checks:
-      static_lint: {applicable: false, na_reason: repository_preflight.py is unchanged.}
-      unit: {applicable: false, na_reason: Covered by the normalization contracts.}
-      integration: {applicable: true, evidence: "PASS: repository_preflight.py --base origin/main (3832eab9) on real heads #340 af8ad73a, #339 c3366418, #337 6fd260b7, #259 4784e68c: REPOSITORY PREFLIGHT PASSED; documentation_sync.py --base-ref on those plus #263 #262 #261 #260 #168 reports PURE_DEPENDENCY_UPDATE with 0 errors."}
-      contract: {applicable: true, evidence: "PASS: --base/--head contract unchanged."}
-      e2e: {applicable: false, na_reason: No browser UI or deployed service is changed.}
-      security: {applicable: true, evidence: "PASS: Human workflow-only edits now require the mapped documents instead of passing silently."}
-      migration_recovery: {applicable: false, na_reason: Revert-only.}
-      cli_harness: {applicable: true, evidence: "PASS: repository_preflight.py CLI on four real PR heads."}
-      docs_schema: {applicable: false, na_reason: Covered by the normalization boundary.}
-  - boundary: Repository delivery and documentation closure
-    reason: The change touches the Documentation Sync gate and must pass the full local Gate.
-    checks:
-      static_lint: {applicable: true, evidence: "PASS: full local Integration Gate static stage."}
-      unit: {applicable: true, evidence: "PASS: focused suites inside the full Gate run."}
-      integration: {applicable: true, evidence: "PASS: publish_preflight.py run on the exact committed candidate."}
-      contract: {applicable: true, evidence: "PASS: candidate documentation sync clean for its own changed files (0 errors with the fixed evaluator)."}
-      e2e: {applicable: false, na_reason: No browser UI or deployed service is changed.}
-      security: {applicable: true, evidence: "PASS: candidate secret scan and content safety inside the Gate."}
-      migration_recovery: {applicable: false, na_reason: Rollback is a PR revert.}
-      cli_harness: {applicable: true, evidence: "PASS: publish_preflight.py run CLI."}
-      docs_schema: {applicable: true, evidence: "PASS: Documentation Placement audit clean."}
+- boundary: Turn Context stale readiness fail policy
+  reason: Context must retain freshness and refresh facts while avoiding a stale-only
+    closed policy for READY Intelligence.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'PASS: git diff --check; focused lifecycle executes the changed Python
+        module.'
+    unit:
+      applicable: true
+      evidence: 'PASS: tests/evidence/intelligence_context_lifecycle.py verifies READY+STALE
+        manifest and retained refresh guidance.'
+    integration:
+      applicable: true
+      evidence: 'PASS: tests/evidence/intelligence_context_lifecycle.py through bundled
+        AIPS Python 3.12.'
+    contract:
+      applicable: true
+      evidence: 'PASS: tests/validation/opencode_integration_contracts.py via `python
+        -m tests.validation.opencode_integration_contracts`.'
+    e2e:
+      applicable: false
+      na_reason: No UI or deployed service changes.
+    security:
+      applicable: true
+      evidence: 'PASS: lifecycle keeps non-READY, UNKNOWN and unresolved instruction
+        conflicts fail-closed.'
+    migration_recovery:
+      applicable: false
+      na_reason: No persistent schema or state change; PR revert restores policy.
+    cli_harness:
+      applicable: true
+      evidence: 'PASS: Context lifecycle invokes the project_intelligence CLI for
+        a READY+STALE mutation.'
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: Context manifest retains freshness and targeted_refresh fields.'
+- boundary: OpenCode direct native write authorization
+  reason: A native permission guard relaxation must pair each newly allowed case with
+    still-denied counterparts.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'PASS: git diff --check; Python lifecycle execution validates syntax.'
+    unit:
+      applicable: true
+      evidence: 'PASS: OpenCode native guard lifecycle allows READY+STALE and denies
+        independent blockers.'
+    integration:
+      applicable: true
+      evidence: 'PASS: tests/evidence/opencode_integration_lifecycle.py.'
+    contract:
+      applicable: true
+      evidence: 'PASS: tests/validation/opencode_integration_contracts.py invokes
+        lifecycle.'
+    e2e:
+      applicable: false
+      na_reason: Host UI is unchanged; fixtures do not claim runtime acceptance.
+    security:
+      applicable: true
+      evidence: 'PASS: tests retain stale+conflict, non-READY, UNKNOWN, escaped path
+        and external action denials.'
+    migration_recovery:
+      applicable: false
+      na_reason: No persistent data; PR revert restores guard behavior.
+    cli_harness:
+      applicable: true
+      evidence: 'PASS: existing OpenCode lifecycle exercises native plugin install/doctor/uninstall
+        and direct guard decisions.'
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: lifecycle contract asserts advisory decision reason.'
+- boundary: Documentation and scenario contract
+  reason: Human and agent policy must consistently explain the stale advisory and
+    retained stops.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'PASS: git diff --check.'
+    unit:
+      applicable: false
+      na_reason: Verified by documentation and scenario contract validation.
+    integration:
+      applicable: true
+      evidence: 'PASS: Project Intelligence and OpenCode lifecycle evidence.'
+    contract:
+      applicable: true
+      evidence: 'PASS: Scenario 267 registered as lifecycle coverage.'
+    e2e:
+      applicable: false
+      na_reason: No UI changes.
+    security:
+      applicable: true
+      evidence: 'PASS: documentation retains all approved stop conditions.'
+    migration_recovery:
+      applicable: false
+      na_reason: Documentation-only rollback is a PR revert.
+    cli_harness:
+      applicable: false
+      na_reason: No CLI interface change.
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: Human and orchestration policy text synchronized; scenario
+        coverage maps evidence.'
+- boundary: Repository delivery and remote required check
+  reason: This is a Large/Core candidate and must pass the exact-candidate full Gate
+    before publication.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: PENDING exact-candidate Core Integration Gate.
+    unit:
+      applicable: true
+      evidence: PENDING exact-candidate Core Integration Gate.
+    integration:
+      applicable: true
+      evidence: PENDING exact-candidate Core Integration Gate.
+    contract:
+      applicable: true
+      evidence: PENDING exact-candidate Core Integration Gate.
+    e2e:
+      applicable: false
+      na_reason: No deployed service or UI changes.
+    security:
+      applicable: true
+      evidence: PENDING exact-candidate secret scan.
+    migration_recovery:
+      applicable: false
+      na_reason: No persistence or migration.
+    cli_harness:
+      applicable: true
+      evidence: PENDING exact-candidate Core Integration Gate.
+    docs_schema:
+      applicable: true
+      evidence: PENDING documentation closure and repository validation.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 candidate:
-  base_sha: 02201e27321a1a82e7bc0f8864c927ddbfdc840f
-  changed_files_hash: 8e05d7b9ff310cf909f29c0991fb7a2fb01cea98549d0dd024dd64fbc9a77f79
-blockers:
-  []
+  base_sha: 79f84751264b582d64ff55f3bf3b8108823b05d2
+  changed_files_hash: 31213188a7eafe93c774f9ddda588531a72b37d2f13ed26f998e83417393e1d7
 review_evidence:
   required: false
+blockers: []
 status: READY

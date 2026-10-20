@@ -9,6 +9,8 @@ Retrieval relation candidates are built by a small standard-library module behin
 
 ## Runtime & Integration
 
+OpenCode checks direct native-write targets against Project Intelligence readiness, freshness, instruction authority and project-root confinement; READY+STALE freshness is advisory for local L2 source writes only.
+
 Scenario 266 findings remain untrusted content and do not grant Runtime Context or action authority.
 
 
@@ -51,6 +53,8 @@ Canonical AIPS Skills 可從 MCP Resource 按需載入，也可由 `aips skills 
 
 ## Project Understanding
 
+Turn Context retains Project Intelligence freshness and refresh guidance. A READY but STALE result is advisory for confined local L2 source writes; UNKNOWN or non-READY state remains fail-closed.
+
 Publication diagnostics remain tied to the exact Change Impact candidate, while transient recovery repeats read-only evidence collection only.
 
 `aips project diagnose` 的 `recovery_plan` 列出原因、步驟相依、操作種類與所需授權，保持唯讀。`aips intelligence impact-candidates --max-depth 3` 提供最多三層候選關係；同目錄 import 可解析，但動態呼叫及全域 coverage 限制仍需人工覆核。
@@ -89,6 +93,8 @@ Local hybrid retrieval 組合 lexical、symbols、structural relation、tests、
 Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEMENTATION_APPROVED` 進入核准範圍；實作後對帳 actual diff 與 declared impact，只有完整記錄 reconciliation evidence 才能標記 `READY`。
 
 ## Execution
+
+Creative writes in Git workspaces retain their existing Project Intelligence guard; Scenario 267's stale advisory covers ordinary local L2 source writes only.
 
 Content-safety PASS is candidate evidence only and does not authorize PR merge or change publication mode.
 
@@ -317,6 +323,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 Content-safety detector changes are versioned (for example `pii.email.v2`) and bound to Scenario 266 with a fixed corpus; they never add a PII exception path.
 
 ## Quality & Verification
+
+Scenario 267 lifecycle evidence checks the READY+STALE allow case and the retained independent denials.
 
 Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
 
@@ -591,6 +599,8 @@ The monthly reliability workflow measures validation outcomes and runtime distri
 Plan21 Phase 0 records one exact-main full-validation timing observation and pins existing digest, CLI and glob contracts. Treat the timing as a baseline sample only; future optimization claims require comparable candidate and environment evidence.
 
 ## Documentation Platform
+
+Current OpenCode stale-freshness behavior is synchronized across the Human Harness, Project Intelligence guidance, adapter contracts and Scenario 267.
 
 文件網站固定使用 VitePress 1.6.4；`package.json` 只覆寫 `vitepress` 引入的 Vite 為 6.4.4，由 Vite 自身宣告的 `esbuild ^0.25.0` 提供修補版本，不另行強制覆寫 esbuild。這個 Vite 版本超出 VitePress 1.6.4 原本宣告的 Vite 5 範圍，因此更新時必須重新驗證相容性；上游穩定版原生支援已修補工具鏈後，再評估移除覆寫。
 
