@@ -1932,6 +1932,8 @@ The diagnostics lifecycle covers missing, stale, partial and blocked Intelligenc
 
 Plan36 publication diagnostics preserve this topic's existing behavior and authority boundaries.
 
+The synthetic scanner fixture in `tests/test_publication_authority.py` places each hex digit exactly twice in a per-run shuffle, so its Shannon entropy is always 4.0 and clears the `generic-secret-assignment` floor of 3.25; the earlier raw uuid4 hex fell below that floor in about 0.7% of runs and made the guard test flaky. Scanner rules and thresholds are unchanged.
+
 ## Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow
 
 The mandatory candidate secret scan remains independent of optional toolchain provisioning.

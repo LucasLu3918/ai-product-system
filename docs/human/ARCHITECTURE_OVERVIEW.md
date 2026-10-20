@@ -589,6 +589,8 @@ Evolution data completeness、validator shadow/replay、branch cleanup proposal�
 
 Publication diagnostics extend the existing read-only Git publication flow with phase, evidence provenance, and safe recovery details. They add no execution or authorization path.
 
+The synthetic scanner fixture in `tests/test_publication_authority.py` places each hex digit exactly twice in a per-run shuffle, so its Shannon entropy is always 4.0 and clears the `generic-secret-assignment` floor of 3.25; the earlier raw uuid4 hex fell below that floor in about 0.7% of runs and made the guard test flaky. Scanner rules and thresholds are unchanged.
+
 ## Documentation Architecture
 
 The Runtime Content Safety and Scenario 265 documentation crosswalk tracks the AVIF limits and unsupported-feature recovery path.
