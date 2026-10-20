@@ -451,6 +451,8 @@ High-risk external runtime actions also require an exact, unexpired Approval Rec
 
 ## Public repository / CI consistency
 
+Content-safety `pii.email.v2` only exempts the exact ASCII `git` service account in scp-style `git@<host>:path` and `ssh://` Git remotes; every other email is still blocked. `scripts/publication_transfer.py` and its lifecycle test use the literal `git@github.com:` remote string instead of splicing it together to avoid the scanner.
+
 Scenario 263 covers font parser bounds, staged blob size-before-read, scanner parity across commit/publication/history, and redacted diagnostics; exact-candidate validation remains required before publication.
 
 The lucas-lab target requires PRs and the `verify` and `visual-audit` checks; force pushes and branch deletion are disabled with zero required approvals.

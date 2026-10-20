@@ -537,6 +537,8 @@ The publication doctor normalizes branch existence, effective GitHub rules, clas
 
 ## Product Delivery
 
+Publication transfer parses GitHub remotes from the literal `git@github.com:<owner>/<repo>.git` form and from `https`/`ssh` URLs. The scanner's `git`-only SSH exemption does not relax any other email finding, so transfer code should not hide remote strings behind string assembly.
+
 Scenario 266 covers versioned injection classification, added-line checks, full-blob secret/PII scanning, and safe recovery diagnostics.
 
 
