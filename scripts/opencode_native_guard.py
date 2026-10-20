@@ -93,15 +93,23 @@ def evaluate_write(*, tool: str, resources: list[str], root: str, manifest: dict
     reasons = []
     if intelligence.get("readiness") != "READY":
         reasons.append("Project Intelligence readiness is not READY")
-    if freshness.get("status") != "CURRENT":
+    ready_stale_advisory = intelligence.get("readiness") == "READY" and freshness.get("status") == "STALE"
+    if freshness.get("status") not in ({"CURRENT", "STALE"} if ready_stale_advisory else {"CURRENT"}):
         reasons.append("Project Intelligence freshness is not CURRENT")
     if fail_policy.get("mode") == "closed":
-        reasons.extend(str(item) for item in fail_policy.get("reasons", []) if item)
+        fail_reasons = [str(item) for item in fail_policy.get("reasons", []) if item]
+        if ready_stale_advisory and fail_reasons and set(fail_reasons) == {"intelligence_stale"}:
+            # Older cached manifests may still classify staleness as a hard
+            # failure. Ignore only this legacy-only reason.
+            fail_reasons = []
+        if fail_reasons or not fail_policy.get("reasons"):
+            reasons.extend(fail_reasons or ["Project mutation context fail policy is closed"])
     if instructions.get("requires_resolution") is True:
         reasons.append("project instruction authority conflict requires resolution")
     if reasons:
         return {"decision": "DENY", "level": "L2", "reason": "; ".join(dict.fromkeys(reasons))}
-    return {"decision": "ALLOW", "level": "L2", "reason": "current Project Intelligence and confined native target"}
+    reason = "READY Project Intelligence is stale but advisory; confined native target" if ready_stale_advisory else "current Project Intelligence and confined native target"
+    return {"decision": "ALLOW", "level": "L2", "reason": reason}
 
 
 def _option_path(value: str) -> bool:

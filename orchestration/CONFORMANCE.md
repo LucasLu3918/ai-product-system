@@ -90,6 +90,7 @@ The fixture lifecycle covers safe local profile/reference paths, SVG and PNG val
 
 ## Scenario 235 — OpenCode Native Context and Action Guard
 
+
 Each creative response derives its grant from the current native prompt hook and bounded Session continuation state; transcript recovery, stale prompts and advisory Context cannot restore authority.
 
 
@@ -1097,6 +1098,8 @@ The branch lifecycle report classifies remote branches using current exact-SHA P
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+Scenario 267 changes no Skill catalog or installation behavior; it adds a separate lifecycle contract for Project Intelligence freshness and native write decisions.
+
 Content-safety controls remain separate from skill discovery, installation, and author trust decisions.
 
 
@@ -1164,6 +1167,8 @@ The canonical Skill registry and pinned upstream manifest classify the complete 
 
 
 ## Scenario 264 — Hash-bound Creative Git Asset Import
+
+Scenario 267 separately verifies that the creative Git write denial stays in force when ordinary local L2 source writes can use stale READY context.
 
 tests/evidence/opencode_integration_lifecycle.py verifies the AIPS creative import candidate and CLI flow, source/candidate hash checks, no overwrite or path escape, explicit Git-root opt-in, and unchanged Git index bytes. It uses synthetic local assets and does not stage or commit.
 

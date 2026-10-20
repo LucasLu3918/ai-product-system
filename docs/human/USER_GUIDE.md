@@ -71,6 +71,8 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+Creative outputs in Git workspaces retain their existing guard, even while ordinary confined local L2 source writes may proceed with READY but STALE Project Intelligence.
+
 Creative assets using static AVIF pass the bounded EXIF/XMP safety scan described in Runtime Content Safety; this does not establish visual quality or licensing.
 
 Publication failure diagnostics describe Git execution only; they do not establish creative intent or authorize generated assets.
@@ -203,6 +205,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
+OpenCode keeps direct writes confined to the project and requires READY Project Intelligence without unresolved instruction conflicts. STALE freshness alone is advisory for this local L2 case; external actions retain the existing Human gate.
+
 The staged commit safety Hook also scans bounded AVIF metadata; its denial is a content-safety result and does not grant or change native tool authority.
 
 Claude 的 Bash 失敗觀察位於 managed Harness hook，僅提供執行結果診斷，不改變 Host 權限或發布授權。
@@ -275,6 +279,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 詳細請看 [Global Harness 與 MCP](HARNESS.md)。
 
 ## Roles、Skills 與重用
+
+Scenario 267 changes no Skill discovery or installation behavior; its lifecycle exercises Project Intelligence freshness and the OpenCode direct-write guard.
 
 Content-safety controls remain separate from skill discovery, installation, and author trust decisions.
 
@@ -633,6 +639,7 @@ Standalone and shadow dependency-review artifacts retain exact base/head, run ID
 舊聊天內容不是 authoritative run state；若 workspace fingerprint 已變，先 refresh / revalidate 再接續。
 
 ## Project Intelligence
+
 
 診斷的 Recovery Plan 按既有狀態提供檢查、補主題、finalize 或 refresh 順序。每步都標示操作種類與所需授權；計畫供檢視，不會自動執行或改變 Project Mode。
 

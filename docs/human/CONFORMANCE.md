@@ -1778,6 +1778,8 @@ The lifecycle uses synthetic SVG/PNG fixtures to verify confined paths, active-c
 
 ## Scenario 235 — OpenCode Native Context and Action Guard
 
+Scenario 267 adds a READY+STALE local-write case and retains denial evidence for UNKNOWN freshness, non-READY Intelligence, authority conflicts, path escapes, creative Git writes and external actions.
+
 Media-content denials remain in the commit safety scanner and do not expand the OpenCode action guard's enforcement claim.
 
 原生驗收僅對指定 OpenCode 版本、平台與來源摘要成立；任意 Shell、MCP／自訂工具及 guard 外寫入標為 UNSUPPORTED，不代表生產模型品質或整體強制治理。
@@ -1827,6 +1829,8 @@ The existing OpenCode integration lifecycle also verifies hash-bound asset impor
 The cross-profile quality evidence extension is covered by Scenario 258; this creative execution scenario continues to distinguish generated artifacts, image checks, Human review and user acceptance.
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
+
+Scenario 267 changes no Skill discovery or installation behavior; its lifecycle exercises Project Intelligence freshness and the OpenCode direct-write guard.
 
 Content-safety controls remain separate from skill discovery, installation, and author trust decisions.
 
@@ -1887,6 +1891,8 @@ Release history 更新（純依賴升級文件豁免，Scenario 221）已審查�
 
 
 ## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance
+
+Scenario 267's direct-write lifecycle complements diagnostics: stale READY freshness remains visible while independent native guard denials remain covered.
 
 Scenario 263 applies the same read-only principle to commit content: Hook and CLI use one scanner, redact findings, and do not mutate Git.
 
@@ -2006,6 +2012,8 @@ The native publication failure observer reports only an allowlisted category and
 The native commit Hook and read-only `aips safety diagnose commit` use the same staged-content scanner. Strict ignore-marker handling, bounded PNG/JPEG/WebP/AVIF/M4A/MP3/TTF/OTF/WOFF/WOFF2 metadata scans, pre-read Git blob limits, fail-closed unknown binary and scanner errors, redacted structured recovery, and unchanged HEAD/index are verified by `tests/test_safety_diagnostics.py` and `tests/test_font_metadata.py`. This diagnostic surface does not grant commit or publication authority. Scenario 265 covers static AVIF EXIF/XMP extents, metadata redaction and candidate/history/Creative consumers; it does not claim AV1 decode or visual-quality assurance.
 
 ## Scenario 264 — Hash-bound Creative Git Asset Import
+
+Scenario 267 keeps this creative Git workspace denial unchanged; the advisory applies only to ordinary local L2 source writes.
 
 The lifecycle verifies default Git destination rejection, explicit exact-root opt-in, hash revalidation, create-only writes, and unchanged Git index bytes. The source remains a non-Git EPHEMERAL workspace; import does not stage or commit.
 

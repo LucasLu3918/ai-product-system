@@ -12,6 +12,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+Scenario 267's changes are synchronized through the required Harness, Project Intelligence and OpenCode adapter documentation before publication.
+
 Creative raster and content-safety changes include the AVIF limits and Scenario 265 placement in the exact-candidate documentation review.
 
 Character artwork keeps its existing source-to-candidate, hash-verification and create-only lifecycle; publication diagnosis adds no asset import or generation behavior.
@@ -547,6 +549,8 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
 ## Validation architecture consistency
+
+Scenario 267 verifies READY+STALE local L2 writes together with the independent guard denials; the Core Change Matrix binds that evidence to the exact candidate.
 
 Content-safety controls remain separate from skill discovery, installation, and author trust decisions.
 

@@ -55,6 +55,8 @@ Material visual artifacts use `visual-quality-review`. Review against the approv
 
 ## Local character artwork
 
+The READY+STALE advisory in Scenario 267 applies only to ordinary confined local L2 source writes; creative writes in Git workspaces retain the existing Project Intelligence guard.
+
 Static AVIF output and references pass the shared bounded container and metadata safety check; this does not validate licensing, provenance or visual quality.
 
 Git publication diagnostics do not establish creative intent or authorize creative file changes; the existing creative action and acceptance boundaries remain separate.

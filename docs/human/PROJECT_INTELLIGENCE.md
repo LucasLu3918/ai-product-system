@@ -19,6 +19,7 @@ Project Intelligence 是 AIPS 對既有專案建立的可重用理解層。
 - `intelligence_missing`：需要時手動執行 `aips intelligence bootstrap --project <path>`；補足必要語意主題並完成審查後，再執行 `aips intelligence finalize --project <path>`。
 - `intelligence_partial`：依 status 補足必要語意主題與證據，再 finalize。
 - `intelligence_stale`：先檢視 `aips intelligence refresh-plan --project <path>`；確認影響範圍後才執行 refresh。
+- readiness 為 `READY` 且 freshness 為 `STALE`：Context 會保留 stale 狀態與 targeted refresh 指引，但不單獨阻擋受限的本地 L2 原始碼寫入；`UNKNOWN`、非 READY 與其他既有停止條件仍有效。
 - `intelligence_blocked`：先處理阻擋原因，不略過 gate。
 
 重新執行 `aips intelligence status --project <path>` 或 `aips project diagnose <path>` 驗證結果。Runtime 設定與 MCP 靜態能力不證明 Host 中 Hook／工具確實執行；未取得原生實機證據時維持 `UNVERIFIED`。

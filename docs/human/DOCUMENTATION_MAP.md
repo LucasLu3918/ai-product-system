@@ -22,6 +22,9 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 ## 文件角色
 
+Scenario 267 changes no Skill discovery, installation or upstream trust behavior; it is a separate runtime guard contract.
+
+
 Matt Pocock upstream Skill 的清單與安裝處置由 pinned manifest 和 canonical registry 管理；Plan44 不增加上游 Skill 項目或改變預設路由。
 
 Claude Code publication 的操作步驟位於 User Guide，安裝相容資訊位於 Installation，Agent 契約則位於 Harness adapter 文件。
@@ -128,6 +131,8 @@ Release history 更新（純依賴升級文件豁免，Scenario 221）已審查�
 Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
 ## Agent / machine canonical 文件
+
+Scenario 267 and the active `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml` record the READY+STALE native-write policy and its retained denial cases.
 
 Creative raster validation uses the shared AVIF metadata scanner in `scripts/creative_image_validation.py`; its format handling is not a Skill or new capability route.
 

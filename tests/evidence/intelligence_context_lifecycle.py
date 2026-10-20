@@ -204,6 +204,81 @@ def material_instruction_conflict_surface(base: Path, env: dict[str, str]) -> No
     intel = load_yaml(store / "PROJECT_INTELLIGENCE.yaml")
     require((intel.get("topics") or {}) == {}, "authoritative instructions must not be copied into derived Intelligence")
 
+
+def ready_stale_mutation_advisory(base: Path, env: dict[str, str]) -> None:
+    project = base / "ready-stale-project"
+    init_repo(project)
+    (project / "main.py").write_text("print('baseline')\n", encoding="utf-8")
+    git(project, "add", "-A")
+    git(project, "commit", "-qm", "baseline")
+    boot = json_run([sys.executable, str(PI), "bootstrap", "--project", str(project), "--format", "json"], env)
+    store = Path(boot["store"])
+    intelligence_path = store / "PROJECT_INTELLIGENCE.yaml"
+    intelligence = load_yaml(intelligence_path)
+    intelligence["architecture"] = {
+        "summary": "A small Python application validated through repository lifecycle evidence.",
+        "confidence": "high",
+        "source": "topics/architecture.md",
+    }
+    intelligence["unknowns"] = []
+    topics = intelligence.setdefault("topics", {})
+    topic_evidence = {
+        "architecture": "Application code is in the tracked source root; no service topology is declared.",
+        "data-flow": "The fixture reads source from the repository; no persistence or event pipeline is configured.",
+        "modules": "The source fixture is a single module and has no declared module dependencies.",
+        "conventions": "Project instructions are preserved as pointers; no extra style rule is inferred.",
+        "testing": "The repository's AIPS lifecycle and validation scripts are the applicable verification path.",
+        "security": "Native writes are confined to the project and unresolved authority conflicts remain blocking.",
+    }
+    for name, evidence in topic_evidence.items():
+        topic_file = store / "topics" / f"{name}.md"
+        topic_file.parent.mkdir(parents=True, exist_ok=True)
+        topic_file.write_text(f"# {name}\n\n{evidence}\n", encoding="utf-8")
+        topics[name] = {"path": f"topics/{name}.md", "type": "INTERPRETATION", "confidence": "high", "evidence": ["main.py"], "watch": ["main.py"]}
+    intelligence_path.write_text(yaml.safe_dump(intelligence, sort_keys=False), encoding="utf-8")
+    finalized = json_run([sys.executable, str(PI), "finalize", "--project", str(project), "--format", "json"], env)
+    require(finalized.get("readiness") == "READY", "semantic fixture must reach READY before stale-policy assertion")
+
+    (project / "main.py").write_text("print('changed after review')\n", encoding="utf-8")
+    context = json_run([
+        sys.executable, str(PI), "context", "--project", str(project), "--runtime", "codex",
+        "--prompt", "Modify the local source file.", "--format", "json",
+    ], env)
+    require((context.get("intelligence") or {}).get("readiness") == "READY", "stale fixture must remain semantically READY")
+    require((context.get("freshness") or {}).get("status") == "STALE", "changed source must remain visibly stale")
+    require((context.get("requirements") or {}).get("targeted_refresh"), "stale Context must retain targeted refresh guidance")
+    fail_policy = context.get("fail_policy") or {}
+    require(fail_policy.get("mode") == "soft", "READY+STALE alone must not close a local mutation context")
+    require("intelligence_stale" not in (fail_policy.get("reasons") or []), "READY+STALE must not be a standalone fail-closed reason")
+
+    import opencode_native_guard
+    target = project / "main.py"
+    decision = opencode_native_guard.evaluate_write(tool="edit", resources=[str(target)], root=str(project), manifest=context)
+    require(decision.get("decision") == "ALLOW" and "stale but advisory" in decision.get("reason", ""),
+            "confined native L2 write must allow READY+STALE with an explicit advisory reason")
+    legacy = {**context, "fail_policy": {"mode": "closed", "reasons": ["intelligence_stale"]}}
+    require(opencode_native_guard.evaluate_write(tool="edit", resources=[str(target)], root=str(project), manifest=legacy).get("decision") == "ALLOW",
+            "legacy stale-only cached policy must remain compatible")
+    conflict = {**context, "fail_policy": {"mode": "closed", "reasons": ["intelligence_stale", "unresolved_authority_conflict"]}}
+    require(opencode_native_guard.evaluate_write(tool="edit", resources=[str(target)], root=str(project), manifest=conflict).get("decision") == "DENY",
+            "stale must not hide another closed policy reason")
+    conflict = {**context, "instruction_resolution": {"requires_resolution": True}}
+    require(opencode_native_guard.evaluate_write(tool="edit", resources=[str(target)], root=str(project), manifest=conflict).get("decision") == "DENY",
+            "instruction authority conflict must remain denied")
+    partial = {**context, "intelligence": {"readiness": "PARTIAL"}}
+    require(opencode_native_guard.evaluate_write(tool="edit", resources=[str(target)], root=str(project), manifest=partial).get("decision") == "DENY",
+            "non-READY Intelligence must remain denied")
+    unknown = {**context, "freshness": {"status": "UNKNOWN"}}
+    require(opencode_native_guard.evaluate_write(tool="edit", resources=[str(target)], root=str(project), manifest=unknown).get("decision") == "DENY",
+            "UNKNOWN freshness must remain denied")
+    require(opencode_native_guard.evaluate_write(tool="edit", resources=[str(base / "outside.py")], root=str(project), manifest=context).get("decision") == "DENY",
+            "path escape must remain denied")
+    require(opencode_native_guard.evaluate_write(tool="external_action", resources=[str(target)], root=str(project), manifest=context).get("decision") == "DENY",
+            "external actions must remain Human-gated")
+    creative = {**context, "task": {"classification": {"domain": "creative", "intent": "create", "effect": "filesystem_write"}}}
+    require(opencode_native_guard.evaluate_write(tool="write", resources=[str(project / "art.svg")], root=str(project), manifest=creative).get("decision") == "DENY",
+            "creative Git workspace writes must remain denied")
+
 def normal_chat_no_bootstrap(base: Path, env: dict[str, str]) -> None:
     project = base / "chat-project"
     init_repo(project)
@@ -361,6 +436,7 @@ def main() -> int:
 
         source_registry_runtime_dedup(base, env)
         material_instruction_conflict_surface(base, env)
+        ready_stale_mutation_advisory(base, env)
         # Use a separate config root so the dedup fixture's Intelligence cannot affect the normal-chat assertion.
         chat_env = dict(env)
         chat_env["XDG_CONFIG_HOME"] = str(base / "chat-config")

@@ -17,7 +17,7 @@ if "spawnSync" in plugin or "const result = await invokeAsync" not in plugin or 
 for marker in ('duration_ms:', 'host_capability', 'permission_enforcement:', 'host_version_acceptance:'):
     if marker not in plugin:
         errors.append(f"OpenCode bounded latency/host evidence is missing: {marker}")
-for marker in ('evaluate_write', 'evaluate_shell', 'Project Intelligence readiness is not READY', 'target escapes project root'):
+for marker in ('evaluate_write', 'evaluate_shell', 'Project Intelligence readiness is not READY', 'READY Project Intelligence is stale but advisory', 'target escapes project root'):
     if marker not in guard:
         errors.append(f"OpenCode native guard is missing decision boundary: {marker}")
 if 'hook_execution": "UNVERIFIED"' not in projection or 'pre_tool_guard: AVAILABLE_UNVERIFIED' not in registry or 'remains **ADVISORY**' not in compatibility or 'MCP/custom tools' not in compatibility:

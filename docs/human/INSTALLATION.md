@@ -104,6 +104,8 @@ Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需�
 - Stable release readiness additionally requires exactly one empty `## Unreleased` section; installers continue to require a verified stable tag.
 ## Runtime integration
 
+OpenCode direct local L2 writes may proceed with READY Project Intelligence whose freshness is STALE, while the stale state remains visible. UNKNOWN freshness, insufficient readiness, unresolved instruction authority and escaping targets keep their existing stop behavior.
+
 Commit-time AVIF metadata scanning uses built-in bounded parsing and adds no package installation or native runtime adapter requirement.
 
 安裝 Claude Code adapter 時由管理器偵測版本；v2.1.295+ 的 publication PreToolUse guard fail closed，舊版/未知版保留相容設定並提示限制。

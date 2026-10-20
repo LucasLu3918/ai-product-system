@@ -63,6 +63,8 @@ Load `SYSTEM_CORE.md` with minimal Harness rules and critical native/project ins
 
 ## Mutation safety
 
+For confined local L2 source writes, READY Project Intelligence with STALE freshness is advisory and remains visible with targeted refresh guidance. UNKNOWN freshness, non-READY Intelligence, unavailable canonical protocols, authority conflicts, escaping paths, creative writes and external/high-risk effects keep their existing stops.
+
 Staged AVIF metadata denials are produced by the content-safety scanner and do not broaden native runtime action interception.
 
 Creative workspace asset import is an explicit local CLI action bound to a reviewed source hash and an absent destination path.

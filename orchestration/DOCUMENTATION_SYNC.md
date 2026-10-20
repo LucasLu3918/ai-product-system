@@ -225,6 +225,8 @@ Documentation sync path normalization (Scenario 221): `documentation_sync.evalua
 
 ## Human documentation placement
 
+Scenario 267 is the lifecycle contract for READY+STALE local L2 advisory behavior; keep Harness, Project Intelligence and OpenCode adapter documentation aligned with that boundary.
+
 Publication scanner changes preserve the existing authority topology while updating all Documentation Impact-required placements. Stable scanner failure codes, pre-scan literal validation, redaction and Scenario 261 evidence must stay aligned across Human guides, Harness, architecture and Runtime Content Safety.
 
 Scenario 265 maps AVIF limits and recovery across User Guide, Technology Guide, Security Assurance and the Runtime Content Safety boundary.
