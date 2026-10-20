@@ -539,6 +539,8 @@ The publication doctor normalizes branch existence, effective GitHub rules, clas
 
 Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
+文件同步路徑正規化（Scenario 221）：`documentation_sync.evaluate_changes` 只移除開頭一個 `./`（`removeprefix`），不再用 `lstrip("./")` 逐字元剝除；先前 `.github/workflows/x.yml` 會被改成 `github/workflows/x.yml`，使 `config/documentation-sync.yaml` 中所有 `.github/**` 觸發條件（Technology Guide、evolution-radar、publication-preflight、documentation-platform、execution-isolation 等）失效。修正後，人工修改 workflow 需同步對應文件；純依賴升級仍由 `evaluate_candidate` 先行豁免。
+
 ## Product Delivery
 
 Publication transfer parses GitHub remotes from the literal `git@github.com:<owner>/<repo>.git` form and from `https`/`ssh` URLs. The scanner's `git`-only SSH exemption does not relax any other email finding, so transfer code should not hide remote strings behind string assembly.

@@ -1,72 +1,46 @@
 version: 1
 change:
-  id: dependabot-preflight-pin-sync-20261020
-  summary: Route every diff-based Documentation Sync consumer, including repository preflight, through one
-    evaluate_candidate entry point that shares pure_dependency_update, and validate GitHub Action pins by exact
-    identity, full commit SHA, reviewed version floor and paired-workflow consistency instead of copied SHA literals.
+  id: documentation-sync-dot-prefix-20261020
+  summary: Documentation Sync removes only a single leading "./" from changed paths instead of lstrip("./"), so every
+    .github/** trigger in config/documentation-sync.yaml is enforced; pure dependency updates stay exempt through
+    evaluate_candidate.
   boundary:
-    - Documentation Sync shared entry point
+    - Documentation Sync path normalization
     - Repository preflight documentation consistency
-    - Action pin validation helper
-    - Pin contract sites and evolution adapter config
     - Repository delivery and documentation closure
 matrix:
-  - boundary: Documentation Sync shared entry point
-    reason: documentation_sync.evaluate_candidate is the only diff-based sync evaluator; it may exempt only verified
-      pure dependency updates with the same equality guard as Documentation Impact and Placement.
+  - boundary: Documentation Sync path normalization
+    reason: evaluate_changes normalized with lstrip("./"), stripping the leading dot of .github/** and disabling the
+      Technology Guide and rule-specific workflow triggers.
     checks:
-      static_lint: {applicable: true, evidence: "PASS: ruff reports no new findings versus base for changed files; git diff --check clean."}
-      unit: {applicable: true, evidence: "PASS: dependency_impact_lifecycle sync_for fixtures: pip bump exempt; bump plus doc edit, range edit and disabled policy keep full rules; zero base returns no files."}
-      integration: {applicable: true, evidence: "PASS: documentation_sync.py --base-ref on real heads #262 #263 #260 #168 #340 #259 reports valid with PURE_DEPENDENCY_UPDATE."}
-      contract: {applicable: true, evidence: "PASS: documentation_sync_contracts uses evaluate_candidate; static config contracts unchanged."}
+      static_lint: {applicable: true, evidence: "PASS: ruff reports only the 4 pre-existing findings (EXE001, I001, PLW1510 x2) on unchanged lines; git diff --check clean."}
+      unit: {applicable: true, evidence: "PASS: contracts assert .github/workflows/evolution-radar.yml requires the Technology Guide and evolution-radar docs, ./-prefixed complete update passes, and .github/workflows/docs-site.yml triggers documentation-platform."}
+      integration: {applicable: true, evidence: "PASS: documentation_sync.py --files .github/workflows/docs-site.yml returns valid false with Technology Guide and documentation-platform errors; the base (172128e8..3832eab9) evaluator returns valid true for the same input."}
+      contract: {applicable: true, evidence: "PASS: validation.documentation_sync_contracts reports no documentation sync errors."}
       e2e: {applicable: false, na_reason: No browser UI or deployed service is changed.}
-      security: {applicable: true, evidence: "PASS: predicate, allowlist and size limits unchanged; any predicate failure returns the full rules."}
-      migration_recovery: {applicable: false, na_reason: "No persistent state; documentation_exemption.enabled false restores full rules (asserted)."}
-      cli_harness: {applicable: true, evidence: "PASS: documentation_sync.py CLI reports dependency_update_exemption when exempt."}
-      docs_schema: {applicable: true, evidence: "PASS: DOCUMENTATION_SYNC and Scenario 221 describe the single entry point."}
+      security: {applicable: true, evidence: "PASS: fail-closed direction only; the pure dependency exemption and its equality guard are unchanged."}
+      migration_recovery: {applicable: false, na_reason: "No persistent state; rollback is reverting one line."}
+      cli_harness: {applicable: true, evidence: "PASS: documentation_sync.py CLI --files and --base-ref modes."}
+      docs_schema: {applicable: true, evidence: "PASS: DOCUMENTATION_SYNC (Human and Agent), TECHNOLOGY_GUIDE, DOCUMENTATION_MAP and Scenario 221 describe the normalization."}
   - boundary: Repository preflight documentation consistency
-    reason: scripts/repository_preflight.py is matrix-required and was the unwired fourth consumer blocking pip PRs.
+    reason: repository_preflight inherits the stricter evaluator; Dependabot workflow PRs must remain exempt.
     checks:
-      static_lint: {applicable: true, evidence: "PASS: narrowed exception tuple; no new ruff findings."}
-      unit: {applicable: false, na_reason: Covered by the shared entry point unit fixtures.}
-      integration: {applicable: true, evidence: "PASS: repository_preflight.py --base b6555c31 --head HEAD with the candidate overlaid: #262 75ac2e7f, #263 67ace8ce, #260 d4c21f2f, #168 2a6e8988, #340 8b632b8c, #259 36bda58f all PASSED (four FAILED before)."}
-      contract: {applicable: true, evidence: "PASS: janitor invocation and --base/--head contract unchanged."}
+      static_lint: {applicable: false, na_reason: repository_preflight.py is unchanged.}
+      unit: {applicable: false, na_reason: Covered by the normalization contracts.}
+      integration: {applicable: true, evidence: "PASS: repository_preflight.py --base origin/main (3832eab9) on real heads #340 af8ad73a, #339 c3366418, #337 6fd260b7, #259 4784e68c: REPOSITORY PREFLIGHT PASSED; documentation_sync.py --base-ref on those plus #263 #262 #261 #260 #168 reports PURE_DEPENDENCY_UPDATE with 0 errors."}
+      contract: {applicable: true, evidence: "PASS: --base/--head contract unchanged."}
       e2e: {applicable: false, na_reason: No browser UI or deployed service is changed.}
-      security: {applicable: true, evidence: "PASS: non-dependency candidates produce identical Documentation consistency errors."}
+      security: {applicable: true, evidence: "PASS: Human workflow-only edits now require the mapped documents instead of passing silently."}
       migration_recovery: {applicable: false, na_reason: Revert-only.}
-      cli_harness: {applicable: true, evidence: "PASS: repository_preflight.py CLI on six real PR heads."}
-      docs_schema: {applicable: true, evidence: "PASS: MAINTENANCE and INTEGRATION_GATE notes."}
-  - boundary: Action pin validation helper
-    reason: require_pinned_action replaces copied SHA literals and must keep identity, immutability and downgrade protection.
-    checks:
-      static_lint: {applicable: true, evidence: "PASS: reuses ACTION_LINE, PINNED_SHA and _release from the pure-update grammar."}
-      unit: {applicable: true, evidence: "PASS: accepts moved SHA, newer comment and comment-less reusable workflow; rejects tag, branch, short SHA, owner swap, prefixed owner, removed comment, below-floor comment, extra unpinned reference, wrong count and missing reference."}
-      integration: {applicable: false, na_reason: Pure text function.}
-      contract: {applicable: true, evidence: "PASS: pinned_action_references exposes refs for paired-workflow equality."}
-      e2e: {applicable: false, na_reason: No browser UI or deployed service is changed.}
-      security: {applicable: true, evidence: "PASS: identity compared exactly; every reference must be a 40-hex SHA; impostor-commit review stays Human (proposal analysis)."}
-      migration_recovery: {applicable: false, na_reason: New function.}
-      cli_harness: {applicable: false, na_reason: No CLI surface.}
-      docs_schema: {applicable: true, evidence: "PASS: SECURITY_ASSURANCE Release Security Gate and Scenario 221."}
-  - boundary: Pin contract sites and evolution adapter config
-    reason: Ten literal SHA sites and the evolution action_commit key blocked Dependabot action PRs.
-    checks:
-      static_lint: {applicable: true, evidence: "PASS: config files load; no new ruff findings."}
-      unit: {applicable: false, na_reason: Contracts are exercised directly.}
-      integration: {applicable: true, evidence: "PASS: security_workflow, evolution_governance, dependency_review, publish_preflight, repository_health, documentation_sync and static contracts report 0 errors on main and on #340 and #259 heads with the candidate overlaid (4 errors before)."}
-      contract: {applicable: true, evidence: "PASS: tampered fixtures on #340 (radar and decision SHAs differ; config action_commit restored) and #259 (tag reference, below-floor comment) fail with the expected messages."}
-      e2e: {applicable: false, na_reason: No browser UI or deployed service is changed.}
-      security: {applicable: true, evidence: "PASS: Node 24 and reviewed version floors kept; upstream tag peel for #259 and #340 recorded in the proposal."}
-      migration_recovery: {applicable: true, evidence: "PASS: action_commit to action rename has no runtime reader; revert restores it."}
-      cli_harness: {applicable: false, na_reason: No CLI surface.}
-      docs_schema: {applicable: true, evidence: "PASS: EVOLUTION_RADAR docs record that the commit lives only in the workflows."}
+      cli_harness: {applicable: true, evidence: "PASS: repository_preflight.py CLI on four real PR heads."}
+      docs_schema: {applicable: false, na_reason: Covered by the normalization boundary.}
   - boundary: Repository delivery and documentation closure
-    reason: The change touches matrix-required repository preflight and must pass the full local Gate.
+    reason: The change touches the Documentation Sync gate and must pass the full local Gate.
     checks:
       static_lint: {applicable: true, evidence: "PASS: full local Integration Gate static stage."}
-      unit: {applicable: true, evidence: "PASS: focused suites; full Gate run recorded in the delivery report."}
+      unit: {applicable: true, evidence: "PASS: focused suites inside the full Gate run."}
       integration: {applicable: true, evidence: "PASS: publish_preflight.py run on the exact committed candidate."}
-      contract: {applicable: true, evidence: "PASS: exact-candidate Documentation Impact complete; placement audit clean for 20 documents."}
+      contract: {applicable: true, evidence: "PASS: candidate documentation sync clean for its own changed files (0 errors with the fixed evaluator)."}
       e2e: {applicable: false, na_reason: No browser UI or deployed service is changed.}
       security: {applicable: true, evidence: "PASS: candidate secret scan and content safety inside the Gate."}
       migration_recovery: {applicable: false, na_reason: Rollback is a PR revert.}
@@ -75,8 +49,8 @@ matrix:
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 candidate:
-  base_sha: 172128e8a0bc62884a9ba5ec0edf37ef3912196a
-  changed_files_hash: a0a5c80a69fac5ffb58fe3aff920f5a1376425b2f90d710cdee664e732a99abc
+  base_sha: 3832eab9ac7c15f28ecacf3ae5a1e1181fda70bf
+  changed_files_hash: ecd4becfc202154a5fbe4cd776de2a73eb7a7bfa5742019e5a30fae4a3e99737
 blockers:
   []
 review_evidence:
