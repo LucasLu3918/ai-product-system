@@ -30,7 +30,7 @@ def git(root: Path, *args: str) -> bytes:
 
 
 def github_repository(url: str) -> str | None:
-    scp_prefix = "git" + chr(64) + "github.com:"
+    scp_prefix = "git@github.com:"
     if url.startswith(scp_prefix):
         path = url.removeprefix(scp_prefix)
     else:

@@ -657,6 +657,8 @@ Retrieval index persistence is an internal, rebuildable cache boundary in `scrip
 
 ## Git Publication 與 Release
 
+SSH remotes such as `git@github.com:<owner>/<repo>.git` are not treated as email addresses, but any other email in a commit or diff is still blocked. If a commit is blocked for an email, remove the real address or use clearly fake test data; do not split the string to get past the scanner.
+
 Content-safety PASS is candidate evidence only and does not authorize PR merge or change publication mode.
 
 
