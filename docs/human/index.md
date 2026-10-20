@@ -3,135 +3,94 @@ layout: home
 
 hero:
   name: "AI Product System"
-  text: "跨 Agent Software Engineering Harness"
-  tagline: "Roles · Skills · Project Intelligence · Deterministic Orchestration · MCP · Human-governed delivery"
+  text: "讓 Agent 協作更清楚、可驗證"
+  tagline: "跨 Agent 工程工作系統：只載入需要的脈絡，依風險安排驗證，重要發布由人決定。"
   actions:
     - theme: brand
-      text: 開始使用
+      text: 5 分鐘快速上手
       link: /GETTING_STARTED
     - theme: alt
-      text: 安裝
-      link: /INSTALLATION
+      text: 了解系統架構
+      link: /ARCHITECTURE_OVERVIEW
 
 features:
-  - title: Agent-independent
-    details: Native Runtime adapters 與 MCP access plane 共用同一套 AIPS canonical sources。
-  - title: Progressive Disclosure
-    details: 只載入任務需要的 Role、Skill、Protocol 與 Project evidence。
-  - title: Deterministic Execution
-    details: Scheduler、Isolation、Integration Gate 與 validators 分離 semantic planning 與固定規則。
-  - title: Human Authority
-    details: Git publish、merge、release、production 與核心治理決策保持 Human-controlled。
+  - title: 跨 Agent 共用規則
+    details: 以 Global Harness 與原生 Runtime Adapter 整合 Codex、Claude Code、Gemini CLI、OpenCode 及 MCP 主機。
+  - title: 按需取得專案脈絡
+    details: Project Intelligence 保存可追溯的專案知識；每次工作只讀取相關指示與證據。
+  - title: 依風險驗證變更
+    details: Change Impact 追蹤呼叫端、使用端與資料邊界；Deterministic Gate 檢查明確規則。
+  - title: 重要決策由人掌握
+    details: 驗證結果提供證據，不會自行授權合併、發布、上線或治理變更。
 ---
+
+<div class="docs-intro">
+  <p class="eyebrow">AI Product System（AIPS）文件</p>
+  <p>AIPS 是一套跨 Agent 的軟體工程工作系統。它把專案脈絡、工作方法、驗證證據與人類決策邊界接在一起，協助你從需求釐清一路走到可審查的交付成果。</p>
+</div>
+
+## 依你的目標開始
+
+<div class="docs-path-grid">
+  <a class="docs-path-card" href="./GETTING_STARTED">
+    <span class="docs-path-kicker">第一次使用</span>
+    <strong>安裝並開始一項工作</strong>
+    <span>確認環境、安裝 AIPS，再用自然語言描述目標。</span>
+  </a>
+  <a class="docs-path-card" href="./USER_GUIDE#existing-project">
+    <span class="docs-path-kicker">已有程式專案</span>
+    <strong>讓 Agent 先理解專案</strong>
+    <span>檢視既有指示、Project Intelligence 與變更影響。</span>
+  </a>
+  <a class="docs-path-card" href="./HARNESS">
+    <span class="docs-path-kicker">整合 Agent</span>
+    <strong>設定 Runtime 或 MCP</strong>
+    <span>了解各 Agent 的整合方式、能力證據與限制。</span>
+  </a>
+  <a class="docs-path-card" href="./MAINTENANCE">
+    <span class="docs-path-kicker">維護 AIPS</span>
+    <strong>檢查文件、驗證與發布</strong>
+    <span>從維護指南查找一致性、版本與驗收流程。</span>
+  </a>
+</div>
+
+## 系統由哪些部分組成？
+
+下圖呈現 AIPS 的主要邊界：Runtime 接收工作，脈絡層提供專案事實，執行與驗證層產生證據；發布和治理等重要決策保留在人手中。
+
+<figure class="docs-figure">
+  <img src="./assets/architecture-zh.svg" alt="AIPS 系統架構圖：Runtime 與 MCP、專案脈絡、工作路由、執行驗證及人類決策之間的關係" />
+  <figcaption>系統架構：共用工作脈絡與驗證方式，不代表每個 Runtime 都有相同的防護能力。</figcaption>
+</figure>
+
+## 一項變更如何完成？
+
+既有專案會先整理變更邊界，再依影響與風險安排執行和驗證。完成證據後，合併、發布或上線仍走各自的授權流程。
+
+<figure class="docs-figure">
+  <img src="./assets/workflow-zh.svg" alt="AIPS 工作流程圖：從需求與脈絡解析，經影響分析、執行、驗證到人類授權的交付流程" />
+  <figcaption>工作流程：檢查結果是決策證據；它本身不會授予發布或上線權限。</figcaption>
+</figure>
 
 ## 文件如何組織
 
-OpenCode native-write behavior and its tested READY+STALE advisory boundary are documented in Harness and Project Intelligence; see Scenario 267 for the exact allow/deny contract.
+OpenCode 原生寫入行為及 READY+STALE 的有限 advisory 邊界，整理於 Harness 與 Project Intelligence；精確的允許／拒絕契約見 Scenario 267。
 
-Publication troubleshooting lives in User Guide; safe error boundaries and Claude hook semantics are cross-linked from Security Assurance, Harness and Scenario 261.
+發布問題排查見使用指南；安全錯誤輸出邊界與 Claude Hook 行為則交叉整理於安全保證、Harness 與 Scenario 261。
 
-Claude Code 的版本相容限制見安裝指南與 Harness adapter 說明；診斷契約和驗收案例分別由 Git Publication 指南及 Scenario 261 說明。
-Creative asset import 操作見 [User Guide](USER_GUIDE.md)，邊界與 Scenario 264 見 [Technology Guide](TECHNOLOGY_GUIDE.md) 和 [Conformance](CONFORMANCE.md)。
+| 你想了解 | 建議閱讀 |
+| --- | --- |
+| 安裝、更新或移除 | [安裝指南](INSTALLATION.md) |
+| 日常使用與產品交付 | [使用指南](USER_GUIDE.md) |
+| Agent、Runtime 與 MCP 整合 | [Global Harness](HARNESS.md) |
+| 專案知識、檢索與變更影響 | [Project Intelligence](PROJECT_INTELLIGENCE.md) |
+| 架構邊界與資料流 | [系統架構總覽](ARCHITECTURE_OVERVIEW.md) |
+| 能力清單與技術實作 | [系統參考](SYSTEM_REFERENCE.md)、[技術指南](TECHNOLOGY_GUIDE.md) |
+| 安全、品質與人工審查 | [安全保證](SECURITY_ASSURANCE.md)、[Conformance 驗證紀錄](CONFORMANCE.md) |
+| 維護、版本與文件治理 | [系統維護](MAINTENANCE.md)、[文件導覽](DOCUMENTATION_MAP.md) |
 
-AVIF metadata safety guidance is in the [User Guide](USER_GUIDE.md#runtime-content-safety-boundary), with limits and evidence in [Security Assurance](SECURITY_ASSURANCE.md#runtime-content-safety-boundary) and Scenario 265.
+## 閱讀方式
 
-Commit Content Safety 的操作說明見 [User Guide](USER_GUIDE.md#runtime-content-safety-boundary)，權限與 fail-closed 邊界見 [Security Assurance](SECURITY_ASSURANCE.md#runtime-content-safety-boundary)，驗證證據見 Scenario 263。
-Injection false-positive handling, exact expiring exceptions, and full staged-blob secret coverage are recorded in Scenario 266 and the published User Guide and Security Assurance sections.
+文件以繁體中文說明操作與判斷方式；架構、Runtime、工具及狀態名稱會保留英文，首次出現時補上中文解釋。指令、路徑、設定欄位及錯誤代碼維持原樣，方便直接比對實際輸出。
 
-Resource Authorization and local Creative execution behavior are documented in the User Guide, Security Assurance, and Scenario 262; implementation ownership and placement remain in the Agent-facing orchestration references.
-
-For publication recovery, start with the User Guide and follow the linked Security Assurance, Harness and Scenario 260/261 evidence.
-
-For a returned publication Diagnostic ID, use the User Guide's `aips publish diagnose --diagnostic-id <UUID>` guidance; lookup is available only when an audit ledger was explicitly configured.
-
-Publication Doctor 的候選分支、政策證據與錯誤恢復方式請見 [User Guide](USER_GUIDE.md#git-publication-與-release)、[Security Assurance](SECURITY_ASSURANCE.md#runtime-policy-enforcement) 與 Scenario 260/261。
-
-For publication failures, follow USER_GUIDE.md Git Publication guidance and Scenario 260; runtime adapter permission truth is documented separately in HARNESS.md.
-
-GitHub publication troubleshooting and first-time readiness checks are covered by `aips publish doctor` in the [User Guide](USER_GUIDE.md#git-publication-與-release); authority and response contracts are in the [Technology Guide](TECHNOLOGY_GUIDE.md).
-
-Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
-
-Plan45 scanner recovery codes and command-order guarantees are described in [Git Publication](USER_GUIDE.md#git-publication-與-release), [Security Assurance](SECURITY_ASSURANCE.md), and [Harness](HARNESS.md); Scenario 261 defines the safe diagnostic contract.
-
-Creative asset import usage lives in USER_GUIDE.md; its reusable workflow and boundaries live in orchestration/CREATIVE_DIRECTION.md.
-
-
-Creative quality benchmark 操作方式在 USER_GUIDE，證據欄位與驗證邊界在 TECHNOLOGY_GUIDE，Scenario 258 收錄可執行的契約證據。
-
-OpenCode setup 與版本綁定驗收請閱讀 [Global Harness](./HARNESS.md)、[Installation](./INSTALLATION.md) 與 [Technology Guide](./TECHNOLOGY_GUIDE.md)；Scenario 235 定義原生驗收證據邊界。
-
-上游 Skill 的安全安裝、來源篩選與選擇性解除安裝請見 [User Guide](./USER_GUIDE.md#roles-skills-與重用)；來源固定摘要、檔案所有權與 Scenario 259 驗收見 [Harness](./HARNESS.md) 與 [Conformance](./CONFORMANCE.md#scenario-259--matt-pocock-skill-integration-and-explorer)。
-
-Skill Explorer 標示每個上游來源是否可安裝；31 個非 canonical ID 可選擇安裝，7 個同名 ID 使用 AIPS canonical。詳細路徑與明確呼叫設定見 [User Guide](./USER_GUIDE.md#roles-skills-與重用)。
-
-創作流程新增逐項驗證、版本化回饋與有限修正。明確重製指令可在同一 Session 執行；自動修正需 opt-in，機器結果仍需人工確認與使用者驗收。
-
-
-可重用的任務方法見 `skills/INDEX.yaml` 與各 Skill；49 個 canonical AIPS Skills 可用 <a href="./skill-catalog.html">Skill Explorer</a> 搜尋。Explorer 也檢索 38 個固定版本、保留原文與 SHA-256 的 Matt Pocock 外部來源及其路由狀態。場景規格和覆蓋狀態見 Conformance 文件；遊戲引擎與平台資料見 `references/`。
-
-其他 Agent 的 Skill 載入方式、MCP Resource 路徑與安全解除安裝流程見 [Global Harness](HARNESS.md#在-opencode-以外載入-aips-skills)；安裝入口見 [Installation](INSTALLATION.md)。
-
-Git publish／merge 的 Human 操作見 User Guide，安全與 Agent adapter 邊界見 Security Assurance 和 Harness；創意授權與 Git 授權各自維持其文件入口。
-
-Git 發布操作請從 [User Guide](./USER_GUIDE.md#git-publication-與-release) 開始；若需理解個人快速模式與高保證模式的信任邊界，閱讀 [Security Assurance](./SECURITY_ASSURANCE.md#runtime-policy-enforcement)。
-
-一般個人模式 PR 合併需使用 Claude Code 或啟用中的 Gemini 原生確認；目前任務明確授權時，Claude `--auto` 可通過同一候選檢查啟用 GitHub auto-merge，Gemini 仍逐次確認。Codex 無法保證攔截直接 merge 命令，詳見上述安全保證。
-
-
-Git publication 外部簽發、服務接入與 migration 請閱讀 [Security Assurance](./SECURITY_ASSURANCE.md#runtime-policy-enforcement)，實際 propose/status/verify 使用流程在 User Guide 的 Git Publication 與 Release。
-
-依工作直接閱讀：[專案診斷與恢復](PROJECT_INTELLIGENCE.md)、[Runtime 整合與驗收](HARNESS.md)、[品質與人工 Review](USER_GUIDE.md)、[維護與 CI](MAINTENANCE.md)。大型文件報告可列出既有章節入口；機器可讀 Registry 保留單一來源。
-
-Existing Project relationship discovery is explained in Project Intelligence; architecture boundaries are summarized in Architecture Overview and scenario evidence is listed in Conformance.
-
-Creative quality workflow 的操作、OpenCode 授權、Profile contract 與 lifecycle 證據依 User Guide、Creative Direction、Scenario 234/236/238 對照；AI review 僅提供建議。
-
-Implementation maintainers can find the internal prompt compiler boundary and extraction evidence in the Architecture Overview, Technology Guide, and Scenario Conformance pages.
-
-Creative engine readiness behavior is described in the User Guide and Scenario 236; Architecture and Harness pages preserve the fixed-loopback and unverified-inference boundaries.
-
-角色美術授權、產圖前檢查及視覺驗收請依序參考 [User Guide](USER_GUIDE.md#creative-directionstyle與brand)、[Technology Guide](TECHNOLOGY_GUIDE.md#execution) 與 [Scenario Conformance](CONFORMANCE.md#scenario-238--creative-task-authorization-and-multi-item-execution)。
-
-Runtime integration, Project Intelligence recovery, creative provenance, validation policy, Evolution Radar and release governance are documented at their canonical topic pages; cross-topic changes are reconciled through the documentation impact report. Quality baselines and Scenario evidence are summarized in Maintenance, Technology Guide and Conformance. The `0.81.0` release notes remain in `CHANGELOG.md`; versioning and exact-candidate readiness guidance is maintained in [Maintenance](MAINTENANCE.md#versioning) and [User Guide](USER_GUIDE.md#git-publication-與-release).
-
-Creative workflow 的 Human 操作方式見 User Guide；協定與授權邊界見 Creative Direction，批次工作範本與驗收證據分別見 `templates/creative/` 和 Scenario 238。
-
-Project Intelligence 與診斷恢復流程見 [Project Intelligence 使用指南](PROJECT_INTELLIGENCE.md)；命令與 Runtime 支援見 [System Reference](SYSTEM_REFERENCE.md)。
-
-本機 Z-Image Turbo 的 MFLUX 與固定 ComfyUI 工作流設定及生成操作請由 User Guide 的 Creative Direction 主題進入；Technology Guide 說明固定執行邊界。
-
-本機角色插畫設定與排查請見 User Guide 的 Creative Direction、Style 與 Brand；命令盤點、流程測試、真實生成及人工品質審查分開驗收。
-
-Creative Bundle 的操作方式見 [User Guide](USER_GUIDE.md)，技術限制見 [Technology Guide](TECHNOLOGY_GUIDE.md#local-character-artwork)；OpenCode adapter 的 canonical contract 位於 Agent 文件與 Conformance Scenario 236。
-
-OpenCode 安裝、Session Context、creative asset profile、trace 與原生 acceptance 的操作說明集中於 [Harness](HARNESS.md)。
-
-OpenCode Runtime Adapter 的使用方式見 [Harness](HARNESS.md)，執行邊界與 Scenario 235 見 [Conformance](CONFORMANCE.md)。
-
-OpenCode 全域指示、原生 Skills／Commands、MCP 預覽與保守 ownership 操作見 [Harness](HARNESS.md)。
-
-Creative Direction、EPHEMERAL 本機生成 Bundle、預檢、素材 provenance 與人工視覺審查流程見 [User Guide](USER_GUIDE.md#creative-directionstylebrand)；其執行邊界與 Scenario 236 見 [Conformance](CONFORMANCE.md#scenario-236--local-creative-bundle-execution)。
-
-`CHANGELOG.md` 列出 0.74.0 候選內容；版本標籤與 release readiness 仍依 exact-main SHA 與獨立核准流程處理。
-
-Prospective `aips docs impact --base HEAD --planned-path <path>` resolves sync and placement closure to a fixed point. Each triggered rule requires an update in its canonical topic; combined changes use the union of those topics. Validate every text anchor before applying the batch. Closure is scope evidence and never grants publication authority.
-
-- **開始使用**：Install、First Project、Update、Uninstall。
-- **使用指南**：產品交付、Existing Project、Security、Quality。
-- **Agent 整合**：Global Harness、native adapters、MCP。
-- **核心概念 / 架構**：Project Intelligence、Scheduler、Isolation、Governance；共用 deterministic hash/path/glob helper 維護於 `scripts/aips_common/`，相容輸出見 [Architecture Overview](ARCHITECTURE_OVERVIEW.md)。
-- **Reference**：Scenario Conformance、SAL、Technology Guide。
-- **Maintainers**：Documentation consistency 與 system maintenance。
-
-版本歷史請看 repository 的 CHANGELOG；較早版本的完整內容位於 `docs/history/changelog/`，根目錄仍保留所有版本連結。最新的 capability registry、runtime telemetry、quality ratchet 與 Agent Eval freshness 架構說明見 [Architecture Overview](ARCHITECTURE_OVERVIEW.md) 與 [Scenario Conformance](CONFORMANCE.md)。維護者的 release readiness 與 tag approval 流程見 Maintenance；驗證歷史請看 Scenario Conformance。
-
-目前主要實作遵循 Runtime 模型偏好，Skill registry 由 frontmatter 決定性產生。詳見 [技術指南](TECHNOLOGY_GUIDE.md) 與 [Conformance](CONFORMANCE.md)。
-
-Reusable local character artwork reuses the Creative Direction Skills, provenance validation and deterministic typeset sheets; see [User Guide](USER_GUIDE.md) and [Scenario Conformance](CONFORMANCE.md#scenario-234--local-character-artwork-provenance-and-composition).
-
-For publication failure diagnosis, start with [Git Publication 與 Release](./USER_GUIDE.md#git-publication-與-release); security and authority details are in [Security Assurance](./SECURITY_ASSURANCE.md).
-
-Runtime Content Safety 的 canonical 行為與安全界線見 `orchestration/CONTENT_SAFETY_BOUNDARY.md`；字型掃描的驗證情境為 Scenario 263。
-
-純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
+詳細治理規則與 Agent 執行契約以 repository 中的 canonical 文件為準；這個網站提供使用者導覽、概念說明與操作入口。若文件與目前工具輸出不一致，請以現行程式、設定與驗證結果核對，並依[文件一致性流程](DOCUMENTATION_SYNC.md)回報與修正。

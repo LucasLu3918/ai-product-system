@@ -1,14 +1,10 @@
-# AIPS System Reference
+# AIPS 系統參考（System Reference）
 
-The publication CLI/import facade remains `scripts/publish_preflight.py`; post-merge synchronization is implemented in `scripts/publish_post_merge.py`. No public command or installation dependency is added.
+本頁列出公開命令、能力面（Capability Surface）、支援環境與其驗證來源。欄位名稱、能力識別字、路徑及命令會保留 canonical 英文，方便和 CLI 輸出、設定與原始程式比對；使用方式與政策說明請回到各主題指南。
 
-This page lists factual command, capability and runtime data. Explanatory policy remains in the linked canonical documentation.
+系統事實表由 `config/system-facts.yaml` 與 `config/architecture-surfaces.yaml` 產生，請修改來源後執行 `python scripts/system_facts.py --write` 更新本頁，不直接編輯標記區塊。
 
-Shared deterministic primitives live in `scripts/aips_common/`; existing modules keep their public compatibility wrappers, and capability projections continue to be generated from the canonical registry.
-
-The established Retrieval Intelligence command/import facade remains `scripts/retrieval_intelligence.py`; internal lexical relation extraction lives in `scripts/retrieval_relations.py`. No public command or installation dependency is added.
-
-`aips intelligence impact-candidates --seed-path <path>` emits bounded read-only relationship candidates with provenance; it does not update canonical Impact Graph edges or global coverage.
+現行架構由能力登錄與對應驗證共同界定。`aips intelligence impact-candidates --seed-path <path>` 會唯讀產生有界、帶來源的關係候選，不會更新 canonical Impact Graph 或全域覆蓋狀態。
 
 
 <!-- AIPS-SYSTEM-FACTS:BEGIN -->

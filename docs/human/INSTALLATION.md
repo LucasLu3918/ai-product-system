@@ -1,25 +1,10 @@
 # 安裝、更新與解除
 
-AIPS 的 public lifecycle terminology 統一使用 **Install / Update / Uninstall**。bootstrap.sh 只保留為 backward-compatible wrapper，不再是新使用者文件的主要入口。
+本指南整理 AIPS 的安裝生命週期（Install / Update / Uninstall）。支援 macOS、Linux 與 Windows + WSL；目前不宣稱 Windows 原生 PowerShell／CMD runtime 已支援。AIPS 需要 Python 3.12 以上。
 
-Evolution deterministic pre-analysis ships as an internal Python module with the existing AIPS checkout; it adds no separate installation step or dependency.
+尚無可驗證的穩定版標籤時，安裝與更新會停止，不會自行改用開發分支。只有在你選擇追蹤可變動開發版時，才明確指定 `main`。
 
 ## macOS / Linux
-
-Scenario 266 verifies versioned injection rules, added-line checks, complete secret/PII coverage, and safe diagnostics.
-
-The live Claude/Gemini hooks run from the installed AIPS system copy, so publication guard classification changes take effect only after the normal AIPS update.
-
-
-No AVIF parser dependency is installed: supported static AVIF metadata uses the bounded built-in scanner, and unsupported structures fail closed.
-
-Personal publication uses the repository's existing secret-scan policy. `SECRET_SCAN_*` diagnostics explain policy or candidate inspection failures without exposing raw errors or paths; unsupported command forms are rejected before scanning. No additional installation dependency or service is required.
-
-
-Claude 的失敗觀察只回報固定類別與解析出的 exit code，不保存原始錯誤文字，也不重試或授權發布。
-
-Claude Code managed publication guard 只有在 v2.1.295 以上使用 `onFailure: block`；舊版或無法辨識版本時仍安裝相容設定並顯示警示。
-Commit safety 會以已安裝的 `fontTools` 解析 TTF/OTF/WOFF/WOFF2 中繼資料；WOFF2 另需 `Brotli`。兩者由 `requirements.txt` 管理，managed AIPS install/update/preflight 會一併修復缺少的必要 runtime dependency。不要改用系統 Python 或停用 Hook 來略過檢查。
 
 ~~~bash
 (
@@ -32,301 +17,89 @@ Commit safety 會以已安裝的 `fontTools` 解析 TTF/OTF/WOFF/WOFF2 中繼資
 )
 ~~~
 
-Installer 會自行管理 AIPS system checkout、Python virtual environment、CLI 與可安全安裝的 Runtime integrations。`--configure-shell` 會在 zsh／bash profile 寫入可辨識、可逆的 AIPS-owned `PATH` 區塊；使用者不需要先建立目錄、cd 或手動 git clone。若要自行管理 profile，使用 `--no-configure-shell`。
+安裝器會管理 AIPS system checkout、Python virtual environment、CLI 與支援的 Runtime 整合。預設安裝路徑為 `$XDG_DATA_HOME/aips/system`，若未設定 `XDG_DATA_HOME` 則使用 `~/.local/share/aips/system`。可用 `AIPS_INSTALL_DIR` 指定其他 system checkout 路徑。
 
-Install/update 會透過目錄鎖避免併發寫入，並對 Git clone/fetch 做有限次重試。首次 clone 先寫入安裝路徑旁的暫存目錄，只有在 channel 與 commit 驗證完成後才會提升。若鎖資訊顯示 stale，先確認沒有其他 AIPS install/update 程序，再手動清除錯誤訊息指出的 lock directory。
-
-預設 managed system path：
-
-~~~text
-$XDG_DATA_HOME/aips/system
-或
-~/.local/share/aips/system
-~~~
-
-可用 AIPS_INSTALL_DIR 覆寫。
-
-commit Hook 使用已安裝的 AIPS runtime；內容安全規則（例如 `pii.email.v2`）的更新要等重新安裝或更新 runtime 後才會生效於本機 Hook。
-
-純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
-
-Dependabot commit 的機器人 noreply author 與最後一行精確的 `Signed-off-by` trailer 屬於 Git 身分 metadata，由 `config/git-publication.yaml` 決定，不是 PII 例外；`pii.email.v2` 與其他位址仍會擋下，機器人身分不授予權限。
+`--configure-shell` 會在 zsh 或 bash profile 加入有明確 AIPS 標記的 `PATH` 區塊，方便新終端找到 `aips`。若你自行管理 shell 設定，改用 `--no-configure-shell`。
 
 ## Windows
 
-目前正式支援 **Windows + WSL**，不宣稱 native PowerShell runtime 已完成。
-
-在 PowerShell：
+目前支援 Windows + WSL。在 PowerShell 執行安裝器後，請從 WSL terminal 使用 AIPS：
 
 ~~~powershell
 $installer = Join-Path ([IO.Path]::GetTempPath()) ("aips-install-" + [guid]::NewGuid().ToString("N") + ".ps1")
 try {
   Invoke-WebRequest -Uri https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/scripts/install.ps1 -OutFile $installer -ErrorAction Stop
   if (!(Test-Path -LiteralPath $installer) -or (Get-Item -LiteralPath $installer).Length -eq 0) { throw "AIPS installer download was empty." }
-  & $installer
+  & $installer -Channel main
 } finally {
   Remove-Item -LiteralPath $installer -ErrorAction SilentlyContinue
 }
 ~~~
 
-PowerShell launcher 會把安裝交給 WSL 內相同的 Linux installer，因此核心 install lifecycle 只有一份。安裝後請在 WSL terminal 執行 AIPS。
-
-預設 channel 為 stable；第一個已驗證 release tag 出現前，安裝會停止。若明確要安裝開發版，請執行 `& $installer -Channel main`；Linux/macOS shell installer 對應使用 `--channel main`。
-
-> Windows native PowerShell / CMD runtime 若未來實作，必須另有真實 lifecycle evidence 後才可標記為 supported。
+只有在明確選擇開發版時才加上 `-Channel main`。PowerShell 啟動器會將安裝交給 WSL 中的 Linux installer；這不代表原生 PowerShell 已支援。
 
 ## 驗證
-
-AIPS 不會安裝影像引擎或模型。若已自行設定本機 MFLUX 或 loopback ComfyUI，可用 `aips creative preflight` 檢查 Bundle；檢查不會產生影像。
-
-安裝後可用 `aips trajectory evaluate --trace <trace.yaml> --mode shadow` 驗證 trajectory evidence CLI；此命令不需要外部 provider API key。
 
 ~~~bash
 aips version
 aips doctor
 aips harness status
 aips mcp inspect
-aips project check /path/to/project
 ~~~
 
+`aips doctor` 檢查 system checkout、Python runtime、必要套件及本機命令。OpenAPI generator 等選用能力有獨立安裝流程，不會因未安裝而使基本 AIPS 安裝失敗。
 
-Maintainer 的發布前入口為 `aips docs impact` 與 `aips publish plan|preflight|post-merge`。一般使用者安裝不會自動執行 GitHub 查詢、重寫 branch 或取得 publication authority。
+維護者要驗證完整 repository 時使用 `aips validate`。一般安裝不會在使用者電腦執行完整 CI，也不會連線修改 GitHub repository 設定。
 
-安裝流程本身會執行 **installation integrity validation**：確認必要 runtime dependency、核心 source contract 與 Human documentation placement 可用；它不會在一般使用者電腦重跑需要 Playwright/browser 等開發工具的完整 repository CI suite。
-
-`aips doctor` 會檢查 system checkout、Python environment、必要的 PyYAML／MCP runtime dependencies、CLI、Harness 與 MCP availability；必要依賴不完整時會回傳失敗並提示重新執行 `aips install`。`aips update` 與 `aips preflight` 會在 managed installation 缺少必要依賴時自動依 `requirements.txt` 修復。Maintainer 若要執行完整 repository validation，使用 `aips validate`；正式 PR / main 仍以 GitHub Actions 的 Janitor / repository checks 為準。
-
-
-OpenAPI tooling 是選用相依套件，不會隨基本安裝自動下載。使用前執行 `aips openapi doctor`；若狀態為 `NOT_INSTALLED`，明確執行 `aips openapi install`，由 AIPS managed venv 安裝 `requirements-openapi.txt` 中的固定版本。基本 `aips doctor` 會顯示此選用能力狀態，但缺少它不會使一般 AIPS 安裝失敗。完成後可在產品 repository 執行 `aips openapi validate <spec> --repo-root .`。
-
-Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需要額外安裝 Neo4j、外部資料庫或 provider credential。
-
-- Stable release readiness additionally requires exactly one empty `## Unreleased` section; installers continue to require a verified stable tag.
 ## Runtime integration
 
-OpenCode direct local L2 writes may proceed with READY Project Intelligence whose freshness is STALE, while the stale state remains visible. UNKNOWN freshness, insufficient readiness, unresolved instruction authority and escaping targets keep their existing stop behavior.
+OpenCode 原生直接寫入在 Project Intelligence 為 READY、但 freshness 為 STALE 時，可依既有 L2 advisory 邊界繼續；系統仍會明確顯示過期狀態。freshness 為 UNKNOWN、準備度不足、指示來源權限衝突未解或目標路徑越界時，仍維持原有停止條件。詳細 allow／deny 契約見 Scenario 267。
 
-Commit-time AVIF metadata scanning uses built-in bounded parsing and adds no package installation or native runtime adapter requirement.
+Commit 時的 AVIF 中繼資料掃描採用內建且有界的解析器，不需安裝額外套件，也不新增原生 Runtime adapter 需求。
 
-安裝 Claude Code adapter 時由管理器偵測版本；v2.1.295+ 的 publication PreToolUse guard fail closed，舊版/未知版保留相容設定並提示限制。
-Creative asset import uses the installed aips creative CLI and requires no additional Host adapter or generator setup. Git destinations remain unavailable unless the user explicitly opts into the hash-bound create-only candidate flow.
+安裝或更新後，以 `aips harness status` 檢視可辨識的 Runtime，再依 Host 提示使用 `aips harness install` 或 `aips harness doctor`。解除整合可使用 `aips harness uninstall`；只移除 CLI 時使用 `aips uninstall`。
 
-The installed CLI exposes `aips safety diagnose commit --worktree <repo> --message-file <path> [--format json|text]`. It reads the staged candidate and explicit message only; it does not stage, commit, publish, or alter Host and repository authority settings.
+不同 Agent 的 Context、工具權限與原生 Hook 能力並不相同。安裝狀態或靜態探測只能說明設定狀態；有版本綁定的 Host 驗收才可證明指定環境中的行為。Codex 的部分防護維持 ADVISORY，不能視為作業系統層級的隔離。
 
-Publication Diagnostic ID lookup uses `aips publish diagnose --diagnostic-id <UUID>` and reads only the existing ledger selected by `AIPS_GOVERNANCE_AUDIT_LEDGER`. Without that setting it reports `NOT_CONFIGURED`; installation does not create a ledger or change audit configuration.
-
-Runtime Resource Authorization profiles are supplied by trusted Runtime configuration. Missing or invalid profiles remain default-deny; installation does not create or modify a user's authorization profile.
-
-The Claude Code publication recovery observation uses the existing Doctor command and requires no added runtime component or credential.
-
-The installed Claude Code publication hook uses the native PreToolUse denial envelope and can present a safe diagnostic summary; its output does not grant or execute a denied action. Claude Code v2.1.295 or later also receives `onFailure: "block"` for the managed PreToolUse guard so a hook crash or timeout blocks the tool call. Older or unknown versions retain compatible settings and cannot guarantee this host-level failure behavior; upgrade before relying on it.
-Managed settings also register a separate `PostToolUseFailure:Bash` observer; it does not inherit the PreToolUse `onFailure` version policy and is removed with the other AIPS-owned hooks.
-
-An installed Claude Code harness can diagnose PR failures through the read-only AIPS publish doctor command. Keep managed PreToolUse hooks active; do not grant blanket Bash access as an error-recovery shortcut.
-
-For first-time GitHub repository setup, `aips publish doctor --project-root <repo>` checks local GitHub CLI access and read-only repository policy visibility. Missing access or Required Checks remains a blocker; the doctor does not change settings. See the Git Publication section of the User Guide.
-
-Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
-
-Creative workspace import uses the existing `aips` command and validation Python selection; it adds no install-time provider dependency.
-
-
-The creative quality benchmark is part of the local AIPS source tooling. It reads evidence for already observed local trials and does not install a generator, reviewer, model or host integration.
-
-Native acceptance reports separately record exact-host checks and unsupported effects. The report identifies arbitrary Shell process effects, MCP/custom-tool effects and out-of-process writes as UNSUPPORTED; legacy reports lacking the field show UNVERIFIED. Neither report state grants permission or proves production model quality.
-
-更新後既有 OpenCode `creative_execution` catalog 增加 `quality-check`、`feedback`、`repair`、`compare`、`quality-loop`。逐項檢查使用已安裝本地 Ollama vision model 與固定 Pillow 依賴；缺少 reviewer 時在生成前阻擋，不自動下載模型。
-
-No issuer setup is required for personal development: the absent fixed trust-root path selects personal publication mode. Administrators can opt into high assurance by installing the protected trust-root configuration and external issuer described in Security Assurance; invalid configuration fails closed.
-
-
-安裝 Harness 不會部署 publication issuer 或產生可信 signing key。Git Hook 新版需由管理者另外接入 root-owned `/etc/aips/publication-authority.yaml` 與外部 HTTPS service；步驟見 Security Assurance 的 Runtime Policy Enforcement。
-
-驗收後可將 `tests/evidence/opencode_native_acceptance.py --binary <opencode> --output <XDG_CONFIG_HOME>/aips/harness/owned/opencode/native-acceptance.json` 的報告交由 doctor 顯示。報告不授予權限，Host／來源變更後需重新驗收。
-
-Installed runtimes may use `aips intelligence impact-candidates --seed-path <path>` for bounded read-only relationship discovery; the command preserves unknown relationships and does not alter Project Intelligence graph files.
-
-The creative prompt compiler is part of the existing AIPS Python package and adds no installer step, provider dependency, or model download.
-
-Local creative visual assistance uses an already-installed Ollama model over fixed loopback only; the workflow does not install the model or enable a cloud endpoint.
-
-OpenCode creative clarification state is held only in the active Session and requires no additional service, provider credential or model download; host-native acceptance remains separate from installation status.
-
-Successful adapter installation confirms setup only. Runtime Context delivery, permission enforcement and host-version compatibility use separate acceptance evidence, so unsupported or untested host combinations remain explicitly unverified.
-
-The Gemini per-merge confirmation rule is shipped in the AIPS extension's `policies/personal-pr-merge.toml`; it applies only while the extension is active and interactive. User/admin policy with higher priority may override it. Claude's confirmation uses the installed native PreToolUse hook. Codex remains advisory.
-
-The OpenCode V2 Creative tool uses the adapter's prompt hook and shared local executor; installing the plugin does not install an image engine or model. Verify native grant admission with the versioned-host acceptance before relying on runtime behavior.
-
-The plugin accepts the shared executor's Z-Image Turbo `model_profile`, UNET, CLIP and VAE fields; runtime setup does not verify local weights or real inference.
-
-~~~bash
-aips project diagnose /path/to/project --format text
-~~~
-
-`aips project diagnose` 只讀彙整 `aips doctor`、專案智慧、Runtime/Harness 設定與 MCP 靜態能力，並提供 recovery next steps。它不會自動建立或更新快取；原生 Host 效果也不會因設定存在而被標記為已驗證。
-
-選用 Z-Image Turbo 時，另外確認本機 MFLUX 提供 `mflux-generate-z-image-turbo` 且模型、tokenizer 權重完整；AIPS 安裝不會替你下載模型。
-
-產圖流程新增 discover/configure，不安裝引擎或下載模型。更新 canonical AIPS 後重新執行 Harness 安裝並重啟 OpenCode，新 plugin 與創作 skill 才會重新投影；使用者自行修改的投影仍依 ownership 規則保留。
-
-OpenCode V2 可提供受限的 creative execution tool；它只在明確創作／修改意圖下先做 preflight，再呼叫本機設定的引擎。
-
-OpenCode's bounded creative tool uses the installed local AIPS runtime and does not install MFLUX, ComfyUI, or model weights. `prepare` only creates versioned local Profile/Bundle files; configure an already installed engine before preflight or explicit execution.
-
-The ComfyUI Z-Image Turbo profile requires already-installed UNET, Qwen CLIP and VAE weights; `aips creative preflight` verifies their local API inventory without generating an image.
-
-OpenCode 安裝流程自動偵測執行檔，建立受管理全域 `AGENTS.md`、Skills、三個 `aips-*` Commands；確認 V2 後另安裝受管理 AIPS plugin。設定根目錄依 `OPENCODE_CONFIG_DIR`、`XDG_CONFIG_HOME` 或預設 `~/.config/opencode`；既有同名或改動過的檔案保留並回報 CONFLICT。稍後安裝 OpenCode 可重新執行 `aips harness install`；MCP 另以 `aips mcp config --client opencode` 預覽。
-
-執行 `aips harness doctor` 可檢查版本相容、投影完整性、Host discovery 與 Hook 執行證據。若 Plugin 更新後需重新載入，Doctor 會提示重跑 install、重啟 OpenCode 並建立新 Session；安裝和檔案存在不會被當成 Hook 已執行。V1 不會安裝 V2 Plugin，未知版本保留使用者設定並回報衝突。
-
-Run Dashboard output continues to use the existing read-only projection contract; the shared canonical helper changes no installed runtime or persisted state.
-
-安裝的 Runtime adapter 讀取固定 `SYSTEM_CORE.md` 和 Turn Context 的 task-specific protocol pointers；`SYSTEM.md` 相容入口仍保留，更新流程不得把完整 orchestration 文件加入常駐 context。
-
-本次新增的治理 snapshot 不增加安裝相依；只有 operator 主動執行時才使用既有 `gh` CLI 與其登入狀態。
-
-The public `bin/aips` entrypoint remains a thin launcher. Its resolved checkout contains `scripts/aips_cli.sh` and the `scripts/aips_cli/` implementation modules; installed symlinks resolve those modules relative to the installed AIPS checkout, regardless of the caller working directory.
-
-Publication post-merge reconciliation 拆至 `scripts/publish_post_merge.py`，由既有 CLI facade 呼叫；使用相同 Python/Git runtime，不增加安裝步驟或相依套件。
-
-Retrieval relation extraction uses the existing Python runtime and standard library; splitting its internal implementation adds no installation step or dependency.
-
-Temporal query 使用既有 `aips intelligence temporal` 入口與 Python/Git runtime；實作拆至內部 adapter 不增加安裝步驟或相依套件。
-
-AIPS runtime 最低支援 Python 3.12。PR 主 Gate 使用 Python 3.12；每週相容性 smoke workflow 驗證 Python 3.12、3.13、3.14。支援與測試版本由 `config/system-facts.yaml` 維護，並同步至 `pyproject.toml` 與本頁系統參考。Installer 會選擇 Python 3.14、3.13、3.12 或相容的 `python3`；需要指定解譯器時可設定 `AIPS_PYTHON=/path/to/python3`。低於 3.12 的 AIPS-owned `.venv` 會在 install／update／preflight 修復時重建；`aips doctor` 會指出不支援的 runtime 與修復方式。
-
-Task ownership CLI 隨 AIPS CLI 一併提供，不需額外 runtime 套件。啟用前需建立 AIPS 管理的 Git worktree isolation；在不支援 native write guard 的 runtime，資源授權結果會明確維持 advisory。
-
-The optional `aips run dashboard` command uses the existing Python runtime and loopback-only HTTP server; it adds no database, frontend dependency chain or mutation endpoint.
-
-Validation installs the pinned `cryptography` dependency used to verify Ed25519 review receipts against trust anchors supplied outside the project checkout. No issuer is trusted by default.
-
-安裝後可使用 `aips commands list` 檢視 Portable Command Registry；`aips commands render` 只預覽，`aips commands install --host <id>` 才建立 AIPS-owned projection。這些 projection 不會自動修改 Client-owned MCP 設定，也不提供 Runtime-native enforcement。
-
-跨 Agent 的 Skill 載入可依 [Global Harness](HARNESS.md#在-opencode-以外載入-aips-skills) 使用 MCP，也可安裝原生 Skill。Codex 與 Gemini CLI 使用 `~/.agents/skills/<name>/SKILL.md`，Claude Code 使用 `~/.claude/skills/<name>/SKILL.md`；workspace scope 分別使用專案內 `.agents/skills` 與 `.claude/skills`。Gemini CLI 也會辨識 `.agents/skills`。
-
-~~~bash
-aips skills install requirements-definition --host codex
-aips skills install requirements-definition --host claude --scope workspace --project /path/to/project
-aips skills status --host codex
-aips skills uninstall requirements-definition --host codex
-aips skills list --include-upstream --group-by status
-aips skills install --upstream --all --host codex --host claude --host gemini
-aips skills status --upstream --host codex
-aips skills uninstall --upstream --all --host codex
-aips skills install --upstream git-guardrails-claude-code --host claude
-aips skills uninstall --upstream git-guardrails-claude-code --host claude
-~~~
-
-同一個 Skill 可重複安裝至多個 Host；Codex 與 Gemini 共用目錄時只會建立一份投影，所有權紀錄保存每個 Host 的引用。`aips skills uninstall --all --host <host>` 只處理該 Host 已記錄的 AIPS Skills。安裝遇到同名原生 Skill 時會回報 `ALREADY_PRESENT_UNOWNED` 或 `CONFLICT`，不覆寫既有內容。卸載只刪除逐檔摘要與安裝紀錄吻合的檔案；使用者修改過的檔案及自行新增的資源會保留。
-
-`--upstream` 可選擇 `aips skills list --include-upstream` 顯示的任何 Matt Pocock 來源 Skill；`--all` 會逐項處理全部 38 項，其中 31 個不同於 AIPS canonical ID 的技能可安裝，7 個同名項目（`code-review`、`grill-with-docs`、`prototype`、`tdd`、`writing-beats`、`writing-fragments`、`writing-shape`）回報 `SKIPPED_CANONICAL` 並沿用 AIPS 版本。來源 manifest 的 `disposition` 仍說明 AIPS 整合關係，但不再限制使用者安裝。Codex 投影會設定 `allow_implicit_invocation: false`，Claude Code 投影會設定 `disable-model-invocation: true`；Gemini CLI 會沿用啟用技能前的使用者確認。既有同名檔案仍受一般 ownership／衝突保護。安裝會複製 vendored Skill 與支援檔案，不會執行其中的腳本，也不會註冊或修改 Agent hooks。
-
-`aips skills status --upstream` 只檢查上游來源安裝；`aips skills uninstall --upstream --all --host <host>` 只解除該 Host 的 AIPS-owned 上游項目。使用者修改過的檔案會保留並回報 `CONFLICT_PRESERVED`；不帶 `--upstream` 的原有安裝／解除語意維持不變。
-
-Portable Command 也能安裝為 Host 原生 Skill，例如 `aips commands install aips.grill-me --host codex`；可用 `aips commands status --host codex` 檢視，並以 `aips commands uninstall aips.grill-me --host codex` 精確移除該命令，或用 `aips commands uninstall --host codex` 移除該 Host 的全部 Portable Commands。這些命令產生相同格式的 Host 相容 `SKILL.md`，並使用同一份 AIPS ownership manifest。
-
-支援 MCP 的 Host 仍可透過 `aips mcp serve` 讀取 `aips://catalog/skills` 與 `aips://skills/<skill-id>`；MCP 連線與原生 Skill 安裝互相獨立。
-Native Runtime Adapter 與 MCP 是兩個互補平面：
-
-- Codex / Claude Code / Gemini CLI：依可驗證能力安裝 AIPS-owned integration。
-- MCP-compatible Host：可使用 `aips mcp serve`；以 `aips mcp config --client cursor|windsurf|copilot|amp|codex|generic` 產生 review-only 設定。
-- MCP-only governance enforcement 仍為 ADVISORY；native pre-tool hook 才能提供已驗證的 stronger enforcement。
-
-產生設定只會輸出 JSON，不會寫入或覆蓋第三方 client-owned configuration；使用者確認後再依 Host 文件安裝設定。
-
-細節放在 [Global Harness 與 MCP](HARNESS.md)，不在 Installation 頁重複 implementation 細節。
-
-
-The publication doctor is part of the existing AIPS CLI; it does not require a new service, credential, or installation component. See Git Publication for `aips publish doctor` usage.
+MCP 設定可用 `aips mcp config --client <client>` 預覽。該命令不會替你寫入 Cursor、Copilot、Amp、Codex 或其他 Host 設定。
 
 ## 常見問題與排查
 
-`--source-checkout` 接受 Git 根目錄的 clone 或 linked worktree，安裝使用其已提交 HEAD；子目錄及非 AIPS 根目錄會拒絕。macOS Bash 3.2 的無選項安裝有獨立覆蓋。套件安裝回報 HTTP、proxy、DNS、TLS 或套件解析分類，不輸出可能含憑證的原始套件索引訊息；HTTP 403 應先查套件來源權限，不應直接重新登入 GitHub。
-
 ### `aips: command not found`
 
-Installer 會建立 `~/.local/bin/aips`（或 `AIPS_BIN_HOME` 指定的路徑）。官方安裝命令使用 `--configure-shell`，為 zsh 的 `~/.zprofile` 或 bash 的適用 profile 加入 AIPS-owned block。未提供選項的互動式安裝會詢問；非互動式安裝只顯示操作提示，不會等待輸入。
+若剛完成安裝，先開啟新的 terminal。若安裝時使用 `--no-configure-shell`，請自行將安裝器顯示的 CLI 目錄加入 `PATH)，或使用絕對路徑執行 `aips doctor`。
 
-可檢查或管理 shell integration：
+### Runtime 顯示 `NOT_DETECTED`
 
-~~~bash
-"$HOME/.local/bin/aips" shell status
-"$HOME/.local/bin/aips" shell install
-"$HOME/.local/bin/aips" shell uninstall
-~~~
+確認 Agent 已安裝，並使用支援的本機 Runtime 版本。執行 `aips harness status` 和 `aips harness doctor` 查看探測到的設定與可恢復問題；缺少 Host 時不會自動建立不存在的整合。
 
-重複執行 `shell install` 不會重複加入區塊。若 managed block 被修改，AIPS 會保留內容並回報 conflict；不會猜測或覆寫使用者調整。
+### 顯示 `Harness: active`，但 Host 沒有載入
 
-先確認 CLI 存在，再把實際安裝路徑加入目前 shell：
+`active` 表示 AIPS 找到受管理設定，不能證明 Host 已讀取或執行它。重新啟動 Host、確認目前工作階段使用的設定路徑，並依該 Runtime 的驗收方式確認 Context 或 Hook 實際生效。
 
-~~~bash
-ls -l ~/.local/bin/aips
-export PATH="$HOME/.local/bin:$PATH"
-aips doctor
-~~~
+### 安裝或更新找不到穩定版
 
-安裝完成但尚未重開 terminal 時，Installer 也會顯示可直接執行的絕對路徑。使用自訂 `AIPS_BIN_HOME` 時，請使用該目錄下的 `aips` 路徑：
+此時不要讓安裝器默默改追蹤 `main)。若你要使用開發版，重新執行安裝器並明確指定 `--channel main`。安裝完成後，更新會追蹤該明確選擇的 channel。
 
-~~~bash
-"$HOME/.local/bin/aips" doctor
-"$HOME/.local/bin/aips" harness status
-~~~
+### 更新因本機變更或版本差異停止
 
-若選擇手動管理，將相同的 `export PATH=...` 加入使用中的 `~/.zprofile`、`~/.zshrc` 或 `~/.bashrc`，然後開啟新的 terminal。若使用 `AIPS_BIN_HOME`，請把該值加入 `PATH`，不要照抄 `~/.local/bin`。
-
-### `aips harness status` 顯示 `codex: NOT_DETECTED`
-
-這通常表示安裝當下找不到 Codex CLI 的命令路徑；不代表 AIPS 核心 checkout、MCP 或 Python environment 安裝失敗。Codex 已安裝後重新執行：
-
-~~~bash
-aips harness install
-aips harness status
-~~~
-
-macOS 的 ChatGPT app 內建 Codex 路徑會自動偵測。若 Codex 安裝在自訂位置，可在該次命令指定：
-
-~~~bash
-CODEX_CLI_PATH="/path/to/codex" aips harness install
-~~~
-
-成功時應看到 `codex: AUTOMATIC capability=CONTEXT_ALWAYS`。`enforcement=ADVISORY` 是 Codex adapter 的誠實能力標示，表示它提供持久指示，不攔截 Host 的每一個原生工具呼叫。
-
-### Harness 已安裝但狀態仍是 `NOT_DETECTED`
-
-先檢查目前使用的命令與設定，再重新安裝 adapter：
-
-~~~bash
-command -v codex
-aips doctor
-aips harness install
-aips harness doctor
-~~~
-
-若 `command -v codex` 沒有輸出，使用上面的 `CODEX_CLI_PATH`；若 CLI 已在桌面應用程式內而沒有獨立 shell 命令，AIPS 仍可使用可驗證的 app 內建路徑完成 Codex managed block。
-
-### `aips harness status` 顯示 `Harness: active` 但沒有自動載入？
-
-`Harness: active` 只代表 AIPS Global Harness ownership manifest 存在；每個 runtime 的 adapter 狀態要個別看。只有 `codex: AUTOMATIC` 且 capability 為 `CONTEXT_ALWAYS`，才代表 Codex 全域 managed instruction 已完成。完成後請開啟新的 Codex 工作階段，讓新的全域指示鏈載入。
+先保存並檢視 system checkout 內的本機變更。遇到 major version 更新時，先閱讀 `CHANGELOG.md)，再使用 `aips update --allow-major` 明確同意。AIPS 不會以自動 merge、rebase 或 rollback 猜測如何處理分歧。
 
 ## 更新
-
-Managed installations use the stable channel by default and require a verified `vX.Y.Z` release tag. Before the first stable release is published, initial installation and updates stop without falling back to mutable `main`; use `--channel main` only when you explicitly want the development branch. The installer records the selected channel so later `aips update` follows the same policy. Release candidates can be checked with the read-only `release-readiness` workflow; publishing a tag remains a separate explicitly approved step.
 
 ~~~bash
 aips update
 ~~~
 
-AIPS 只在 managed system checkout clean、history 可 fast-forward 時自動更新；major version 變更仍需要顯式處理。
+穩定版 channel 只接受版本標籤與目標 commit 均通過驗證的版本。若目前是 `main` 開發版 channel，更新會以 fast-forward 方式同步遠端；工作樹髒污、歷史分歧或驗證失敗會停止。
 
-Existing Project mutation 前：
+若已有程式專案需要更新 AIPS 並執行系統 preflight：
 
 ~~~bash
 aips system preflight /path/to/project
 ~~~
 
-`aips preflight /path/to/project` remains a backward-compatible alias. `aips project check /path/to/project` is read-only and reports attachment mode plus Project Intelligence freshness (`CURRENT`, `STALE` or `UNKNOWN`); it does not refresh or attach the Project.
+相容入口 `aips preflight` 仍可使用。preflight 會先更新 AIPS system checkout，再檢查專案，不會替專案執行未知修復。
 
 ## 解除安裝
 
@@ -334,36 +107,18 @@ aips system preflight /path/to/project
 aips uninstall
 ~~~
 
-選配：
+解除安裝會移除 AIPS 管理的 Runtime 整合與 CLI 連結。Shell `PATH` 區塊只會在安全條件成立時移除；若設定遭使用者修改或安裝目錄還有其他程式，AIPS 會保留區塊並提示處理方式。
 
-~~~bash
-aips uninstall --remove-cache
-aips uninstall --remove-cache --remove-venv
-aips uninstall --remove-shell-integration
-~~~
+下列選項用於明確擴大清除範圍：
 
-預設解除安裝會移除 AIPS CLI symlink，再移除未遭修改的 AIPS-owned shell block。若 CLI 目錄仍含其他工具，PATH block 會保留，避免讓其他命令失去可發現性；確定要移除時使用 `--remove-shell-integration`。使用者自行建立的 PATH 設定不在 AIPS ownership 內，不會被刪除。
-
-Windows + WSL 可從 WSL terminal 執行相同 aips uninstall；repository 亦保留 scripts/uninstall.ps1 作 recovery wrapper。
+- `--remove-shell-integration`：要求移除 AIPS 管理的 shell 區塊。
+- `--remove-venv`：移除 AIPS 管理的 Python virtual environment。
+- `--remove-cache`：刪除外部 Project Intelligence 快取。
 
 ## 會保留什麼
 
-預設不刪除：
-
-- 使用者原本的 Agent instructions；
-- custom Skills；
-- Project source；
-- Project .ai/ workspace；
-- External Project Intelligence；
-- third-party MCP client-owned configuration。
-
-若 client 曾手動註冊 aips mcp serve，需在該 client 自己移除 registration；AIPS 不猜測或刪除 client-owned settings。
+一般解除安裝會保留 AIPS system repository、專案原始碼、使用者撰寫的 Agent 指示與 Skills、專案內的 `.ai/` workspace，以及外部 Project Intelligence 快取。未經明確選項要求，AIPS 不會清除這些專案知識或 Python 環境。
 
 ## 相容入口
 
-~~~bash
-./scripts/bootstrap.sh
-./scripts/uninstall.sh
-~~~
-
-這些只保留給既有 checkout / recovery。新文件與新使用者一律使用 Install / Uninstall terminology。
+`scripts/uninstall.sh` 與 `scripts/uninstall.ps1` 保留為相容／復原入口；新安裝請使用本指南的 Install 流程。舊版 `bootstrap.sh` 也只保留相容用途，不是新的主要入口。

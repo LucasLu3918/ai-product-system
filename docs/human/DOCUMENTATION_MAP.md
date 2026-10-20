@@ -10,6 +10,8 @@ Human Docs 依使用目的組織，而不是依版本號堆疊。
 
 ## Official Docs Site
 
+官方文件網站面向使用者與維護者，操作說明以繁體中文為主。架構、Runtime、工具與狀態等專有名詞在首次出現時補上英文；命令、程式識別字、設定欄位和原因碼維持原文，方便直接比對。首頁依讀者目標提供安裝、使用、整合與維護入口；網站中的架構圖和流程圖必須對照目前程式、設定與 canonical 文件維護。
+
 文件開發工具的安全版本、限定覆寫與本機伺服器操作見 [Technology Guide](TECHNOLOGY_GUIDE.md#documentation-platform)；相依套件與鎖定檔變更的同步要求見 [Documentation Consistency](DOCUMENTATION_SYNC.md#official-docs-site)。
 
 The docs-site workflow uses pinned setup-node v7 and upload-pages-artifact v5 on GitHub-hosted Ubuntu 24.04. Action upgrades include architecture, technology and documentation-sync updates; dependency PRs are subject to the same documentation closure as manual changes.
