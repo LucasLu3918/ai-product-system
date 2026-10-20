@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Exempt verified pure dependency updates (full-SHA pinned `uses:` bumps and exact `name==version` upgrades in allowlisted manifests) from documentation-only requirements in Documentation Impact, Placement and Sync; any other change keeps the full rules, and every non-documentation gate and Human merge approval is unchanged.
+
 - Replace broad content-injection keyword pairing with versioned, source-aware rules; preserve full staged Secret/PII scanning, add exact expiring exceptions, and return redacted actionable commit diagnostics.
 
 - Classify exact-candidate secret-scan failures with stable redacted diagnostics, and reject unsupported publication command forms before candidate inspection or scanning.

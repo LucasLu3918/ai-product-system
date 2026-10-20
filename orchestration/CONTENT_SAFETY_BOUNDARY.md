@@ -30,6 +30,7 @@ Supported decisions are `ALLOW`, `REDACT`, `BLOCK` and `REVIEW`.
 
 - Secrets reuse the deterministic detectors from `scripts/check_secret_leakage.py`.
 - PII starts with deterministic email, phone, checksum-valid card and Taiwan ID detection. It is sink- and context-aware; an email is not automatically a violation.
+- Email rule `pii.email.v2` does not report the exact ASCII `git` service user of an scp-like (`host:path`) or `ssh://` Git remote; that is remote grammar, not an exception. Every other regex match, including personal remote users, case variants and confusables, is reported independently, and redaction uses the same predicate. PII never accepts repository exceptions.
 - External content carries provenance such as `trust: UNTRUSTED`. Prompt injection is reported as `INJECTION_SIGNAL`, not as a claim of confirmed compromise.
 - A detector failure is fail-closed for commit, PR, release and high-assurance audit sinks, and degraded/drop behavior for low-risk diagnostic sinks.
 
@@ -55,6 +56,8 @@ The canonical sink manifest is `config/content-safety.yaml`. Any new persistence
 1. v0.58.0: kernel, reusable secret detector, deterministic PII baseline, policy engine and AIPS-owned sink integration.
 2. v0.59.0: publication and runtime enforcement for commit, push, PR and release content, including indirect body/message files.
 3. v0.60.0: provenance, untrusted-content separation, injection signals, tool-action correlation and quarantine.
+
+Pure dependency update documentation exemption (Scenario 221): `pure_dependency_update` in `scripts/dependency_impact.py` returns `PURE_DEPENDENCY_UPDATE` only when every changed file is an allowlisted dependency manifest (`.github/workflows/*.yml`, root `requirements*.txt`, `constraints/*.txt`) modified in place and every changed line pair is either a full-SHA pinned `uses:` reference for the same action with a non-decreasing version comment, or an exact `name==version` pin with a strictly higher version. Documentation Impact, Documentation Placement and Documentation Sync then suppress documentation requirements only and report each dependency's classification, risk and `human_review_required`; any other line or file, downgrade, unpinned reference, planned path, size-limit overflow or predicate failure keeps the full rules. Secret scanning, content safety, the Core Change Test Matrix, the Integration Gate, required checks and Human merge approval are unchanged, and `automatic_merge_authorized` stays false.
 
 ## Security invariants
 

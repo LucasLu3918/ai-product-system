@@ -536,6 +536,8 @@ When public repository hardening changes, review together:
 - validator contracts that check policy properties rather than freezing one dependency version.
 Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功，再分別模擬 loopback 與 browser 失敗，確保環境阻擋診斷不受 optional module availability 干擾；這不變更 runtime 行為。
 
+純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
+
 ## Validation architecture consistency
 
 Content-safety controls remain separate from skill discovery, installation, and author trust decisions.
@@ -676,6 +678,8 @@ Internal Retrieval Intelligence module extraction must preserve the `retrieval_i
 
 
 Publication recovery reports exact phase and sanitized evidence. `ALREADY_MERGED` proceeds to post-merge reconciliation for the exact head; diagnostics do not repeat publication or replace required checks.
+
+純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
 
 ## Deterministic Scheduler / Integration Gate consistency
 
@@ -821,3 +825,7 @@ Register every new persistence or publication sink in `config/content-safety.yam
 For Plan45 publication scanning, keep the literal executable/subcommand check ahead of candidate inspection. Classify scanner policy, base, object and candidate-file failures with allowlisted `SECRET_SCAN_*` diagnostics; never include exception messages, paths or secret values. Findings and incomplete scans remain fail-closed. Update Scenario 261 and the Core Change Test Matrix with any new scanner boundary.
 
 Commit-form changes in the publication guard must prove that content not yet staged is scanned and that commit-time `REVIEW` findings still block.
+
+Changes to PII detector grammar need a versioned rule ID, a hex-encoded positive/negative corpus with a v1/v2 comparison, shared detection/redaction predicates, and no PII exception path. Code-level `chr(64)` workarounds for Git remotes can be removed once the installed runtime carries `pii.email.v2`.
+
+純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。

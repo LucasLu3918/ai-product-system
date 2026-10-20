@@ -261,6 +261,8 @@ The Retrieval Intelligence SQLite persistence boundary is `scripts/retrieval_sto
 
 Plan36 publication diagnostics preserve this topic's existing behavior and authority boundaries.
 
+純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
+
 ## Security & Governance
 
 Independent review evidence and personal publication authority remain unchanged by AVIF metadata inspection; ComfyUI resource grants remain a separate boundary.
@@ -309,6 +311,8 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 ### Governance Audit Evidence
 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
+
+Content-safety detector changes are versioned (for example `pii.email.v2`) and bound to Scenario 266 with a fixed corpus; they never add a PII exception path.
 
 ## Quality & Verification
 
@@ -529,6 +533,8 @@ The observation collector reports readiness separately from collection health: `
 
 The publication doctor normalizes branch existence, effective GitHub rules, classic protection, ruleset, and worktree evidence into phase-specific diagnostics. Its JSON remains observational and keeps Human and native-host authority outside the diagnostic result.
 
+純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
+
 ## Product Delivery
 
 Scenario 266 covers versioned injection classification, added-line checks, full-blob secret/PII scanning, and safe recovery diagnostics.
@@ -604,3 +610,5 @@ The provider-neutral `scripts/content_safety.py` kernel supplies deterministic s
 Versioned injection rules distinguish instruction override, exfiltration, agent execution and ambiguous wording. Git commit scanning evaluates changed lines with source context, while Secret/PII checks cover the full staged blob. The shared read-only diagnostic returns stable rule/finding IDs and actionable recovery without matched text. Exact, expiring exceptions require approval evidence and cannot bypass Secret, PII or scanner-failure blocks.
 
 Commit 與發布掃描支援有界的 TTF/OTF/WOFF/WOFF2 metadata；fontTools/Brotli 缺失、格式偽裝、解析錯誤或資源超限都 fail closed。
+
+`pii.email.v2` is a deterministic regex plus Git remote grammar check: only the exact ASCII `git` userinfo of an scp-like or `ssh://` remote is excluded, and PII has no exception path.

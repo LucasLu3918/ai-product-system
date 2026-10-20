@@ -216,6 +216,8 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 `scripts/evolution_preanalysis.py` is an internal implementation behind the unchanged `scripts/evolution_analysis.py` facade. Its source inventory and module-identity lifecycle belong to the `evolution-radar` documentation closure; user command and authority behavior remain unchanged.
 
+Pure dependency update documentation exemption (Scenario 221): `pure_dependency_update` in `scripts/dependency_impact.py` returns `PURE_DEPENDENCY_UPDATE` only when every changed file is an allowlisted dependency manifest (`.github/workflows/*.yml`, root `requirements*.txt`, `constraints/*.txt`) modified in place and every changed line pair is either a full-SHA pinned `uses:` reference for the same action with a non-decreasing version comment, or an exact `name==version` pin with a strictly higher version. Documentation Impact, Documentation Placement and Documentation Sync then suppress documentation requirements only and report each dependency's classification, risk and `human_review_required`; any other line or file, downgrade, unpinned reference, planned path, size-limit overflow or predicate failure keeps the full rules. Secret scanning, content safety, the Core Change Test Matrix, the Integration Gate, required checks and Human merge approval are unchanged, and `automatic_merge_authorized` stays false.
+
 
 ## Human documentation placement
 
@@ -320,6 +322,8 @@ The new `scripts/retrieval_storage.py` helper belongs to the existing Project In
 
 
 Scenario 260 publication diagnostics synchronize with the Human Git Publication/Security Assurance sections, Architecture Overview, Claude Code adapter, CLI help, and the source-controlled diagnostic contracts.
+
+Pure dependency update documentation exemption (Scenario 221): `pure_dependency_update` in `scripts/dependency_impact.py` returns `PURE_DEPENDENCY_UPDATE` only when every changed file is an allowlisted dependency manifest (`.github/workflows/*.yml`, root `requirements*.txt`, `constraints/*.txt`) modified in place and every changed line pair is either a full-SHA pinned `uses:` reference for the same action with a non-decreasing version comment, or an exact `name==version` pin with a strictly higher version. Documentation Impact, Documentation Placement and Documentation Sync then suppress documentation requirements only and report each dependency's classification, risk and `human_review_required`; any other line or file, downgrade, unpinned reference, planned path, size-limit overflow or predicate failure keeps the full rules. Secret scanning, content safety, the Core Change Test Matrix, the Integration Gate, required checks and Human merge approval are unchanged, and `automatic_merge_authorized` stays false.
 
 ## Scenario 220 — Parallel advisory fast feedback
 

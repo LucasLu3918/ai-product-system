@@ -954,6 +954,8 @@ Dependency reports preserve Human review and do not merge unrelated pull request
 
 `scripts/dependency_impact.py` classifies dependency updates from `config/dependency-policy.yaml` and recommends evidence by class. Unknown packages are `UNCLASSIFIED` / `HIGH`; semantic runtime changes require retrieval regression and semantic trial evidence. The CLI is advisory, requires a human decision, and never authorizes automatic merges or policy edits.
 
+Pure dependency update documentation exemption (Scenario 221): `pure_dependency_update` in `scripts/dependency_impact.py` returns `PURE_DEPENDENCY_UPDATE` only when every changed file is an allowlisted dependency manifest (`.github/workflows/*.yml`, root `requirements*.txt`, `constraints/*.txt`) modified in place and every changed line pair is either a full-SHA pinned `uses:` reference for the same action with a non-decreasing version comment, or an exact `name==version` pin with a strictly higher version. Documentation Impact, Documentation Placement and Documentation Sync then suppress documentation requirements only and report each dependency's classification, risk and `human_review_required`; any other line or file, downgrade, unpinned reference, planned path, size-limit overflow or predicate failure keeps the full rules. Secret scanning, content safety, the Core Change Test Matrix, the Integration Gate, required checks and Human merge approval are unchanged, and `automatic_merge_authorized` stays false.
+
 ## Scenario 222 — Large Document Measurement Only
 
 文件大小報告附上前十二個既有 H2 閱讀入口，並區分文件與 Canonical machine-readable 來源；仍只回報 WARN，不複製 Registry、搬移文件或縮減 Gate。
@@ -1122,6 +1124,8 @@ The canonical Skill registry contains 49 AIPS Skills; the pinned 38-item upstrea
 
 `tests/evidence/skills_cli_lifecycle.py` also verifies upstream batch/selected install, optional-only eligibility, canonical duplicate skips, source-scoped ownership and uninstall across Codex, Claude, and Gemini; modified, unowned, and Portable Command files remain intact. Live Agent discovery is outside this fixture's evidence.
 
+Release history update for the pure dependency update documentation exemption (Scenario 221) reviewed this section: Skill integration, Explorer and reuse behavior are unchanged.
+
 ## Scenario 260 — Publication diagnostics and Doctor
 
 Scenario 263 is separate from publication Doctor and cannot satisfy PR merge checks or approval.
@@ -1164,3 +1168,7 @@ tests/evidence/opencode_integration_lifecycle.py verifies the AIPS creative impo
 Versioned injection rules reject the former generic-keyword false positives while preserving strong override, exfiltration and agent-execution blocks. Commit and publication-candidate injection checks overlap added diff lines; Secret and PII checks remain full-blob/full-diff. Removed or unchanged suspicious content does not block an unrelated edit. Ambiguous signals require review and remain denied until an exact approved, unexpired exception applies. Tests verify scope/expiry, safe structured recovery, no matched-content output and unchanged Git index/HEAD.
 
 Scenarios 099 and 169 bind the guard read-only allow list, commit-form scanning and unchanged commit-time `REVIEW` blocking to `tests/test_publication_authority.py`.
+
+Scenario 266 also binds `pii.email.v2`: only the exact ASCII `git` userinfo of an scp-like or `ssh://` Git remote is not an email finding; all other address-shaped matches block independently, redaction uses the same predicate, and `pii.*` exception records are invalid.
+
+Pure dependency update documentation exemption (Scenario 221): `pure_dependency_update` in `scripts/dependency_impact.py` returns `PURE_DEPENDENCY_UPDATE` only when every changed file is an allowlisted dependency manifest (`.github/workflows/*.yml`, root `requirements*.txt`, `constraints/*.txt`) modified in place and every changed line pair is either a full-SHA pinned `uses:` reference for the same action with a non-decreasing version comment, or an exact `name==version` pin with a strictly higher version. Documentation Impact, Documentation Placement and Documentation Sync then suppress documentation requirements only and report each dependency's classification, risk and `human_review_required`; any other line or file, downgrade, unpinned reference, planned path, size-limit overflow or predicate failure keeps the full rules. Secret scanning, content safety, the Core Change Test Matrix, the Integration Gate, required checks and Human merge approval are unchanged, and `automatic_merge_authorized` stays false.

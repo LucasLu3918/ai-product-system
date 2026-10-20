@@ -334,6 +334,8 @@ At SAL 4, unresolved High/Critical findings are **BLOCK**. They may not be downg
 
 Publication diagnostic evidence is read-only and redacted. HTTP 403 remains an access/evidence failure; a classic-protection 404 is interpreted only after branch existence is confirmed, and effective active rules determine the reported state. UNKNOWN never grants publication authority.
 
+純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
+
 ## Model routing
 
 SAL informs, but does not equal, Model Tier.
@@ -480,6 +482,10 @@ Commit scanning uses versioned injection rule IDs and changed-line context; Secr
 The commit guard accepts quoted-delimiter heredoc messages, literal `git add` commands joined by `&&`, `-a`/`-am` and `--amend`, and scans worktree content the commit would include; secret, PII and ambiguous injection (`REVIEW`) findings still block at commit (Scenario 169).
 
 發布守衛只放行判定為非發布的指令形式；可能發布的形式仍一律拒絕。commit 階段的 `REVIEW` 注入訊號仍會阻擋，因為發布時的候選掃描只涵蓋密鑰。
+
+Email rule `pii.email.v2` reads only the exact ASCII `git` userinfo of an scp-like or `ssh://` Git remote as a host address. Personal remote users, `https` userinfo, case variants, confusables and any address next to or inside a remote stay blocked; secret scanning is unchanged and PII still has no exception path.
+
+純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
 
 ## Runtime Policy Enforcement
 

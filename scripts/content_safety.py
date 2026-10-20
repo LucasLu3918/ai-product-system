@@ -65,6 +65,20 @@ def git_diff_payload_with_added_lines(diff: str) -> tuple[str, set[int]]:
 
 
 EMAIL_RE = re.compile(r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", re.IGNORECASE)
+EMAIL_RULE_ID = "pii.email.v2"
+# pii.email.v2: the Git SSH service user in Git remote syntax is a host address, not
+# an email. Only the exact ASCII local part "git" qualifies; this is grammar, not an
+# exception mechanism, and every other regex match is still reported independently.
+GIT_REMOTE_USER = "git"
+_GIT_PATH_SEGMENT = r"[A-Za-z0-9._~{}$<>-]+"
+GIT_SCP_TAIL_RE = re.compile(
+    r":(?:[~/]?[A-Za-z0-9._{}$<-][A-Za-z0-9._~{}$<>-]*(?:/" + _GIT_PATH_SEGMENT + r")*/?"
+    r"(?=$|[\s\"'`)\],;>])"
+    r"|(?=[\"'`]|\n|\Z))"
+)
+GIT_SCP_LEAD = frozenset(" \t\r\n\"'`([=<,")
+GIT_SSH_URL_HEAD_RE = re.compile(r"(?:ssh|git\+ssh|ssh\+git)://\Z", re.IGNORECASE)
+GIT_SSH_URL_TAIL_RE = re.compile(r"(?::\d{1,5})?/")
 PHONE_RE = re.compile(r"(?<!\d)(?:\+886[- ]?|0)9\d{2}[- ]?\d{3}[- ]?\d{3}(?!\d)")
 # Do not treat the numeric prefix of a hexadecimal Git SHA as a payment card.
 # A card candidate must be delimited from hexadecimal characters as well as
@@ -205,6 +219,34 @@ def _exception_applies(exceptions: list[dict[str, Any]], *, rule_id: str, path: 
     )
 
 
+def _is_git_remote_userinfo(text: str, match: re.Match[str]) -> bool:
+    """Return True only for `git` userinfo in an scp-like or ssh:// Git remote."""
+    if match.group(0).partition("@")[0] != GIT_REMOTE_USER:
+        return False
+    start, end = match.span()
+    if GIT_SSH_URL_HEAD_RE.search(text, 0, start) and GIT_SSH_URL_TAIL_RE.match(text, end):
+        return True
+    if start and text[start - 1] not in GIT_SCP_LEAD:
+        return False
+    return GIT_SCP_TAIL_RE.match(text, end) is not None
+
+
+def email_matches(text: str) -> list[re.Match[str]]:
+    """Email candidates shared by detection and redaction."""
+    return [match for match in EMAIL_RE.finditer(text) if not _is_git_remote_userinfo(text, match)]
+
+
+def _redact_emails(text: str, replacement: str) -> str:
+    parts: list[str] = []
+    cursor = 0
+    for match in email_matches(text):
+        parts.append(text[cursor:match.start()])
+        parts.append(replacement)
+        cursor = match.end()
+    parts.append(text[cursor:])
+    return "".join(parts)
+
+
 def _luhn(value: str) -> bool:
     digits = [int(c) for c in value if c.isdigit()]
     if not 13 <= len(digits) <= 19:
@@ -284,8 +326,9 @@ def scan_payload(payload: Any, *, sink: str, config: dict[str, Any] | None = Non
                 secret_rule_id,
                 _stable_finding_fingerprint(secret_rule_id, str(item["fingerprint"]), source_path),
             ))
-        for match in EMAIL_RE.finditer(text):
-            findings.append(_finding("PII", "email", location, match.group(0), config, sink, text.count("\n", 0, match.start()) + 1))
+        for match in email_matches(text):
+            findings.append(_finding("PII", "email", location, match.group(0), config, sink,
+                                     text.count("\n", 0, match.start()) + 1, rule_id=EMAIL_RULE_ID))
         for match in PHONE_RE.finditer(text):
             findings.append(_finding("PII", "phone", location, match.group(0), config, sink, text.count("\n", 0, match.start()) + 1))
         for match in CARD_RE.finditer(text):
@@ -336,7 +379,7 @@ def _redact_text(text: str, findings: list[Finding], location: str) -> str:
                 lambda match, value=replacement: match.group(0).replace(match.group(2), value), result
             )
         elif finding.detector == "email":
-            result = EMAIL_RE.sub(replacement, result)
+            result = _redact_emails(result, replacement)
         elif finding.detector == "phone":
             result = PHONE_RE.sub(replacement, result)
         elif finding.detector == "credit-card-luhn":
