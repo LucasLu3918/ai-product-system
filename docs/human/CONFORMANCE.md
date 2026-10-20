@@ -1682,6 +1682,8 @@ Dependency updates receive an explicit class, risk and recommended validation pl
 
 純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
 
+文件同步路徑正規化（Scenario 221）：Documentation Sync 只移除開頭一個 `./`，不再用 `lstrip("./")` 逐字元剝除，使 `config/documentation-sync.yaml` 中的 `.github/**` 觸發條件真正生效；純依賴升級仍由 `evaluate_candidate` 先行豁免。
+
 Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
 ## Scenario 222 — Large Document Measurement Only
@@ -2016,5 +2018,3 @@ The `pii.email.v2` corpus proves Git remote `git` userinfo (scp-like, `ssh://`, 
 純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
 
 Dependabot commits: the GitHub App bot noreply author and Dependabot's exact final `Signed-off-by` trailer are Git identity metadata decided by `config/git-publication.yaml`, not PII exceptions; `pii.email.v2` and every other address stay blocking, and the bot identity grants no authority.
-
-文件同步路徑正規化（Scenario 221）：Documentation Sync 只移除開頭一個 `./`，不再用 `lstrip("./")` 逐字元剝除，使 `config/documentation-sync.yaml` 中的 `.github/**` 觸發條件真正生效；純依賴升級仍由 `evaluate_candidate` 先行豁免。
