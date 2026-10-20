@@ -30,7 +30,7 @@ $installer = Join-Path ([IO.Path]::GetTempPath()) ("aips-install-" + [guid]::New
 try {
   Invoke-WebRequest -Uri https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/scripts/install.ps1 -OutFile $installer -ErrorAction Stop
   if (!(Test-Path -LiteralPath $installer) -or (Get-Item -LiteralPath $installer).Length -eq 0) { throw "AIPS installer download was empty." }
-  & $installer -Channel main
+  & $installer
 } finally {
   Remove-Item -LiteralPath $installer -ErrorAction SilentlyContinue
 }
