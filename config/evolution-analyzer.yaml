@@ -7,7 +7,7 @@ adapter:
   provider: openai
   kind: codex-action
   optional: true
-  action_commit: 86365089eb2b84e0a8fb0717b304f8bdcb13b20e
+  action: openai/codex-action
   codex_version: "0.155.0"
   credential_secret: OPENAI_API_KEY
   model_repository_variable: AIPS_EVOLUTION_MODEL

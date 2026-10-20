@@ -48,6 +48,8 @@ for rel in (
             errors.append(f'Evolution governance syntax failed: {rel}: {result.stderr.strip()}')
 
 sys.path.insert(0, str(ROOT / 'scripts'))
+from dependency_impact import pinned_action_references, require_pinned_action
+
 try:
     import evolution_analysis as analysis
     import evolution_decision as decision
@@ -255,7 +257,6 @@ radar_workflow = ROOT / '.github/workflows/evolution-radar.yml'
 if radar_workflow.exists():
     text = radar_workflow.read_text(encoding='utf-8')
     for required_text in (
-        'openai/codex-action@86365089eb2b84e0a8fb0717b304f8bdcb13b20e',
         'permission-profile: ":read-only"',
         'evolution_analysis.py finalize',
         'ANALYSIS_PENDING',
@@ -296,6 +297,8 @@ if decision_workflow.exists():
 
 analyzer_config = yaml.safe_load((ROOT / 'config/evolution-analyzer.yaml').read_text(encoding='utf-8')) or {}
 trial_config = yaml.safe_load((ROOT / 'config/evolution-trial.yaml').read_text(encoding='utf-8')) or {}
+# The Codex Action commit lives only in the workflows (Dependabot moves it); config names the identity.
+codex_pins = set()
 for config, workflow_path in (
     (analyzer_config, radar_workflow),
     (trial_config, decision_workflow),
@@ -303,12 +306,16 @@ for config, workflow_path in (
     if workflow_path.exists():
         workflow = workflow_path.read_text(encoding='utf-8')
         execution = config.get('adapter') or config.get('execution') or {}
-        action_commit = str(execution.get('action_commit') or '')
+        action = str(execution.get('action') or '')
         codex_version = str(execution.get('codex_version') or '')
-        if action_commit and action_commit not in workflow:
-            errors.append(f'{workflow_path.name} does not match configured Codex Action commit')
+        if 'action_commit' in execution or action != 'openai/codex-action':
+            errors.append(f'{workflow_path.name} config must name action: openai/codex-action without a copied action_commit')
+        errors.extend(require_pinned_action(workflow, 'openai/codex-action', label=workflow_path.name, min_version='v1', expected_count=1))
+        codex_pins.update(item['ref'] for item in pinned_action_references(workflow, 'openai/codex-action'))
         if codex_version and codex_version not in workflow:
             errors.append(f'{workflow_path.name} does not match configured Codex version')
+if len(codex_pins) > 1:
+    errors.append('evolution-radar.yml and evolution-decision.yml must pin the same Codex Action commit')
 
 lifecycle = ROOT / 'tests/evidence/evolution_governance_lifecycle.py'
 if lifecycle.exists():

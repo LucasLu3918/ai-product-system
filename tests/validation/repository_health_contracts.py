@@ -290,19 +290,23 @@ if lifecycle.exists():
                 f"{result.stderr.strip()}"
             )
 
+sys.path.insert(0, str(ROOT / "scripts"))
+from dependency_impact import require_pinned_action
+
 workflow = ROOT / ".github/workflows/validate.yml"
 if workflow.exists():
     workflow_text = workflow.read_text(encoding="utf-8")
     for required_text in (
         "scripts/repository_health.py audit",
         "repository-health-report.json",
-        "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a",
     ):
         if required_text not in workflow_text:
             errors.append(
                 "validate workflow missing Repository Health CI evidence "
                 f"contract: {required_text}"
             )
+    for item in require_pinned_action(workflow_text, "actions/upload-artifact", label="validate workflow", min_version="v7.0.1"):
+        errors.append(f"validate workflow missing Repository Health CI evidence contract: {item}")
 
 
 maintenance_workflow = ROOT / ".github/workflows/repository-health.yml"
@@ -315,7 +319,6 @@ if maintenance_workflow.exists():
         "issues: write",
         "scripts/repository_health.py audit",
         "repository-health-report.json",
-        "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a",
         "Repository Health Drift",
         "gh issue create",
         "automatic_remediation_authorized",
@@ -328,6 +331,8 @@ if maintenance_workflow.exists():
                 "repository-health maintenance workflow missing contract: "
                 f"{required_text}"
             )
+    for item in require_pinned_action(maintenance_text, "actions/upload-artifact", label="repository-health workflow", min_version="v7.0.1"):
+        errors.append(f"repository-health maintenance workflow missing contract: {item}")
     if "contents: write" in maintenance_text:
         errors.append(
             "repository-health maintenance workflow must not have contents: write"

@@ -1,6 +1,11 @@
 from __future__ import annotations
 
+import sys
+
 from .static_contracts import ROOT, errors, load_yaml
+
+sys.path.insert(0, str(ROOT / "scripts"))
+from dependency_impact import require_pinned_action
 
 caller_path = ROOT / ".github/workflows/validate.yml"
 reusable_path = ROOT / ".github/workflows/dependency-review.yml"
@@ -30,8 +35,10 @@ if reusable.get("permissions") != {"contents": "read", "pull-requests": "read"}:
 review_job = (reusable.get("jobs") or {}).get("dependency-review") or {}
 steps = review_job.get("steps") or []
 action = next((step for step in steps if str(step.get("uses", "")).startswith("actions/dependency-review-action@")), {})
-if action.get("uses") != "actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294":
-    errors.append("dependency review must remain pinned to its reviewed action commit")
+if not action or require_pinned_action(
+    reusable_path.read_text(encoding="utf-8"), "actions/dependency-review-action", label="dependency review", min_version="v5.0.0"
+):
+    errors.append("dependency review must remain pinned to an immutable commit at or above its reviewed v5.0.0 floor")
 if (action.get("with") or {}).get("fail-on-severity") != "high":
     errors.append("dependency review must continue blocking high-severity dependency findings")
 if action.get("continue-on-error") != "${{ inputs.shadow }}":

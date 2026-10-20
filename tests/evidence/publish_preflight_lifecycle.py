@@ -1003,8 +1003,10 @@ def main() -> int:
     assert "AIPS_VALIDATION_VENV" in cli_source
     docs_workflow = (ROOT / ".github/workflows/docs-site.yml").read_text(encoding="utf-8")
     sandbox_workflow = (ROOT / ".github/workflows/e2b-sandbox-verification.yml").read_text(encoding="utf-8")
-    assert "actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1" in docs_workflow
-    assert "actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0" in sandbox_workflow
+    from dependency_impact import require_pinned_action
+
+    assert not require_pinned_action(docs_workflow, "actions/deploy-pages", label="docs-site", min_version="v5.0.1")
+    assert not require_pinned_action(sandbox_workflow, "actions/upload-artifact", label="e2b", min_version="v6.0.0")
 
     print("PUBLISH PREFLIGHT LIFECYCLE PASSED")
     return 0
