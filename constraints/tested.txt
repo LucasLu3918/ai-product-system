@@ -6,8 +6,8 @@ ast_serialize==0.12.1
 attrs==26.1.0
 cffi==2.1.1
 click==8.5.0
-coverage==7.16.1
-cryptography==50.0.1
+coverage==7.16.2
+cryptography==50.0.2
 greenlet==3.5.6
 h11==0.16.0
 hypothesis==6.155.2
@@ -46,7 +46,7 @@ pytest==9.1.1
 referencing==0.37.0
 rfc3339-validator==0.1.4
 rpds-py==2026.6.3
-ruff==0.16.8
+ruff==0.17.0
 six==1.17.0
 sortedcontainers==2.4.0
 sse-starlette==3.5.0

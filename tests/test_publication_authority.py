@@ -3,11 +3,11 @@ from __future__ import annotations
 import base64
 import copy
 import os
+import random
 import subprocess
 import sys
 import tempfile
 import unittest
-import uuid
 from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -22,9 +22,15 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 
 def scanner_fixture_assignment() -> str:
-    """Generate per-run scanner input without storing credential-like data in source."""
+    """Generate per-run scanner input without storing credential-like data in source.
+
+    Every hex digit appears exactly twice, so the value always has 4.0 bits of entropy and clears
+    the generic-assignment entropy floor; a raw uuid4 hex fell below it in about 0.7% of runs.
+    """
     label = ''.join(map(chr, (97, 112, 105, 95, 107, 101, 121, 61)))
-    return label + uuid.uuid4().hex
+    digits = list('0123456789abcdef' * 2)
+    random.SystemRandom().shuffle(digits)
+    return label + ''.join(digits)
 from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 from publication_commands import CommandError, shell_commands
 from publication_issuer import Issuer
