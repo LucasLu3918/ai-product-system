@@ -1,4 +1,6 @@
-# AIPS Technology Guide
+# AIPS 技術指南（Technology Guide）
+
+本指南整理 AIPS 目前採用的技術與能力邊界，供需要理解系統運作方式的讀者查閱。操作步驟集中在[使用指南](USER_GUIDE.md)；Runtime、函式、CLI、設定欄位及狀態識別字保留英文，首次出現時補充中文用途。能力狀態應依 canonical 設定、程式與驗證證據判讀。
 
 
 獨立審查 receipt 的 Ed25519 驗簽使用 Python `cryptography`，版本固定於驗證依賴。受信任公鑰清單由執行環境在候選 repository 外提供；未提供時不宣稱已驗證 runtime 隔離。Context、Retrieval 與 Integration Gate 的操作耗時來自實際起迄事件，不推估模型 token。
@@ -600,7 +602,9 @@ Plan21 Phase 0 records one exact-main full-validation timing observation and pin
 
 ## Documentation Platform
 
-Current OpenCode stale-freshness behavior is synchronized across the Human Harness, Project Intelligence guidance, adapter contracts and Scenario 267.
+OpenCode stale-freshness 行為須在 Human Harness、Project Intelligence 指南、adapter 契約與 Scenario 267 中保持一致。
+
+官方文件網站面向使用者與維護者，操作指引、概念及導覽以繁體中文撰寫；專有名詞首次出現時補上英文原名。程式碼、指令、API／設定欄位、路徑、狀態與原因碼保留 canonical 拼法，方便搜尋與複製。首頁採任務導覽；架構圖與流程圖須符合目前程式與設定，並附繁體中文替代文字及圖說。
 
 文件網站固定使用 VitePress 1.6.4；`package.json` 只覆寫 `vitepress` 引入的 Vite 為 6.4.4，由 Vite 自身宣告的 `esbuild ^0.25.0` 提供修補版本，不另行強制覆寫 esbuild。這個 Vite 版本超出 VitePress 1.6.4 原本宣告的 Vite 5 範圍，因此更新時必須重新驗證相容性；上游穩定版原生支援已修補工具鏈後，再評估移除覆寫。
 

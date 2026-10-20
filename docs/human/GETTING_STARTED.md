@@ -1,8 +1,10 @@
 # 快速上手
 
+這份指南帶你完成安裝、確認整合狀態，並開始第一項工作。AIPS 需要 Python 3.12 以上；Windows 使用 WSL。首次安裝不需要先 clone repository。
+
 ## 安裝 AIPS
 
-Stable installation requires a version tag whose recorded version and target commit verify successfully. Until a stable release exists, development installations must explicitly request `--channel main`.
+目前若尚無已驗證的穩定版標籤，安裝程式會停止並要求明確選擇開發版 `main`。安裝器會驗證版本標籤與目標 commit；不會在穩定版不可用時靜默改用可變動分支。
 
 macOS / Linux：
 
@@ -17,7 +19,7 @@ macOS / Linux：
 )
 ~~~
 
-Windows 使用支援的 WSL 路徑，在 PowerShell 執行：
+Windows 請在 PowerShell 執行安裝器；核心 runtime 會在 WSL 中安裝與執行：
 
 ~~~powershell
 $installer = Join-Path ([IO.Path]::GetTempPath()) ("aips-install-" + [guid]::NewGuid().ToString("N") + ".ps1")
@@ -30,19 +32,9 @@ try {
 }
 ~~~
 
-不需要先手動 clone repository 或切換到 AIPS 目錄。
-
-AIPS runtime 需要 Python 3.12 以上；若系統同時安裝多個 Python，可用 `AIPS_PYTHON=/path/to/python3` 指定建立受管理 virtual environment 的版本。使用 `aips doctor` 可檢查 runtime 版本與安裝狀態。
-
-`--configure-shell` 會為 zsh 或 bash 寫入具有 AIPS ownership 標記的 `PATH` 區塊；若要自行管理 shell profile，改用 `--no-configure-shell`。安裝後尚未重開 terminal 時，可直接使用安裝器顯示的絕對路徑，或依 [安裝排查](INSTALLATION.md#常見問題與排查) 操作。
+如要自行管理 shell 設定檔，將安裝命令中的 `--configure-shell` 改為 `--no-configure-shell`。需要指定 Python 時，設定 `AIPS_PYTHON=/path/to/python3`。
 
 ## 驗證安裝
-
-本機創作 Bundle 可先用 `aips creative preflight --project <project> --bundle <bundle.yaml>` 檢查環境；只有明確執行 `aips creative execute` 才會呼叫已設定的本機引擎。
-
-已安裝 OpenCode 時，執行 `aips harness install` 後以 `aips harness doctor` 檢查受管理指示與技能投影；衝突須先檢查使用者修改。
-
-驗證安裝更新時，除了主線 repository SHA，也需核對註冊的安裝版 SHA。從已更新的 AIPS checkout 執行 `./bin/aips publish post-merge --fetch --sync-installed --apply` 可安全快轉兩者；髒工作樹、不同遠端或分歧的安裝版會停止並回報。
 
 ~~~bash
 aips version
@@ -52,79 +44,52 @@ aips mcp inspect
 aips commands list
 ~~~
 
-需要檢視 Agent 執行路徑時，可使用 `aips trajectory evaluate --trace <trace.yaml> --mode shadow`；這只產生 observable evidence，不會授予 Git Publish 權限。
+`aips doctor` 檢查受管理的 AIPS checkout、Python 環境、必要相依套件與可用整合。各指令顯示的靜態狀態不等同於已完成 Host 內的行為驗收。
 
-維護 repository 時，使用 `aips docs impact --base origin/main` 與 `aips publish plan --base origin/main` 先確認 CI-parity requirements；這些命令不會自行 merge 或發布。
-
-若要連接 MCP Host，可先用 `aips mcp config --client cursor|windsurf|copilot|amp|codex|generic` 檢視 review-only JSON；AIPS 不會自動修改 Host 設定。
-需要跨 Host 使用治理工作流時，可先預覽或安裝 Portable Command projection：`aips commands render aips.plan --host cursor`、`aips commands install --host cursor`。生成檔案由 AIPS ownership 管理，使用者修改後會保留並回報衝突。
+要連接 MCP 主機時，先以 `aips mcp config --client cursor|windsurf|copilot|amp|codex|generic` 預覽設定。這項操作只輸出建議內容，不會代替你修改 Host 設定。Portable Command 可先用 `aips commands render <command-id> --host <host>` 預覽，再依需要安裝。
 
 ## 開始工作
 
-
-平常直接開啟你的 Agent / IDE。AIPS 會依 Runtime 能力使用 native adapter 或 MCP access plane。
+開啟平常使用的 Agent 或 IDE，直接描述你想完成的目標、限制條件與驗收方式。AIPS 會依 Runtime 可用能力提供任務相關脈絡；Agent 再依工作內容進行規劃、實作與驗證。
 
 ~~~text
-你的需求
-→ AIPS Context / Routing
-→ 只載入需要的 Role / Skill
-→ Planning / Implementation
-→ Review / Validation
-→ Human-controlled publication / production
+需求與驗收方式
+→ 任務脈絡與工作模式
+→ 只載入相關 Role / Skill / Protocol
+→ 規劃、實作與驗證
+→ 人工審查及授權的交付決策
 ~~~
+
+必要時可參考[使用指南](USER_GUIDE.md)了解產品交付、品質審查、Git 發布與其他流程。
 
 ## Existing Project
 
-創作結果有必要身份特徵錯誤時，直接指出缺陷並明確要求重製；同一 OpenCode Session 可接受新的單張修正請求。自動修正須明確 opt-in，機器檢查完成後仍提供預覽供使用者驗收。
+已有程式專案時，先檢視目前狀態與恢復建議：
 
-先查看 `aips project diagnose <path>` 的 Recovery Plan。它會解釋阻礙與修復順序，但 bootstrap、finalize、refresh 仍按已批准範圍執行，專案不會因診斷而自動附加。
+~~~bash
+aips project diagnose /path/to/project
+aips project check /path/to/project
+~~~
 
-For local character artwork, an explicit creative request may continue through a bounded style clarification; cancellation or switching tasks revokes that continuation. See the [User Guide](USER_GUIDE.md#creative-directionstyle與brand).
+修改前仍須依專案原生指示、Project Intelligence、新變更影響與驗收要求執行。診斷只提供狀態與下一步，不會替你附加專案、刷新知識或執行修復。
 
-角色插畫可先以 `aips creative discover --project PATH` 檢查支援命令。再準備角色規範、建立 configured Bundle 並預檢；命令存在不代表模型權重或圖片品質已可用。
-
-創作可靠性 Core candidate 保留完整 Gate、媒材拒絕及取消授權回歸。損壞 PNG fixture 必須失敗；合成測試不能替代真實模型與人工品質驗收。
-
-OpenCode 使用 V2 時，可執行 `aips harness install` 與 `aips harness doctor` 檢查投影和 Host 狀態；EPHEMERAL 創意工作可用 `aips creative scan` 查看外部快取的素材中繼資料。
-
-For OpenCode V2, `aips harness install` installs the owned global plugin after runtime-version detection; use `aips harness doctor` to inspect its setup status. Plugin discovery alone does not verify model-context delivery or permission-hook execution.
-
-The Dashboard is a read-only view backed by current task state; shared projection fingerprints do not create or migrate project records.
-
-每回合先取得精簡固定核心與任務相關協定指標；修改既有專案前仍須依其原生規範取得 Project Intelligence、Change Impact 與驗證要求。
-
-平行實作時，先由 Deterministic Scheduler 派送 Task Graph，再在 AIPS worktree 綁定 task owner。Owner 狀態、lease 與實際變更路徑可從 Run Dashboard 檢視；enforcement 只有在 runtime guard 經驗證後才會提升。
-
-For parallel local work, `aips run dashboard` provides a read-only repository-scoped view of known runs on `127.0.0.1`; it cannot mutate, approve, merge or publish.
-
-Concurrent AIPS event writers share an append lock and sequence allocator, so events remain ordered when more than one local operation records evidence for the same run.
-
-不需要先建立 .ai/。EPHEMERAL mode 可直接工作；只有需要 project-local persistent state 時才：
+一般工作不需要先建立 `.ai/`。AIPS 可在 EPHEMERAL 模式使用外部快取；只有確定需要專案內保存可重用狀態時，才執行：
 
 ~~~bash
 aips attach /path/to/project
 ~~~
 
-## 更新
+`aips system preflight /path/to/project` 會更新並驗證 AIPS system checkout。更新前先確認該專案的工作樹狀態與變更範圍。
 
-安裝後預設追蹤穩定版；尚無已驗證的穩定版標籤時，安裝與更新會停止，不會回退到可變動的 `main`。需要開發版時，初次安裝可在 Linux/macOS 傳入 `--channel main`，或在 Windows WSL wrapper 傳入 `-Channel main`。
+## 更新
 
 ~~~bash
 aips update
 ~~~
 
-Existing Project mutation 前建議：
+一般安裝追蹤經驗證的穩定版。若尚無可用的穩定版標籤，請依安裝器明確指定 `--channel main`；Windows WSL 安裝器對應使用 `-Channel main`。
 
-~~~bash
-aips project check /path/to/project
-aips system preflight /path/to/project
-~~~
-
-`project check` reports Project mode and Intelligence freshness without changing project state. `system preflight` updates and validates the AIPS system checkout before implementation; the legacy `aips preflight` command remains compatible.
-
-需要查詢歷史架構時，可使用 `aips intelligence temporal --mode as-of --revision <sha>`；一般任務不需要載入完整 temporal history。
-
-`aips update` 與 `aips preflight` 會檢查 managed installation 的必要 Python dependencies，只有缺漏時才依 `requirements.txt` 修復；直接從一般 source checkout 執行時不會隱式建立 `.venv`。
+更新只會管理 AIPS 自己的安裝與 Runtime 整合。髒工作樹、遠端不一致或無法驗證的版本會停止並顯示原因。
 
 ## 解除安裝
 
@@ -132,4 +97,4 @@ aips system preflight /path/to/project
 aips uninstall
 ~~~
 
-預設會移除未遭修改且不影響共用 CLI 目錄的 AIPS-owned shell block。User instructions、Skills、Project source、Project .ai/ 與 External Project Intelligence 仍會保留。
+解除安裝會移除 AIPS 管理的 Runtime 整合與 CLI 連結。Shell `PATH` 區塊僅在可安全移除時一併清除；使用者修改過的設定或含有其他程式的目錄會保留。使用者指示、Skills、專案原始碼、專案 `.ai/` 與外部 Project Intelligence 會保留；只有明確指定 `--remove-cache` 才會刪除外部快取。

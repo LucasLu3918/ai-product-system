@@ -646,6 +646,8 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 
 ## Official Docs Site
 
+官方文件首頁以繁體中文依讀者任務導覽安裝、使用、Agent 整合與維護。首頁提供中文系統架構圖與工作流程圖（`assets/architecture-zh.svg`、`assets/workflow-zh.svg`）；兩圖需對照目前 Runtime、Project Intelligence、變更影響、驗證及人類授權邊界維護。各 Host 的實際攔截能力仍須依版本綁定的驗收證據判讀。
+
 文件工具鏈保留穩定版 VitePress 1.6.4，僅將其 Vite 間接依賴固定至 6.4.4，以帶入 Vite 與 esbuild 安全修補。開發伺服器只綁定 `127.0.0.1`、停用 CORS 並保留主機檢查；預覽命令另以 `--host 127.0.0.1` 限制靜態預覽存取。GitHub Pages 仍只提供靜態產物。
 
 VitePress 只渲染 Human documentation。Agent canonical protocols 仍留在 SYSTEM.md、orchestration/、roles/、skills/，不因網站而複製。

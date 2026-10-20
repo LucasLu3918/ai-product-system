@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 470" role="img" aria-labelledby="title desc">
+  <title id="title">AIPS 工作流程</title>
+  <desc id="desc">從需求與任務脈絡開始，經影響分析、執行、驗證、人工決策，並在變更後更新專案脈絡。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f3f8f6"/><stop offset="1" stop-color="#eaf2ef"/></linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#668b84"/></marker>
+    <style>
+      text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;fill:#18312e}
+      .title{font-size:28px;font-weight:700}.box{fill:#fff;stroke:#c8d9d4;stroke-width:2}.final{fill:#256b63;stroke:none}
+      .num{font-size:14px;font-weight:700;fill:#256b63}.head{font-size:18px;font-weight:700}.body{font-size:14px;fill:#58716c}.finalhead{font-size:18px;font-weight:700;fill:#fff}.finalbody{font-size:14px;fill:#e2f1ed}
+      .arrow{fill:none;stroke:#668b84;stroke-width:3;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1200" height="470" rx="26" fill="url(#bg)"/>
+  <text x="55" y="58" class="title">從需求到可審查的交付</text>
+  <g transform="translate(55 105)">
+    <rect width="190" height="158" rx="16" class="box"/>
+    <text x="20" y="34" class="num">01 · 開始</text><text x="20" y="70" class="head">釐清需求</text>
+    <text x="20" y="105" class="body">目標、限制、驗收方式</text><text x="20" y="130" class="body">需要時先補齊未知事項</text>
+  </g>
+  <g transform="translate(290 105)">
+    <rect width="190" height="158" rx="16" class="box"/>
+    <text x="20" y="34" class="num">02 · 理解</text><text x="20" y="70" class="head">載入任務脈絡</text>
+    <text x="20" y="105" class="body">原生指示、專案知識</text><text x="20" y="130" class="body">相關協定與能力</text>
+  </g>
+  <g transform="translate(525 105)">
+    <rect width="190" height="158" rx="16" class="box"/>
+    <text x="20" y="34" class="num">03 · 規劃</text><text x="20" y="70" class="head">界定變更影響</text>
+    <text x="20" y="105" class="body">檢視呼叫端與使用端</text><text x="20" y="130" class="body">記錄風險、未知與驗收</text>
+  </g>
+  <g transform="translate(760 105)">
+    <rect width="190" height="158" rx="16" class="box"/>
+    <text x="20" y="34" class="num">04 · 執行</text><text x="20" y="70" class="head">實作並驗證</text>
+    <text x="20" y="105" class="body">依風險選擇檢查深度</text><text x="20" y="130" class="body">保留實際執行與差異證據</text>
+  </g>
+  <g transform="translate(995 105)">
+    <rect width="150" height="158" rx="16" class="final"/>
+    <text x="20" y="34" class="finalbody">05 · 決策</text><text x="20" y="70" class="finalhead">人工審查</text>
+    <text x="20" y="105" class="finalbody">依授權決定</text><text x="20" y="130" class="finalbody">是否發布</text>
+  </g>
+  <path d="M245 184H280M480 184H515M715 184H750M950 184H985" class="arrow"/>
+
+  <rect x="290" y="325" width="660" height="76" rx="16" fill="#dcebe6"/>
+  <text x="320" y="357" class="head">變更完成後：比對實際差異，更新受影響的專案知識</text>
+  <text x="320" y="383" class="body">若影響範圍不明、證據過期或檢查失敗，先釐清或修正再進入交付決策。</text>
+  <path d="M850 263V300H935V325" class="arrow"/>
+  <path d="M290 363H210V285H620V272" class="arrow"/>
+</svg>

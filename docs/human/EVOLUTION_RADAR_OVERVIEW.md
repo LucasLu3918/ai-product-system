@@ -1,103 +1,45 @@
 # Evolution Radar 流程總覽
 
-Deterministic local pre-analysis remains available through the `evolution_analysis.py` facade; its implementation resides in `evolution_preanalysis.py` and does not grant semantic or publication authority.
+Evolution Radar（演進雷達）負責蒐集外部技術訊號、整理證據並安排受控試驗，協助 AIPS 評估值得研究的改進。它不會自行修改系統、採納候選方案或授權發布。
 
-本期資料會分開呈現 `pipeline_health`（來源 cohort、收集失敗、重複及期間完整性）與 `content_value`（訊號是否形成可採用建議）。來源缺漏或月份未結束時是資料不完整，不能解讀為零價值；來源完整但沒有可採取建議則是有效的零產出。通過 evidence digest 驗證的分析會寫回 GitHub Issue body，避免下一次排程遺失分析狀態。
-
-本機命令沿用既有流程：`aips evolution package` 建立分析輸入、`aips evolution analyze` 完成分析、`aips evolution apply` 套用已核准決策。命令本身不授權程式碼變更或發布。
-
-目前 Capability Map 納入 Runtime Context 與 runtime invariant matrix，供後續 Radar 比較與趨勢追蹤。
-
-Evolution Radar 是 AIPS 的 maintenance plane，用來研究外部技術變化，但不直接取得 implementation / merge / release authority。
+流程會明確區分「資料是否完整」與「訊號是否有用」：來源資料缺漏時標示輸入不完整；來源完整但沒有可執行建議時，才記錄為零產出。指標與分析結果都供人審查，不會自動調整來源政策或系統設定。
 
 ## Signal Collection
 
-創作閉環的新觀察項目是必要條件漏判、修正次數、重複缺陷與停損原因；實測前不宣稱準確率提升。使用者回饋可以形成有限修正任務，機器評估仍不代替人工驗收。
-
-採樣政策維持至少五個可用健康社群來源，每來源最多十筆、原始訊號總上限五十筆。去重後不足五十筆時報告 candidate_shortfall 與 BELOW_TARGET，不以重複項湊數。
-
-Creative workflow signals distinguish deterministic authorization checks, native-host acceptance, real model inference and Human visual review; missing inference evidence remains unverified.
-
-本機創作 fixture 只提供流程證據，不能證明生成品質改善或模型採用成效；真實圖片與人工驗收需另行取得。
-
-Runtime lifecycle observations separate plugin setup from action-level hook execution; unknown provider or MCP behavior remains unverified and cannot be promoted from setup evidence.
-
-Context-routing evidence is collected from deterministic route classification and lifecycle outputs; prompts and model reasoning are excluded.
-
-Offline relevance evaluation compares selected/rejected signals with explicit Human labels. Unlabeled or uncertain records produce `NOT_READY`; the evaluator reports metrics but never changes source policy.
-
-Weekly scan 從 source-controlled allowlist 收集 bounded public evidence，保存 provenance、publication time、dedup identity 與 source class。
+每週從版本控制的來源清單蒐集有界公開資料，保存來源、發布時間、去重識別與來源類別等 provenance。採樣至少需要五個可用來源；每個來源最多取十筆，原始訊號總數最多五十筆。去重後未達目標時回報缺口，不以重複資料補足。
 
 ## Deterministic Pre-analysis
 
-Deterministic pre-analysis retains its existing digest output through the shared canonical helper; this extraction does not change candidate ranking or Human decisions.
-
-本機預分析會為未入選候選記錄可重現的排除原因與彙總計數，供人工檢視 shortlist 的資料價值；語意判斷與採納決策仍由既有流程負責。
-
-本機 deterministic rules 做 category hint、capability mapping、near-duplicate grouping 與 review priority。這不是 semantic suitability 或 adoption recommendation。
+本機預分析使用固定規則整理類別、能力對應、相似訊號與檢視優先順序，並記錄可重現的排除原因。這些結果是排序線索，不會判斷方案是否值得採用，也不會代替語意分析或人類決策。
 
 ## Semantic Analysis
 
-可靠 semantic analyzer 若可用，結果必須綁定 exact evidence digest + repository revision；不可用時保持 ANALYSIS_PENDING，不偽造 PASS。
-
-Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
+若使用語意分析，結果必須綁定完整的 evidence digest 與 repository revision。資料不足、分析服務不可用或來源無法驗證時，狀態維持 `ANALYSIS_PENDING` 或 `NOT_READY`，不會填入推測結果。
 
 ## Human Decision
 
-Human 可選 REJECT / HOLD / ASSESS / TRIAL / ADOPT。Positive decision 若 baseline 已 stale，必須先重新取得 current-main evidence。
+人類審查者可選擇 `REJECT`、`HOLD`、`ASSESS`、`TRIAL` 或 `ADOPT`。正向決策必須使用目前仍有效的證據；若基準版本已過期，需先針對目前 main 重新取得證據。
 
 ## Controlled Trial
 
-TRIAL 使用 approved scope / paths 與 AIPS-owned isolation。執行後檢查 forbidden paths、diff size、repository validation 與 evidence fingerprint。
-
-Scenario 140 的 observable-event 評估維持離線 evidence：歷史事件可用已命中的 Resource Authorization Grant 補足缺漏上下文，明確事件上下文仍須符合 Grant。Grant 未明確允許網路使用時，觀測到網路活動會標示 `network_policy_violation`；這不代表 live capture 或 runtime enforcement。
+`TRIAL` 只能在核准範圍與檔案路徑內執行，並使用 AIPS 管理的隔離環境。完成後檢查禁止路徑、變更大小、repository validation 與 evidence fingerprint。Trial 結果證明的是該次受限試驗的觀測，不代表正式採納。
 
 ## Trial → Adoption
 
-OpenCode Harness acceptance remains version-scoped evidence; Evolution Radar promotion still requires its own Human decision and effectiveness evidence.
-
-Trial PASS 只表示 trial evidence 可供 review。正式 ADOPT 必須是新的 Human Decision，綁定 exact PASS fingerprint，再回到正常 System Self-Improvement / Core Change / Git Publish 流程。
-
-GitHub Actions 的 Ubuntu runner 固定在 24.04，artifact upload action 維持已驗證的完整 SHA pin；runtime 升級需先驗證 action 與 runner 相容性。
+Trial 通過只表示證據可供審查。正式 `ADOPT` 必須由人類另行決定，並綁定該次 `PASS` fingerprint，再進入一般 System Self-Improvement、Core Change 與 Git Publish 流程。
 
 ## Provider Credentials
 
-External provider credential 永遠是 optional enhancement，不得變成普通 Radar、baseline validation 或 release prerequisite。Missing credential 使用 truthful SKIPPED / PENDING state。
+外部分析 Provider 的 credentials 是選用條件，不是一般 Radar、基準驗證或 release 的必要依賴。缺少 credentials 時明確回報 `SKIPPED` 或 `PENDING`，不會透過其他帳號或服務自動補足。
 
 ## Effectiveness Feedback
 
-Review fixed-core size and route-selection tests together; a smaller context is useful only while required gates remain reachable and missing routes fail closed.
+每月可依 deterministic fingerprint 抽樣供人工標註，離線評估 shortlist precision／recall、可採取建議比例與來源關聯性。輸入不完整時維持 `NOT_READY`；分析只會提出檢視政策的建議，不會自動調整來源權重或候選清單。
 
-每月由 deterministic fingerprint 排序抽取 20 筆 signal 供 Human 標註；離線評估 shortlist precision/recall、actionable yield 與來源 relevance yield。資料不完整時維持 `NOT_READY`，結果只提供來源政策檢視建議，不會自動調整來源權重或 shortlist。
-The monthly Effectiveness report leaves shortlist yield unavailable when a source-bearing weekly Issue lacks pre-analysis. Oversized weekly Issue bodies use a bounded SHA-256 checked archive restored before the monthly rollup reads evidence.
-
-If archive verification fails, the monthly report names that unreadable Issue and keeps it under Human review; it is not silently omitted from the cohort.
-
-Plan19 的 2026-09 effectiveness snapshot 記錄 100 筆 signals、無 shortlist，並明確保留 100 筆未分析與 4 份缺少 pre-analysis 的 weekly Issues；覆蓋不完整，不據此調整 source ranking 或權重。
-Scenario-by-scenario 的演進與數值證據放在 [Scenario Conformance](CONFORMANCE.md)，不再把每個版本/Scenario追加到本頁尾端。
-
-
-Task ownership leases and Dashboard projection are execution operations, not Radar decisions. They cannot adopt a candidate, approve a Trial, or grant publication authority.
-
-Effectiveness evidence distinguishes current system-bound evaluations from historical results without a source fingerprint. Optional operation spans report observed duration and outcome only when a matching run record is available.
-
-The read-only Parallel Run Dashboard is an observation surface for parallel workflow state; it does not create an Evolution decision or merge authority.
-
-Agent trajectory evidence 可回饋至後續 regression scenario，但不具備自動修改、merge、release 或 publication authority。
-
-Runtime Policy Enforcement 不交由 Evolution Radar 語意分析授權；外部語意訊號只能收緊決定性決策，且 provider 仍屬 optional trial。
-
-Monthly / quarterly roll-up量測 collected → shortlist → semantic → actionable → Trial → PASS → ADOPT funnel 與 duplicate / failure evidence；指標只產生 Human-review flag，不自動改 source weight 或系統設定。相同月份的排程與手動 Issue reconciliation 會在同一 repository queue 中依序執行，保留 pending 工作且不取消報告。
-
-Quarterly Radar aggregation runs on day 3 of January, April, July and October so monthly Radar and Effectiveness Issues have time to publish. Missing monthly evidence remains `INCOMPLETE_INPUT`.
-Portable Command Core 的 Registry、renderer、ownership conflict 與 MCP read-only contract 沿用既有 Harness capability；Host-native integration 維持後續候選。
+每月與每季摘要會呈現蒐集、shortlist、semantic analysis、actionable 建議、Trial、PASS 與 ADOPT 的流程指標，也會標示重複或失敗資料。統計只提示人類檢視。缺少分析、歷史資料不完整或 evidence archive 無法驗證時，都會明確保留為未完成／待檢視。
 
 ## Verification History
 
-Creative workflow verification distinguishes deterministic authorization and provenance checks, native-host hook acceptance, real model inference and Human visual review. Missing inference evidence stays unverified and Radar recommendations never replace implementation or publication decisions.
+逐項驗證案例與版本化證據見[情境驗證紀錄](CONFORMANCE.md)。歷史數字不代表未來趨勢；本機 fixture 或安裝狀態也不能證明模型品質、Runtime enforcement 或外部 Provider 的實際效果。
 
-本機創作可靠性 fixture 只驗證流程與安全邊界。缺少權重時，生成品質與設備效能維持未驗證，不能由命令盤點推定改善成效。
-
-Runtime adapter acceptance stays separate from Evolution Radar trial evidence; the OpenCode Harness contract records supported host/version and unsupported Shell/MCP effects.
-
-Scenario 230 is the current route/core baseline; its measurements remain candidate-bound and do not establish runtime enforcement beyond the tested adapters.
+查看更多現行命令與證據要求，請閱讀 [Evolution Radar 使用指南](EVOLUTION_RADAR.md)。所有採納、實作與發布仍沿用各自的人類審查與授權流程。

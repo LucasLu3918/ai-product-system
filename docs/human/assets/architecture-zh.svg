@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">AI Product System 系統架構</title>
+  <desc id="desc">呈現 Runtime 與 MCP、任務脈絡、工作路由、執行驗證和人類決策邊界。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f3f8f6"/><stop offset="1" stop-color="#eaf2ef"/></linearGradient>
+    <linearGradient id="core" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#256b63"/><stop offset="1" stop-color="#194d48"/></linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#668b84"/></marker>
+    <style>
+      text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;fill:#18312e}
+      .title{font-size:30px;font-weight:700}.subtitle{font-size:16px;fill:#58716c}
+      .box{fill:#fff;stroke:#c8d9d4;stroke-width:2}.core{fill:url(#core);stroke:none}
+      .head{font-size:20px;font-weight:700}.body{font-size:15px;fill:#506863}.corehead{font-size:21px;font-weight:700;fill:#fff}.corebody{font-size:15px;fill:#e2f1ed}
+      .arrow{fill:none;stroke:#668b84;stroke-width:3;marker-end:url(#arrow)}.tag{font-size:13px;fill:#52716b}
+    </style>
+  </defs>
+  <rect width="1200" height="720" rx="26" fill="url(#bg)"/>
+  <text x="60" y="65" class="title">AIPS 系統架構</text>
+  <text x="60" y="96" class="subtitle">共用專案脈絡與驗證方式；各 Runtime 的防護能力仍以實際驗收證據為準。</text>
+
+  <rect x="55" y="145" width="255" height="160" rx="18" class="box"/>
+  <text x="82" y="186" class="head">使用者與 Runtime</text>
+  <text x="82" y="220" class="body">Codex · Claude Code</text>
+  <text x="82" y="248" class="body">Gemini CLI · OpenCode</text>
+  <text x="82" y="276" class="body">MCP 主機與工具</text>
+
+  <rect x="355" y="145" width="290" height="160" rx="18" class="box"/>
+  <text x="382" y="186" class="head">任務脈絡</text>
+  <text x="382" y="220" class="body">原生指示與正式文件</text>
+  <text x="382" y="248" class="body">Project Intelligence</text>
+  <text x="382" y="276" class="body">任務需要的 Protocol / Skill</text>
+
+  <rect x="690" y="145" width="455" height="160" rx="18" class="core"/>
+  <text x="720" y="186" class="corehead">AIPS 工作路由與治理</text>
+  <text x="720" y="220" class="corebody">需求釐清 · 風險判斷 · Planning</text>
+  <text x="720" y="248" class="corebody">角色與 Skills · 確定性檢查</text>
+  <text x="720" y="276" class="corebody">人類授權邊界 · 不以推測補足證據</text>
+
+  <path d="M310 225H346" class="arrow"/><path d="M645 225H681" class="arrow"/>
+
+  <rect x="170" y="395" width="340" height="175" rx="18" class="box"/>
+  <text x="200" y="438" class="head">執行與變更影響</text>
+  <text x="200" y="473" class="body">Existing Project：先界定影響範圍</text>
+  <text x="200" y="501" class="body">檢視 caller、consumer 與未知項目</text>
+  <text x="200" y="529" class="body">依需要使用隔離執行環境</text>
+
+  <rect x="615" y="395" width="340" height="175" rx="18" class="box"/>
+  <text x="645" y="438" class="head">驗證與審查證據</text>
+  <text x="645" y="473" class="body">Tests · Validators · Integration Gate</text>
+  <text x="645" y="501" class="body">結果綁定候選變更與實際差異</text>
+  <text x="645" y="529" class="body">人類審查補足語意與產品判斷</text>
+
+  <rect x="995" y="395" width="150" height="175" rx="18" class="box"/>
+  <text x="1020" y="438" class="head">人類決策</text>
+  <text x="1020" y="473" class="body">合併</text>
+  <text x="1020" y="501" class="body">發布</text>
+  <text x="1020" y="529" class="body">上線</text>
+
+  <path d="M835 305V350H340V385" class="arrow"/>
+  <path d="M510 482H606" class="arrow"/>
+  <path d="M955 482H986" class="arrow"/>
+  <text x="493" y="371" class="tag">符合工作需要時進入</text>
+
+  <rect x="170" y="615" width="975" height="52" rx="14" fill="#dcebe6"/>
+  <text x="200" y="648" class="body">核心原則：AIPS 組織脈絡、工作與證據；驗證通過或工具可用，都不會自行授予合併、發布或上線權限。</text>
+</svg>

@@ -218,6 +218,8 @@ Plan36 publication diagnostics preserve this topic's existing behavior and autho
 
 ## Official Docs Site
 
+網站的使用者說明以繁體中文為主，第一次出現的專有名詞以中文解釋並補充英文；命令、API／欄位名稱、路徑與機器狀態維持 canonical 拼法。首頁應按讀者任務導覽，不得以變更備忘錄取代操作說明。架構圖與流程圖需指向目前實際邊界，並附上文字替代說明與圖說。
+
 文件工具鏈安全修補需同步 `package.json` 的限定 Vite 覆寫與 npm lockfile。保留 VitePress 穩定版時，跨 Vite 主要版本的覆寫必須驗證乾淨安裝、audit、build、開發／預覽及熱更新；本機存取設定與操作限制維護在 Technology Guide 的 Documentation Platform。
 
 Pinned Actions updates require synchronized operational documentation. setup-node v7 executes with Node 24; upload-pages-artifact v5 uses upload-artifact v7. GitHub-hosted Ubuntu 24.04 supplies the runner; PR builds keep deployment skipped and main retains the configured Pages-state guard.
