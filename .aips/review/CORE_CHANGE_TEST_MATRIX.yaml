@@ -1,81 +1,84 @@
 version: 1
 change:
-  id: pii-email-git-remote-20261020
-  summary: Replace pii.email.v1 with pii.email.v2 so the exact `git` service user of scp-like and ssh:// Git remotes is
-    not reported as an email, while every other address, personal remote user and confusable remains blocked, detection
-    and redaction share one predicate, and PII exceptions stay impossible.
+  id: deps-docs-impact-20261020
+  summary: Exempt verified pure dependency updates from documentation-only requirements through one deterministic,
+    content-only predicate shared by Documentation Impact, Placement and Sync; every other change and every
+    non-documentation gate keeps its existing behavior.
   boundary:
-    - Email detection rule semantics (pii.email.v2)
-    - Redaction parity for REDACT sinks
-    - Commit Hook, diagnose and publication preview/plan consumers
-    - Secret and exception invariants
-    - Documentation and scenario closure
+    - Pure dependency update diff-shape predicate
+    - Documentation Impact exemption in docs-impact, plan, run and preview
+    - Documentation Placement and Documentation Sync gates
+    - Dependency policy documentation_exemption validation
+    - Repository delivery and documentation closure
 matrix:
-  - boundary: Email detection rule semantics (pii.email.v2)
-    reason: The rule blocks durable sinks; narrowing it must not let any non-remote address through.
+  - boundary: Pure dependency update diff-shape predicate
+    reason: The predicate decides when documentation requirements are suppressed; every ambiguous or malformed diff must
+      fall back to the full rules.
     checks:
-      static_lint: {applicable: true, evidence: "PASS: ruff check on changed Python files; git diff --check clean."}
-      unit: {applicable: true, evidence: "PASS: tests/test_content_safety.py 16 tests (new cases folded into existing methods); 17 hex Git remote samples ALLOW, 21 hex true-address samples BLOCK with rule_id pii.email.v2."}
-      integration: {applicable: true, evidence: "PASS: tests/test_safety_diagnostics.py 17 tests and tests/test_publication_planning.py 30 tests."}
-      contract: {applicable: true, evidence: "PASS: v1/v2 corpus comparison test; v1 flags all 38 samples, v2 flags only the 21 true-address samples."}
+      static_lint: {applicable: true, evidence: "PASS: ruff on changed modules clean for introduced code; git diff --check clean."}
+      unit: {applicable: true, evidence: "PASS: tests/evidence/dependency_impact_lifecycle.py positive SHA pin, same-version repin, grouped major, pip constraints and security-class cases."}
+      integration: {applicable: true, evidence: "PASS: classify-diff on all ten open Dependabot heads (#168, #259-#263, #337-#340) returns PURE_DEPENDENCY_UPDATE against df79357e."}
+      contract: {applicable: true, evidence: "PASS: Scenario 221 extended; stable reason codes asserted for every negative case."}
       e2e: {applicable: false, na_reason: No browser UI or deployed service is changed.}
-      security: {applicable: true, evidence: "PASS: case variants, dotless-i confusable, personal scp user, ssh:// personal user, https userinfo, address adjacent to or inside a remote path, and combolist form stay blocked."}
-      migration_recovery: {applicable: false, na_reason: No persistent data or configuration migration; rollback is a PR revert.}
-      cli_harness: {applicable: true, evidence: "PASS: aips publish preview (core) content_safety PASS and documentation placement complete for the candidate."}
-      docs_schema: {applicable: true, evidence: "PASS: Content Safety Boundary, Security Assurance and Scenario 266 describe the rule."}
-  - boundary: Redaction parity for REDACT sinks
-    reason: Detection and redaction previously used separate regex application; they must agree.
+      security: {applicable: true, evidence: "PASS: mixed with/run/env edits, new step, owner swap, local action, unpinned tag, downgrades, ranges, extras, markers, pre-release, CRLF, non-ASCII look-alike, new/deleted/chmod/nested files, planned paths, size limits and Git errors all stay NOT_PURE."}
+      migration_recovery: {applicable: false, na_reason: No persistent state; rollback is a PR revert or documentation_exemption.enabled false.}
+      cli_harness: {applicable: true, evidence: "PASS: dependency_impact.py classify-diff CLI exercised on real PR heads."}
+      docs_schema: {applicable: true, evidence: "PASS: Scenario 221 and canonical documentation record the shape and fallback."}
+  - boundary: Documentation Impact exemption in docs-impact, plan, run and preview
+    reason: The CI janitor and the build_plan blocker both use documentation_impact; the exemption must apply only when the
+      exact changed-file set equals the verified pure set.
     checks:
-      static_lint: {applicable: true, evidence: "PASS: ruff check on changed Python files; git diff --check clean."}
-      unit: {applicable: true, evidence: "PASS: runtime_log redacts the address and keeps the adjacent Git remote; a remote alone is ALLOW."}
-      integration: {applicable: true, evidence: "PASS: safe_emit REDACT path shared by governance_audit, observable_event and project_intelligence callers."}
-      contract: {applicable: true, evidence: "PASS: finding shape unchanged; values never emitted."}
-      e2e: {applicable: false, na_reason: No UI.}
-      security: {applicable: true, evidence: "PASS: real addresses in the same location are still redacted."}
-      migration_recovery: {applicable: false, na_reason: No stored data changes.}
-      cli_harness: {applicable: false, na_reason: Library behavior only; CLI uses safe_emit unchanged.}
-      docs_schema: {applicable: true, evidence: "PASS: Content Safety Boundary states the shared predicate."}
-  - boundary: Commit Hook, diagnose and publication preview/plan consumers
-    reason: governance_guard, safety_diagnostics, publish_preflight and publication_authority consume email findings.
+      static_lint: {applicable: true, evidence: "PASS: ruff import order fixed; no new findings in introduced code."}
+      unit: {applicable: true, evidence: "PASS: documentation_impact exempt/suppressed equality and file-set mismatch cases in the dependency lifecycle."}
+      integration: {applicable: true, evidence: "PASS: replayed #338 and #262 heads with this change overlaid; docs-impact --require-complete exit 0."}
+      contract: {applicable: true, evidence: "PASS: publish_preflight_lifecycle Step Summary exemption output and planned-path fallback."}
+      e2e: {applicable: false, na_reason: No browser UI or deployed service is changed.}
+      security: {applicable: true, evidence: "PASS: planned paths, extra files and non-pure scopes leave required_additions identical to the previous behavior."}
+      migration_recovery: {applicable: false, na_reason: Additive report field only.}
+      cli_harness: {applicable: true, evidence: "PASS: publish_preflight.py docs-impact CLI with --summary-file."}
+      docs_schema: {applicable: true, evidence: "PASS: dependency_update_exemption is additive; existing keys keep meaning."}
+  - boundary: Documentation Placement and Documentation Sync gates
+    reason: Repository validation would still fail a pure dependency PR unless placement and the diff-based sync check share
+      the predicate.
     checks:
-      static_lint: {applicable: true, evidence: "PASS: ruff check on changed Python files; git diff --check clean."}
-      unit: {applicable: true, evidence: "PASS: safety diagnostics suite 17 tests."}
-      integration: {applicable: true, evidence: "PASS: tests/validate_repository.py VALIDATION PASSED (266 scenarios); safety diagnostics 17 and publication planning 30 tests."}
-      contract: {applicable: true, evidence: "PASS: full repository validator; finding shape and CONTENT_PII_BLOCKED reason code unchanged."}
-      e2e: {applicable: false, na_reason: No UI.}
-      security: {applicable: true, evidence: "PASS: CONTENT_PII_BLOCKED reason code and fail-closed behavior unchanged."}
-      migration_recovery: {applicable: false, na_reason: The installed runtime keeps v1 until updated; no data migration.}
-      cli_harness: {applicable: true, evidence: "PASS: aips publish preview (core) content_safety PASS and documentation placement complete for the candidate."}
-      docs_schema: {applicable: true, evidence: "PASS: Scenario 266 updated."}
-  - boundary: Secret and exception invariants
-    reason: The change must not weaken secret scanning or open a PII exception path.
+      static_lint: {applicable: true, evidence: "PASS: ruff clean on documentation_placement.py."}
+      unit: {applicable: true, evidence: "PASS: placement early return requires predicate files equal to the changed set."}
+      integration: {applicable: true, evidence: "PASS: replayed #338 and #262: DOCUMENTATION PLACEMENT PASSED and documentation_sync_contracts reported no errors."}
+      contract: {applicable: true, evidence: "PASS: static placement config errors and static sync contracts still run unconditionally."}
+      e2e: {applicable: false, na_reason: No browser UI or deployed service is changed.}
+      security: {applicable: true, evidence: "PASS: only diff-based requirements are skipped and only for a verified pure candidate."}
+      migration_recovery: {applicable: false, na_reason: No persistent data migration.}
+      cli_harness: {applicable: false, na_reason: Placement and sync run inside repository validation; covered by integration replay.}
+      docs_schema: {applicable: true, evidence: "PASS: Documentation Sync docs describe the exemption and fallback."}
+  - boundary: Dependency policy documentation_exemption validation
+    reason: A policy edit must never widen the exemption beyond the closed manifest pattern set or bounded sizes.
     checks:
-      static_lint: {applicable: true, evidence: "PASS: ruff check on changed Python files; git diff --check clean."}
-      unit: {applicable: true, evidence: "PASS: secret next to a Git remote still BLOCK; a pii.email.v2 exception record is rejected as invalid rule_id."}
-      integration: {applicable: true, evidence: "PASS: check_secret_leakage untouched; candidate/history secret scan unchanged."}
-      contract: {applicable: true, evidence: "PASS: config/content-safety.yaml and content-safety-exceptions.yaml unchanged."}
-      e2e: {applicable: false, na_reason: No UI.}
-      security: {applicable: true, evidence: "PASS: secret next to a Git remote still BLOCK; pii.* exception rejected; check_secret_leakage and sink policy unchanged."}
-      migration_recovery: {applicable: false, na_reason: No migration.}
-      cli_harness: {applicable: false, na_reason: No CLI change.}
-      docs_schema: {applicable: true, evidence: "PASS: Content Safety Boundary repeats that PII never accepts exceptions."}
-  - boundary: Documentation and scenario closure
-    reason: Detector semantics are documented in canonical and human docs and Scenario 266.
+      static_lint: {applicable: true, evidence: "PASS: YAML loads; validate_policy clean on the committed policy."}
+      unit: {applicable: true, evidence: "PASS: broad paths (scripts/*.py, **) rejected; disabled policy returns DISABLED; high_risk_classes_exempt false returns HIGH_RISK_NOT_EXEMPT."}
+      integration: {applicable: false, na_reason: Static configuration consumed only by the predicate.}
+      contract: {applicable: true, evidence: "PASS: dependency_impact_contracts keeps automatic merge and policy changes disabled."}
+      e2e: {applicable: false, na_reason: No browser UI or deployed service is changed.}
+      security: {applicable: true, evidence: "PASS: invalid policy yields CLASSIFIER_BLOCKED and full documentation rules."}
+      migration_recovery: {applicable: false, na_reason: Static repository policy only.}
+      cli_harness: {applicable: false, na_reason: No CLI surface for policy editing.}
+      docs_schema: {applicable: true, evidence: "PASS: proposal and Scenario 221 document the option A choice."}
+  - boundary: Repository delivery and documentation closure
+    reason: The change touches matrix-required publication preflight code and must pass the full local Gate.
     checks:
-      static_lint: {applicable: true, evidence: "PASS: ruff check on changed Python files; git diff --check clean."}
-      unit: {applicable: false, na_reason: Documentation only.}
-      integration: {applicable: true, evidence: "PASS: tests/validate_repository.py VALIDATION PASSED (266 scenarios); safety diagnostics 17 and publication planning 30 tests."}
-      contract: {applicable: true, evidence: "PASS: full repository validator; finding shape and CONTENT_PII_BLOCKED reason code unchanged."}
-      e2e: {applicable: false, na_reason: No UI.}
-      security: {applicable: false, na_reason: Documentation only.}
-      migration_recovery: {applicable: false, na_reason: No migration.}
-      cli_harness: {applicable: false, na_reason: No CLI change.}
-      docs_schema: {applicable: true, evidence: "PASS: documentation placement closure in aips publish preview; 11 canonical docs updated within allowed sections."}
+      static_lint: {applicable: true, evidence: "PASS: capability_registry.py check valid (45 capabilities, 10 surfaces)."}
+      unit: {applicable: true, evidence: "PASS: focused lifecycles pass; full Gate run recorded in the delivery report."}
+      integration: {applicable: true, evidence: "PASS: publish_preflight.py run on the exact committed candidate."}
+      contract: {applicable: true, evidence: "PASS: exact-candidate Documentation Impact complete with zero required additions."}
+      e2e: {applicable: false, na_reason: No browser UI or deployed service is changed.}
+      security: {applicable: true, evidence: "PASS: candidate secret scan and content safety inside the Gate."}
+      migration_recovery: {applicable: false, na_reason: Rollback is a PR revert.}
+      cli_harness: {applicable: true, evidence: "PASS: publish_preflight.py run CLI."}
+      docs_schema: {applicable: true, evidence: "PASS: Documentation Placement audit clean for 19 canonical documents (including CHANGELOG-triggered HARNESS and index)."}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 candidate:
-  base_sha: df79357e3c260c450645e40d7af27321c8627757
-  changed_files_hash: b6c893363b06c689a6100ccb8d36157c488895729c0629af47a302a53bb81a7e
+  base_sha: bf329efb76b57e7a2e54a6e6e42e8b52460b2486
+  changed_files_hash: aecacfd83b227c7944b2d13beba0c9f56d6c4fb554c8e4f85671719c3084a359
 blockers:
   []
 review_evidence:

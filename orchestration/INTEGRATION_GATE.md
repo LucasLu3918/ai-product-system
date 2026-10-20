@@ -131,6 +131,8 @@ The candidate fingerprint includes the scanner and policy SHA-256 hashes, along 
 
 `ALREADY_MERGED` is an idempotent read-only recovery state bound to the exact PR head, merge commit, and live default base. It routes to post-merge reconciliation and does not replace the exact-candidate Gate or required checks.
 
+Pure dependency update documentation exemption (Scenario 221): `pure_dependency_update` in `scripts/dependency_impact.py` returns `PURE_DEPENDENCY_UPDATE` only when every changed file is an allowlisted dependency manifest (`.github/workflows/*.yml`, root `requirements*.txt`, `constraints/*.txt`) modified in place and every changed line pair is either a full-SHA pinned `uses:` reference for the same action with a non-decreasing version comment, or an exact `name==version` pin with a strictly higher version. Documentation Impact, Documentation Placement and Documentation Sync then suppress documentation requirements only and report each dependency's classification, risk and `human_review_required`; any other line or file, downgrade, unpinned reference, planned path, size-limit overflow or predicate failure keeps the full rules. Secret scanning, content safety, the Core Change Test Matrix, the Integration Gate, required checks and Human merge approval are unchanged, and `automatic_merge_authorized` stays false.
+
 ## Validation Profile
 
 The Integration Gate inventory includes `scripts/publish_post_merge.py` and its facade lifecycle evidence so exact-candidate validation compiles and exercises the extracted implementation.

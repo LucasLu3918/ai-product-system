@@ -131,3 +131,5 @@ Reusable local character artwork reuses the Creative Direction Skills, provenanc
 For publication failure diagnosis, start with [Git Publication 與 Release](./USER_GUIDE.md#git-publication-與-release); security and authority details are in [Security Assurance](./SECURITY_ASSURANCE.md).
 
 Runtime Content Safety 的 canonical 行為與安全界線見 `orchestration/CONTENT_SAFETY_BOUNDARY.md`；字型掃描的驗證情境為 Scenario 263。
+
+純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。

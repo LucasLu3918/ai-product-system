@@ -123,6 +123,8 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 
 Plan36 publication diagnostics preserve this topic's existing behavior and authority boundaries.
 
+Release history 更新（純依賴升級文件豁免，Scenario 221）已審查本區段：Skill 整合、Explorer 與重用行為不變。
+
 ## Agent / machine canonical 文件
 
 Creative raster validation uses the shared AVIF metadata scanner in `scripts/creative_image_validation.py`; its format handling is not a Skill or new capability route.
@@ -341,3 +343,5 @@ Execution Isolation provider changes map to Architecture Overview and Security A
 **Plan19 architecture and runtime closure.**
 
 Plan19 machine-readable authorities are `config/capability-registry.yaml` and `config/eval-freshness.yaml`; generated compatibility views are `config/architecture-surfaces.yaml` and `references/evolution/CAPABILITY_MAP.yaml`. Branch and monthly effectiveness evidence lives under `.aips/review/` and remains report-only.
+
+純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。

@@ -40,7 +40,9 @@ def matrix_required(profile: dict[str, Any], files: list[str], change_class: str
     return matches(files, [str(item) for item in profile.get("matrix_required_paths") or []])
 
 
-def documentation_impact(files: list[str], root: Path = DEFAULT_ROOT) -> dict[str, Any]:
+def documentation_impact(
+    files: list[str], root: Path = DEFAULT_ROOT, dependency_update: dict[str, Any] | None = None
+) -> dict[str, Any]:
     sync = yaml.safe_load((root / "config/documentation-sync.yaml").read_text(encoding="utf-8")) or {}
     placement = yaml.safe_load((root / "config/documentation-placement.yaml").read_text(encoding="utf-8")) or {}
     closure = set(files)
@@ -88,7 +90,20 @@ def documentation_impact(files: list[str], root: Path = DEFAULT_ROOT) -> dict[st
     required = sorted(closure - set(files))
     direct_path_count = len(set(files))
     required_by_counts = [len(sources) for sources in required_by.values()]
-    return {
+    exemption = None
+    if dependency_update is not None:
+        exempt = (
+            dependency_update.get("status") == "PURE_DEPENDENCY_UPDATE"
+            and sorted(set(files)) == sorted(dependency_update.get("files") or [])
+        )
+        exemption = {**dependency_update, "applied": exempt, "suppressed_required_additions": required if exempt else []}
+        if exempt:
+            # Pure version bumps carry no documented behavior; only documentation
+            # requirements are suppressed, every other gate still applies.
+            required = []
+            required_by = {}
+            required_by_counts = []
+    result = {
         "changed_files": files,
         "closure": sorted(closure),
         "triggered_rules": triggered,
@@ -107,3 +122,6 @@ def documentation_impact(files: list[str], root: Path = DEFAULT_ROOT) -> dict[st
             "maximum_requirements_per_document": max(required_by_counts, default=0),
         },
     }
+    if exemption is not None:
+        result["dependency_update_exemption"] = exemption
+    return result

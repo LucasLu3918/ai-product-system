@@ -196,6 +196,8 @@ The Scheduler never falls back to LLM coordination to make a blocked graph look 
 
 Publication doctor output is a read-only observation and never changes task readiness, scheduling order, isolation, or Human approval state.
 
+Pure dependency update documentation exemption (Scenario 221): `pure_dependency_update` in `scripts/dependency_impact.py` returns `PURE_DEPENDENCY_UPDATE` only when every changed file is an allowlisted dependency manifest (`.github/workflows/*.yml`, root `requirements*.txt`, `constraints/*.txt`) modified in place and every changed line pair is either a full-SHA pinned `uses:` reference for the same action with a non-decreasing version comment, or an exact `name==version` pin with a strictly higher version. Documentation Impact, Documentation Placement and Documentation Sync then suppress documentation requirements only and report each dependency's classification, risk and `human_review_required`; any other line or file, downgrade, unpinned reference, planned path, size-limit overflow or predicate failure keeps the full rules. Secret scanning, content safety, the Core Change Test Matrix, the Integration Gate, required checks and Human merge approval are unchanged, and `automatic_merge_authorized` stays false.
+
 ## Read-only declaration and fail-closed boundary
 
 Publication Prepare and diagnostic lookup are read-only observations; their lifecycle fields do not become scheduler grants or execution receipts. Only an independently observed completed native action may be reported as executed.

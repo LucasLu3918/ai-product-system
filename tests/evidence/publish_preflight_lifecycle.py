@@ -130,6 +130,26 @@ def main() -> int:
             assert publish.main() == 1
         assert "Documentation impact: FAIL" in summary_path.read_text()
         assert "docs/human/USER_GUIDE.md" in summary_path.read_text()
+        pure_scope = {
+            "status": "PURE_DEPENDENCY_UPDATE", "files": [".github/workflows/scorecard.yml"],
+            "items": [{"name": "github/codeql-action", "current_version": "v4.37.4", "target_version": "v4.38.3",
+                       "classification": "CI_ACTION", "risk": "MEDIUM"}],
+        }
+        exempt_summary = Path(summary_dir) / "exempt.md"
+        with patch.object(sys, "argv", ["publish", "docs-impact", "--base", "HEAD", "--require-complete", "--summary-file", str(exempt_summary)]), patch.object(
+            publish, "resolve_commit", return_value="head"
+        ), patch.object(publish, "changed_files", return_value=[".github/workflows/scorecard.yml"]), patch.object(
+            publish, "pure_dependency_update", return_value=pure_scope
+        ), patch.object(publish, "emit"):
+            assert publish.main() == 0
+        assert "Documentation impact: PASS (pure dependency update exemption)" in exempt_summary.read_text()
+        assert "github/codeql-action v4.37.4 -> v4.38.3 (CI_ACTION/MEDIUM)" in exempt_summary.read_text()
+        with patch.object(sys, "argv", ["publish", "docs-impact", "--base", "HEAD", "--require-complete",
+                                        "--planned-path", "docs/human/MAINTENANCE.md"]), patch.object(
+            publish, "resolve_commit", return_value="head"
+        ), patch.object(publish, "changed_files", return_value=[".github/workflows/scorecard.yml"]), patch.object(publish, "emit"):
+            # Prospective paths can never be content-verified, so the full rules apply.
+            assert publish.main() == 1
 
     complete_files = ["bin/aips", *impact["required_additions"]]
     assert publish.documentation_impact(complete_files)["complete"]
