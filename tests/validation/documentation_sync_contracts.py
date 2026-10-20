@@ -66,6 +66,15 @@ if script.exists():
         ]
         if docs_sync.evaluate_changes(complete, config):
             errors.append('Documentation sync rejected a complete Evolution documentation update')
+        workflow_only = docs_sync.evaluate_changes(['.github/workflows/evolution-radar.yml'], config)
+        for expected in ('Technology Guide review required', 'rule evolution-radar requires'):
+            if not any(expected in item for item in workflow_only):
+                errors.append(f'Documentation sync must enforce .github/** triggers: missing "{expected}"')
+        if docs_sync.evaluate_changes(['./' + path for path in complete], config):
+            errors.append('Documentation sync must strip a single leading ./ prefix')
+        dot_dir = docs_sync.evaluate_changes(['.aips/review/x.md', '.github/workflows/docs-site.yml'], config)
+        if not any('rule documentation-platform requires' in item for item in dot_dir):
+            errors.append('Documentation sync must keep the leading dot of hidden directories')
         base = os.environ.get('AIPS_DOCS_DIFF_BASE', '').strip()
         if base and base != '0' * 40:
             diff_errors, _ = docs_sync.evaluate_candidate(base, 'HEAD', config, ROOT)

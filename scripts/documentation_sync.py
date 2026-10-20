@@ -26,7 +26,8 @@ def validate_config(doc):
 def evaluate_changes(files,config):
  e=validate_config(config)
  if e:return e
- changed=sorted({str(x).strip().lstrip("./") for x in files if str(x).strip()}); s=set(changed); t=config["technology_guide"]
+ # removeprefix, not lstrip: lstrip drops the leading "." of .github/** and disables those triggers.
+ changed=sorted({str(x).strip().removeprefix("./") for x in files if str(x).strip()}); s=set(changed); t=config["technology_guide"]
  if anymatch(changed,pats(t.get("triggers"))) and t["path"] not in s:e.append(f"Technology Guide review required: {t['path']} was not updated")
  for r in config.get("rules") or []:
   if not anymatch(changed,pats(r.get("triggers"))):continue

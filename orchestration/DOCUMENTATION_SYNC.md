@@ -220,6 +220,8 @@ Pure dependency update documentation exemption (Scenario 221): `pure_dependency_
 
 Dependabot repository preflight and action pin sync (Scenario 221): `scripts/repository_preflight.py`, the documentation sync contracts and the `scripts/documentation_sync.py` CLI all evaluate sync through `documentation_sync.evaluate_candidate`, which shares `pure_dependency_update` with docs-impact and placement; every non-matching candidate keeps the full rules. Validation contracts no longer copy action commit SHAs: `dependency_impact.require_pinned_action` requires the exact action identity, a full 40-hex commit SHA, a version comment at or above the reviewed floor, and one shared SHA across paired workflows; the evolution configs name `action: openai/codex-action`. Human review still confirms that a new SHA is the upstream tag commit.
 
+Documentation sync path normalization (Scenario 221): `documentation_sync.evaluate_changes` removes only a single leading `./` (`removeprefix`). The previous `lstrip("./")` stripped characters, turning `.github/workflows/x.yml` into `github/workflows/x.yml` and disabling every `.github/**` trigger in `config/documentation-sync.yaml` (Technology Guide, evolution-radar, publication-preflight, documentation-platform, execution-isolation and others). Human workflow changes now require the mapped documentation; pure dependency updates stay exempt because `evaluate_candidate` applies the exemption first.
+
 
 ## Human documentation placement
 
