@@ -670,3 +670,5 @@ The commit guard accepts quoted-delimiter heredoc messages, literal `git add` co
 Email rule `pii.email.v2` treats the `git` service user of an scp-like or `ssh://` Git remote as a host address, not an email; detection and redaction share that predicate and every other address still blocks.
 
 純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
+
+文件同步路徑正規化（Scenario 221）：Documentation Sync 只移除開頭一個 `./`，不再用 `lstrip("./")` 逐字元剝除，使 `config/documentation-sync.yaml` 中的 `.github/**` 觸發條件真正生效；純依賴升級仍由 `evaluate_candidate` 先行豁免。
