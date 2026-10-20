@@ -175,7 +175,7 @@ jobs:
         id: trial_agent
         if: inputs.decision == 'TRIAL' && steps.trial_provider.outputs.value == 'openai-codex-action' && steps.trial_secret.outputs.available == 'true' && steps.isolation.outcome == 'success'
         continue-on-error: true
-        uses: openai/codex-action@86365089eb2b84e0a8fb0717b304f8bdcb13b20e # v1
+        uses: openai/codex-action@bdf19a4a223ec2549a3e2274a0cf61556bc07675 # v1
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           working-directory: ${{ steps.isolation.outputs.path }}
