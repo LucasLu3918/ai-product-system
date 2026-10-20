@@ -208,10 +208,12 @@ def run(base: str, head: str, docs_build: bool = False) -> list[str]:
         errors.extend(build_docs_site())
 
     sync_config = yaml.safe_load((ROOT / "config/documentation-sync.yaml").read_text(encoding="utf-8")) or {}
-    errors.extend(
-        f"Documentation consistency: {item}"
-        for item in documentation_sync.evaluate_changes(files, sync_config)
-    )
+    try:
+        # Shared entry point: verified pure dependency updates are exempt (Scenario 221).
+        sync_errors, _ = documentation_sync.evaluate_candidate(base, head, sync_config, ROOT)
+    except (OSError, RuntimeError, TypeError, ValueError, KeyError) as exc:
+        sync_errors = [f"failed: {exc}"]
+    errors.extend(f"Documentation consistency: {item}" for item in sync_errors)
 
     previous = os.environ.get("AIPS_DOCS_DIFF_BASE")
     os.environ["AIPS_DOCS_DIFF_BASE"] = base

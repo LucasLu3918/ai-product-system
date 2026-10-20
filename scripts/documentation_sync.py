@@ -34,15 +34,30 @@ def evaluate_changes(files,config):
   if mh:e.append(f"Documentation sync rule {r['id']} requires Human docs: "+", ".join(mh))
   if ma:e.append(f"Documentation sync rule {r['id']} requires Agent docs: "+", ".join(ma))
  return e
-def changed_files_from_git(base,head="HEAD"):
+def changed_files_from_git(base,head="HEAD",root=ROOT):
  if not base or base==ZERO:return []
- r=subprocess.run(["git","diff","--name-only",f"{base}...{head}"],cwd=ROOT,capture_output=True,text=True)
+ r=subprocess.run(["git","diff","--name-only",f"{base}...{head}"],cwd=root,capture_output=True,text=True)
  if r.returncode:raise RuntimeError(r.stderr.strip() or "git diff failed")
  return [x.strip() for x in r.stdout.splitlines() if x.strip()]
+def evaluate_candidate(base,head,config,root=ROOT):
+ """Single diff-based sync entry point; verified pure dependency updates are exempt (Scenario 221)."""
+ files=changed_files_from_git(base,head,root)
+ if files:
+  import sys
+  if str(root/"scripts") not in sys.path:sys.path.insert(0,str(root/"scripts"))
+  from dependency_impact import pure_dependency_update
+  scope=pure_dependency_update(base,head,root)
+  if scope["status"]=="PURE_DEPENDENCY_UPDATE" and sorted(set(files))==scope["files"]:return [],scope
+ return evaluate_changes(files,config),None
 def main():
  p=argparse.ArgumentParser(); p.add_argument("--config",default=str(DEFAULT)); p.add_argument("--base-ref",default=os.environ.get("AIPS_DOCS_DIFF_BASE","")); p.add_argument("--head-ref",default="HEAD"); p.add_argument("--files",nargs="*"); a=p.parse_args(); c=yaml.safe_load(Path(a.config).read_text()) or {}; ce=validate_config(c)
  if ce: print(json.dumps({"valid":False,"errors":ce},indent=2)); return 1
- try: f=a.files if a.files is not None else changed_files_from_git(a.base_ref,a.head_ref) if a.base_ref else []
- except RuntimeError as x: print(json.dumps({"valid":False,"errors":[str(x)]},indent=2)); return 1
- e=evaluate_changes(f,c); print(json.dumps({"valid":not e,"changed_files":f,"errors":e},ensure_ascii=False,indent=2)); return 0 if not e else 1
+ x=None
+ try:
+  if a.files is not None or not a.base_ref: f=a.files or []; e=evaluate_changes(f,c)
+  else: f=changed_files_from_git(a.base_ref,a.head_ref); e,x=evaluate_candidate(a.base_ref,a.head_ref,c)
+ except RuntimeError as r: print(json.dumps({"valid":False,"errors":[str(r)]},indent=2)); return 1
+ out={"valid":not e,"changed_files":f,"errors":e}
+ if x: out["dependency_update_exemption"]={"status":x["status"],"items":len(x.get("items") or [])}
+ print(json.dumps(out,ensure_ascii=False,indent=2)); return 0 if not e else 1
 if __name__=="__main__": raise SystemExit(main())

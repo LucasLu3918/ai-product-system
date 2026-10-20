@@ -338,6 +338,8 @@ Publication diagnostic evidence is read-only and redacted. HTTP 403 remains an a
 
 Dependabot commits: the GitHub App bot noreply author and Dependabot's exact final `Signed-off-by` trailer are Git identity metadata decided by `config/git-publication.yaml`, not PII exceptions; `pii.email.v2` and every other address stay blocking, and the bot identity grants no authority.
 
+Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
+
 ## Model routing
 
 SAL informs, but does not equal, Model Tier.

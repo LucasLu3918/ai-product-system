@@ -186,6 +186,54 @@ def _pair_action(path: str, old: str, new: str) -> dict[str, Any]:
     }
 
 
+def pinned_action_references(text: str, action: str) -> list[dict[str, Any]]:
+    """Return every `uses:` reference to exactly `action`, parsed with the pure-update grammar."""
+    mention = re.compile(r"(?<![A-Za-z0-9_./-])" + re.escape(action) + r"@", re.ASCII)
+    references: list[dict[str, Any]] = []
+    for number, raw in enumerate(text.splitlines(), 1):
+        if not mention.search(raw):
+            continue
+        match = ACTION_LINE.fullmatch(raw.rstrip())
+        exact = bool(match) and match["action"] == action
+        references.append({
+            "line": number,
+            "ref": match["ref"] if exact else "",
+            "ver": match["ver"] if exact else None,
+            "pinned": exact and bool(PINNED_SHA.fullmatch(match["ref"])),
+        })
+    return references
+
+
+def require_pinned_action(
+    text: str,
+    action: str,
+    *,
+    label: str,
+    min_version: str | None = None,
+    expected_count: int | None = None,
+) -> list[str]:
+    """Validate a workflow's action pin by identity and immutability instead of a copied SHA literal.
+
+    Dependabot may move the SHA; the action identity, the full-SHA pin and the reviewed
+    version floor (when given) must hold. Human review still approves the new commit.
+    """
+    references = pinned_action_references(text, action)
+    if not references:
+        return [f"{label} must pin {action} to an immutable full commit SHA"]
+    errors: list[str] = []
+    if expected_count is not None and len(references) != expected_count:
+        errors.append(f"{label} must reference {action} exactly {expected_count} time(s)")
+    if not all(item["pinned"] for item in references):
+        errors.append(f"{label} must pin {action} to an immutable full commit SHA")
+    if min_version is not None:
+        for item in references:
+            if item["ver"] is None:
+                errors.append(f"{label} must keep a version comment on {action}")
+            elif _release(item["ver"]) < _release(min_version):
+                errors.append(f"{label} pins {action} {item['ver']} below reviewed floor {min_version}")
+    return errors
+
+
 def _pair_pip(path: str, old: str, new: str) -> dict[str, Any]:
     before, after = PIP_LINE.fullmatch(old), PIP_LINE.fullmatch(new)
     if not before or not after:

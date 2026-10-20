@@ -59,12 +59,16 @@ for phrase in (
 ):
     if phrase not in repository_preflight:
         errors.append(f"offline documentation build contract missing: {phrase}")
+sys.path.insert(0, str(ROOT / "scripts"))
+from dependency_impact import require_pinned_action
+
+# Node 24 floors; the commit itself is reviewed per PR (Dependabot may move it).
 workflow_pins = {
-    ".github/workflows/docs-site.yml": "actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1",
-    ".github/workflows/e2b-sandbox-verification.yml": "actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0",
+    ".github/workflows/docs-site.yml": ("actions/deploy-pages", "v5.0.1"),
+    ".github/workflows/e2b-sandbox-verification.yml": ("actions/upload-artifact", "v6.0.0"),
 }
-for rel, expected in workflow_pins.items():
-    if expected not in (ROOT / rel).read_text(encoding="utf-8"):
+for rel, (action, floor) in workflow_pins.items():
+    if require_pinned_action((ROOT / rel).read_text(encoding="utf-8"), action, label=rel, min_version=floor):
         errors.append(f"Node 24 action pin mismatch: {rel}")
 
 evidence = ROOT / "tests/evidence/publish_preflight_lifecycle.py"

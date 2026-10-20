@@ -385,10 +385,11 @@ for workflow_path in (".github/workflows/validate.yml", ".github/workflows/docs-
 if (ROOT / ".github/workflows/docs-site.yml").read_text(encoding="utf-8").count('"package-lock.json"') != 2:
     errors.append("docs-site pull_request and main push path filters must include package-lock.json")
 
+sys.path.insert(0, str(ROOT / "scripts"))
+from dependency_impact import require_pinned_action
+
 for action in ("actions/checkout", "actions/setup-python"):
-    match = re.search(r"uses:\s*" + re.escape(action) + r"@([0-9a-f]{40})(?:\s|$)", workflow_text)
-    if not match:
-        errors.append(f"validate workflow must pin {action} to an immutable full commit SHA")
+    errors.extend(dict.fromkeys(require_pinned_action(workflow_text, action, label="validate workflow")))
 
 dependabot_text = (ROOT / ".github/dependabot.yml").read_text(encoding="utf-8") if (ROOT / ".github/dependabot.yml").exists() else ""
 for ecosystem in ('package-ecosystem: "pip"', 'package-ecosystem: "github-actions"'):

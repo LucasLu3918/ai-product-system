@@ -222,4 +222,74 @@ assert pure_dependency_update("does-not-exist", "HEAD", ROOT, policy=policy)["re
 broad = json.loads(json.dumps(policy))
 broad["documentation_exemption"]["paths"] = ["scripts/*.py"]
 assert validate_policy(broad), "broad exemption paths must be rejected"
+
+# Every diff-based Documentation Sync consumer (repository preflight, sync contracts, CLI)
+# shares documentation_sync.evaluate_candidate and therefore this predicate.
+import documentation_sync
+
+SYNC_CONFIG = {
+    "version": 1,
+    "technology_guide": {"enabled": True, "path": "docs/human/TECHNOLOGY_GUIDE.md", "triggers": ["requirements*.txt"]},
+    "rules": [{"id": "deterministic-execution", "triggers": ["requirements-validation.txt"],
+               "human_docs": ["docs/human/USER_GUIDE.md"], "agent_docs": ["orchestration/ORCHESTRATOR.md"]}],
+}
+
+
+def sync_for(edit, *, exemption: dict[str, object] | None = None):
+    with tempfile.TemporaryDirectory(prefix="aips-dep-sync-") as temporary:
+        repo = Path(temporary)
+        git(repo, "init", "-q", "-b", "main")
+        candidate = json.loads(json.dumps(policy))
+        if exemption:
+            candidate["documentation_exemption"].update(exemption)
+        for rel, text in {**FILES, "config/dependency-policy.yaml": yaml.safe_dump(candidate)}.items():
+            (repo / rel).parent.mkdir(parents=True, exist_ok=True)
+            (repo / rel).write_bytes(text.encode("utf-8"))
+        git(repo, "add", "-A")
+        git(repo, "commit", "-qm", "base")
+        edit(repo)
+        git(repo, "add", "-A")
+        git(repo, "commit", "-qm", "head", "--allow-empty")
+        return documentation_sync.evaluate_candidate("HEAD~1", "HEAD", SYNC_CONFIG, repo)
+
+
+sync_errors, sync_scope = sync_for(coverage_bump)
+assert sync_errors == [] and sync_scope["status"] == "PURE_DEPENDENCY_UPDATE", (sync_errors, sync_scope)
+full_rules = documentation_sync.evaluate_changes(["constraints/tested.txt", "requirements-validation.txt"], SYNC_CONFIG)
+assert len(full_rules) == 3, full_rules
+for edit, label in (
+    (combine(coverage_bump, replace("docs/notes.md", "notes", "changed")), "dependency bump plus doc edit"),
+    (replace("requirements.txt", "PyYAML>=6.0.3,<7", "PyYAML>=6.0.4,<7"), "range edit"),
+):
+    observed, observed_scope = sync_for(edit)
+    assert observed and observed_scope is None, (label, observed)
+disabled, disabled_scope = sync_for(coverage_bump, exemption={"enabled": False})
+assert disabled == full_rules and disabled_scope is None, disabled
+assert documentation_sync.evaluate_candidate("0" * 40, "HEAD", SYNC_CONFIG, ROOT) == ([], None)
+
+# Action pins are validated by identity, immutable SHA and reviewed floor instead of copied
+# SHA literals, so Dependabot can move the commit while Human review approves it.
+from dependency_impact import pinned_action_references, require_pinned_action
+
+PIN = f"      - uses: ossf/scorecard-action@{OLD_SHA} # v2.4.4\n"
+assert require_pinned_action(PIN, "ossf/scorecard-action", label="S", min_version="v2.4.4", expected_count=1) == []
+assert require_pinned_action(PIN.replace(OLD_SHA, NEW_SHA), "ossf/scorecard-action", label="S", min_version="v2.4.4") == []
+assert require_pinned_action(PIN.replace("# v2.4.4", "# v2.5.0"), "ossf/scorecard-action", label="S", min_version="v2.4.4") == []
+assert require_pinned_action("    uses: g/o/.github/workflows/r.yml@" + OLD_SHA + "\n", "g/o/.github/workflows/r.yml", label="S") == []
+for text, expected in (
+    (PIN.replace(OLD_SHA, "v2"), "immutable full commit SHA"),
+    (PIN.replace(OLD_SHA, "main"), "immutable full commit SHA"),
+    (PIN.replace(OLD_SHA, OLD_SHA[:12]), "immutable full commit SHA"),
+    (PIN.replace("ossf/", "evil/"), "immutable full commit SHA"),
+    (PIN.replace("ossf/", "xossf/"), "immutable full commit SHA"),
+    (PIN.replace(" # v2.4.4", ""), "version comment"),
+    (PIN.replace("# v2.4.4", "# v2.4.3"), "below reviewed floor"),
+    (PIN + "      - uses: ossf/scorecard-action@v2\n", "immutable full commit SHA"),
+    (PIN + PIN.replace(OLD_SHA, NEW_SHA), "exactly 1"),
+    ("", "immutable full commit SHA"),
+):
+    found = require_pinned_action(text, "ossf/scorecard-action", label="S", min_version="v2.4.4", expected_count=1)
+    assert any(expected in item for item in found), (text, found)
+pair = {item["ref"] for text in (PIN, PIN.replace(OLD_SHA, NEW_SHA)) for item in pinned_action_references(text, "ossf/scorecard-action")}
+assert pair == {OLD_SHA, NEW_SHA}, "paired-workflow consistency check needs both references"
 print("dependency impact lifecycle: PASS")

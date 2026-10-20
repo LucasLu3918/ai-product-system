@@ -22,6 +22,8 @@ Review durable weekly evidence for the previous calendar month, aggregate recurr
 
 Quarterly Evolution Review is a deterministic credential-free rollup over durable monthly evidence.
 
+Dependabot repository preflight and action pin sync (Scenario 221): `scripts/repository_preflight.py`, the documentation sync contracts and the `scripts/documentation_sync.py` CLI all evaluate sync through `documentation_sync.evaluate_candidate`, which shares `pure_dependency_update` with docs-impact and placement; every non-matching candidate keeps the full rules. Validation contracts no longer copy action commit SHAs: `dependency_impact.require_pinned_action` requires the exact action identity, a full 40-hex commit SHA, a version comment at or above the reviewed floor, and one shared SHA across paired workflows; the evolution configs name `action: openai/codex-action`. Human review still confirms that a new SHA is the upstream tag commit.
+
 ## Candidate states
 
 - `COVERED` — existing AIPS behavior materially covers the signal.
