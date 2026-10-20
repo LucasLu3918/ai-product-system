@@ -378,6 +378,8 @@ Publication Preflight 將 Python module availability 與 loopback/browser capabi
 
 Plan36 publication diagnostics preserve this topic's existing behavior and authority boundaries.
 
+Dependabot commit 的機器人 noreply author 與最後一行精確的 `Signed-off-by` trailer 屬於 Git 身分 metadata，由 `config/git-publication.yaml` 決定，不是 PII 例外；`pii.email.v2` 與其他位址仍會擋下，機器人身分不授予權限。
+
 ## Security 與 Governance
 
 Content-safety PASS is candidate evidence only and does not authorize PR merge or change publication mode.

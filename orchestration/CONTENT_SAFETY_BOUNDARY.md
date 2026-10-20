@@ -40,6 +40,8 @@ An unresolved `REVIEW` finding blocks commit, PR and release sinks. A repository
 
 The commit sink also covers worktree content that a chained literal `git add`, `-a`/`-am` or `--amend` would include before it is staged, and quoted-delimiter heredoc messages. Commit remains the local injection gate because publication-time candidate scanning covers secrets only.
 
+Publication preflight `git_identity` accepts the GitHub App bot noreply form (`<numeric id>+<slug>[bot]` on `users.noreply.github.com`, `identity.allowed_bot_author_patterns`) only in the candidate commit author field; committer and local `user.email` keep the human noreply formats. Before the `commit_messages` PII scan, exact `identity.trailer_identities` entries (currently Dependabot's `Signed-off-by: dependabot[bot]` with GitHub's support address) are replaced by `git-identity-metadata` only in the final trailer block of a commit authored by the same bot. `pii.email.v2` is unchanged, every other address still blocks, a malformed policy fails closed, and a bot identity grants no authority.
+
 ## Sink policy
 
 Diagnostic and ephemeral sinks redact sensitive values. Durable or public sinks block and require safe regeneration. `git commit` is content-sensitive but does not require Git Publish Approval. Publish authorization and content safety are separate decisions.

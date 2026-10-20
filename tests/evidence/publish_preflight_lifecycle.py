@@ -26,8 +26,133 @@ def load_module():
     return module
 
 
+def bot_identity_metadata_evidence(publish) -> None:
+    """GitHub App bot author and exact Dependabot sign-off; everything else keeps today's blocking."""
+    at = chr(64)
+    noreply = at + "users.noreply.github.com"
+    dependabot = "49699333+dependabot[bot]" + noreply
+    actions_bot = "41898282+github-actions[bot]" + noreply
+    human = "123+codex" + noreply
+    support = "support" + at + "github.com"
+    personal = "jane" + at + "example.com"
+    signoff = "Signed-off-by: dependabot[bot] <" + support + ">"
+    message = "build(deps): bump coverage from 1 to 2\n\nBumps coverage from 1 to 2.\n\n" + signoff
+    policy = publish.git_identity_policy()
+
+    assert publish.is_bot_author(dependabot, policy) and publish.is_bot_author(actions_bot, policy)
+    assert publish.is_bot_author(dependabot, policy, "dependabot")
+    assert not publish.is_bot_author(actions_bot, policy, "dependabot")
+    for rejected in (
+        "dependabot[bot]" + noreply, "49699333+[bot]" + noreply, "49699333+-dependabot[bot]" + noreply,
+        "49699333+dependabot-[bot]" + noreply, "49699333+depend_abot[bot]" + noreply,
+        "49699333+dependabot[bot][bot]" + noreply, "49699333+dependabot[BOT]" + noreply,
+        "49699333+dependabot[bot]" + noreply + ".evil.test", "49699333+dependabot[bot]" + at + "example.com",
+        dependabot + "\n", dependabot + " ", "49699333+dependabot［bot］" + noreply,
+        "49699333+Kube[bot]" + noreply, human, "",
+    ):
+        assert not publish.is_bot_author(rejected, policy), rejected
+
+    def scan(text: str) -> str:
+        return publish.safe_emit(sink="git_commit", payload=text)["decision"]
+
+    masked = publish.mask_trailer_identities(message, dependabot, policy)
+    assert support not in masked and masked.endswith("<git-identity-metadata>")
+    assert scan(message) == "BLOCK" and scan(masked) == "ALLOW"
+    unmasked_cases = {
+        "personal sign-off": (message.replace(support, personal), dependabot),
+        "human author": (message, human),
+        "other bot author": (message, actions_bot),
+        "sign-off in body": ("subject\n\n" + signoff + "\n\nfinal words here", dependabot),
+        "non-trailer final line": (message + "\nthanks", dependabot),
+        "second address": (message[:-1] + "> <" + personal + ">", dependabot),
+        "co-author key": (message.replace("Signed-off-by", "Co-authored-by"), dependabot),
+        "lower-case key": (message.replace("Signed-off-by", "signed-off-by"), dependabot),
+        "double space": (message.replace("Signed-off-by: ", "Signed-off-by:  "), dependabot),
+        "upper-case domain": (message.replace("github.com", "GITHUB.COM"), dependabot),
+        "fullwidth at": (message.replace(at, "＠"), dependabot),
+        "confusable domain": (message.replace("github", "gіthub"), dependabot),
+        "other name": (message.replace("dependabot[bot] <", "dependabot <"), dependabot),
+        "no body": (signoff, dependabot),
+    }
+    for label, (text, author) in unmasked_cases.items():
+        assert publish.mask_trailer_identities(text, author, policy) == text, label
+    for label in ("personal sign-off", "human author", "other bot author", "sign-off in body", "non-trailer final line",
+                  "second address", "co-author key", "lower-case key", "double space", "upper-case domain", "no body"):
+        assert scan(unmasked_cases[label][0]) == "BLOCK", label
+    # The sign-off is masked while a personal address elsewhere still blocks.
+    mixed = publish.mask_trailer_identities("subject\n\ncontact " + personal + "\n\n" + signoff, dependabot, policy)
+    assert scan(mixed) == "BLOCK" and personal in mixed
+    fake_token = "ghp_" + ("A" * 40)
+    with_token = publish.mask_trailer_identities("subject\n\n" + fake_token + "\n\n" + signoff, dependabot, policy)
+    assert scan(with_token) == "BLOCK"
+    corpus = json.loads((ROOT / "tests/fixtures/content-safety/corpus.json").read_text(encoding="utf-8"))
+    for sample in corpus["malicious_hex"]:
+        injection = publish.mask_trailer_identities(
+            "subject\n\n" + bytes.fromhex(sample).decode("utf-8") + "\n\n" + signoff, dependabot, policy)
+        assert scan(injection) == "BLOCK", sample
+    findings = publish.safe_emit(sink="git_commit", payload=message.replace(support, personal))["findings"]
+    assert findings and personal not in json.dumps(findings)
+
+    with tempfile.TemporaryDirectory(prefix="aips-bot-identity-") as directory:
+        root = Path(directory)
+        subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+        (root / "requirements.txt").write_text("coverage==1\n", encoding="utf-8")
+        subprocess.run(["git", "add", "."], cwd=root, check=True)
+
+        def commit(parent: str | None, text: str, author: str, committer: str) -> str:
+            tree = subprocess.run(["git", "write-tree"], cwd=root, check=True, capture_output=True, text=True).stdout.strip()
+            env = {**os.environ, "GIT_AUTHOR_NAME": "Author", "GIT_AUTHOR_EMAIL": author,
+                   "GIT_COMMITTER_NAME": "Committer", "GIT_COMMITTER_EMAIL": committer}
+            argv = ["git", "commit-tree", tree, *(["-p", parent] if parent else []), "-m", text]
+            return subprocess.run(argv, cwd=root, env=env, check=True, capture_output=True, text=True).stdout.strip()
+
+        base = commit(None, "base", human, human)
+        args = Namespace(commit_message=None, body=None, body_file=None)
+        with patch.object(publish, "ROOT", root):
+            def plans(head: str) -> tuple[dict, str]:
+                safety = publish.content_safety_plan(args, base, head)
+                decision = next(item["decision"] for item in safety["checks"] if item["label"] == "commit_messages")
+                return publish.commit_identity_plan(base, head), decision
+
+            identity, decision = plans(commit(base, message, dependabot, human))
+            assert identity == {"status": "PASS", "findings": [], "blockers": []} and decision == "ALLOW"
+            identity, decision = plans(commit(base, message, dependabot, "noreply" + at + "github.com"))
+            assert identity["status"] == "PASS" and decision == "ALLOW"
+            identity, _ = plans(commit(base, "subject", human, dependabot))
+            assert identity["findings"] == [{"commit": identity["findings"][0]["commit"], "field": "committer", "reason": "email_not_approved"}]
+            bot_head = commit(base, message, dependabot, human)
+            identity, decision = plans(commit(bot_head, message, human, human))
+            assert identity["status"] == "PASS" and decision == "BLOCK"
+            _, decision = plans(commit(base, message, actions_bot, human))
+            assert decision == "BLOCK"
+
+            broken = root / "broken-policy.yaml"
+            for document in (
+                {"identity": {"allowed_email_patterns": ["^x$"], "trailer_identities": [{"key": "Signed-off-by"}]}},
+                {"identity": {"allowed_email_patterns": ["^x$"], "allowed_bot_author_patterns": "^x$"}},
+                {"identity": {"allowed_email_patterns": ["^x$"], "allowed_bot_author_patterns": ["("]}},
+                {"identity": {"allowed_email_patterns": []}},
+                {"identity": {"allowed_email_patterns": ["^x$"], "trailer_identities": [
+                    {"key": "Signed-off-by", "name": "a <b>", "email_pattern": "^x$", "requires_author_slug": "dependabot"}]}},
+            ):
+                broken.write_text(yaml.safe_dump(document), encoding="utf-8")
+                with patch.object(publish, "GIT_PUBLICATION_POLICY", broken):
+                    identity, decision = plans(commit(base, message, dependabot, human))
+                assert identity["findings"] == [{"reason": "identity_policy_invalid"}] and decision == "BLOCK", document
+            empty = {"identity": {"allowed_email_patterns": [r"^(?:[0-9]+\+)?[A-Za-z0-9-]+\x40users\.noreply\.github\.com$"],
+                                  "allowed_bot_author_patterns": [], "trailer_identities": []}}
+            broken.write_text(yaml.safe_dump(empty), encoding="utf-8")
+            with patch.object(publish, "GIT_PUBLICATION_POLICY", broken):
+                identity, decision = plans(commit(base, message, dependabot, human))
+            assert identity["findings"][0]["reason"] == "email_not_approved" and decision == "BLOCK"
+
+    with patch.object(publish, "git", return_value=dependabot):
+        assert publish.configured_identity_plan()["status"] == "BLOCKED"
+
+
 def main() -> int:
     publish = load_module()
+    bot_identity_metadata_evidence(publish)
     workflow = yaml.safe_load((ROOT / ".github/workflows/validate.yml").read_text())
     aggregate = workflow["jobs"]["repository"]["steps"][0]["run"]
     evidence_code = aggregate.split("python3 - <<'PYTHON'\n", 1)[1].split("\nPYTHON", 1)[0]
