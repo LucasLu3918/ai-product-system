@@ -2,6 +2,18 @@ version: 1
 default_class: UNCLASSIFIED
 automatic_merge_authorized: false
 automatic_policy_changes_authorized: false
+# Documentation-only exemption for candidates whose every changed line is a pinned
+# version bump (see Scenario 221). Other gates and Human merge approval are unchanged.
+documentation_exemption:
+  enabled: true
+  paths:
+    - .github/workflows/*.yml
+    - .github/workflows/*.yaml
+    - requirements*.txt
+    - constraints/*.txt
+  max_files: 20
+  max_line_pairs: 100
+  high_risk_classes_exempt: true
 classes:
   DEV_TOOL:
     risk: LOW

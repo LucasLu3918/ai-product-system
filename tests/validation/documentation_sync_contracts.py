@@ -68,7 +68,13 @@ if script.exists():
             errors.append('Documentation sync rejected a complete Evolution documentation update')
         base = os.environ.get('AIPS_DOCS_DIFF_BASE', '').strip()
         if base and base != '0' * 40:
-            for error in docs_sync.evaluate_changes(docs_sync.changed_files_from_git(base, 'HEAD'), config):
+            from dependency_impact import pure_dependency_update
+
+            diff_files = docs_sync.changed_files_from_git(base, 'HEAD')
+            scope = pure_dependency_update(base, 'HEAD', ROOT)
+            if scope['status'] == 'PURE_DEPENDENCY_UPDATE' and sorted(diff_files) == scope['files']:
+                diff_files = []
+            for error in docs_sync.evaluate_changes(diff_files, config):
                 errors.append(f'Documentation consistency: {error}')
     except (ImportError, OSError, RuntimeError, TypeError, ValueError, KeyError, yaml.YAMLError) as exc:
         errors.append(f'Documentation sync validation failed: {exc}')

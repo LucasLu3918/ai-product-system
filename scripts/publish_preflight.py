@@ -24,6 +24,7 @@ if str(ROOT / "scripts") not in sys.path:
 import documentation_placement
 import repository_preflight
 from aips_common import canonical_hash as _aips_canonical_hash
+from dependency_impact import pure_dependency_update
 from integration_gate import load_yaml as load_matrix_yaml
 from integration_gate import matrix_readiness_issues
 from publish_post_merge import PreflightError
@@ -251,7 +252,7 @@ def preview_candidate(args: argparse.Namespace) -> dict[str, Any]:
     matrix_path = Path(args.matrix).resolve() if args.matrix else CANONICAL_MATRIX.resolve()
     if required and matrix_path == CANONICAL_MATRIX.resolve():
         files = sorted(set(files) | {str(CANONICAL_MATRIX.relative_to(ROOT))})
-    docs = documentation_impact(files, ROOT)
+    docs = documentation_impact(files, ROOT, pure_dependency_update(base, None, ROOT))
     placement_errors = documentation_placement.audit_worktree(base)
     matrix_hash = canonical_hash(files)
     binding: dict[str, Any] = {"required": required, "path": str(matrix_path), "changed_files_hash": matrix_hash}
@@ -605,7 +606,7 @@ def build_plan(args: argparse.Namespace, environment: dict[str, Any] | None = No
         blockers.append("publish preflight source root does not match the Git checkout root")
     if required and not matrix_ok:
         blockers.append("canonical Core Change Test Matrix is required")
-    docs = documentation_impact(files, ROOT)
+    docs = documentation_impact(files, ROOT, pure_dependency_update(base, head, ROOT))
     if not docs["complete"]:
         blockers.append("documentation impact is incomplete")
     if git("status", "--porcelain"):
@@ -892,13 +893,23 @@ def main() -> int:
             for planned in args.planned_path:
                 if Path(planned).is_absolute() or ".." in Path(planned).parts or not planned or "\0" in planned:
                     raise PreflightError("planned documentation scope must contain safe repository-relative paths")
-            files = sorted(set(changed_files(resolve_commit(args.base), resolve_commit(args.head))) | set(args.planned_path))
-            impact = documentation_impact(files, ROOT)
+            base, head = resolve_commit(args.base), resolve_commit(args.head)
+            files = sorted(set(changed_files(base, head)) | set(args.planned_path))
+            scope = pure_dependency_update(base, head, ROOT, planned_paths=args.planned_path)
+            impact = documentation_impact(files, ROOT, scope)
             impact["prospective_paths"] = args.planned_path
             emit(impact, args.format)
             if args.summary_file:
                 with Path(args.summary_file).open("a", encoding="utf-8") as summary:
-                    summary.write("Documentation impact: " + ("PASS" if impact["complete"] else "FAIL") + "\n")
+                    exemption = impact.get("dependency_update_exemption") or {}
+                    summary.write("Documentation impact: " + ("PASS" if impact["complete"] else "FAIL")
+                                  + (" (pure dependency update exemption)" if exemption.get("applied") else "") + "\n")
+                    # Package/action names are regex-constrained to [A-Za-z0-9._/-].
+                    summary.writelines(
+                        f"- Dependency: {item['name']} {item['current_version']} -> {item['target_version']}"
+                        f" ({item['classification']}/{item['risk']})\n"
+                        for item in (exemption.get("items") or [])[:40] if exemption.get("applied")
+                    )
                     # Repository-controlled paths are rendered as plain text.
                     summary.writelines(
                         "- Required: " + str(path).replace("\n", " ").replace("\r", " ") + "\n"
