@@ -817,6 +817,9 @@ The Claude/Gemini publication guard denies only command forms that could commit 
 純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
 
 發布 preflight 的 `git_identity` 只在候選 commit 的 author 欄位接受 GitHub App 機器人 noreply 格式（`<數字 ID>+<slug>[bot]`，`identity.allowed_bot_author_patterns`）；committer 與本機 `user.email` 仍只接受一般 noreply。`commit_messages` PII 掃描前，`identity.trailer_identities` 的精確 trailer 身分（目前只有 Dependabot 的 `Signed-off-by: dependabot[bot]` 與 GitHub support 位址）只在同一機器人撰寫之 commit 的最後 trailer 區塊以 `git-identity-metadata` 取代；`pii.email.v2` 不變，其他位址仍會擋下，政策格式錯誤時 fail closed，機器人身分不授予任何權限。
+
+發布守門測試的合成掃描 fixture（`tests/test_publication_authority.py::scanner_fixture_assignment`）每次執行都把 16 個十六進位數字各放兩次後隨機排列，Shannon 熵固定為 4.0、高於 `generic-secret-assignment` 的 3.25 門檻，因此偵測結果不再隨機；原本直接使用 uuid4 hex 約有 0.7% 機率低於門檻而造成偶發失敗。掃描器規則與門檻不變。
+
 ## Evolution Radar
 
 Technology Intelligence 位於 maintenance plane，不在一般工程 Turn hot path。
