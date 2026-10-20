@@ -3,6 +3,16 @@ identity:
   allowed_email_patterns:
     - '^(?:[0-9]+\+)?[A-Za-z0-9-]+\x40users\.noreply\.github\.com$'
     - '^noreply\x40github\.com$'
+  # GitHub App bot noreply; candidate commit author field only (never committer or local user.email).
+  allowed_bot_author_patterns:
+    - '^[0-9]+\+[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?\[bot\]\x40users\.noreply\.github\.com$'
+  # Exact Git trailer identities masked before the commit message PII scan, only in the final
+  # trailer block of a commit authored by the bot with the same slug. Set to [] to disable.
+  trailer_identities:
+    - key: Signed-off-by
+      name: dependabot[bot]
+      email_pattern: '^support\x40github\.com$'
+      requires_author_slug: dependabot
   report_values: false
 merge:
   recommended_method: merge

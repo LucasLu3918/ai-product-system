@@ -813,6 +813,8 @@ Release model 與版本歷史以 repository 的 current policy / CHANGELOG 為�
 The Claude/Gemini publication guard denies only command forms that could commit or publish: read-only commands with a dynamic directory or repository option, a dynamic path to a literal non-Git executable, `gh api` GET requests, local `git lfs` subcommands and repository-defined read-only Git aliases pass, while dynamic git/gh/shell executables, dynamic `-c`/`--config-env`/`--exec-path` values, API writes, publishing LFS subcommands and aliases that expand to commit or publication still fail closed (Scenario 099). Untracked files are listed in publication diagnostics but no longer make the worktree `DIRTY`; uncommitted tracked changes still block push and PR.
 
 純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
+
+發布 preflight 的 `git_identity` 只在候選 commit 的 author 欄位接受 GitHub App 機器人 noreply 格式（`<數字 ID>+<slug>[bot]`，`identity.allowed_bot_author_patterns`）；committer 與本機 `user.email` 仍只接受一般 noreply。`commit_messages` PII 掃描前，`identity.trailer_identities` 的精確 trailer 身分（目前只有 Dependabot 的 `Signed-off-by: dependabot[bot]` 與 GitHub support 位址）只在同一機器人撰寫之 commit 的最後 trailer 區塊以 `git-identity-metadata` 取代；`pii.email.v2` 不變，其他位址仍會擋下，政策格式錯誤時 fail closed，機器人身分不授予任何權限。
 ## Evolution Radar
 
 Technology Intelligence 位於 maintenance plane，不在一般工程 Turn hot path。
@@ -875,3 +877,5 @@ The commit guard accepts quoted-delimiter heredoc messages, literal `git add` co
 含 Git 遠端字串（例如 scp 寫法的 `git` 服務帳號）的檔案不再因 `CONTENT_PII_BLOCKED` 被擋（規則 `pii.email.v2`）；其他 email、個人帳號的遠端與相似字元仍會阻擋，不需要也不允許用 `chr(64)` 等寫法繞過。
 
 純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
+
+Dependabot commit 的機器人 noreply author 與最後一行精確的 `Signed-off-by` trailer 屬於 Git 身分 metadata，由 `config/git-publication.yaml` 決定，不是 PII 例外；`pii.email.v2` 與其他位址仍會擋下，機器人身分不授予權限。

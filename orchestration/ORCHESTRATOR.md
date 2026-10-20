@@ -496,3 +496,5 @@ Scenario 266 specifies that durable commit injection checks use changed staged l
 `bin/aips` is the public thin launcher: it resolves the repository root and forwards arguments to `scripts/aips_cli.sh`. Keep command dispatch, installed-link behavior, exit status, and user-visible output compatible while implementation modules are extracted incrementally.
 
 Agents may use the standard commit forms and read-only Git/GitHub commands directly; a guard allow decision is classification evidence only and never grants publication or merge approval.
+
+Dependabot commits: the GitHub App bot noreply author and Dependabot's exact final `Signed-off-by` trailer are Git identity metadata decided by `config/git-publication.yaml`, not PII exceptions; `pii.email.v2` and every other address stay blocking, and the bot identity grants no authority.

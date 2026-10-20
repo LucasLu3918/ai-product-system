@@ -52,6 +52,11 @@ except ModuleNotFoundError:  # imported as a repository module by lifecycle evid
     from scripts.browser_runtime import discover_browser, probe_browser
 
 CANONICAL_MATRIX = ROOT / ".aips/review/CORE_CHANGE_TEST_MATRIX.yaml"
+GIT_PUBLICATION_POLICY = ROOT / "config/git-publication.yaml"
+TRAILER_LINE_RE = re.compile(r"[A-Za-z][A-Za-z0-9-]*: \S.*", re.ASCII)
+TRAILER_KEY_RE = re.compile(r"[A-Za-z][A-Za-z0-9-]*", re.ASCII)
+BOT_SLUG_RE = re.compile(r"[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?", re.ASCII)
+IDENTITY_METADATA_PLACEHOLDER = "git-identity-metadata"
 
 
 def git(*args: str, check: bool = True) -> str:
@@ -516,6 +521,99 @@ def remote_policy(branch: str, offline: bool) -> dict[str, Any]:
     return {"status": "UNAVAILABLE", "reason": "branch protection query failed", "next_step": "Check GitHub CLI repository access and rerun publication plan."}
 
 
+class GitIdentityPolicyError(ValueError):
+    """The Git identity policy is malformed; publication checks fail closed."""
+
+
+def _string_list(value: Any, field: str) -> list[str]:
+    if value is None:
+        return []
+    if not isinstance(value, list) or not all(isinstance(item, str) and item for item in value):
+        raise GitIdentityPolicyError(f"{field} must be a list of non-empty strings")
+    return value
+
+
+def git_identity_policy() -> dict[str, Any]:
+    """Load the Git identity policy; any malformed entry raises GitIdentityPolicyError (callers fail closed)."""
+    try:
+        policy = yaml.safe_load(GIT_PUBLICATION_POLICY.read_text(encoding="utf-8")) or {}
+        identity = policy.get("identity") or {}
+        if not isinstance(identity, dict):
+            raise GitIdentityPolicyError("identity must be a mapping")
+        human = [re.compile(item, re.IGNORECASE) for item in _string_list(identity.get("allowed_email_patterns"), "allowed_email_patterns")]
+        bots = [re.compile(item, re.ASCII) for item in _string_list(identity.get("allowed_bot_author_patterns"), "allowed_bot_author_patterns")]
+        trailers: list[dict[str, Any]] = []
+        raw_trailers = identity.get("trailer_identities") or []
+        if not isinstance(raw_trailers, list):
+            raise GitIdentityPolicyError("trailer_identities must be a list")
+        for entry in raw_trailers:
+            if not isinstance(entry, dict) or set(entry) != {"key", "name", "email_pattern", "requires_author_slug"}:
+                raise GitIdentityPolicyError("trailer identity requires exactly key, name, email_pattern and requires_author_slug")
+            key, name, pattern, slug = (entry[field] for field in ("key", "name", "email_pattern", "requires_author_slug"))
+            if not all(isinstance(item, str) and item.isascii() for item in (key, name, pattern, slug)):
+                raise GitIdentityPolicyError("trailer identity fields must be ASCII strings")
+            if not TRAILER_KEY_RE.fullmatch(key) or not BOT_SLUG_RE.fullmatch(slug):
+                raise GitIdentityPolicyError("trailer identity key or author slug is malformed")
+            if not name.strip() or name != name.strip() or any(char in name for char in "<>\r\n"):
+                raise GitIdentityPolicyError("trailer identity name is malformed")
+            trailers.append({"prefix": f"{key}: {name} <", "email": re.compile(pattern, re.ASCII), "slug": slug})
+    except (OSError, re.error, yaml.YAMLError, AttributeError) as exc:
+        raise GitIdentityPolicyError(type(exc).__name__) from exc
+    if not human:
+        raise GitIdentityPolicyError("allowed_email_patterns must not be empty")
+    return {"human": human, "bots": bots, "trailers": trailers}
+
+
+def is_bot_author(email: str, policy: dict[str, Any], slug: str | None = None) -> bool:
+    if not email.isascii() or not any(pattern.fullmatch(email) for pattern in policy["bots"]):
+        return False
+    if slug is None:
+        return True
+    return re.fullmatch(r"[0-9]+\+" + re.escape(slug) + r"\[bot\]", email.split("\x40", 1)[0], re.ASCII) is not None
+
+
+def mask_trailer_identities(message: str, author_email: str, policy: dict[str, Any]) -> str:
+    """Replace exact approved trailer identities in the final trailer block with a placeholder.
+
+    Every other line, including any other address, is returned unchanged for the PII scan.
+    """
+    blocks = message.rstrip("\n").split("\n\n")
+    if len(blocks) < 2 or not policy["trailers"]:
+        return message
+    lines = blocks[-1].split("\n")
+    if not all(TRAILER_LINE_RE.fullmatch(line) for line in lines):
+        return message
+    masked: list[str] = []
+    for line in lines:
+        for identity in policy["trailers"]:
+            prefix = identity["prefix"]
+            if (
+                line.startswith(prefix)
+                and line.endswith(">")
+                and identity["email"].fullmatch(line[len(prefix):-1])
+                and is_bot_author(author_email, policy, identity["slug"])
+            ):
+                line = prefix + IDENTITY_METADATA_PLACEHOLDER + ">"
+                break
+        masked.append(line)
+    blocks[-1] = "\n".join(masked)
+    return "\n\n".join(blocks)
+
+
+def candidate_commit_messages(base: str, head: str) -> str:
+    try:
+        policy: dict[str, Any] | None = git_identity_policy()
+    except ValueError:
+        policy = None  # Fail closed: scan raw messages; commit_identity_plan reports the invalid policy.
+    messages: list[str] = []
+    for commit in reversed(git("rev-list", "--reverse", f"{base}..{head}").splitlines()):
+        message = git("log", "-1", "--format=%B", commit)
+        if policy is not None:
+            message = mask_trailer_identities(message, git("show", "-s", "--format=%ae", commit), policy)
+        messages.append(message)
+    return "\n\n".join(messages)
+
+
 def content_safety_plan(args: argparse.Namespace, base: str, head: str) -> dict[str, Any]:
     checks: list[dict[str, Any]] = []
 
@@ -523,7 +621,7 @@ def content_safety_plan(args: argparse.Namespace, base: str, head: str) -> dict[
         result = safe_emit(sink=sink, payload=payload, context=context)
         checks.append({"label": label, "sink": sink, "decision": result["decision"], "findings": result["findings"]})
 
-    messages = git("log", "--format=%B", f"{base}..{head}")
+    messages = candidate_commit_messages(base, head)
     check("git_commit", messages, "commit_messages")
     diff = git("diff", "--no-ext-diff", "--unified=0", base, head)
     from content_safety import git_diff_payload_with_added_lines
@@ -548,15 +646,24 @@ def content_safety_plan(args: argparse.Namespace, base: str, head: str) -> dict[
 
 
 def commit_identity_plan(base: str, head: str) -> dict[str, Any]:
-    policy_path = ROOT / "config/git-publication.yaml"
-    policy = yaml.safe_load(policy_path.read_text(encoding="utf-8")) or {}
-    patterns = [re.compile(str(item), re.IGNORECASE) for item in (policy.get("identity") or {}).get("allowed_email_patterns") or []]
+    try:
+        policy = git_identity_policy()
+    except ValueError:
+        return {
+            "status": "BLOCKED",
+            "findings": [{"reason": "identity_policy_invalid"}],
+            "blockers": ["Git identity policy in config/git-publication.yaml is invalid"],
+        }
     invalid: list[dict[str, str]] = []
     commits = git("rev-list", "--reverse", f"{base}..{head}").splitlines()
     for commit in commits:
         fields = git("show", "-s", "--format=%ae%x00%ce", commit).split("\0")
         for field, email in zip(("author", "committer"), fields):
-            if not email or not any(pattern.fullmatch(email) for pattern in patterns):
+            approved = bool(email) and (
+                any(pattern.fullmatch(email) for pattern in policy["human"])
+                or (field == "author" and is_bot_author(email, policy))
+            )
+            if not approved:
                 invalid.append({"commit": commit[:12], "field": field, "reason": "email_not_approved"})
     blockers = ["candidate contains an author/committer identity outside the approved GitHub noreply formats"] if invalid else []
     return {"status": "BLOCKED" if blockers else "PASS", "findings": invalid, "blockers": blockers}

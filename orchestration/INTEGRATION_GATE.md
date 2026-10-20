@@ -307,6 +307,8 @@ Publication preview scans the exact tracked diff and bounded untracked candidate
 
 Publication Doctor is diagnostic evidence only. It cannot replace exact-candidate Integration Gate checks, Required Checks enforcement, Human Authority, or native merge confirmation.
 
+Publication preflight `git_identity` accepts the GitHub App bot noreply form (`<numeric id>+<slug>[bot]` on `users.noreply.github.com`, `identity.allowed_bot_author_patterns`) only in the candidate commit author field; committer and local `user.email` keep the human noreply formats. Before the `commit_messages` PII scan, exact `identity.trailer_identities` entries (currently Dependabot's `Signed-off-by: dependabot[bot]` with GitHub's support address) are replaced by `git-identity-metadata` only in the final trailer block of a commit authored by the same bot. `pii.email.v2` is unchanged, every other address still blocks, a malformed policy fails closed, and a bot identity grants no authority.
+
 ## Publication Root-Cause Recovery (Plan35)
 
 The Gate verifies Plan40's explicit publication error codes, candidate/runtime binding, separate plan/authorization/Host/execution states, redaction and optional verified diagnostic lookup against the exact candidate. Trace storage remains optional and cannot satisfy a required check or grant.

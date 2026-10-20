@@ -331,3 +331,5 @@ Runtime action authorization is evaluated at the native tool boundary by Runtime
 Publication preflight policy calculations are isolated in `scripts/publish_preflight_policy.py` and remain deterministic; repository filesystem inputs are rooted at an explicit `Path`. `scripts/publish_preflight.py` remains responsible for Git, runtime probes, candidate orchestration, and publication evidence.
 
 A task graph may schedule read-only publication diagnosis, but a Doctor result or merge plan never grants a protected operation. Required Checks and policy visibility must be re-observed by the publication authority before execution.
+
+Dependabot commits: the GitHub App bot noreply author and Dependabot's exact final `Signed-off-by` trailer are Git identity metadata decided by `config/git-publication.yaml`, not PII exceptions; `pii.email.v2` and every other address stay blocking, and the bot identity grants no authority.

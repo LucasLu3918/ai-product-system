@@ -1,84 +1,83 @@
 version: 1
 change:
-  id: deps-docs-impact-20261020
-  summary: Exempt verified pure dependency updates from documentation-only requirements through one deterministic,
-    content-only predicate shared by Documentation Impact, Placement and Sync; every other change and every
-    non-documentation gate keeps its existing behavior.
+  id: dependabot-identity-20261020
+  summary: Treat the GitHub App bot noreply author and Dependabot's exact final Signed-off-by trailer as Git identity
+    metadata decided by config/git-publication.yaml, so Dependabot commits pass git_identity and commit_messages without
+    changing pii.email.v2, adding a PII exception or granting a bot identity any authority.
   boundary:
-    - Pure dependency update diff-shape predicate
-    - Documentation Impact exemption in docs-impact, plan, run and preview
-    - Documentation Placement and Documentation Sync gates
-    - Dependency policy documentation_exemption validation
+    - Bot author identity
+    - Trailer identity masking
+    - Policy file validation
+    - PII detector invariants
     - Repository delivery and documentation closure
 matrix:
-  - boundary: Pure dependency update diff-shape predicate
-    reason: The predicate decides when documentation requirements are suppressed; every ambiguous or malformed diff must
-      fall back to the full rules.
+  - boundary: Bot author identity
+    reason: commit_identity_plan decides which candidate author addresses are publishable; the bot form must stay
+      author-only, numeric-ID-bound and ASCII-only.
     checks:
-      static_lint: {applicable: true, evidence: "PASS: ruff on changed modules clean for introduced code; git diff --check clean."}
-      unit: {applicable: true, evidence: "PASS: tests/evidence/dependency_impact_lifecycle.py positive SHA pin, same-version repin, grouped major, pip constraints and security-class cases."}
-      integration: {applicable: true, evidence: "PASS: classify-diff on all ten open Dependabot heads (#168, #259-#263, #337-#340) returns PURE_DEPENDENCY_UPDATE against df79357e."}
-      contract: {applicable: true, evidence: "PASS: Scenario 221 extended; stable reason codes asserted for every negative case."}
+      static_lint: {applicable: true, evidence: "PASS: ruff on publish_preflight.py and the lifecycle shows only pre-existing findings; git diff --check clean."}
+      unit: {applicable: true, evidence: "PASS: publish_preflight_lifecycle accepts dependabot and github-actions bot authors and rejects missing ID, empty or hyphen-edged slug, underscore, [bot][bot], [BOT], suffix domain, other domain, trailing newline/space, fullwidth brackets, Kelvin sign and human noreply as bot."}
+      integration: {applicable: true, evidence: "PASS: real commit-tree fixtures: bot author with human or GitHub committer PASS; bot committer BLOCKED (committer field)."}
+      contract: {applicable: true, evidence: "PASS: findings keep {commit, field, reason: email_not_approved}; configured_identity_plan with a bot user.email stays BLOCKED."}
       e2e: {applicable: false, na_reason: No browser UI or deployed service is changed.}
-      security: {applicable: true, evidence: "PASS: mixed with/run/env edits, new step, owner swap, local action, unpinned tag, downgrades, ranges, extras, markers, pre-release, CRLF, non-ASCII look-alike, new/deleted/chmod/nested files, planned paths, size limits and Git errors all stay NOT_PURE."}
-      migration_recovery: {applicable: false, na_reason: No persistent state; rollback is a PR revert or documentation_exemption.enabled false.}
-      cli_harness: {applicable: true, evidence: "PASS: dependency_impact.py classify-diff CLI exercised on real PR heads."}
-      docs_schema: {applicable: true, evidence: "PASS: Scenario 221 and canonical documentation record the shape and fallback."}
-  - boundary: Documentation Impact exemption in docs-impact, plan, run and preview
-    reason: The CI janitor and the build_plan blocker both use documentation_impact; the exemption must apply only when the
-      exact changed-file set equals the verified pure set.
+      security: {applicable: true, evidence: "PASS: identity is not treated as authentication; no gate derives authority, exemption or merge permission from the author."}
+      migration_recovery: {applicable: false, na_reason: "No persistent state; allowed_bot_author_patterns [] restores the previous behavior (asserted)."}
+      cli_harness: {applicable: true, evidence: "PASS: publish_preflight.py plan --offline on #338 (438fcaa6) and #262 (a08fd4cc) with the change overlaid reports only the overlay dirty-worktree blocker."}
+      docs_schema: {applicable: true, evidence: "PASS: proposal, CONTENT_SAFETY_BOUNDARY, SECURITY_ASSURANCE and MAINTENANCE describe the author-only scope."}
+  - boundary: Trailer identity masking
+    reason: The commit_messages PII scan must still block every address except the exact approved trailer identity in the
+      final trailer block of a commit authored by the same bot.
     checks:
-      static_lint: {applicable: true, evidence: "PASS: ruff import order fixed; no new findings in introduced code."}
-      unit: {applicable: true, evidence: "PASS: documentation_impact exempt/suppressed equality and file-set mismatch cases in the dependency lifecycle."}
-      integration: {applicable: true, evidence: "PASS: replayed #338 and #262 heads with this change overlaid; docs-impact --require-complete exit 0."}
-      contract: {applicable: true, evidence: "PASS: publish_preflight_lifecycle Step Summary exemption output and planned-path fallback."}
+      static_lint: {applicable: true, evidence: "PASS: ruff clean for introduced code."}
+      unit: {applicable: true, evidence: "PASS: masked Dependabot message ALLOW; 14 smuggling variants unchanged by masking (personal sign-off, human or other-bot author, body position, non-trailer final line, second address, Co-authored-by, lower-case key, double space, upper-case domain, fullwidth at, confusable domain, other name, no body) and every detectable variant BLOCK."}
+      integration: {applicable: true, evidence: "PASS: replayed #338 and #262 real heads: git_identity PASS, commit_messages ALLOW, candidate_diff ALLOW, secret scan PASS, PURE_DEPENDENCY_UPDATE, documentation complete."}
+      contract: {applicable: true, evidence: "PASS: content_safety_plan keeps one commit_messages check with the same shape; per-commit masking with a bot commit followed by a human commit carrying the same trailer BLOCK."}
       e2e: {applicable: false, na_reason: No browser UI or deployed service is changed.}
-      security: {applicable: true, evidence: "PASS: planned paths, extra files and non-pure scopes leave required_additions identical to the previous behavior."}
-      migration_recovery: {applicable: false, na_reason: Additive report field only.}
-      cli_harness: {applicable: true, evidence: "PASS: publish_preflight.py docs-impact CLI with --summary-file."}
-      docs_schema: {applicable: true, evidence: "PASS: dependency_update_exemption is additive; existing keys keep meaning."}
-  - boundary: Documentation Placement and Documentation Sync gates
-    reason: Repository validation would still fail a pure dependency PR unless placement and the diff-based sync check share
-      the predicate.
+      security: {applicable: true, evidence: "PASS: a personal address elsewhere, a fake token and every malicious_hex corpus sample in a Dependabot message still block; findings never contain the address."}
+      migration_recovery: {applicable: false, na_reason: "trailer_identities [] restores the previous behavior (asserted)."}
+      cli_harness: {applicable: true, evidence: "PASS: publish_preflight.py plan CLI on the replayed heads."}
+      docs_schema: {applicable: true, evidence: "PASS: CONTENT_SAFETY_BOUNDARY Detection boundaries and INTEGRATION_GATE Content Safety Gate record the trailer grammar."}
+  - boundary: Policy file validation
+    reason: A malformed identity policy must never widen acceptance.
     checks:
-      static_lint: {applicable: true, evidence: "PASS: ruff clean on documentation_placement.py."}
-      unit: {applicable: true, evidence: "PASS: placement early return requires predicate files equal to the changed set."}
-      integration: {applicable: true, evidence: "PASS: replayed #338 and #262: DOCUMENTATION PLACEMENT PASSED and documentation_sync_contracts reported no errors."}
-      contract: {applicable: true, evidence: "PASS: static placement config errors and static sync contracts still run unconditionally."}
+      static_lint: {applicable: true, evidence: "PASS: config/git-publication.yaml loads; git_identity_policy validates the committed policy."}
+      unit: {applicable: true, evidence: "PASS: missing trailer fields, non-list bot patterns, invalid regex, empty human patterns and a name containing angle brackets yield identity_policy_invalid and an unmasked BLOCK."}
+      integration: {applicable: false, na_reason: Static configuration consumed only by publish_preflight.}
+      contract: {applicable: true, evidence: "PASS: invalid policy findings are {reason: identity_policy_invalid} with no values."}
       e2e: {applicable: false, na_reason: No browser UI or deployed service is changed.}
-      security: {applicable: true, evidence: "PASS: only diff-based requirements are skipped and only for a verified pure candidate."}
-      migration_recovery: {applicable: false, na_reason: No persistent data migration.}
-      cli_harness: {applicable: false, na_reason: Placement and sync run inside repository validation; covered by integration replay.}
-      docs_schema: {applicable: true, evidence: "PASS: Documentation Sync docs describe the exemption and fallback."}
-  - boundary: Dependency policy documentation_exemption validation
-    reason: A policy edit must never widen the exemption beyond the closed manifest pattern set or bounded sizes.
-    checks:
-      static_lint: {applicable: true, evidence: "PASS: YAML loads; validate_policy clean on the committed policy."}
-      unit: {applicable: true, evidence: "PASS: broad paths (scripts/*.py, **) rejected; disabled policy returns DISABLED; high_risk_classes_exempt false returns HIGH_RISK_NOT_EXEMPT."}
-      integration: {applicable: false, na_reason: Static configuration consumed only by the predicate.}
-      contract: {applicable: true, evidence: "PASS: dependency_impact_contracts keeps automatic merge and policy changes disabled."}
-      e2e: {applicable: false, na_reason: No browser UI or deployed service is changed.}
-      security: {applicable: true, evidence: "PASS: invalid policy yields CLASSIFIER_BLOCKED and full documentation rules."}
+      security: {applicable: true, evidence: "PASS: fail closed on every malformed case."}
       migration_recovery: {applicable: false, na_reason: Static repository policy only.}
       cli_harness: {applicable: false, na_reason: No CLI surface for policy editing.}
-      docs_schema: {applicable: true, evidence: "PASS: proposal and Scenario 221 document the option A choice."}
+      docs_schema: {applicable: true, evidence: "PASS: policy keys documented in the proposal and canonical docs."}
+  - boundary: PII detector invariants
+    reason: The change must not alter pii.email.v2, redaction or the exception validator.
+    checks:
+      static_lint: {applicable: true, evidence: "PASS: scripts/content_safety.py, config/content-safety*.yaml and config/integration-gate.yaml unchanged."}
+      unit: {applicable: true, evidence: "PASS: tests/test_content_safety.py (16 tests) and tests/test_safety_diagnostics.py OK."}
+      integration: {applicable: true, evidence: "PASS: test_publication_planning, publication_transfer_lifecycle and dependency_impact_lifecycle pass."}
+      contract: {applicable: true, evidence: "PASS: expected_test_count 16 unchanged."}
+      e2e: {applicable: false, na_reason: No browser UI or deployed service is changed.}
+      security: {applicable: true, evidence: "PASS: PII still accepts no repository exception; only identity policy decides trailer identities."}
+      migration_recovery: {applicable: false, na_reason: Unchanged module.}
+      cli_harness: {applicable: false, na_reason: Unchanged module.}
+      docs_schema: {applicable: false, na_reason: Detector documentation unchanged apart from the identity-metadata sentence.}
   - boundary: Repository delivery and documentation closure
     reason: The change touches matrix-required publication preflight code and must pass the full local Gate.
     checks:
-      static_lint: {applicable: true, evidence: "PASS: capability_registry.py check valid (45 capabilities, 10 surfaces)."}
-      unit: {applicable: true, evidence: "PASS: focused lifecycles pass; full Gate run recorded in the delivery report."}
+      static_lint: {applicable: true, evidence: "PASS: full local Integration Gate static stage."}
+      unit: {applicable: true, evidence: "PASS: focused suites; full Gate run recorded in the delivery report."}
       integration: {applicable: true, evidence: "PASS: publish_preflight.py run on the exact committed candidate."}
-      contract: {applicable: true, evidence: "PASS: exact-candidate Documentation Impact complete with zero required additions."}
+      contract: {applicable: true, evidence: "PASS: exact-candidate Documentation Impact complete; placement audit clean for 14 documents."}
       e2e: {applicable: false, na_reason: No browser UI or deployed service is changed.}
       security: {applicable: true, evidence: "PASS: candidate secret scan and content safety inside the Gate."}
-      migration_recovery: {applicable: false, na_reason: Rollback is a PR revert.}
+      migration_recovery: {applicable: false, na_reason: Rollback is a PR revert or empty policy lists.}
       cli_harness: {applicable: true, evidence: "PASS: publish_preflight.py run CLI."}
-      docs_schema: {applicable: true, evidence: "PASS: Documentation Placement audit clean for 19 canonical documents (including CHANGELOG-triggered HARNESS and index)."}
+      docs_schema: {applicable: true, evidence: "PASS: Documentation Placement audit clean."}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 candidate:
-  base_sha: bf329efb76b57e7a2e54a6e6e42e8b52460b2486
-  changed_files_hash: aecacfd83b227c7944b2d13beba0c9f56d6c4fb554c8e4f85671719c3084a359
+  base_sha: ebafefc939d8a513468b5d2cb60c14a03aff1469
+  changed_files_hash: e2e17ddd27f1ab3fd5d768672c0c98966d9029f8d749feb46f7d0d6fbf9667dc
 blockers:
   []
 review_evidence:

@@ -229,6 +229,8 @@ For CLI and validation modularization, the boundary matrix must cover direct sou
 Publication diagnostics changes derive tests for every Required Checks state, API/auth failure, stale PR/head evidence, raw-output redaction, no mutation, and no grant consumption. Doctor and merge diagnosis remain read-only; validate their exact candidate through repository validation and the Core Matrix before publication.
 Plan44 additionally binds pipe/compound/upstream-option refusal detail, Claude PostToolUseFailure exit-code redaction, PreToolUse NOT_EXECUTED separation, managed-hook removal and existing merged-PR/Branch Hygiene invariants to Scenario 261 and the exact candidate.
 
+Dependabot commits: the GitHub App bot noreply author and Dependabot's exact final `Signed-off-by` trailer are Git identity metadata decided by `config/git-publication.yaml`, not PII exceptions; `pii.email.v2` and every other address stay blocking, and the bot identity grants no authority.
+
 ## Publication Root-Cause Recovery (Plan35)
 
 Plan40's matrix binds explicit publication reason codes, redacted error gaps, Prepare/Hook candidate observations, lifecycle-state separation and optional verified Diagnostic ID lookup to the exact candidate. Optional ledger failure is covered as a non-authorizing side effect.
