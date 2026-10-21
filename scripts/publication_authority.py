@@ -278,7 +278,7 @@ PUBLICATION_DIAGNOSTICS = {
 }
 
 PUBLICATION_DETAIL_DIAGNOSTICS = {
-    'REMOTE_OBSERVATION_TIMEOUT': ('A required remote observation timed out before it could be verified.', 'Run `aips publish doctor --worktree . --format json` in this candidate worktree, resolve the reported network or authentication issue, then rerun Prepare.', '必要的遠端觀測逾時，尚未完成驗證。', '在此候選工作樹執行唯讀命令 `aips publish doctor --worktree . --format json`，依診斷排除網路或登入問題後重新執行 Prepare。'),
+    'REMOTE_OBSERVATION_TIMEOUT': ('A required remote observation timed out before it could be verified.', 'Manual read-only diagnostic command: `aips publish doctor --worktree . --format json`. Review its network or authentication finding, then rerun Prepare.', '必要的遠端觀測逾時，尚未完成驗證。', '唯讀診斷命令：`aips publish doctor --worktree . --format json`。依診斷排除網路或登入問題後重新執行 Prepare。'),
     'PIPE_UNSUPPORTED': ('A publication command was combined with a shell pipeline.', 'Run the exact approved publication command by itself; do not pipe it through another command.', '發布指令含有管線。', '單獨執行規劃產生的原生發布指令，不要串接管線。'),
     'MULTI_COMMAND_UNSUPPORTED': ('A publication command was combined with another shell command.', 'Run one exact approved publication command at a time.', '發布指令與其他 Shell 命令組合。', '一次只執行一個經核准的原生發布指令。'),
     'COMMAND_WRAPPER_UNSUPPORTED': ('A publication command uses an unsupported shell wrapper.', 'Use the standalone literal command emitted by the validated plan.', '發布指令使用不支援的 Shell 包裝形式。', '使用驗證計畫輸出的獨立原生指令。'),

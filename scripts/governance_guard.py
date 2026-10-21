@@ -1134,11 +1134,11 @@ def hook(runtime: str) -> int:
             if (runtime == "claude-code" and diagnostic.get("retryable") is True and
                     diagnostic.get("category") in {"NETWORK", "RATE_LIMITED", "GITHUB_SERVER_ERROR", "TIMEOUT"}):
                 hook_diagnostic["next_step"] = (
-                    "Run `aips publish doctor --worktree . --format json` in this candidate worktree "
+                    "Manual read-only diagnostic command in this candidate worktree: `aips publish doctor --worktree . --format json`; "
                     "to inspect the safe remote-observation failure, then re-observe before publication."
                 )
                 hook_diagnostic["next_step_zh"] = (
-                    "請在此候選工作樹執行唯讀命令 `aips publish doctor --worktree . --format json` "
+                    "此候選工作樹的唯讀診斷命令：`aips publish doctor --worktree . --format json`； "
                     "檢查遠端觀測失敗原因；重新確認目前候選前不可發布。"
                 )
                 reason = hook_diagnostic['reason_code'] + ': ' + hook_diagnostic['detail'] + ' ' + hook_diagnostic['next_step']

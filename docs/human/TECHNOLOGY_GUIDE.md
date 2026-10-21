@@ -22,8 +22,6 @@ The creative import CLI is routed by the existing AIPS command facade. Its expli
 
 The publication diagnostic contract distinguishes stable blocker reason, source phase, safe recovery, candidate/runtime binding, and independent plan, authorization, Host and execution states. Optional trace storage writes only allowlisted fields to an explicitly configured hash-chained ledger; lookup verifies the chain before returning a record.
 
-The Claude Code publication Hook fails closed immediately after retryable remote errors and directs the user to run the read-only Doctor; it does not wait for a Doctor inside the synchronous Hook. Prepare reports remote timeouts with stable, redacted diagnostics.
-
 The publication Doctor shares the structured API observer and labels the candidate branch independently from target policy, retaining bounded, sanitized endpoint and status evidence.
 
 OpenCode's optional native acceptance records host version, platform, plugin digest and conservative runtime-source digest. It marks arbitrary Shell process effects, MCP/custom-tool effects and out-of-process writes UNSUPPORTED; missing fields in older reports remain UNVERIFIED.
@@ -95,6 +93,8 @@ Local hybrid retrieval 組合 lexical、symbols、structural relation、tests、
 Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEMENTATION_APPROVED` 進入核准範圍；實作後對帳 actual diff 與 declared impact，只有完整記錄 reconciliation evidence 才能標記 `READY`。
 
 ## Execution
+
+The Claude Code publication Hook fails closed immediately after retryable remote errors and provides a separate read-only Doctor command; it does not wait for Doctor inside the synchronous Hook. Prepare reports timeouts with stable, redacted diagnostics.
 
 Creative writes in Git workspaces retain their existing Project Intelligence guard; Scenario 267's stale advisory covers ordinary local L2 source writes only.
 
@@ -275,6 +275,8 @@ Dependabot commit 的機器人 noreply author 與最後一行精確的 `Signed-o
 
 ## Security & Governance
 
+Remote publication errors remain denied until fresh evidence and existing authority checks pass; timeout output omits raw command and exception text.
+
 Independent review evidence and personal publication authority remain unchanged by AVIF metadata inspection; ComfyUI resource grants remain a separate boundary.
 
 Plan42 只擴充既有 commit 與 publication content scanner：候選字型中繼資料先經大小、簽章及格式驗證，再套用相同 Secret／PII／Injection 規則；publication approval 與 runtime permission 決策維持原有路徑。
@@ -325,6 +327,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 Content-safety detector changes are versioned (for example `pii.email.v2`) and bound to Scenario 266 with a fixed corpus; they never add a PII exception path.
 
 ## Quality & Verification
+
+Scenario 260/261 and the Core Change Matrix verify no inline Hook Doctor call, timeout redaction, and exact-candidate publication recovery.
 
 Scenario 267 lifecycle evidence checks the READY+STALE allow case and the retained independent denials.
 
@@ -554,6 +558,8 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 
 ## Product Delivery
 
+Publication diagnostics do not change Human approval, Host permission, Required Checks, merge policy or execution authority.
+
 Publication transfer parses GitHub remotes from the literal `git@github.com:<owner>/<repo>.git` form and from `https`/`ssh` URLs. The scanner's `git`-only SSH exemption does not relax any other email finding, so transfer code should not hide remote strings behind string assembly.
 
 Scenario 266 covers versioned injection classification, added-line checks, full-blob secret/PII scanning, and safe recovery diagnostics.
@@ -570,6 +576,8 @@ Planning Package 可用 EARS 結構表達適合的功能需求，並以 optional
 Implementation Resolution 先釐清 REST/OpenAPI authority，再依既有專案證據或新專案的 Human-confirmed 選型建立 Implementation Profile。Go、PHP、Python、.NET 語言 Profile 提供穩定基線，專案規則與工具鏈仍優先。結構驗證器只檢查欄位、來源和 ownership 衝突，不判斷架構或技術建議是否正確；未取得驗證證據時回報 `UNVERIFIED`。
 
 ## Evolution & Maintenance
+
+Publication timeout and Hook recovery changes stay bound to Scenario 260/261, documentation placement closure and the exact-candidate Core Matrix.
 
 The 0.83.0 release record includes a candidate-bound Core Change Matrix and exact-candidate Gate evidence.
 
@@ -620,6 +628,8 @@ Official Docs Site 使用 VitePress 1.6.x stable line，提供 sidebar、local s
 
 Documentation Placement 將每個 behavior-bearing source 綁到 canonical Human topic；Technology Guide 的廣域 trigger surface若出現尚未映射的新 source，CI 會 fail closed，要求先更新 placement contract。每條已知 subsystem rule 也明確限制 Technology Guide 可修改的 domain，因此版本新增功能不能再任意 append 到文件尾端。
 ## Runtime Content Safety Boundary
+
+The Hook and Prepare timeout diagnostics expose stable allowlisted fields only; raw commands, endpoint values and exception text remain omitted.
 
 Publication validation checks the literal command form before candidate inspection; the existing scanner then checks the exact tree and reachable history. Stable `SECRET_SCAN_*` failures remain fail-closed and redact raw exception details.
 

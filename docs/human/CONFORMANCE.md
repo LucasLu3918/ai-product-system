@@ -1,7 +1,5 @@
 # Scenario Conformance
 
-Scenario 260/261 verifies immediate Claude Hook denial without an inline Doctor call, the manual read-only recovery command, and safe Prepare timeout fields.
-
 本版增加意圖與目標路徑、非 Git Context、混合事件並行序號、唯讀索引、Eval 系統綁定、執行邊界觀測與外部簽章信任測試。既存 Agent Eval 結果會另列 `historical_unbound`；歷史 rubric PASS 不能解讀為目前版本已重新執行。
 
 `tests/evidence/retrieval_relations_extraction_lifecycle.py` verifies the legacy Retrieval Intelligence facade against its internal lexical relation implementation, including comment/string masking and secret-path exclusion; the test does not claim compiler-grade graph completeness.
@@ -1905,8 +1903,6 @@ Publication diagnostics observe policy on the remote default branch independentl
 
 Plan40 also verifies explicit reason-code coverage, `INTERNAL_DIAGNOSTIC_GAP` for unknown classifications, safe common bindings across Prepare and Hook, separate planning/authorization/Host/execution lifecycle states, and optional hash-chain-verified Diagnostic ID lookup. Evidence includes the publication authority, planning, diagnostics, Hook and governance-audit tests; lookup and trace failures do not change authorization.
 
-The read-only publication doctor cross-checks `branch.protected` with classic protection/effective rules, distinguishes permission-hidden policy, and preserves sanitized transient HTTP causes. Claude Code Hook runs one bounded Doctor for retryable network, rate-limit and server failures; skipped checks retain GitHub's successful provider outcome while AIPS remains fail-closed. Diagnostics never grant authority. Evidence: `tests/scenarios/261-publication-diagnostics-and-safe-recovery.md` and the linked lifecycle/validation tests.
-
 Plan44 also verifies stable detail codes for unsupported command forms and a separate Claude `PostToolUseFailure` path that reports observed native execution failure and exit code without raw host text. PreToolUse denial remains `NOT_EXECUTED`; no retry or authority is added.
 
 ## Scenario 240 — Personal Publication Default and High-Assurance Opt-In
@@ -1956,6 +1952,8 @@ Declared behavior dependencies select potentially stale Eval cases for review. T
 Current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md).
 
 ## Scenario 260 — Publication diagnostics and Doctor
+
+Scenario 260/261 verifies immediate Claude Hook denial without an inline Doctor call, the manual read-only recovery command, and safe Prepare timeout fields.
 
 Scenario 261 verifies unsupported personal publication command forms are rejected before candidate scanning and that scanner policy, Git-object and file-read failures remain blocked with redacted diagnostics.
 
@@ -2020,6 +2018,8 @@ Scenario 267 keeps this creative Git workspace denial unchanged; the advisory ap
 The lifecycle verifies default Git destination rejection, explicit exact-root opt-in, hash revalidation, create-only writes, and unchanged Git index bytes. The source remains a non-Git EPHEMERAL workspace; import does not stage or commit.
 
 ## Scenario 266 — Content Safety Injection Context and Recovery
+
+Publication timeout diagnostics preserve this content-safety boundary: raw command and exception text are omitted, as verified alongside the independent publication contract in Scenario 260/261.
 
 The fixed benign/malicious corpus verifies that common JavaScript data references pass, strong injection rules still block, ambiguous findings require review, and removed or unchanged staged lines do not block an unrelated edit. Publication-candidate injection checks inspect added diff lines while Secret/PII scanning retains the complete diff. Full staged Secret/PII coverage, exact expiring exceptions, safe reason/phase/fingerprint/recovery output, Hook parity and unchanged Git index/HEAD are covered by `tests/test_content_safety.py` and `tests/test_safety_diagnostics.py`.
 

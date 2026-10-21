@@ -1,7 +1,5 @@
 # 系統架構總覽
 
-Publication recovery stays fail-closed: Claude Hook reports retryable remote failures immediately and points to the read-only `aips publish doctor --worktree . --format json`; Prepare identifies remote timeouts with stable redacted diagnostics.
-
 
 AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前架構**；版本歷史放 CHANGELOG，Scenario 證據歷史放 Conformance。
 
@@ -262,6 +260,8 @@ Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行
 
 ## Deterministic Execution
 
+Claude publication Hook returns immediately with a fail-closed remote-error diagnosis; a separate read-only Doctor observation supplies endpoint evidence without changing the authorization boundary.
+
 The staged content-safety Hook handles AVIF metadata under bounded limits without changing Harness action authority.
 
 Claude native failure evidence is observational and never schedules retries or mutates the candidate.
@@ -390,6 +390,8 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 
 ## Security 與 Governance
 
+Prepare timeout details are stable and redacted, while Hook remote failures remain denied until the existing publication checks establish fresh evidence and authority.
+
 Content-safety PASS is candidate evidence only and does not authorize PR merge or change publication mode.
 
 
@@ -493,6 +495,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 
 ## Maintenance governance
+
+Publication recovery is an explicit read-only observation step. Scenario 260/261 and the Core Change Matrix keep Hook latency, timeout redaction and publication authority independently verifiable.
 
 Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
 

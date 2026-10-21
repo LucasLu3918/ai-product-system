@@ -1,7 +1,5 @@
 # System Maintenance
 
-Publication diagnostics maintenance (Scenario 260/261): keep the Claude synchronous Hook free of Doctor subprocesses; retryable remote failures must return a safe manual Doctor instruction, and Prepare timeout evidence must retain stable reason/detail/phase/error-class fields without raw command text.
-
 Creative asset import policy is canonical in `orchestration/CREATIVE_DIRECTION.md`; keep the CLI opt-in, candidate mode, Human guidance, Security Assurance, and Scenario 264 synchronized.
 
 Runtime Context 或 Integration Gate 改動時，執行 Scenario 198、完整 repository validation 與 exact-candidate Integration Gate，並維護 Change Impact 和 CORE_CHANGE_TEST_MATRIX 證據。
@@ -318,6 +316,8 @@ Legacy Project Knowledge remains compatibility input only. New reusable understa
 Focused Intelligence context evidence must distinguish storage deduplication from runtime-context deduplication. Do not promote conflict/override/change-impact/monorepo/migration Scenarios until their full contracts are actually enforced and directly exercised.
 
 ## Impact-derived regression testing
+
+Publication Hook recovery tests assert zero inline Doctor calls, immediate fail-closed guidance and safe Prepare timeout fields (Scenario 260/261); exact-candidate evidence is recorded in the Core Change Matrix.
 
 Plan41 records scanner, CLI, documentation-closure, and exact-candidate Gate evidence in the canonical Core Change Test Matrix; its approved scope does not require independent review.
 
@@ -830,6 +830,8 @@ Protected dispatch 會逐筆重新讀取 merged PR，確認 `merged_at`、head S
 
 
 ## Runtime Content Safety Boundary
+
+Publication timeout handling keeps the content-safety boundary explicit: output omits raw command and exception text while the protected operation remains denied.
 
 保留即時處理流程與所有安全檢查，僅調整偵測精確度；policy 變更需以固定良性／惡意樣本比較新舊結果，並驗證例外期限與精確範圍、診斷隱私、Git index/HEAD 不變性及 exact-candidate Gate。
 

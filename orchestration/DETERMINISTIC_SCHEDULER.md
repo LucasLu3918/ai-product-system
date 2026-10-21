@@ -1,7 +1,5 @@
 # Deterministic Scheduler
 
-A synchronous Claude Hook must not wait for a Doctor after retryable remote failure; return the denial and direct a later read-only Doctor observation. A Prepare timeout remains a non-authorizing observation.
-
 Runtime invariant matrix 是既有 Integration Gate 的必要 deterministic check，依 `config/runtime-invariants.yaml` 驗證所有維度值對、案例上限與高風險組合。
 
 CLI help must not schedule validation work. Local preparation preserves gh configuration references while isolating AIPS state and rejects a mismatched venv before dependency checks. Docs impact follows the selected checkout. Existing timing evidence supports removal of accidental duplicate runs without skipping the required exact-candidate Gate or PR/main checks.
@@ -144,6 +142,8 @@ Repository validation timing is written to the same runner temporary area and up
 Publication Preflight lifecycle evidence stubs the Python module probe before asserting loopback/browser blockers; this keeps environment diagnosis deterministic without changing Gate behavior.
 
 ## Failure behavior
+
+A synchronous Claude Hook returns its denial immediately after retryable remote failure and directs a later read-only Doctor observation. A Prepare timeout remains a non-authorizing observation.
 
 Native publication guard 啟動失敗不能被當成允許；Claude Code v2.1.295+ 對 managed publication PreToolUse 使用 `onFailure: block`，舊版/未知版由 adapter 保留相容設定並警示。
 Publication recovery may re-collect remote evidence for transient network, rate-limit or server failures only. Authentication, permission, policy, missing-resource, stale-candidate and Human/Host authority failures are not automatic retries.

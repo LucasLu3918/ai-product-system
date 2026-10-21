@@ -1,7 +1,5 @@
 # Runtime Content Safety Boundary
 
-Publication timeout diagnostics must omit raw command and exception text. A Claude PreToolUse remote failure remains denied, and manual Doctor recovery is read-only and cannot grant publication authority.
-
 ## Purpose
 
 Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.
@@ -64,6 +62,8 @@ The canonical sink manifest is `config/content-safety.yaml`. Any new persistence
 Pure dependency update documentation exemption (Scenario 221): `pure_dependency_update` in `scripts/dependency_impact.py` returns `PURE_DEPENDENCY_UPDATE` only when every changed file is an allowlisted dependency manifest (`.github/workflows/*.yml`, root `requirements*.txt`, `constraints/*.txt`) modified in place and every changed line pair is either a full-SHA pinned `uses:` reference for the same action with a non-decreasing version comment, or an exact `name==version` pin with a strictly higher version. Documentation Impact, Documentation Placement and Documentation Sync then suppress documentation requirements only and report each dependency's classification, risk and `human_review_required`; any other line or file, downgrade, unpinned reference, planned path, size-limit overflow or predicate failure keeps the full rules. Secret scanning, content safety, the Core Change Test Matrix, the Integration Gate, required checks and Human merge approval are unchanged, and `automatic_merge_authorized` stays false.
 
 ## Security invariants
+
+Publication timeout diagnostics omit raw command and exception text. A Claude PreToolUse remote failure remains denied, and manual Doctor recovery is read-only and cannot grant publication authority.
 
 AIPS publication hook 對未預期授權例外 fail closed；回傳與 opt-in ledger 限定 allowlist 例外類別，不攜帶原始訊息或命令。
 Operational dashboard output follows the same sink-aware boundary: only a sanitized allowlist may cross into the localhost observation surface, with no prompts, reasoning, secrets or mutation authority.

@@ -1,7 +1,5 @@
 # Orchestrator
 
-For a retryable remote publication failure, Claude Hook returns a bounded denial immediately. Run `aips publish doctor --worktree . --format json` as a separate read-only observation, then re-prepare the exact candidate; neither diagnostic grants publication authority.
-
 Local publication validation uses the shared Runtime Context resolver so the selected interpreter and its required capabilities are consistent with the Integration Gate.
 
 Internal module extraction preserves the established CLI/import facade and requires focused identity plus subsystem lifecycle evidence; it does not change publication approval or merge authority.
@@ -389,6 +387,8 @@ When emitting a Structured Task Graph, treat tasks as writable by default. Set `
 For Evolution Radar semantic work, prefer the generated provider-neutral handoff when no scheduled provider is available rather than inventing a recommendation. For PR integration, stale target-base evidence must route back to refresh/revalidation rather than proceeding with an old PASS.
 
 ## Change-class handoff to Integration Gate
+
+For a retryable remote publication failure, Claude Hook returns a bounded denial immediately. Use `aips publish doctor --worktree . --format json` as a separate read-only observation, then re-prepare the exact candidate; neither diagnostic grants publication authority.
 
 Preserve `COMMAND_FORM_UNSUPPORTED` while using its allowlisted detail code for recovery. Claude PostToolUseFailure is a native execution result after start; it does not authorize a retry or replace Human/Host checks.
 
