@@ -253,8 +253,15 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
         error_code = ('REMOTE_OBSERVATION_FAILED' if isinstance(exc, (OSError, subprocess.TimeoutExpired)) and phase in {'remote_observation', 'pr_observation'}
                       else 'CONTENT_SCAN_BLOCKED' if phase == 'content_scan'
                       else 'INTERNAL_DIAGNOSTIC_GAP')
-        item = diagnostic(error_code)
-        item['error_class'] = type(exc).__name__
+        if isinstance(exc, subprocess.TimeoutExpired) and phase in {'remote_observation', 'pr_observation'}:
+            item = authority.PublicationError(
+                'remote observation timed out', error_code,
+                context={'error_class': 'TimeoutExpired'}, phase=phase,
+                detail_code='REMOTE_OBSERVATION_TIMEOUT').diagnostic()
+        else:
+            item = diagnostic(error_code)
+            if error_code == 'INTERNAL_DIAGNOSTIC_GAP':
+                item['error_class'] = type(exc).__name__
         item['phase'] = phase
         result['phase'] = phase
         result['diagnostics'].append(item)
@@ -343,7 +350,7 @@ def recovery_guidance(result: dict[str, Any]) -> dict[str, Any]:
     elif 'REQUIRED_CHECKS_PENDING' in codes:
         state, human, retry = 'CHECKS_PENDING', False, True
     elif any(isinstance(item, dict) and item.get('retryable') is True and
-             item.get('category') in {'NETWORK', 'RATE_LIMITED', 'GITHUB_SERVER_ERROR'}
+             item.get('category') in {'NETWORK', 'RATE_LIMITED', 'GITHUB_SERVER_ERROR', 'TIMEOUT'}
              for item in diagnostics):
         state, human, retry = 'READ_OBSERVATION_RETRYABLE', False, True
     elif status == 'BLOCKED':

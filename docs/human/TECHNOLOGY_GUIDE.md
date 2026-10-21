@@ -22,7 +22,7 @@ The creative import CLI is routed by the existing AIPS command facade. Its expli
 
 The publication diagnostic contract distinguishes stable blocker reason, source phase, safe recovery, candidate/runtime binding, and independent plan, authorization, Host and execution states. Optional trace storage writes only allowlisted fields to an explicitly configured hash-chained ledger; lookup verifies the chain before returning a record.
 
-The Claude Code publication Hook can invoke the existing read-only Doctor once after explicitly retryable network, rate-limit or GitHub server errors.
+The Claude Code publication Hook fails closed immediately after retryable remote errors and directs the user to run the read-only Doctor; it does not wait for a Doctor inside the synchronous Hook. Prepare reports remote timeouts with stable, redacted diagnostics.
 
 The publication Doctor shares the structured API observer and labels the candidate branch independently from target policy, retaining bounded, sanitized endpoint and status evidence.
 

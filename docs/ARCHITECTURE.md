@@ -1263,3 +1263,5 @@ flowchart LR
 ~~~
 
 The MCP plane is portable and ADVISORY; full MCP hosts use Resources / Prompts / Tools, while tool-only hosts use read-only catalog/read/workflow Tools over the same canonical sources. Native adapters remain a separate enhancement plane for verified TURN_NATIVE / TOOL_GUARDED behavior. The gateway is local stdio only and performs no provider/model call inside the server.
+
+Publication recovery remains on the existing read-only observation boundary: the Claude PreToolUse guard fails closed without waiting for Doctor, while Prepare returns stable, redacted timeout details. No publication authority or execution path changes.

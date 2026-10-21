@@ -297,6 +297,10 @@ class PublicationDiagnosticsTest(unittest.TestCase):
             patch('sys.stdin', StringIO(json.dumps(payload))),
             patch.dict(os.environ, hook_env, clear=True),
             patch.dict(os.environ, {'AIPS_GOVERNANCE_AUDIT_LEDGER': ''}),
+            patch.object(governance_guard, 'operations_for', return_value=['git_push']),
+            patch.object(governance_guard, 'safe_emit', return_value={'decision': 'ALLOW'}),
+            patch('publication_commands.shell_commands', return_value=[['git', 'push', 'origin',
+                head + ':refs/heads/codex/wrong-target']]),
             patch('publication_authority.publication_mode', return_value='personal'),
             patch('publication_authority.validate_personal_action', side_effect=
                   authority.PublicationError(
@@ -377,23 +381,17 @@ class PublicationDiagnosticsTest(unittest.TestCase):
         self.assertEqual(payload['event']['reason_code'], 'PUSH_TARGET_BRANCH_MISMATCH')
         self.assertNotIn('raw_command', payload['event'])
 
-    def test_claude_hook_runs_one_read_only_doctor_only_for_retryable_remote_failure(self):
+    def test_claude_hook_does_not_run_doctor_inline_for_retryable_remote_failure(self):
         from contextlib import redirect_stdout
         from io import StringIO
 
         from publication_authority import PublicationError
 
         command = "gh pr merge 7 --repo fixture/repo --squash --match-head-commit " + "a" * 40
-        doctor_payload = {"status": "BLOCKED", "read_only": True,
-                          "policy": {"required_check_state": "UNAVAILABLE"},
-                          "diagnostics": [{"reason_code": "REQUIRED_CHECKS_POLICY_NETWORK",
-                              "phase": "protection_policy_evidence", "category": "NETWORK",
-                              "retryable": True, "next_step": "Retry safely."}],
-                          "authorized": False, "executed": False, "api_write_performed": False}
         calls = []
         def run(argv, **kwargs):
             calls.append(argv)
-            return subprocess.CompletedProcess(argv, 2, json.dumps(doctor_payload), "sensitive raw output")
+            raise AssertionError("Doctor must not run inside the synchronous PreToolUse hook")
 
         output = StringIO()
         with patch.object(governance_guard, "operations_for", return_value=["gh_pr_merge"]), \
@@ -408,13 +406,43 @@ class PublicationDiagnosticsTest(unittest.TestCase):
                     "tool_input": {"command": command}}))), \
                 redirect_stdout(output):
             self.assertEqual(governance_guard.hook("claude-code"), 0)
-        self.assertEqual(len(calls), 1)
-        self.assertIn("doctor", calls[0])
+        self.assertEqual(calls, [])
         payload = json.loads(output.getvalue())["hookSpecificOutput"]
         self.assertEqual(payload["permissionDecision"], "deny")
-        self.assertIn('"doctor_observation"', payload["additionalContext"])
-        self.assertNotIn("sensitive raw output", output.getvalue())
-        self.assertIn('"authorized":false', payload["additionalContext"])
+        self.assertIn("aips publish doctor --worktree . --format json", payload["permissionDecisionReason"])
+        self.assertNotIn('"doctor_observation"', payload["additionalContext"])
+        self.assertIn("authorization_status=DENIED", payload["additionalContext"])
+        self.assertIn("execution_status=NOT_EXECUTED", payload["additionalContext"])
+
+    def test_claude_hook_timeout_returns_safe_diagnosis_without_command_text(self):
+        from contextlib import redirect_stdout
+        from io import StringIO
+
+        secret_command = "git ls-remote PRIVATE_ENDPOINT PRIVATE_TOKEN"
+        command = "git push origin " + "a" * 40 + ":refs/heads/codex/fixture"
+        output = StringIO()
+        with patch.object(governance_guard, "operations_for", return_value=["git_push"]), \
+                patch.object(governance_guard, "safe_emit", return_value={"decision": "ALLOW"}), \
+                patch("publication_authority.publication_mode", return_value="personal"), \
+                patch("publication_commands.shell_commands", return_value=[["git", "push", "origin"]]), \
+                patch("publication_authority.validate_personal_action",
+                      side_effect=subprocess.TimeoutExpired(secret_command, 15)), \
+                patch.dict(os.environ, {'AIPS_GOVERNANCE_AUDIT_LEDGER': ''}), \
+                patch.object(governance_guard.sys, "stdin", StringIO(json.dumps({
+                    "cwd": str(self.root), "tool_input": {"command": command}}))), \
+                redirect_stdout(output):
+            self.assertEqual(governance_guard.hook("claude-code"), 0)
+        response = output.getvalue()
+        payload = json.loads(response)["hookSpecificOutput"]
+        self.assertEqual(payload["permissionDecision"], "deny")
+        self.assertIn('"reason_code":"REMOTE_OBSERVATION_FAILED"', payload["additionalContext"])
+        self.assertIn('"detail_code":"REMOTE_OBSERVATION_TIMEOUT"', payload["additionalContext"])
+        self.assertIn('"phase":"remote_observation"', payload["additionalContext"])
+        self.assertIn('"error_class":"TimeoutExpired"', payload["additionalContext"])
+        self.assertIn("aips publish doctor --worktree . --format json", response)
+        self.assertNotIn("PRIVATE_ENDPOINT", response)
+        self.assertNotIn("PRIVATE_TOKEN", response)
+        self.assertIn("authorization_status=DENIED", payload["additionalContext"])
 
     def test_aips_cli_routes_doctor_to_non_aips_git_project(self):
         project = self.root / "customer-project"

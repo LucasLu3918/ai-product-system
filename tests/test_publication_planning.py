@@ -108,6 +108,23 @@ class PlanningTest(unittest.TestCase):
         result = planning.prepare(self.repo / '.git', title='Candidate', body_file=self.body)
         self.assertEqual(result['status'], 'BLOCKED')
 
+    def test_prepare_timeout_has_specific_safe_remote_diagnostic(self):
+        sentinel = 'PRIVATE_TIMEOUT_COMMAND_AND_TOKEN'
+        with patch.object(auth, '_personal_base', side_effect=subprocess.TimeoutExpired(sentinel, 15)):
+            result = self.prepare()
+        self.assertEqual(result['status'], 'BLOCKED')
+        item = result['diagnostics'][0]
+        self.assertEqual(item['reason_code'], 'REMOTE_OBSERVATION_FAILED')
+        self.assertEqual(item['detail_code'], 'REMOTE_OBSERVATION_TIMEOUT')
+        self.assertEqual(item['phase'], 'remote_observation')
+        self.assertEqual(item['category'], 'TIMEOUT')
+        self.assertEqual(item['error_class'], 'TimeoutExpired')
+        self.assertTrue(item['retryable'])
+        self.assertIn('aips publish doctor --worktree . --format json', item['next_step'])
+        self.assertFalse(result['authorized'])
+        self.assertEqual(result['invocations'], [])
+        self.assertNotIn(sentinel, str(result))
+
     def test_changed_body_invalidates_fingerprint(self):
         first = self.prepare()
         self.body.write_text('New reviewed body\n')

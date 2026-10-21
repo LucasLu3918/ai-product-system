@@ -1,5 +1,7 @@
 # 系統架構總覽
 
+Publication recovery stays fail-closed: Claude Hook reports retryable remote failures immediately and points to the read-only `aips publish doctor --worktree . --format json`; Prepare identifies remote timeouts with stable redacted diagnostics.
+
 
 AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前架構**；版本歷史放 CHANGELOG，Scenario 證據歷史放 Conformance。
 

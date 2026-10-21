@@ -1,5 +1,7 @@
 # System Maintenance
 
+Publication diagnostics maintenance (Scenario 260/261): keep the Claude synchronous Hook free of Doctor subprocesses; retryable remote failures must return a safe manual Doctor instruction, and Prepare timeout evidence must retain stable reason/detail/phase/error-class fields without raw command text.
+
 Creative asset import policy is canonical in `orchestration/CREATIVE_DIRECTION.md`; keep the CLI opt-in, candidate mode, Human guidance, Security Assurance, and Scenario 264 synchronized.
 
 Runtime Context 或 Integration Gate 改動時，執行 Scenario 198、完整 repository validation 與 exact-candidate Integration Gate，並維護 Change Impact 和 CORE_CHANGE_TEST_MATRIX 證據。

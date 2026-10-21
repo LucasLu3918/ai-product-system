@@ -1,5 +1,7 @@
 # Integration Gate (Janitor Gate)
 
+Scenario 260/261 publication coverage requires immediate fail-closed Hook recovery, no inline Doctor invocation, and Prepare timeout diagnostics with stable redacted fields. The exact-candidate Gate preserves these contracts.
+
 Core candidate 另執行 `runtime-invariant-matrix`；Runtime Context 變更應使用 `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml` 描述邊界證據，並在遠端必要檢查通過後才合併。
 
 The shared `module_extraction_lifecycle.py` verifies compatibility facades for internal module splits; it does not weaken or replace the exact-candidate Gate.

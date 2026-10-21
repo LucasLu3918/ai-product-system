@@ -1,5 +1,7 @@
 # Runtime Content Safety Boundary
 
+Publication timeout diagnostics must omit raw command and exception text. A Claude PreToolUse remote failure remains denied, and manual Doctor recovery is read-only and cannot grant publication authority.
+
 ## Purpose
 
 Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.

@@ -1,5 +1,7 @@
 # Security Assurance
 
+Remote publication timeouts remain fail-closed and non-authorizing. Claude Hook does not run a synchronous Doctor subprocess; its denial gives a manual read-only recovery command. Prepare exposes only stable timeout diagnostics and omits raw command and exception text (Scenarios 260/261).
+
 Runtime Context 僅回報必要路徑、能力旗標與選擇原因；不得序列化環境變數、token、憑證檔案內容或含機密的命令輸出。
 
 Security review depth is proportional to the actual product/feature risk. The system does not apply the same heavy security process to every change.

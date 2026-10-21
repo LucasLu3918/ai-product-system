@@ -1,5 +1,7 @@
 # 安裝、更新與解除
 
+若 Claude Code 發布 Hook 因遠端觀測失敗而拒絕操作，Hook 會立即 fail-closed；請在同一候選工作樹手動執行唯讀命令 `aips publish doctor --worktree . --format json`。Prepare 逾時診斷會提供穩定代碼，不包含原始錯誤或命令。
+
 本指南整理 AIPS 的安裝生命週期（Install / Update / Uninstall）。支援 macOS、Linux 與 Windows + WSL；目前不宣稱 Windows 原生 PowerShell／CMD runtime 已支援。AIPS 需要 Python 3.12 以上。
 
 尚無可驗證的穩定版標籤時，安裝與更新會停止，不會自行改用開發分支。只有在你選擇追蹤可變動開發版時，才明確指定 `main`。

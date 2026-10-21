@@ -1,5 +1,7 @@
 # Orchestrator
 
+For a retryable remote publication failure, Claude Hook returns a bounded denial immediately. Run `aips publish doctor --worktree . --format json` as a separate read-only observation, then re-prepare the exact candidate; neither diagnostic grants publication authority.
+
 Local publication validation uses the shared Runtime Context resolver so the selected interpreter and its required capabilities are consistent with the Integration Gate.
 
 Internal module extraction preserves the established CLI/import facade and requires focused identity plus subsystem lifecycle evidence; it does not change publication approval or merge authority.
