@@ -75,10 +75,12 @@ class PublicationError(ValueError):
         result['detail_zh'] = detail_zh
         result['next_step_zh'] = next_step_zh
         error_class = self.context.get('error_class') or type(self).__name__
-        if (code == 'INTERNAL_DIAGNOSTIC_GAP' or code.startswith('SECRET_SCAN_')) and isinstance(error_class, str) and re.fullmatch(r'[A-Za-z][A-Za-z0-9_.]{0,79}', error_class):
-            result['error_class'] = error_class
-        elif (code == 'REMOTE_OBSERVATION_FAILED' and detail_code == 'REMOTE_OBSERVATION_TIMEOUT'
-              and error_class == 'TimeoutExpired'):
+        expose_error_class = (
+            code == 'INTERNAL_DIAGNOSTIC_GAP' or code.startswith('SECRET_SCAN_') or
+            (code == 'REMOTE_OBSERVATION_FAILED' and detail_code == 'REMOTE_OBSERVATION_TIMEOUT'
+             and error_class == 'TimeoutExpired')
+        )
+        if expose_error_class and isinstance(error_class, str) and re.fullmatch(r'[A-Za-z][A-Za-z0-9_.]{0,79}', error_class):
             result['error_class'] = error_class
         component = self.context.get('component')
         if code.startswith('SECRET_SCAN_') and component == 'check_secret_leakage':
