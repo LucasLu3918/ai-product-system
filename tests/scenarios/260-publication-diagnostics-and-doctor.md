@@ -19,7 +19,8 @@ An agent cannot explain why a checked PR merge was blocked, or a maintainer is c
 - Claude Code, OpenCode and Codex receive consistent guidance while retaining native permissions and Human Authority; no policy changes, bypasses or automatic merge are introduced.
 - The candidate/source branch is reported separately from the remote default policy branch; `--branch` is an explicit policy target override.
 - GitHub API 401, 403, contextual 404, 429/rate-limit, 5xx, network/CLI and malformed-response evidence retains a safe endpoint/status category; unknown policy remains blocking.
-- Claude Code Hook runs one read-only Doctor automatically only after a retryable network, rate-limit or GitHub server error; denial context carries the bounded Doctor result and stable reason without raw command, tool arguments or credentials.
+- Claude Code Hook fails closed immediately after a retryable remote observation failure; it never runs Doctor synchronously. Its bounded denial gives the safe reason and the read-only `aips publish doctor --worktree . --format json` recovery command.
+- A `TimeoutExpired` during Prepare remote observation reports `REMOTE_OBSERVATION_FAILED` with detail `REMOTE_OBSERVATION_TIMEOUT`, the observation phase and safe error class, without raw command or exception text; the result remains non-authorizing.
 - Recovery retryability matches the observed cause: transient network, rate-limit, server and pending-check states allow read-only re-observation; permission, authentication, policy, stale candidate and Host/Human authority do not.
 
 ## Evidence

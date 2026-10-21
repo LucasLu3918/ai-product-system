@@ -6,6 +6,8 @@
 
 ## macOS / Linux
 
+Managed Runtime hooks keep content-safety and publication checks fail-closed. Remote publication diagnostics are read-only; timeout output omits raw commands and exception text.
+
 ~~~bash
 (
   set -e

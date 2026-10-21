@@ -1,5 +1,7 @@
 # Runtime Policy Enforcement
 
+Claude publication Hook remote failures fail closed without synchronous Doctor work. Safe denial context includes a manual read-only Doctor command; Prepare timeout reports stable redacted diagnostics without exception text or the command that timed out.
+
 ## Purpose
 
 Runtime Policy Enforcement provides deterministic, provider-neutral decisions for supported tool actions at the pre-execution boundary. It extends Resource Authorization and existing native hooks; it does not grant Human, publication, merge or release authority.

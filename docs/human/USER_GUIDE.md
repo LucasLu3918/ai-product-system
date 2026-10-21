@@ -666,6 +666,10 @@ Retrieval index persistence is an internal, rebuildable cache boundary in `scrip
 
 ## Git Publication 與 Release
 
+### Claude Code 發布 Hook 遠端逾時
+
+Hook 遇到可重試的遠端觀測失敗時會立即拒絕並提供安全診斷，不會在同步 Hook 中等待 Doctor。請在同一候選工作樹執行唯讀命令 `aips publish doctor --worktree . --format json`；完成排除後重新執行 Prepare。逾時表示尚未完成遠端驗證，不代表授權或已執行。
+
 SSH remotes such as `git@github.com:<owner>/<repo>.git` are not treated as email addresses, but any other email in a commit or diff is still blocked. If a commit is blocked for an email, remove the real address or use clearly fake test data; do not split the string to get past the scanner.
 
 Content-safety PASS is candidate evidence only and does not authorize PR merge or change publication mode.
@@ -865,6 +869,8 @@ Scenario / validation history
 
 Documentation Placement Contract 會檢查 heading hierarchy、version/scenario-style heading 與 changed-line placement。新增功能不得只在 current-behavior 文件尾端追加 `vX.Y` / Scenario 說明；若確實需要新 topic，必須同時把 canonical section 加入 placement contract。
 ## Runtime Content Safety Boundary
+
+Publication timeout output remains content-safe by omitting raw command and exception text; a denial remains `NOT_EXECUTED` until existing authority checks succeed.
 
 Plan45 scanner failures use stable `SECRET_SCAN_*` codes and safe recovery guidance; unsupported literal commands are rejected before scanning and never execute. This preserves the existing fail-closed content-safety policy.
 

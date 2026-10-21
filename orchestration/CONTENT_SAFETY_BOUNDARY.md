@@ -63,6 +63,8 @@ Pure dependency update documentation exemption (Scenario 221): `pure_dependency_
 
 ## Security invariants
 
+Publication timeout diagnostics omit raw command and exception text. A Claude PreToolUse remote failure remains denied, and manual Doctor recovery is read-only and cannot grant publication authority.
+
 AIPS publication hook 對未預期授權例外 fail closed；回傳與 opt-in ledger 限定 allowlist 例外類別，不攜帶原始訊息或命令。
 Operational dashboard output follows the same sink-aware boundary: only a sanitized allowlist may cross into the localhost observation surface, with no prompts, reasoning, secrets or mutation authority.
 

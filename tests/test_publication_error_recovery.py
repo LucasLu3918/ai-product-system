@@ -86,6 +86,19 @@ class PublicationRecoveryContractTest(unittest.TestCase):
         self.assertFalse(unknown["retry_read_only"])
         self.assertFalse(unknown_remote["retryable"])
 
+    def test_timeout_is_a_retryable_read_observation_with_specific_recovery(self):
+        item = PublicationError('', 'REMOTE_OBSERVATION_FAILED',
+            context={'error_class': 'TimeoutExpired'}, phase='remote_observation',
+            detail_code='REMOTE_OBSERVATION_TIMEOUT').diagnostic()
+        result = recovery_guidance({'status': 'BLOCKED', 'diagnostics': [item]})
+        self.assertEqual(item['reason_code'], 'REMOTE_OBSERVATION_FAILED')
+        self.assertEqual(item['detail_code'], 'REMOTE_OBSERVATION_TIMEOUT')
+        self.assertEqual(item['error_class'], 'TimeoutExpired')
+        self.assertEqual(item['category'], 'TIMEOUT')
+        self.assertTrue(result['retry_read_only'])
+        self.assertFalse(result['authorized'])
+        self.assertFalse(result['executed'])
+
     def test_merge_confirmation_and_merged_are_separate(self):
         awaiting = recovery_guidance({"status": "PLANNED",
                                      "next_step": "NATIVE_MERGE_CONFIRMATION"})

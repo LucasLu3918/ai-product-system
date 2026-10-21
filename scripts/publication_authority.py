@@ -45,6 +45,7 @@ class PublicationError(ValueError):
         detail, next_step = values[:2]
         phase = self.phase or _phase_for_code(code)
         source = _source_for_code(code)
+        detail_code = self.detail_code or self.context.get('detail_code')
         result: dict[str, Any] = {
             'version': 2,
             'diagnostic_id': str(uuid.uuid4()),
@@ -57,14 +58,16 @@ class PublicationError(ValueError):
             'source': 'CLAUDE_HOST' if code.startswith('HOST_') else 'AIPS_PUBLICATION',
             'blocking_rule': source,
             'blocking_rule_id': _blocking_rule_id(code),
-            'retryable': code in RETRYABLE_REASONS,
+            'retryable': (code in RETRYABLE_REASONS or
+                          (code == 'REMOTE_OBSERVATION_FAILED' and detail_code == 'REMOTE_OBSERVATION_TIMEOUT')),
             'redacted': True,
             'recovery_mode': 'HUMAN_OR_HOST_REQUIRED' if source in {'HUMAN_AUTHORITY', 'HOST_PERMISSION'} else 'SAFE_OBSERVATION',
         }
-        detail_code = self.detail_code or self.context.get('detail_code')
         detail = PUBLICATION_DETAIL_DIAGNOSTICS.get(detail_code) if isinstance(detail_code, str) else None
         if detail:
             result.update(detail_code=detail_code, detail=detail[0], next_step=detail[1])
+        if detail_code == 'REMOTE_OBSERVATION_TIMEOUT':
+            result['category'] = 'TIMEOUT'
         detail_zh, next_step_zh = PUBLICATION_DIAGNOSTICS_ZH.get(
             code, ('發布驗證未通過。', '檢查此階段的安全診斷，修正後重新執行唯讀驗證。'))
         if detail:
@@ -72,7 +75,12 @@ class PublicationError(ValueError):
         result['detail_zh'] = detail_zh
         result['next_step_zh'] = next_step_zh
         error_class = self.context.get('error_class') or type(self).__name__
-        if (code == 'INTERNAL_DIAGNOSTIC_GAP' or code.startswith('SECRET_SCAN_')) and isinstance(error_class, str) and re.fullmatch(r'[A-Za-z][A-Za-z0-9_.]{0,79}', error_class):
+        expose_error_class = (
+            code == 'INTERNAL_DIAGNOSTIC_GAP' or code.startswith('SECRET_SCAN_') or
+            (code == 'REMOTE_OBSERVATION_FAILED' and detail_code == 'REMOTE_OBSERVATION_TIMEOUT'
+             and error_class == 'TimeoutExpired')
+        )
+        if expose_error_class and isinstance(error_class, str) and re.fullmatch(r'[A-Za-z][A-Za-z0-9_.]{0,79}', error_class):
             result['error_class'] = error_class
         component = self.context.get('component')
         if code.startswith('SECRET_SCAN_') and component == 'check_secret_leakage':
@@ -272,6 +280,7 @@ PUBLICATION_DIAGNOSTICS = {
 }
 
 PUBLICATION_DETAIL_DIAGNOSTICS = {
+    'REMOTE_OBSERVATION_TIMEOUT': ('A required remote observation timed out before it could be verified.', 'Manual read-only diagnostic command: `aips publish doctor --worktree . --format json`. Review its network or authentication finding, then rerun Prepare.', '必要的遠端觀測逾時，尚未完成驗證。', '唯讀診斷命令：`aips publish doctor --worktree . --format json`。依診斷排除網路或登入問題後重新執行 Prepare。'),
     'PIPE_UNSUPPORTED': ('A publication command was combined with a shell pipeline.', 'Run the exact approved publication command by itself; do not pipe it through another command.', '發布指令含有管線。', '單獨執行規劃產生的原生發布指令，不要串接管線。'),
     'MULTI_COMMAND_UNSUPPORTED': ('A publication command was combined with another shell command.', 'Run one exact approved publication command at a time.', '發布指令與其他 Shell 命令組合。', '一次只執行一個經核准的原生發布指令。'),
     'COMMAND_WRAPPER_UNSUPPORTED': ('A publication command uses an unsupported shell wrapper.', 'Use the standalone literal command emitted by the validated plan.', '發布指令使用不支援的 Shell 包裝形式。', '使用驗證計畫輸出的獨立原生指令。'),

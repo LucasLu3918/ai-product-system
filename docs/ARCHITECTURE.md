@@ -312,6 +312,8 @@ The alias candidate is deterministic and transparent. It is not an embedding pro
 
 ## Maintenance and publication evidence
 
+Publication recovery remains on the existing read-only observation boundary: the Claude PreToolUse guard fails closed without waiting for Doctor, while Prepare returns stable, redacted timeout details. No publication authority or execution path changes.
+
 Plan42 adds bounded font-metadata inspection to commit and publication safety evidence; the content decision remains separate from Personal or High-Assurance publication approval.
 
 Commit diagnostics preserve the Git Publish Approval Gate; they cannot authorize a branch update, PR merge, or release.

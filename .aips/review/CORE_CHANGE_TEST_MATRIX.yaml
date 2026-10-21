@@ -1,154 +1,108 @@
 version: 1
 change:
-  id: project-intelligence-stale-advisory-20261020
-  summary: READY Project Intelligence STALE freshness is advisory for confined local
-    L2 source writes; every independent stop remains enforced.
+  id: hook-timeout-diagnostics-20261021
+  summary: Claude publication Hook returns immediately with a safe fail-closed diagnosis after retryable remote errors; Prepare classifies remote timeouts with stable redacted fields.
   boundary:
-  - Turn Context stale readiness fail policy
-  - OpenCode direct native write authorization
-  - Project Intelligence and Harness policy documentation
-  - Repository delivery and remote required check
+    - Claude PreToolUse remote observation recovery and fail-closed behavior
+    - Prepare remote timeout reason, detail, phase, category, and safe error class
+    - Scenario 260/261, Human and Agent documentation closure
+    - Exact-candidate Core Integration Gate and remote required checks
 matrix:
-- boundary: Turn Context stale readiness fail policy
-  reason: Context must retain freshness and refresh facts while avoiding a stale-only
-    closed policy for READY Intelligence.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: 'PASS: git diff --check; focused lifecycle executes the changed Python
-        module.'
-    unit:
-      applicable: true
-      evidence: 'PASS: tests/evidence/intelligence_context_lifecycle.py verifies READY+STALE
-        manifest and retained refresh guidance.'
-    integration:
-      applicable: true
-      evidence: 'PASS: tests/evidence/intelligence_context_lifecycle.py through bundled
-        AIPS Python 3.12.'
-    contract:
-      applicable: true
-      evidence: 'PASS: tests/validation/opencode_integration_contracts.py via `python
-        -m tests.validation.opencode_integration_contracts`.'
-    e2e:
-      applicable: false
-      na_reason: No UI or deployed service changes.
-    security:
-      applicable: true
-      evidence: 'PASS: lifecycle keeps non-READY, UNKNOWN and unresolved instruction
-        conflicts fail-closed.'
-    migration_recovery:
-      applicable: false
-      na_reason: No persistent schema or state change; PR revert restores policy.
-    cli_harness:
-      applicable: true
-      evidence: 'PASS: Context lifecycle invokes the project_intelligence CLI for
-        a READY+STALE mutation.'
-    docs_schema:
-      applicable: true
-      evidence: 'PASS: Context manifest retains freshness and targeted_refresh fields.'
-- boundary: OpenCode direct native write authorization
-  reason: A native permission guard relaxation must pair each newly allowed case with
-    still-denied counterparts.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: 'PASS: git diff --check; Python lifecycle execution validates syntax.'
-    unit:
-      applicable: true
-      evidence: 'PASS: OpenCode native guard lifecycle allows READY+STALE and denies
-        independent blockers.'
-    integration:
-      applicable: true
-      evidence: 'PASS: tests/evidence/opencode_integration_lifecycle.py.'
-    contract:
-      applicable: true
-      evidence: 'PASS: tests/validation/opencode_integration_contracts.py invokes
-        lifecycle.'
-    e2e:
-      applicable: false
-      na_reason: Host UI is unchanged; fixtures do not claim runtime acceptance.
-    security:
-      applicable: true
-      evidence: 'PASS: tests retain stale+conflict, non-READY, UNKNOWN, escaped path
-        and external action denials.'
-    migration_recovery:
-      applicable: false
-      na_reason: No persistent data; PR revert restores guard behavior.
-    cli_harness:
-      applicable: true
-      evidence: 'PASS: existing OpenCode lifecycle exercises native plugin install/doctor/uninstall
-        and direct guard decisions.'
-    docs_schema:
-      applicable: true
-      evidence: 'PASS: lifecycle contract asserts advisory decision reason.'
-- boundary: Documentation and scenario contract
-  reason: Human and agent policy must consistently explain the stale advisory and
-    retained stops.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: 'PASS: git diff --check.'
-    unit:
-      applicable: false
-      na_reason: Verified by documentation and scenario contract validation.
-    integration:
-      applicable: true
-      evidence: 'PASS: Project Intelligence and OpenCode lifecycle evidence.'
-    contract:
-      applicable: true
-      evidence: 'PASS: Scenario 267 registered as lifecycle coverage.'
-    e2e:
-      applicable: false
-      na_reason: No UI changes.
-    security:
-      applicable: true
-      evidence: 'PASS: documentation retains all approved stop conditions.'
-    migration_recovery:
-      applicable: false
-      na_reason: Documentation-only rollback is a PR revert.
-    cli_harness:
-      applicable: false
-      na_reason: No CLI interface change.
-    docs_schema:
-      applicable: true
-      evidence: 'PASS: Human and orchestration policy text synchronized; scenario
-        coverage maps evidence.'
-- boundary: Repository delivery and remote required check
-  reason: This is a Large/Core candidate and must pass the exact-candidate full Gate
-    before publication.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: PENDING exact-candidate Core Integration Gate.
-    unit:
-      applicable: true
-      evidence: PENDING exact-candidate Core Integration Gate.
-    integration:
-      applicable: true
-      evidence: PENDING exact-candidate Core Integration Gate.
-    contract:
-      applicable: true
-      evidence: PENDING exact-candidate Core Integration Gate.
-    e2e:
-      applicable: false
-      na_reason: No deployed service or UI changes.
-    security:
-      applicable: true
-      evidence: PENDING exact-candidate secret scan.
-    migration_recovery:
-      applicable: false
-      na_reason: No persistence or migration.
-    cli_harness:
-      applicable: true
-      evidence: PENDING exact-candidate Core Integration Gate.
-    docs_schema:
-      applicable: true
-      evidence: PENDING documentation closure and repository validation.
+  - boundary: Claude PreToolUse remote observation recovery
+    reason: The synchronous Claude Hook must not wait for an inline Doctor subprocess and must preserve a safe, non-authorizing denial.
+    checks:
+      static_lint:
+        applicable: true
+        evidence: PASS — git diff --check origin/main...HEAD.
+      unit:
+        applicable: true
+        evidence: PASS — tests/test_publication_diagnostics.py asserts no Doctor subprocess and safe retryable denial output.
+      integration:
+        applicable: true
+        evidence: PASS — exact-candidate Integration Gate passed on cc46a6c; no blockers.
+      contract:
+        applicable: true
+        evidence: PASS — Scenario 260 and 261 contracts updated; complete repository validator passed.
+      e2e:
+        applicable: false
+        na_reason: No deployed service or UI behavior changed; native Hook envelope is covered by local lifecycle tests.
+      security:
+        applicable: true
+        evidence: PASS — timeout sentinel and private command text are absent from Hook output; authorization remains DENIED and NOT_EXECUTED.
+      migration_recovery:
+        applicable: false
+        na_reason: No persistent schema or state change; reverting the PR restores prior behavior.
+      cli_harness:
+        applicable: true
+        evidence: PASS — complete repository validator passed; Claude Hook payload contract is exercised by focused tests.
+      docs_schema:
+        applicable: true
+        evidence: PASS — planned docs-impact closure complete with zero required additions; all 18 closure documents updated.
+  - boundary: Prepare remote observation timeout diagnostics
+    reason: A remote timeout must remain blocking while exposing a stable, actionable diagnosis without raw exception or command text.
+    checks:
+      static_lint:
+        applicable: true
+        evidence: PASS — git diff --check origin/main...HEAD.
+      unit:
+        applicable: true
+        evidence: PASS — tests/test_publication_planning.py verifies REMOTE_OBSERVATION_TIMEOUT, phase, TimeoutExpired, category and safe next step.
+      integration:
+        applicable: true
+        evidence: PASS — exact-candidate Integration Gate passed on cc46a6c; no blockers.
+      contract:
+        applicable: true
+        evidence: PASS — Scenario 260/261 describe stable timeout fields and unchanged non-authorizing behavior.
+      e2e:
+        applicable: false
+        na_reason: No UI, deployed service or external schema changes.
+      security:
+        applicable: true
+        evidence: PASS — tests verify raw timeout command and private endpoint sentinel are redacted.
+      migration_recovery:
+        applicable: false
+        na_reason: No schema or data migration; retry uses the existing read-only Doctor.
+      cli_harness:
+        applicable: true
+        evidence: PASS — tests/test_publication_error_recovery.py verifies timeout re-observation remains read-only.
+      docs_schema:
+        applicable: true
+        evidence: PASS — Human, Agent, Scenario and architecture documentation closure is synchronized.
+  - boundary: Candidate delivery and remote required checks
+    reason: This is an approved Core Change; verify the exact committed candidate and remote required checks before merging main.
+    checks:
+      static_lint:
+        applicable: true
+        evidence: PASS — git diff --check origin/main...HEAD.
+      unit:
+        applicable: true
+        evidence: PASS — 57 focused publication tests and 24 subtests passed.
+      integration:
+        applicable: true
+        evidence: PASS — exact-candidate Integration Gate passed on cc46a6c; no blockers.
+      contract:
+        applicable: true
+        evidence: PASS — tests/validate_repository.py completed with VALIDATION PASSED (267 scenarios).
+      e2e:
+        applicable: false
+        na_reason: No deployed system or UI changes.
+      security:
+        applicable: true
+        evidence: PASS — exact-candidate mandatory secret scan completed with zero findings.
+      migration_recovery:
+        applicable: false
+        na_reason: No persistent state or migration.
+      cli_harness:
+        applicable: true
+        evidence: PASS — exact-candidate Integration Gate passed on cc46a6c; no blockers.
+      docs_schema:
+        applicable: true
+        evidence: PASS — documentation impact closure is complete and repository validator passed.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 candidate:
-  base_sha: 79f84751264b582d64ff55f3bf3b8108823b05d2
-  changed_files_hash: 31213188a7eafe93c774f9ddda588531a72b37d2f13ed26f998e83417393e1d7
+  base_sha: 6cfcdeb2edaf67b3e48aa70adbcfd8aebd416dbd
+  changed_files_hash: 80562ebfad3824d174297b843d19bacef298129f5dabf7da67dbf35dc77b36f2
 review_evidence:
   required: false
 blockers: []

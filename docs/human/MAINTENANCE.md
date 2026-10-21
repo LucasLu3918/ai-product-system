@@ -317,6 +317,8 @@ Focused Intelligence context evidence must distinguish storage deduplication fro
 
 ## Impact-derived regression testing
 
+Publication Hook recovery tests assert zero inline Doctor calls, immediate fail-closed guidance and safe Prepare timeout fields (Scenario 260/261); exact-candidate evidence is recorded in the Core Change Matrix.
+
 Plan41 records scanner, CLI, documentation-closure, and exact-candidate Gate evidence in the canonical Core Change Test Matrix; its approved scope does not require independent review.
 
 Publication policy changes test branch protection visibility, exact target policy, check-state classification and Hook no-write behavior.
@@ -828,6 +830,8 @@ Protected dispatch 會逐筆重新讀取 merged PR，確認 `merged_at`、head S
 
 
 ## Runtime Content Safety Boundary
+
+Publication timeout handling keeps the content-safety boundary explicit: output omits raw command and exception text while the protected operation remains denied.
 
 保留即時處理流程與所有安全檢查，僅調整偵測精確度；policy 變更需以固定良性／惡意樣本比較新舊結果，並驗證例外期限與精確範圍、診斷隱私、Git index/HEAD 不變性及 exact-candidate Gate。
 

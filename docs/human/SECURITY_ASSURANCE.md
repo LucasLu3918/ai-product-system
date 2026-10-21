@@ -465,6 +465,8 @@ SAL 2+ default registration requires an independently retained anchor. SAL 4 req
 The retention helper never deletes evidence or grants compaction authority. Expiry only creates a Human-review action and a minimal digest record.
 ## Runtime Content Safety Boundary
 
+Prepare timeout diagnostics omit the raw command and exception text, and the Claude Hook remains denied while remote evidence is unavailable.
+
 Personal publication rejects unsupported literal command forms before scanning and reports scanner policy or candidate-read failures through stable redacted reason codes. Both paths remain non-authorizing and fail closed.
 
 The Claude native failure observer excludes raw host errors and command text from diagnostic and durable sinks; only bounded allowlisted fields are reported.
@@ -497,6 +499,8 @@ Publication preflight `git_identity` accepts the GitHub App bot noreply form (`<
 
 ## Runtime Policy Enforcement
 
+Remote publication timeouts remain fail-closed and non-authorizing. Claude Hook never invokes a synchronous Doctor subprocess; its denial gives a manual read-only recovery command. Prepare exposes only stable timeout diagnostics and omits raw command and exception text (Scenarios 260/261).
+
 Content-safety PASS is candidate evidence only and does not authorize PR merge or change publication mode.
 
 
@@ -509,7 +513,7 @@ Commit-safety diagnostics are not Runtime Action approvals; they cannot satisfy 
 
 Publication diagnostic fields and optional ledger tracing are observability only. Unknown causes remain a diagnostic gap; they do not downgrade the existing fail-closed requirement or create Human, Host, push, PR, or merge authority.
 
-Claude Code runs one bounded Doctor only for retryable network, rate-limit or GitHub server errors; native Host confirmation and merge authority remain required.
+Claude Code's publication Hook returns a bounded denial for retryable remote errors without invoking Doctor; a separate Doctor invocation remains read-only, and native Host confirmation and merge authority remain required.
 
 Publication Doctor reports only observed HTTP status and safe endpoint identity. Authentication, permission, missing resource, rate limit, service and network failures remain distinct; unknown policy evidence blocks, and diagnostic retries never run push, PR or merge actions.
 

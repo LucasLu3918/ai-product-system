@@ -1,5 +1,7 @@
 # Core Change Testing
 
+Publication Hook recovery tests assert zero inline Doctor subprocess calls for retryable remote failures, fail-closed safe recovery guidance, timeout redaction, and Prepare timeout reason/detail/phase/error-class fields.
+
 
 Publication prepare/diagnose planning is read-only and binds an explicit candidate worktree; native tools retain their own permission and authority checks. Re-observe live Git/PR state before continuation; a planning fingerprint never grants publication or merge authority.
 Runtime Foundation changes include the bounded Runtime Invariant Matrix and credential-free Context contract in the candidate-specific test matrix. Recompute the matrix and actual diff reconciliation after implementation expands.

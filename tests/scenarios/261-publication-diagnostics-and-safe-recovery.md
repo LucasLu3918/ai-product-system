@@ -26,7 +26,9 @@ Given `AIPS_GOVERNANCE_AUDIT_LEDGER` is configured, when a Prepare, Hook, or Doc
 
 Given a PR already merged with the exact candidate head and a merge commit reachable from the live default base, when preparation is repeated, then the result is `ALREADY_MERGED` and plans post-merge reconciliation without a push, PR creation, or merge invocation. A different head, unavailable merge commit, or stale base remains blocked.
 
-Given Claude Code Hook receives a retryable network, rate-limit or GitHub server error, when it handles the denial, then it runs the read-only Doctor once and returns only bounded safe fields; Host denial, missing Human approval, stale scope, or missing/failing required checks still require the named review or approval. Diagnostics never grant publication authority.
+Given Claude Code Hook receives a retryable remote observation error, when it handles the denial, then it fails closed immediately without invoking Doctor and returns the bounded reason plus `aips publish doctor --worktree . --format json` recovery instruction; Host denial, missing Human approval, stale scope, or missing/failing required checks still require the named review or approval. Diagnostics never grant publication authority.
+
+Given Prepare times out while observing remote state, when it returns its diagnostic, then it reports `REMOTE_OBSERVATION_FAILED`, `REMOTE_OBSERVATION_TIMEOUT`, the observation phase and `TimeoutExpired` class without raw command or exception text; the result remains unauthorized and unexecuted.
 
 Given the local candidate branch differs from the repository default, when `aips publish doctor` observes policy, then it reports both identities and queries the explicit/default target branch, never the candidate by implication. API status and endpoint categories distinguish authentication, permission, contextual missing resources, rate limits, server errors and network failures; unconfirmed evidence remains `UNKNOWN`.
 

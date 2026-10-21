@@ -388,6 +388,8 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 
 ## Change-class handoff to Integration Gate
 
+For a retryable remote publication failure, Claude Hook returns a bounded denial immediately. Use `aips publish doctor --worktree . --format json` as a separate read-only observation, then re-prepare the exact candidate; neither diagnostic grants publication authority.
+
 Preserve `COMMAND_FORM_UNSUPPORTED` while using its allowlisted detail code for recovery. Claude PostToolUseFailure is a native execution result after start; it does not authorize a retry or replace Human/Host checks.
 
 Publication 診斷只提供安全的失敗原因與下一步，不授權重試或合併。Claude Code v2.1.295+ 的 native fail-closed hook 設定不取代 AIPS 與 GitHub 的發布檢查。

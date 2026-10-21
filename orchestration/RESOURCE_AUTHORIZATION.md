@@ -1,5 +1,7 @@
 # Resource-Scoped Agent Authorization
 
+Publication Doctor remains a separately invoked read-only observation. A Claude Hook timeout or retryable remote failure stays denied until a fresh Prepare and the existing authority checks succeed.
+
 ## Purpose
 
 Add deterministic least-privilege evidence to the existing Execution Profile without creating a new Role, Skill or Human approval gate.
