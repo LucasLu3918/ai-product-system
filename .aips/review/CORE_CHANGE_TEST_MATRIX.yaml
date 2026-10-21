@@ -19,7 +19,7 @@ matrix:
         evidence: PASS — tests/test_publication_diagnostics.py asserts no Doctor subprocess and safe retryable denial output.
       integration:
         applicable: true
-        evidence: PENDING — exact-candidate Integration Gate.
+        evidence: PASS — exact-candidate Integration Gate passed on cc46a6c; no blockers.
       contract:
         applicable: true
         evidence: PASS — Scenario 260 and 261 contracts updated; complete repository validator passed.
@@ -49,7 +49,7 @@ matrix:
         evidence: PASS — tests/test_publication_planning.py verifies REMOTE_OBSERVATION_TIMEOUT, phase, TimeoutExpired, category and safe next step.
       integration:
         applicable: true
-        evidence: PENDING — exact-candidate Integration Gate.
+        evidence: PASS — exact-candidate Integration Gate passed on cc46a6c; no blockers.
       contract:
         applicable: true
         evidence: PASS — Scenario 260/261 describe stable timeout fields and unchanged non-authorizing behavior.
@@ -79,7 +79,7 @@ matrix:
         evidence: PASS — 57 focused publication tests and 24 subtests passed.
       integration:
         applicable: true
-        evidence: PENDING — exact-candidate Integration Gate.
+        evidence: PASS — exact-candidate Integration Gate passed on cc46a6c; no blockers.
       contract:
         applicable: true
         evidence: PASS — tests/validate_repository.py completed with VALIDATION PASSED (267 scenarios).
@@ -88,13 +88,13 @@ matrix:
         na_reason: No deployed system or UI changes.
       security:
         applicable: true
-        evidence: PASS — complete repository validation passed; exact-candidate secret scan is required by publication preflight.
+        evidence: PASS — exact-candidate mandatory secret scan completed with zero findings.
       migration_recovery:
         applicable: false
         na_reason: No persistent state or migration.
       cli_harness:
         applicable: true
-        evidence: PENDING — exact-candidate Integration Gate.
+        evidence: PASS — exact-candidate Integration Gate passed on cc46a6c; no blockers.
       docs_schema:
         applicable: true
         evidence: PASS — documentation impact closure is complete and repository validator passed.
