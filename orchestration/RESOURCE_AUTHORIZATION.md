@@ -103,3 +103,5 @@ aips authorization check \
 An ALLOW means only that the declared ordinary resource operation is within the deterministic profile. All other applicable governance/testing/publication gates still apply.
 
 For external services, the runtime binds the grant selector to the observed destination host and passes explicit port/method/path and redirect evidence when available. A model-provided Runtime Action cannot replace the host-observed tool, URL or trusted `AIPS_RESOURCE_AUTHORIZATION_PROFILE` environment setting.
+
+Git publication remains subject to explicit Human task intent and exact-candidate validation. AIPS Required Checks enforcement is opt-in via `AIPS_ENFORCE_REQUIRED_CHECKS=1`; GitHub native protection remains effective.

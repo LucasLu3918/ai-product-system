@@ -79,3 +79,5 @@ aips runtime-policy evaluate --action ACTION.yaml \
 ~~~
 
 An `ALLOW` from the standalone evaluator is a decision result. It is not proof a runtime actually enforces it; only a verified native hook or sandbox can provide that evidence.
+
+Personal PR merge checks are independently enforced by AIPS only when `AIPS_ENFORCE_REQUIRED_CHECKS=1`. This runtime setting does not mutate or bypass GitHub's native branch protection and rulesets.

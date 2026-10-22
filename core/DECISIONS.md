@@ -8,7 +8,7 @@ This file is the compact record of accepted design decisions. Use a new ADR only
 | System self-improvement | Every user suggestion about this system is reviewed for appropriateness, duplication, simplification, optimization, compatibility and Constitution impact before implementation |
 | Constitutional change | Requires affected-Article/risk analysis and a second explicit Constitutional Approval; prefer lower-layer change |
 | Core change approval | Large/core changes are proposal-first; semantic impact > file count; material scope drift requires re-approval |
-| Git publication modes | Personal mode defaults to publishing validated coding tasks on engineering branches/PRs unless the user says local-only; main merge requires explicit task intent and required checks. High assurance requires an external single-use grant. |
+| Git publication modes | Personal mode defaults to publishing validated coding tasks on engineering branches/PRs unless the user says local-only; main merge requires explicit task intent, while AIPS Required Checks enforcement is opt-in via `AIPS_ENFORCE_REQUIRED_CHECKS=1`. GitHub's native policy remains effective. High assurance requires an external single-use grant. |
 | Atomic commits | Group commits by logical capability, reviewability and revertability; never split merely by file |
 | Agent model | Role + Capability/Skill + Context + Task |
 | Human authority | Protected Human Authority |

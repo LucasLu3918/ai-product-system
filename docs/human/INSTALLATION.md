@@ -124,3 +124,5 @@ aips uninstall
 ## 相容入口
 
 `scripts/uninstall.sh` 與 `scripts/uninstall.ps1` 保留為相容／復原入口；新安裝請使用本指南的 Install 流程。舊版 `bootstrap.sh` 也只保留相容用途，不是新的主要入口。
+
+Optional publication setting: set `AIPS_ENFORCE_REQUIRED_CHECKS=1` in the agent runtime environment when AIPS should independently require visible Required Checks policy and passing checks. GitHub native protections apply regardless of this setting.

@@ -73,3 +73,5 @@ Operational dashboard output follows the same sink-aware boundary: only a saniti
 - Public or durable sink policy cannot silently redact a blocked secret.
 - Human approval cannot be bypassed by an injection signal.
 - Unsupported runtime capability is never upgraded to `TOOL_GUARDED`.
+
+This content-safety boundary is unchanged by publication settings. AIPS Required Checks enforcement is separately opt-in via `AIPS_ENFORCE_REQUIRED_CHECKS=1`, and GitHub native protections remain effective.

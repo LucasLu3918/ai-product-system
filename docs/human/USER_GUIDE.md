@@ -704,7 +704,7 @@ Personal Mode 的逐次合併確認和 High-Assurance Mode 的外部 signed gran
 
 `aips publish diagnose --worktree <candidate-root> --command '<literal-command>'` 可辨識 `PUSH_SOURCE_NOT_EXACT_SHA`、`INVALID_TARGET_REF`、`WORKTREE_DIRTY`、`BASE_NOT_ANCESTOR`、`CONTENT_SCAN_BLOCKED` 與 metadata 問題。`prepare` 的高保證流程輸出精確 lease 命令與 `AUTHORITY_REQUIRED`，仍須由外部 issuer 核准；模式設定存在但無效時不降級。`--merge-intent` 僅記錄當次任務意圖，不能取代使用者或 Host 授權。
 
-首次設定或 PR 卡住時，可執行 `aips publish doctor --project-root <repo> [--pr <number>] --format yaml`。Doctor 只讀檢查 GitHub CLI 登入、repository merge methods、branch protection/ruleset 可見性、Required Checks 與指定 PR/head/checks，並列出安全的下一步。Required Checks 會明確回報未設定、權限未知、失敗、執行中、缺少／跳過、取消、PR head/base 過期或 GitHub 網路／限流／伺服器錯誤；任何空白或不可見證據都會阻擋，不會自動調整保護規則。GitHub 對 skipped check 的結果保留為 provider 成功，AIPS 仍以 `MISSING` 阻擋發布。Claude Code Hook 只會在可重試的網路、限流或伺服器錯誤時自動執行一次唯讀 Doctor。`aips publish diagnose` 也接受 literal `gh pr merge`，但只驗證 PR、完整 head SHA、base、merge method 與即時 checks；輸出 `authorized: false`、`executed: false`，不執行 merge、不消耗 grant。Codex/OpenCode 的診斷仍不取代原生工具權限或 GitHub 保護。
+首次設定或 PR 卡住時，可執行 `aips publish doctor --project-root <repo> [--pr <number>] --format yaml`。Doctor 只讀檢查 GitHub CLI 登入、repository merge methods、branch protection/ruleset 可見性、Required Checks 與指定 PR/head/checks，並列出安全的下一步。Required Checks 會明確回報未設定、權限未知、失敗、執行中、缺少／跳過、取消、PR head/base 過期或 GitHub 網路／限流／伺服器錯誤；任何空白或不可見證據都會阻擋，不會自動調整保護規則。GitHub 對 skipped check 的結果保留為 provider 成功，AIPS 仍以 `MISSING` 阻擋發布。Claude Code Hook 只會在可重試的網路、限流或伺服器錯誤時自動執行一次唯讀 Doctor。`aips publish diagnose` 也接受 literal `gh pr merge`，依 `AIPS_ENFORCE_REQUIRED_CHECKS=1` 設定驗證 Required Checks；預設仍驗證 PR、完整 head SHA、base 與 merge method，但標示 AIPS check gate 未啟用。Doctor 繼續回報即時政策／checks 狀態。輸出 `authorized: false`、`executed: false`，不執行 merge、不消耗 grant。Codex/OpenCode 的診斷仍不取代原生工具權限或 GitHub 保護。
 
 `aips publish doctor --worktree <candidate-root> --worktree-details` 是唯讀診斷，可選擇 `--branch <name>` 與 `--pr <number>`，輸出分階段證據、穩定原因碼、HTTP status、端點及已遮蔽的錯誤摘要。dirty 明細只列 repo-relative staged／modified／deleted／untracked 路徑與處理建議，不讀檔案內容、不會 stash、刪除或忽略檔案。HTTP 404 只有在分支存在且 effective-rules 證據完整時，才可判定沒有作用中的分支規則；當 `branch.protected` 為 true 而 classic protection 回覆 403 時，Required Checks policy 為 `UNKNOWN_PERMISSION`。其他未知證據也維持阻擋。`ALREADY_MERGED` 會導向 exact-head post-merge reconciliation，不會再次規劃 push、建 PR 或 merge。診斷與 `retryable` 欄位都不授予發布權限；主機拒絕、Human approval 或 required checks 仍依原流程處理。
 
@@ -724,7 +724,7 @@ Diagnostic ID 只有在使用者已設定既有 `AIPS_GOVERNANCE_AUDIT_LEDGER` �
 
 `branch-hygiene.yml` 的報告會依 branch SHA、目前 main、local checkout 與 PR 狀態列出 `KEEP`、`SUPERSEDED`、`REBASE_REQUIRED` 或 `CLEANUP_CANDIDATE`。這些分類供維護者檢視，不會自動 merge、rebase、關閉 PR 或刪除 branch；清理仍須逐筆核准 exact manifest。
 
-預設個人模式會在程式修改與驗證完成後，自行推送工程分支並建立／更新指向遠端預設分支的 PR；不需設定簽發服務。只有使用者明確要求 local-only／不發布時才停在本機。一般 PR merge 時，Claude Code 會顯示原生確認並列出 PR、base/head SHA 與 required checks；Gemini CLI 透過互動式 extension policy 每次要求確認。若目前任務明確授權合併，且 `gh pr merge --auto` 通過相同候選驗證，Claude Code 可啟用 GitHub auto-merge 而不再要求第二次 Claude 確認；GitHub 仍會等待 checks 與 repository policy，Gemini 仍逐次詢問。Codex Hook 仍是 advisory，無法保證攔截直接 merge 命令。直接推送保護分支、刪除分支與發行不屬於個人模式。
+預設個人模式會在程式修改與驗證完成後，自行推送工程分支並建立／更新指向遠端預設分支的 PR；不需設定簽發服務。只有使用者明確要求 local-only／不發布時才停在本機。一般 PR merge 時，Claude Code 會顯示原生確認並列出 PR、base/head SHA 與 AIPS Required Checks 強制狀態；設定 `AIPS_ENFORCE_REQUIRED_CHECKS=1` 時才要求 AIPS 確認 required checks 通過。Gemini CLI 透過互動式 extension policy 每次要求確認。若目前任務明確授權合併，且 `gh pr merge --auto` 通過相同候選驗證，Claude Code 可啟用 GitHub auto-merge 而不再要求第二次 Claude 確認；GitHub 仍會等待 checks 與 repository policy，Gemini 仍逐次詢問。Codex Hook 仍是 advisory，無法保證攔截直接 merge 命令。直接推送保護分支、刪除分支與發行不屬於個人模式。
 Claude/Gemini Hook 會遞迴分類命令參數及 unquoted heredoc 內的 `$(...)`／反引號替換，因此安全的查詢命令可留在同一次 Shell 呼叫。替換只供 AST 分析、不會由 Hook 執行；發布仍須使用明確 SHA、ref、repository 和既有核准流程。
 
 
@@ -754,7 +754,7 @@ Pull requests may show an early advisory repository-preflight result while the r
 
 Post-merge reconciliation 的實作拆分不改變既有指令、快轉安全條件或人工合併權限。
 
-For a Large/Core change, complete documentation closure, the reviewed Core Change Test Matrix, candidate secret scanning, full repository validation, and the exact-candidate Integration Gate before publication. Create the PR with its `aips:core-change` label on the initial request. Merge into `main` only when the task requests it and required checks pass; release tagging remains separate.
+For a Large/Core change, complete documentation closure, the reviewed Core Change Test Matrix, candidate secret scanning, full repository validation, and the exact-candidate Integration Gate before publication. Create the PR with its `aips:core-change` label on the initial request. Merge into `main` only when the task requests it. AIPS Required Checks enforcement is opt-in with `AIPS_ENFORCE_REQUIRED_CHECKS=1`; GitHub native protection remains effective. Release tagging remains separate.
 
 Repository validation keeps running every validator while shadow reports assess future selective-validation safety. Coverage, governance complexity, and reliability data are review signals; they do not bypass the normal Gate or authorize automatic source changes.
 

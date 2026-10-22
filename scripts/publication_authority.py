@@ -24,6 +24,11 @@ import yaml
 CONFIG = Path('/etc/aips/publication-authority.yaml')
 PUBLICATION_OPERATIONS = {'git_push', 'git_tag', 'gh_pr_create', 'gh_pr_merge', 'gh_release_create'}
 PERSONAL_PUBLICATION_OPERATIONS = {'git_push', 'gh_pr_create', 'gh_pr_merge'}
+
+
+def required_checks_enforced() -> bool:
+    """Return whether AIPS independently gates PR merges on Required Checks."""
+    return os.environ.get('AIPS_ENFORCE_REQUIRED_CHECKS') == '1'
 PERSONAL_BRANCH_PREFIXES = ('agent/', 'bugfix/', 'chore/', 'claude/', 'codex/', 'docs/', 'feat/', 'feature/', 'fix/', 'gemini/', 'work/')
 
 
@@ -843,47 +848,55 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
             target = _ref(root, 'refs/heads/' + pr['baseRefName'])
             if pr['baseRefName'] != _remote_default_branch(root, url):
                 raise PublicationError('personal PR merge must target the remote default branch', reason_code='PR_BASE_MISMATCH')
-            from publication_diagnostics import (
-                classify_required_checks,
-                required_checks_policy,
-            )
-            from repository_governance_snapshot import build_snapshot, query_github_api
+            required_checks = []
+            required_checks_status = 'NOT_ENFORCED'
+            enforce_required_checks = required_checks_enforced()
+            if enforce_required_checks:
+                from publication_diagnostics import (
+                    classify_required_checks,
+                    required_checks_policy,
+                )
+                from repository_governance_snapshot import build_snapshot, query_github_api
 
-            def read_policy_api(endpoint: str) -> dict[str, Any]:
+                def read_policy_api(endpoint: str) -> dict[str, Any]:
+                    try:
+                        return query_github_api(root, endpoint)
+                    except subprocess.TimeoutExpired:
+                        return {'returncode': 1, 'http_status': None, 'payload': None,
+                                'endpoint': endpoint, 'error_class': 'NETWORK', 'error_message': None}
+                policy_snapshot = build_snapshot(repo, pr['baseRefName'], read_policy_api)
+                policy_observation = required_checks_policy(policy_snapshot)
+                if policy_observation['status'] != 'CONFIGURED':
+                    reason_code = policy_observation['reason_code'] or 'REQUIRED_CHECKS_POLICY_UNVERIFIED'
+                    error = PublicationError('Required Checks policy is not verifiably configured', reason_code,
+                                             phase='protection_policy_evidence')
+                    error.context.update({'policy_sources': policy_observation.get('sources', {})})
+                    raise error
+                checks = subprocess.run(
+                    ['gh', 'pr', 'checks', argv[3], '--repo', repo, '--required', '--json', 'bucket,name'],
+                    cwd=root, capture_output=True, text=True, timeout=30, check=False,
+                )
                 try:
-                    return query_github_api(root, endpoint)
-                except subprocess.TimeoutExpired:
-                    return {'returncode': 1, 'http_status': None, 'payload': None,
-                            'endpoint': endpoint, 'error_class': 'NETWORK', 'error_message': None}
-            policy_snapshot = build_snapshot(repo, pr['baseRefName'], read_policy_api)
-            policy_observation = required_checks_policy(policy_snapshot)
-            if policy_observation['status'] != 'CONFIGURED':
-                reason_code = policy_observation['reason_code'] or 'REQUIRED_CHECKS_POLICY_UNVERIFIED'
-                error = PublicationError('Required Checks policy is not verifiably configured', reason_code,
-                                         phase='protection_policy_evidence')
-                error.context.update({'policy_sources': policy_observation.get('sources', {})})
-                raise error
-            checks = subprocess.run(
-                ['gh', 'pr', 'checks', argv[3], '--repo', repo, '--required', '--json', 'bucket,name'],
-                cwd=root, capture_output=True, text=True, timeout=30, check=False,
-            )
-            try:
-                required_checks = json.loads(checks.stdout) if checks.returncode in {0, 8} else None
-            except json.JSONDecodeError:
-                required_checks = None
-            check_observation = classify_required_checks(required_checks, returncode=checks.returncode,
-                                                          stderr=checks.stderr,
-                                                          required_policy=policy_observation['checks'])
-            if check_observation['status'] != 'PASS':
-                raise PublicationError('required PR checks are missing or not all passing',
-                                        check_observation['reason_code'] or 'REQUIRED_CHECKS_INVALID')
+                    required_check_report = json.loads(checks.stdout) if checks.returncode in {0, 8} else None
+                except json.JSONDecodeError:
+                    required_check_report = None
+                check_observation = classify_required_checks(required_check_report, returncode=checks.returncode,
+                                                              stderr=checks.stderr,
+                                                              required_policy=policy_observation['checks'])
+                if check_observation['status'] != 'PASS':
+                    raise PublicationError('required PR checks are missing or not all passing',
+                                            check_observation['reason_code'] or 'REQUIRED_CHECKS_INVALID')
+                required_checks = check_observation['checks']
+                required_checks_status = 'PASS'
             result['merge_confirmation'] = {
                 'pr_number': int(argv[3]),
                 'pr_url': pr['url'],
                 'head_sha': pr['headRefOid'],
                 'base_branch': pr['baseRefName'],
                 'base_sha': pr['baseRefOid'],
-                'required_checks': check_observation['checks'],
+                'required_checks': required_checks,
+                'required_checks_status': required_checks_status,
+                'required_checks_enforced': enforce_required_checks,
                 'auto_merge': '--auto' in argv,
             }
         else:

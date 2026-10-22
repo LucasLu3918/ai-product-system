@@ -645,3 +645,5 @@ Versioned injection rules distinguish instruction override, exfiltration, agent 
 Commit 與發布掃描支援有界的 TTF/OTF/WOFF/WOFF2 metadata；fontTools/Brotli 缺失、格式偽裝、解析錯誤或資源超限都 fail closed。
 
 `pii.email.v2` is a deterministic regex plus Git remote grammar check: only the exact ASCII `git` userinfo of an scp-like or `ssh://` remote is excluded, and PII has no exception path.
+
+Personal PR merge keeps exact PR/head/base and mergeability validation. AIPS Required Checks enforcement is opt-in through `AIPS_ENFORCE_REQUIRED_CHECKS=1`; GitHub's own configured protection remains authoritative.

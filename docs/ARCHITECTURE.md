@@ -1265,3 +1265,5 @@ flowchart LR
 ~~~
 
 The MCP plane is portable and ADVISORY; full MCP hosts use Resources / Prompts / Tools, while tool-only hosts use read-only catalog/read/workflow Tools over the same canonical sources. Native adapters remain a separate enhancement plane for verified TURN_NATIVE / TOOL_GUARDED behavior. The gateway is local stdio only and performs no provider/model call inside the server.
+
+Personal publication policy: AIPS independently enforces Required Checks only when `AIPS_ENFORCE_REQUIRED_CHECKS=1`; GitHub's native branch protection and rulesets remain the merge enforcement boundary.

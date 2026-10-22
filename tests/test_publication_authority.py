@@ -248,7 +248,23 @@ class PublicationTest(unittest.TestCase):
             return {'returncode': 0, 'http_status': 200, 'payload': payload,
                     'endpoint': endpoint, 'error_class': None, 'error_message': None}
 
-        with patch('publication_authority._personal_base', return_value=self.base), \
+        with patch.dict(os.environ, {'AIPS_ENFORCE_REQUIRED_CHECKS': ''}), \
+                patch('publication_authority._personal_base', return_value=self.base), \
+                patch('publication_authority._remote_default_branch', return_value='main'), \
+                patch('publication_authority._tip', return_value=self.base), \
+                patch('publication_authority.run', side_effect=observed_run), \
+                patch('publication_authority.subprocess.run', side_effect=observed_subprocess_run), \
+                patch('repository_governance_snapshot.query_github_api', side_effect=AssertionError('default mode must not require policy evidence')), \
+                patch('check_secret_leakage.scan_candidate', return_value=([], [], [], {})):
+            observed = auth.validate_personal_action(self.repo, 'gh_pr_merge', merge)
+            binding = observed['merge_confirmation']
+            self.assertFalse(binding['required_checks_enforced'])
+            self.assertEqual(binding['required_checks_status'], 'NOT_ENFORCED')
+            self.assertEqual(binding['required_checks'], [])
+            self.assertEqual(binding['head_sha'], self.head)
+
+        with patch.dict(os.environ, {'AIPS_ENFORCE_REQUIRED_CHECKS': '1'}), \
+                patch('publication_authority._personal_base', return_value=self.base), \
                 patch('publication_authority._remote_default_branch', return_value='main'), \
                 patch('publication_authority._tip', return_value=self.base), \
                 patch('publication_authority.run', side_effect=observed_run), \
@@ -262,6 +278,8 @@ class PublicationTest(unittest.TestCase):
             self.assertEqual(binding['head_sha'], self.head)
             self.assertEqual(binding['base_sha'], self.base)
             self.assertEqual(binding['required_checks'], ['repository'])
+            self.assertTrue(binding['required_checks_enforced'])
+            self.assertEqual(binding['required_checks_status'], 'PASS')
 
             pr['state'] = 'CLOSED'
             with self.assertRaisesRegex(auth.PublicationError, 'open and ready'):
@@ -728,9 +746,11 @@ class PublicationTest(unittest.TestCase):
                 with self.assertRaises(auth.PublicationError):
                     auth.action(self.repo, 'gh_pr_merge', merge + [flag], self.base)
 
-            with patch('publication_authority.subprocess.run', side_effect=lambda argv, **kwargs:
-                       subprocess.CompletedProcess(argv, 0, '[]', '') if argv[:3] == ['gh', 'pr', 'checks']
-                       else observe_checks(argv, **kwargs)), self.assertRaisesRegex(auth.PublicationError, 'missing or not all passing'):
+            with patch.dict(os.environ, {'AIPS_ENFORCE_REQUIRED_CHECKS': '1'}), \
+                    patch('publication_authority.subprocess.run', side_effect=lambda argv, **kwargs:
+                          subprocess.CompletedProcess(argv, 0, '[]', '') if argv[:3] == ['gh', 'pr', 'checks']
+                          else observe_checks(argv, **kwargs)), \
+                    self.assertRaisesRegex(auth.PublicationError, 'missing or not all passing'):
                 auth.action(self.repo, 'gh_pr_merge', merge + ['--auto'], self.base)
         self.run_git(self.repo, 'tag', 'v1')
         release = ['gh', 'release', 'create', 'v1', '--repo', 'owner/project', '--verify-tag']
