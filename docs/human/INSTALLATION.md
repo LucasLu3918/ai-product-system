@@ -57,6 +57,8 @@ aips mcp inspect
 
 ## Runtime integration
 
+一般專案不會自動建立 `.ai/`。只有明確執行 `aips attach <project>` 才會使用 project-local state；若專案位於 Git worktree，AIPS 會在本機 `info/exclude` 排除 `.ai/` 與 detach 封存目錄，不修改專案 `.gitignore`。
+
 OpenCode 原生直接寫入在 Project Intelligence 為 READY、但 freshness 為 STALE 時，可依既有 L2 advisory 邊界繼續；系統仍會明確顯示過期狀態。freshness 為 UNKNOWN、準備度不足、指示來源權限衝突未解或目標路徑越界時，仍維持原有停止條件。詳細 allow／deny 契約見 Scenario 267。
 
 Commit 時的 AVIF 中繼資料掃描採用內建且有界的解析器，不需安裝額外套件，也不新增原生 Runtime adapter 需求。

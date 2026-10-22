@@ -616,6 +616,8 @@ Do not claim the project has been initialized merely from directory/file-name in
 
 ## Existing-project automatic behavior
 
+EPHEMERAL remains the default. Explicit attach/detach in a Git worktree add root-relative `.ai/` and `.ai.detached-*` patterns to repository-local `info/exclude`; this does not modify `.gitignore` or remove already tracked paths.
+
 Content-safety findings are advisory retrieval inputs and do not change Project Intelligence authority or graph completeness.
 
 When readiness is READY and freshness is STALE, preserve freshness and targeted refresh guidance but treat staleness as advisory for confined local L2 source writes. Non-READY readiness, UNKNOWN freshness, unavailable canonical protocols, unresolved instruction authority, path escape, creative writes and external/high-risk actions retain their existing stop conditions.

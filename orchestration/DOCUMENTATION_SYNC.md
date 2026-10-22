@@ -225,6 +225,8 @@ Documentation sync path normalization (Scenario 221): `documentation_sync.evalua
 
 ## Human documentation placement
 
+Project attach/detach behavior is synchronized across Existing Project guidance, Architecture/Technology and Scenario 044: `.ai/` remains opt-in, local `info/exclude` protects untracked workspace and archive paths, and `.gitignore` remains unchanged.
+
 Scenario 267 定義 READY+STALE 時本機 L2 advisory 寫入的生命週期契約；Harness、Project Intelligence 與 OpenCode adapter 文件須對齊此邊界。
 
 Human 文件預設使用繁體中文（台灣）。專有名詞首次出現時，先以精簡中文說明，再附英文原名。命令、程式識別字、路徑、API／設定欄位、狀態值與原因碼維持 canonical 拼法。官方文件首頁採任務導向；架構圖與流程圖須符合目前來源證據，並提供無障礙替代文字及圖說。

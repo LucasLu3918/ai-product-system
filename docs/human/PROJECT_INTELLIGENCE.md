@@ -8,6 +8,8 @@ Project Intelligence 是 AIPS 對既有專案建立的可重用理解層。
 
 ## 第一次 Existing Project
 
+Git worktree 內的 `.ai/` 仍須明確 attach 才會建立；attach/detach 只將 AIPS workspace 與 archive 加入該 worktree 的本機 `info/exclude`，不更動專案 `.gitignore`。
+
 診斷的 Recovery Plan 以既有 reason code 提供先後步驟及授權標記。bootstrap／finalize／refresh 是需要已批准任務範圍的衍生狀態操作；diagnose 本身仍不建立、附加或修復專案。
 
 ### 唯讀診斷與恢復

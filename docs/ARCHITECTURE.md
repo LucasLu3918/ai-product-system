@@ -4,6 +4,8 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ## Runtime flow
 
+Project-local AIPS state is opt-in through `aips attach`. In Git worktrees, attach/detach maintain anchored `.ai/` and `.ai.detached-*` entries in repository-local `info/exclude`; non-Git projects need no Git metadata, and project `.gitignore` remains untouched.
+
 OpenCode direct local L2 writes use the Project Intelligence readiness and instruction checks; READY freshness that is STALE remains visible but is not a standalone denial for a confined source target. UNKNOWN, non-READY and independent guard conditions remain blocking.
 
 Staged media content is inspected by the existing bounded safety scanner; AVIF adds metadata extraction without changing Harness authority or provider execution, creative provenance or licensing, personal publication approval, or ComfyUI resource authorization.
