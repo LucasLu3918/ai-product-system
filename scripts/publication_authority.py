@@ -856,7 +856,10 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
                     classify_required_checks,
                     required_checks_policy,
                 )
-                from repository_governance_snapshot import build_snapshot, query_github_api
+                from repository_governance_snapshot import (
+                    build_snapshot,
+                    query_github_api,
+                )
 
                 def read_policy_api(endpoint: str) -> dict[str, Any]:
                     try:
