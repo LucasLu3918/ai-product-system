@@ -40,7 +40,6 @@ The weekly/manual workflow runs the pinned OSV Scanner reusable workflow and a f
 
 Project Diagnostics remains read-only and does not perform its suggested recovery action.
 
-
 OpenCode integration retains system preflight and existing-host lifecycle checks; missing runtime detection is not native acceptance evidence.
 
 `aips project check <path>` reports attachment mode and Project Intelligence freshness without mutation; freshness problems remain informational and only an invalid path fails. `aips system preflight <path>` delegates to the existing update and repository-validation lifecycle. The legacy `aips preflight` route remains supported.
@@ -1097,6 +1096,8 @@ AIPS retains HTTP status, endpoint, sanitized API error, branch/effective-rules 
 The branch lifecycle report classifies remote branches using current exact-SHA PR metadata and local checkout evidence. It distinguishes branches to keep, superseded work, PR branches requiring rebase, and cleanup candidates. These are advisory dispositions only: report generation and the scheduled workflow never delete branches or grant cleanup authorization. Unknown or incomplete evidence fails closed to KEEP. Scenario 257 is covered by `tests/evidence/branch_hygiene_lifecycle.py` and `tests/validation/branch_hygiene_contracts.py`.
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
+
+Scenario 044 separately covers AIPS project-local state lifecycle; it does not change upstream Skill inventory or installation behavior.
 
 Scenario 267 changes no Skill catalog or installation behavior; it adds a separate lifecycle contract for Project Intelligence freshness and native write decisions.
 

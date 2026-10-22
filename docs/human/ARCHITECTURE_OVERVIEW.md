@@ -67,6 +67,8 @@ OpenCode V2 的 managed plugin 在 primary model dispatch 前注入精簡 Turn C
 
 ## Project Intelligence 與 Retrieval
 
+ATTACHED 仍須使用者明確執行 `aips attach`。在 Git worktree 中，AIPS 以 repository-local `.git/info/exclude` 排除 `.ai/` 與 `.ai.detached-*`，不修改共用的專案 `.gitignore`；既有追蹤狀態不會被改寫。
+
 Turn Context preserves freshness and targeted refresh guidance. READY+STALE freshness is advisory for a confined local L2 source write; UNKNOWN and non-READY states remain blocking.
 
 Scenario 266 provides local deterministic safety evidence; it does not substitute for independent review or grant approval.

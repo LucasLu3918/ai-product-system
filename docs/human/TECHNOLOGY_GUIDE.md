@@ -53,6 +53,8 @@ Canonical AIPS Skills 可從 MCP Resource 按需載入，也可由 `aips skills 
 
 ## Project Understanding
 
+The project lifecycle keeps `.ai/` opt-in and records `.ai/` plus `.ai.detached-*` in the target Git worktree's local `info/exclude`. This leaves shared `.gitignore` files untouched; ignore rules do not untrack paths already in the index.
+
 Turn Context retains Project Intelligence freshness and refresh guidance. A READY but STALE result is advisory for confined local L2 source writes; UNKNOWN or non-READY state remains fail-closed.
 
 Publication diagnostics remain tied to the exact Change Impact candidate, while transient recovery repeats read-only evidence collection only.
@@ -329,6 +331,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 Content-safety detector changes are versioned (for example `pii.email.v2`) and bound to Scenario 266 with a fixed corpus; they never add a PII exception path.
 
 ## Quality & Verification
+
+Scenario 044 verifies the attach/detach ignore contract; it does not alter Skill Explorer routing or native Skill installation behavior.
 
 Scenario 097/260 cover the strict opt-in Required Checks behavior and read-only Doctor contract; AIPS enforcement is controlled by `AIPS_ENFORCE_REQUIRED_CHECKS=1`.
 
@@ -613,6 +617,8 @@ The monthly reliability workflow measures validation outcomes and runtime distri
 Plan21 Phase 0 records one exact-main full-validation timing observation and pins existing digest, CLI and glob contracts. Treat the timing as a baseline sample only; future optimization claims require comparable candidate and environment evidence.
 
 ## Documentation Platform
+
+Project lifecycle guidance is placed in the canonical Existing Project, Installation and Architecture topics; Scenario 044 is the lifecycle evidence source.
 
 OpenCode stale-freshness 行為須在 Human Harness、Project Intelligence 指南、adapter 契約與 Scenario 267 中保持一致。
 

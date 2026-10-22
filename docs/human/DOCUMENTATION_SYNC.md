@@ -31,6 +31,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+Project lifecycle guidance records that `.ai/` is created only by explicit attach and that attach/detach keep AIPS state in repository-local Git excludes without changing `.gitignore`; Scenario 044 covers lifecycle behavior and tracked-file limits.
+
 OpenCode READY+STALE advisory behavior is documented with Project Intelligence and Harness current behavior; Scenario 267 and its lifecycle evidence are the executable contract.
 
 AVIF content-safety behavior is synchronized across User Guide, Security Assurance, Runtime Content Safety protocol and Scenario 265; no AV1 decode or visual-quality claim is implied.

@@ -108,10 +108,13 @@ def init_product(base: Path) -> tuple[Path, Path, str, str]:
     remote = base / "product-remote.git"
     project.mkdir()
     (project / "app.txt").write_text("local product\n", encoding="utf-8")
+    nested_project = project / "nested"
+    nested_project.mkdir()
+    (nested_project / "app.txt").write_text("nested product\n", encoding="utf-8")
     git(project, "init", "-q")
     git(project, "branch", "-m", "main")
     configure_git(project)
-    git(project, "add", "app.txt")
+    git(project, "add", "app.txt", "nested/app.txt")
     git(project, "commit", "-qm", "product baseline")
     baseline = git(project, "rev-parse", "HEAD").stdout.strip()
     run(["git", "clone", "--bare", str(project), str(remote)], check=True)
@@ -169,8 +172,47 @@ def preflight_and_project_lifecycle() -> None:
         require(canonical_preflight.returncode == 0, f"system preflight alias failed: {canonical_preflight.stdout} {canonical_preflight.stderr}")
         require("Update Preflight passed." in canonical_preflight.stdout, "system preflight must delegate to the existing preflight lifecycle")
 
+        exclude_file = Path(git(project, "rev-parse", "--git-path", "info/exclude").stdout.strip())
+        if not exclude_file.is_absolute():
+            exclude_file = project / exclude_file
+        exclude_file.parent.mkdir(parents=True, exist_ok=True)
+        exclude_file.write_text("# preserve this local rule\nkeep-local-data.tmp\n", encoding="utf-8")
+        gitignore_before = (project / ".gitignore").read_bytes() if (project / ".gitignore").exists() else None
+
         attached = cli(system, ["attach", str(project)], env)
         require(attached.returncode == 0 and (project / ".ai").is_dir(), f"attach failed: {attached.stdout} {attached.stderr}")
+        exclude_text = exclude_file.read_text(encoding="utf-8")
+        require("# preserve this local rule\nkeep-local-data.tmp\n" in exclude_text, "Attach must preserve existing local Git exclude entries")
+        require("/.ai/\n" in exclude_text and "/.ai.detached-*/\n" in exclude_text, "Attach must exclude the root AIPS workspace and detached archives")
+        require(git(project, "check-ignore", "--quiet", "--no-index", ".ai/STATE.yaml", check=False).returncode == 0,
+                "AIPS workspace files must be ignored by normal Git staging")
+        require(not gitignore_before and not (project / ".gitignore").exists(), "Attach must not create or modify the project .gitignore")
+        require(not git(project, "status", "--short", check=False).stdout.strip(), "AIPS-local state must not appear in Git status after attach")
+
+        exclude_length = len(exclude_text)
+        repeated_attach = cli(system, ["attach", str(project)], env)
+        require(repeated_attach.returncode == 0, f"repeated attach failed: {repeated_attach.stdout} {repeated_attach.stderr}")
+        repeated_exclude = exclude_file.read_text(encoding="utf-8")
+        require(len(repeated_exclude) == exclude_length, "Repeated attach must not duplicate local Git exclude rules")
+
+        nested_project = project / "nested"
+        nested_attached = cli(system, ["attach", str(nested_project)], env)
+        require(nested_attached.returncode == 0 and (nested_project / ".ai").is_dir(),
+                f"attach to a nested project failed: {nested_attached.stdout} {nested_attached.stderr}")
+        nested_exclude = exclude_file.read_text(encoding="utf-8")
+        require("/nested/.ai/\n" in nested_exclude and "/nested/.ai.detached-*/\n" in nested_exclude,
+                "Nested project excludes must be anchored to the project path")
+        require(git(project, "check-ignore", "--quiet", "--no-index", "nested/.ai/STATE.yaml", check=False).returncode == 0,
+                "Nested AIPS workspace files must be ignored")
+
+        non_git_project = base / "non-git-project"
+        non_git_project.mkdir()
+        non_git_attach = cli(system, ["attach", str(non_git_project)], env)
+        require(non_git_attach.returncode == 0 and (non_git_project / ".ai").is_dir(),
+                f"attach to a non-Git project failed: {non_git_attach.stdout} {non_git_attach.stderr}")
+        require(not (non_git_project / ".git").exists() and not (non_git_project / ".gitignore").exists(),
+                "Non-Git attach must not create Git metadata")
+
         status = cli(system, ["status", str(project)], env)
         require(status.returncode == 0 and "Project attached: yes" in status.stdout and "Project mode: ATTACHED" in status.stdout, "status must report attached provenance")
         attached_check = cli(system, ["project", "check", str(project)], env)
@@ -204,6 +246,9 @@ def preflight_and_project_lifecycle() -> None:
         require(detached.returncode == 0 and not (project / ".ai").exists(), f"detach failed: {detached.stdout} {detached.stderr}")
         archives = sorted(project.glob(".ai.detached-*"))
         require(len(archives) == 1, "Detach must preserve exactly one archived workspace")
+        archived_state = archives[0].relative_to(project) / "STATE.yaml"
+        require(git(project, "check-ignore", "--quiet", "--no-index", str(archived_state), check=False).returncode == 0,
+                "Detached AIPS workspace archives must remain ignored")
         require((project / "app.txt").read_text(encoding="utf-8") == product_text, "Detach modified product source")
 
         blocked_attach = cli(system, ["attach", str(project)], env)

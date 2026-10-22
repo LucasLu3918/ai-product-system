@@ -79,6 +79,8 @@ aips project check /path/to/project
 aips attach /path/to/project
 ~~~
 
+`attach` 仍須明確執行才會建立 `.ai/`。若目標位於 Git worktree，AIPS 會把 `.ai/` 與 `.ai.detached-*` 加入該 worktree 的 `.git/info/exclude`，保留在本機，不修改專案 `.gitignore`。這只忽略尚未追蹤的路徑；原本已追蹤的檔案不會因此解除追蹤。
+
 `aips system preflight /path/to/project` 會更新並驗證 AIPS system checkout。更新前先確認該專案的工作樹狀態與變更範圍。
 
 ## 更新

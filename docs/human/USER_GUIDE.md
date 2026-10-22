@@ -280,6 +280,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 
 ## Roles、Skills 與重用
 
+Skill integration remains independent of project attachment: `aips attach` is explicit, and its local `.git/info/exclude` rules keep AIPS state out of ordinary staging without changing shared Skill installation behavior.
+
 Scenario 267 changes no Skill discovery or installation behavior; its lifecycle exercises Project Intelligence freshness and the OpenCode direct-write guard.
 
 Content-safety controls remain separate from skill discovery, installation, and author trust decisions.
@@ -639,6 +641,8 @@ Standalone and shadow dependency-review artifacts retain exact base/head, run ID
 舊聊天內容不是 authoritative run state；若 workspace fingerprint 已變，先 refresh / revalidate 再接續。
 
 ## Project Intelligence
+
+在 Git worktree 內執行 `aips attach` 或 `aips detach` 時，AIPS 會將 `.ai/` 和 `.ai.detached-*` 寫入 repository-local `.git/info/exclude`，一般 `git add` 不會把這些本機工作區加入提交。既有 exclude 規則會保留，專案 `.gitignore` 不會變更；這項規則不會解除已追蹤檔案的追蹤，也不阻擋明確的 force-add。
 
 
 診斷的 Recovery Plan 按既有狀態提供檢查、補主題、finalize 或 refresh 順序。每步都標示操作種類與所需授權；計畫供檢視，不會自動執行或改變 Project Mode。

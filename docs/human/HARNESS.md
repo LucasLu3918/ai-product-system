@@ -8,6 +8,8 @@ Runtime Context 統一解析驗證 Python 與 cache/config 路徑；它將 Playw
 
 ## Integration model
 
+Project-local Harness state remains opt-in. `aips attach` and `aips detach` add anchored `.ai/` and `.ai.detached-*` patterns to Git's local `info/exclude`, so this per-clone AIPS state does not alter shared project ignore rules.
+
 Commit-time media checks inspect supported AVIF metadata through the existing content-safety path; they do not broaden native runtime interception.
 
 The creative workspace import is an explicit local CLI workflow using the existing AIPS launcher and private metadata cache.
@@ -55,6 +57,8 @@ AIPS Core
 `aips publish doctor --worktree <root> --worktree-details` provides read-only phase and evidence diagnostics. Runtime adapters may use its recovery guidance, while native permission and Human approval remain separate.
 
 ## Native Runtime Adapters
+
+Native adapter discovery does not create project-local `.ai/`; explicit attach/detach keeps that AIPS state in the target Git worktree's local excludes.
 
 Content-safety controls remain separate from skill discovery, installation, and author trust decisions.
 

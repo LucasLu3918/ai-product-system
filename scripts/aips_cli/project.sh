@@ -37,6 +37,66 @@ init_project() {
   say "Workspace initialized: $ai_dir"
 }
 
+ensure_project_local_excludes() {
+  local project="$1"
+  local git_root git_prefix exclude_file pattern last_char
+
+  if ! git_root="$(git -C "$project" rev-parse --show-toplevel 2>/dev/null)"; then
+    say "Project is not in a Git worktree; no local Git excludes were needed."
+    return 0
+  fi
+
+  if ! git_prefix="$(git -C "$project" rev-parse --show-prefix 2>/dev/null)"; then
+    warn "Could not resolve the project path inside its Git worktree."
+    return 1
+  fi
+  if ! exclude_file="$(git -C "$project" rev-parse --git-path info/exclude 2>/dev/null)"; then
+    warn "Could not resolve the repository-local Git exclude file."
+    return 1
+  fi
+  case "$exclude_file" in
+    /*) ;;
+    *) exclude_file="$project/$exclude_file" ;;
+  esac
+
+  if [ ! -e "$exclude_file" ]; then
+    mkdir -p "$(dirname "$exclude_file")" || {
+      warn "Could not create the repository-local Git metadata directory."
+      return 1
+    }
+    : >> "$exclude_file" || {
+      warn "Could not create the repository-local Git exclude file."
+      return 1
+    }
+  fi
+  if [ ! -f "$exclude_file" ]; then
+    warn "The repository-local Git exclude path is not a regular file."
+    return 1
+  fi
+
+  for pattern in "/${git_prefix}.ai/" "/${git_prefix}.ai.detached-*/"; do
+    if grep -Fqx "$pattern" "$exclude_file" 2>/dev/null; then
+      continue
+    fi
+    if [ -s "$exclude_file" ]; then
+      last_char="$(tail -c 1 "$exclude_file" 2>/dev/null || true)"
+      if [ -n "$last_char" ]; then
+        printf '\n' >> "$exclude_file" || {
+          warn "Could not update the repository-local Git exclude file."
+          return 1
+        }
+      fi
+    fi
+    printf '%s\n' "$pattern" >> "$exclude_file" || {
+      warn "Could not update the repository-local Git exclude file."
+      return 1
+    }
+    say "Added local Git exclude: $pattern"
+  done
+
+  return 0
+}
+
 attach_project() {
   local project="$1"
   [ -d "$project" ] || die "Project path does not exist: $project"
@@ -53,6 +113,8 @@ attach_project() {
       return 2
     fi
   fi
+
+  ensure_project_local_excludes "$project" || return 1
 
   init_project "$project"
 
@@ -75,6 +137,8 @@ detach_project() {
     say "Project is already detached (no .ai workspace): $project"
     return 0
   fi
+
+  ensure_project_local_excludes "$project" || return 1
 
   local sync_result
   if ! sync_result="$(intelligence_cmd sync-external --project "$project" --format json 2>&1)"; then

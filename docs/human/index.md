@@ -40,7 +40,7 @@ features:
   <a class="docs-path-card" href="./USER_GUIDE#existing-project">
     <span class="docs-path-kicker">已有程式專案</span>
     <strong>讓 Agent 先理解專案</strong>
-    <span>檢視既有指示、Project Intelligence 與變更影響。</span>
+    <span>檢視既有指示與變更影響；`.ai/` 專案工作區預設不建立，可選擇 attach。</span>
   </a>
   <a class="docs-path-card" href="./HARNESS">
     <span class="docs-path-kicker">整合 Agent</span>

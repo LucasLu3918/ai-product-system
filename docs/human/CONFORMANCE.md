@@ -1751,6 +1751,8 @@ The additive `aips publish diagnose --diagnostic-id` route preserves the existin
 
 Scenario 233 retains public CLI argument and error compatibility; the structured Creative and Runtime errors added in Scenario 262 do not change its command surface.
 
+Scenario 044 lifecycle evidence also verifies attach-time repository-local Git excludes for AIPS `.ai/` state and detach archives, including idempotence, nested repositories, preservation of existing rules, unchanged `.gitignore`, and non-Git projects.
+
 The publication Doctor command keeps its structured JSON status and safe reason-code contract while policy visibility now distinguishes permission-hidden state.
 
 The Doctor command adds repository readiness output without changing existing CLI error or permission semantics; Scenario 260 covers its full diagnostics and redaction contract.
@@ -1830,6 +1832,8 @@ The cross-profile quality evidence extension is covered by Scenario 258; this cr
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+Project-local workspace excludes are covered separately by Scenario 044 and do not change upstream Skill inventory, routing or installation.
+
 Scenario 267 changes no Skill discovery or installation behavior; its lifecycle exercises Project Intelligence freshness and the OpenCode direct-write guard.
 
 Content-safety controls remain separate from skill discovery, installation, and author trust decisions.
@@ -1891,6 +1895,8 @@ Release history 更新（純依賴升級文件豁免，Scenario 221）已審查�
 
 
 ## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance
+
+Scenario 044 lifecycle evidence verifies attach-time local Git excludes for `.ai/` and detach archives, including nested paths, rule preservation, unchanged `.gitignore`, and non-Git projects.
 
 Scenario 267's direct-write lifecycle complements diagnostics: stale READY freshness remains visible while independent native guard denials remain covered.
 

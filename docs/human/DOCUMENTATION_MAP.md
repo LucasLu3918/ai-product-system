@@ -90,6 +90,7 @@ GitHub branch cleanup、version-tag provenance 與 ruleset review 的 Human 指�
 - GETTING_STARTED.md：最短成功路徑。
 - INSTALLATION.md：Install / Update / Uninstall。
 - USER_GUIDE.md：目前產品使用方式。
+- 專案內 AIPS 工作區維持預設停用；`attach`、`detach` 與本機 Git exclude 行為見 [User Guide / Existing Project](USER_GUIDE.md#existing-project)。
 
 ### Agent 整合與核心概念
 

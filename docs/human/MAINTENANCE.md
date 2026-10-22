@@ -554,6 +554,8 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 
 ## Validation architecture consistency
 
+Scenario 044 lifecycle evidence covers repository-local excludes for attached AIPS state and detach archives while preserving the project `.gitignore`.
+
 Scenario 267 verifies READY+STALE local L2 writes together with the independent guard denials; the Core Change Matrix binds that evidence to the exact candidate.
 
 Content-safety controls remain separate from skill discovery, installation, and author trust decisions.
