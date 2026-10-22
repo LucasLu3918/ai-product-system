@@ -1953,6 +1953,8 @@ Current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md)
 
 ## Scenario 260 — Publication diagnostics and Doctor
 
+Scenario 097/260 also cover the opt-in merge gate: without `AIPS_ENFORCE_REQUIRED_CHECKS=1`, AIPS does not block on Required Checks evidence; Doctor remains read-only and GitHub native protections remain effective.
+
 Scenario 260/261 verifies immediate Claude Hook denial without an inline Doctor call, the manual read-only recovery command, and safe Prepare timeout fields.
 
 Scenario 261 verifies unsupported personal publication command forms are rejected before candidate scanning and that scanner policy, Git-object and file-read failures remain blocked with redacted diagnostics.
@@ -2018,6 +2020,8 @@ Scenario 267 keeps this creative Git workspace denial unchanged; the advisory ap
 The lifecycle verifies default Git destination rejection, explicit exact-root opt-in, hash revalidation, create-only writes, and unchanged Git index bytes. The source remains a non-Git EPHEMERAL workspace; import does not stage or commit.
 
 ## Scenario 266 — Content Safety Injection Context and Recovery
+
+Scenario 266 content-safety decisions remain unchanged by the personal PR merge setting `AIPS_ENFORCE_REQUIRED_CHECKS`.
 
 Publication timeout diagnostics preserve this content-safety boundary: raw command and exception text are omitted, as verified alongside the independent publication contract in Scenario 260/261.
 

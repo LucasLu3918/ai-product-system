@@ -1093,7 +1093,8 @@ def hook(runtime: str) -> int:
                     merge_confirmation = publication.get('merge_confirmation')
                     if not merge_confirmation:
                         raise PublicationError('merge confirmation binding unavailable', reason_code='AUTHORITY_VALIDATION_MISSING')
-                    names = ', '.join(merge_confirmation['required_checks']) or 'none reported'
+                    checks_enabled = merge_confirmation.get('required_checks_enforced', False)
+                    names = ', '.join(merge_confirmation['required_checks']) or ('none' if checks_enabled else 'not enforced by AIPS')
                     reason = (
                         f"GitHub will enable auto-merge for PR #{merge_confirmation['pr_number']} in {publication['github_repo']} "
                         if merge_confirmation.get('auto_merge') else

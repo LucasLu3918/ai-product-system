@@ -6,6 +6,8 @@
 
 ## macOS / Linux
 
+安裝完成後，可在 Agent runtime 設定 `AIPS_ENFORCE_REQUIRED_CHECKS=1`，讓 AIPS 獨立要求可讀取的 Required Checks policy 與全部通過；不設定時只停用 AIPS 自身的門檻，GitHub 原生保護與 Runtime Content Safety 仍各自生效。
+
 Managed Runtime hooks keep content-safety and publication checks fail-closed. Remote publication diagnostics are read-only; timeout output omits raw commands and exception text.
 
 ~~~bash

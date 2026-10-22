@@ -9,11 +9,11 @@ An agent cannot explain why a checked PR merge was blocked, or a maintainer is c
 - `aips publish doctor` performs only read-only GitHub observations and reports repository/auth/configuration, merge methods, branch policy visibility and optional PR/check state.
 - Required Checks are distinguished as unconfigured, unknown due to permissions, passing, failing, pending, missing/skipped, cancelled, or unavailable due to authentication, network, rate limit or API response problems.
 - GitHub's provider outcome for a skipped check is retained as `SKIPPING` / `SUCCESSFUL`; AIPS continues to classify that observation as `MISSING` for its stricter publication decision.
-- Missing, malformed or permission-limited policy evidence remains blocking and never implies that protection is absent.
-- `aips publish diagnose` validates a literal `gh pr merge` against the exact PR, head SHA, base, method and live checks without executing it or consuming a grant.
+- Doctor always reports missing, malformed or permission-limited policy evidence accurately; this observation never implies that protection is absent. Merge Authority blocks on unverified policy and checks only when `AIPS_ENFORCE_REQUIRED_CHECKS=1`.
+- `aips publish diagnose` validates a literal `gh pr merge` against the exact PR, head SHA, base and method without executing it or consuming a grant. It validates live Required Checks when `AIPS_ENFORCE_REQUIRED_CHECKS=1`; otherwise it reports the AIPS check gate as disabled without implying GitHub policy is disabled.
 - Diagnostics have stable reason code, phase, safe category, source and actionable next step; raw GitHub output and credentials do not appear.
 - Invalid merge method, forbidden flags and missing or stale pinned head report distinct errors; cleanup stays separate.
-- A missing gh required-check report becomes UNCONFIGURED only with verified empty policy, MISSING if policy names requirements, and UNAVAILABLE if policy is not known. It is never assumed to mean pending.
+- A missing gh required-check report becomes UNCONFIGURED only with verified empty policy, MISSING if policy names requirements, and UNAVAILABLE if policy is not known. It is never assumed to mean pending. The optional AIPS enforcement variable changes merge authorization only, not Doctor evidence.
 - Host Auto Mode rejection is recorded separately from AIPS/GitHub errors, cannot be bypassed by command disguise.
 - The recovery report is read-only and non-authorizing, distinguishing Host confirmation, external grant and already merged status.
 - Claude Code, OpenCode and Codex receive consistent guidance while retaining native permissions and Human Authority; no policy changes, bypasses or automatic merge are introduced.
@@ -21,7 +21,7 @@ An agent cannot explain why a checked PR merge was blocked, or a maintainer is c
 - GitHub API 401, 403, contextual 404, 429/rate-limit, 5xx, network/CLI and malformed-response evidence retains a safe endpoint/status category; unknown policy remains blocking.
 - Claude Code Hook fails closed immediately after a retryable remote observation failure; it never runs Doctor synchronously. Its bounded denial gives the safe reason and the read-only `aips publish doctor --worktree . --format json` recovery command.
 - A `TimeoutExpired` during Prepare remote observation reports `REMOTE_OBSERVATION_FAILED` with detail `REMOTE_OBSERVATION_TIMEOUT`, the observation phase and safe error class, without raw command or exception text; the result remains non-authorizing.
-- Recovery retryability matches the observed cause: transient network, rate-limit, server and pending-check states allow read-only re-observation; permission, authentication, policy, stale candidate and Host/Human authority do not.
+- Recovery retryability matches the observed cause: transient network, rate-limit, server and pending-check states allow read-only re-observation; permission, authentication, policy, stale candidate and Host/Human authority do not. The merge confirmation identifies whether AIPS enforced Required Checks.
 
 ## Evidence
 

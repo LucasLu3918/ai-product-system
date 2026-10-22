@@ -317,6 +317,8 @@ Focused Intelligence context evidence must distinguish storage deduplication fro
 
 ## Impact-derived regression testing
 
+Independent-review evidence remains separate from Required Checks. When reviewing publication changes, verify `AIPS_ENFORCE_REQUIRED_CHECKS` and ensure its default affects only AIPS's own merge gate, not Doctor observations or GitHub rules.
+
 Publication Hook recovery tests assert zero inline Doctor calls, immediate fail-closed guidance and safe Prepare timeout fields (Scenario 260/261); exact-candidate evidence is recorded in the Core Change Matrix.
 
 Plan41 records scanner, CLI, documentation-closure, and exact-candidate Gate evidence in the canonical Core Change Test Matrix; its approved scope does not require independent review.
@@ -830,6 +832,8 @@ Protected dispatch 會逐筆重新讀取 merged PR，確認 `merged_at`、head S
 
 
 ## Runtime Content Safety Boundary
+
+Content-safety maintenance and publication Required Checks enforcement are separate controls; changing `AIPS_ENFORCE_REQUIRED_CHECKS` does not change scanner behavior.
 
 Publication timeout handling keeps the content-safety boundary explicit: output omits raw command and exception text while the protected operation remains denied.
 

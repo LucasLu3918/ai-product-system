@@ -275,6 +275,8 @@ Dependabot commit 的機器人 noreply author 與最後一行精確的 `Signed-o
 
 ## Security & Governance
 
+Personal PR merge keeps exact PR/head/base and mergeability validation. AIPS Required Checks enforcement is opt-in through `AIPS_ENFORCE_REQUIRED_CHECKS=1`; GitHub's own configured protection remains authoritative. Independent-review evidence is a separate check.
+
 Remote publication errors remain denied until fresh evidence and existing authority checks pass; timeout output omits raw command and exception text.
 
 Independent review evidence and personal publication authority remain unchanged by AVIF metadata inspection; ComfyUI resource grants remain a separate boundary.
@@ -327,6 +329,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 Content-safety detector changes are versioned (for example `pii.email.v2`) and bound to Scenario 266 with a fixed corpus; they never add a PII exception path.
 
 ## Quality & Verification
+
+Scenario 097/260 cover the strict opt-in Required Checks behavior and read-only Doctor contract; AIPS enforcement is controlled by `AIPS_ENFORCE_REQUIRED_CHECKS=1`.
 
 Scenario 260/261 and the Core Change Matrix verify no inline Hook Doctor call, timeout redaction, and exact-candidate publication recovery.
 
@@ -628,6 +632,8 @@ Official Docs Site 使用 VitePress 1.6.x stable line，提供 sidebar、local s
 
 Documentation Placement 將每個 behavior-bearing source 綁到 canonical Human topic；Technology Guide 的廣域 trigger surface若出現尚未映射的新 source，CI 會 fail closed，要求先更新 placement contract。每條已知 subsystem rule 也明確限制 Technology Guide 可修改的 domain，因此版本新增功能不能再任意 append 到文件尾端。
 ## Runtime Content Safety Boundary
+
+The optional `AIPS_ENFORCE_REQUIRED_CHECKS=1` merge gate does not change the content-safety scanner contract or candidate scanning.
 
 The Hook and Prepare timeout diagnostics expose stable allowlisted fields only; raw commands, endpoint values and exception text remain omitted.
 

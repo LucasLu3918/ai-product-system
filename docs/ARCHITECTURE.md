@@ -312,6 +312,8 @@ The alias candidate is deterministic and transparent. It is not an embedding pro
 
 ## Maintenance and publication evidence
 
+Personal publication policy: AIPS independently enforces Required Checks only when `AIPS_ENFORCE_REQUIRED_CHECKS=1`; GitHub's native branch protection and rulesets remain the merge enforcement boundary.
+
 Publication recovery remains on the existing read-only observation boundary: the Claude PreToolUse guard fails closed without waiting for Doctor, while Prepare returns stable, redacted timeout details. No publication authority or execution path changes.
 
 Plan42 adds bounded font-metadata inspection to commit and publication safety evidence; the content decision remains separate from Personal or High-Assurance publication approval.

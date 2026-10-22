@@ -1,109 +1,83 @@
 version: 1
+
 change:
-  id: hook-timeout-diagnostics-20261021
-  summary: Claude publication Hook returns immediately with a safe fail-closed diagnosis after retryable remote errors; Prepare classifies remote timeouts with stable redacted fields.
+  id: required-checks-opt-in-20261022
+  summary: AIPS personal PR merge Required Checks enforcement becomes opt-in; GitHub policy observations and native protections remain unchanged.
   boundary:
-    - Claude PreToolUse remote observation recovery and fail-closed behavior
-    - Prepare remote timeout reason, detail, phase, category, and safe error class
-    - Scenario 260/261, Human and Agent documentation closure
-    - Exact-candidate Core Integration Gate and remote required checks
+    - personal PR merge authorization and confirmation contract
+    - Scenario 097/260 and Human/Agent guidance
+    - exact-candidate repository validation and remote publication
+
 matrix:
-  - boundary: Claude PreToolUse remote observation recovery
-    reason: The synchronous Claude Hook must not wait for an inline Doctor subprocess and must preserve a safe, non-authorizing denial.
+  - boundary: personal PR merge authorization
+    reason: The approved change modifies whether AIPS independently blocks a protected PR merge based on Required Checks evidence.
     checks:
       static_lint:
         applicable: true
-        evidence: PASS — git diff --check origin/main...HEAD.
+        evidence: PASS — git diff --check passed; final exact candidate Gate also runs lint.
       unit:
         applicable: true
-        evidence: PASS — tests/test_publication_diagnostics.py asserts no Doctor subprocess and safe retryable denial output.
+        evidence: PASS — 68 publication authority and diagnostics tests passed.
       integration:
         applicable: true
-        evidence: PASS — exact-candidate Integration Gate passed on cc46a6c; no blockers.
+        evidence: Required — exact-candidate Core Integration Gate must pass before publication.
       contract:
         applicable: true
-        evidence: PASS — Scenario 260 and 261 contracts updated; complete repository validator passed.
+        evidence: PASS — repository preflight passed; validator covered 267 scenarios.
       e2e:
         applicable: false
-        na_reason: No deployed service or UI behavior changed; native Hook envelope is covered by local lifecycle tests.
+        na_reason: No deployed UI or service behavior changes.
       security:
         applicable: true
-        evidence: PASS — timeout sentinel and private command text are absent from Hook output; authorization remains DENIED and NOT_EXECUTED.
+        evidence: Required — exact-candidate mandatory secret scan and publication boundary review.
       migration_recovery:
         applicable: false
-        na_reason: No persistent schema or state change; reverting the PR restores prior behavior.
+        na_reason: No persistent schema or runtime state; environment variable opt-in and PR revert provide recovery.
       cli_harness:
         applicable: true
-        evidence: PASS — complete repository validator passed; Claude Hook payload contract is exercised by focused tests.
+        evidence: PASS — complete AIPS preflight and Harness lifecycle passed.
       docs_schema:
         applicable: true
-        evidence: PASS — planned docs-impact closure complete with zero required additions; all 18 closure documents updated.
-  - boundary: Prepare remote observation timeout diagnostics
-    reason: A remote timeout must remain blocking while exposing a stable, actionable diagnosis without raw exception or command text.
+        evidence: PASS — docs impact complete with zero required additions.
+  - boundary: exact candidate delivery
+    reason: Bind repository validation, documentation, secret scan and remote Required Checks evidence to the exact candidate.
     checks:
       static_lint:
         applicable: true
-        evidence: PASS — git diff --check origin/main...HEAD.
+        evidence: PASS — git diff --check passed; final exact candidate Gate also runs lint.
       unit:
         applicable: true
-        evidence: PASS — tests/test_publication_planning.py verifies REMOTE_OBSERVATION_TIMEOUT, phase, TimeoutExpired, category and safe next step.
+        evidence: PASS — 68 publication authority and diagnostics tests passed; complete repository validator passed.
       integration:
         applicable: true
-        evidence: PASS — exact-candidate Integration Gate passed on cc46a6c; no blockers.
+        evidence: Required — exact-candidate Core Integration Gate must pass before publication.
       contract:
         applicable: true
-        evidence: PASS — Scenario 260/261 describe stable timeout fields and unchanged non-authorizing behavior.
+        evidence: PASS — repository preflight passed; validator covered 267 scenarios.
       e2e:
         applicable: false
-        na_reason: No UI, deployed service or external schema changes.
+        na_reason: No deployed UI or service behavior changes.
       security:
         applicable: true
-        evidence: PASS — tests verify raw timeout command and private endpoint sentinel are redacted.
+        evidence: Required — exact-candidate mandatory secret scan and GitHub Required Checks evidence before merge.
       migration_recovery:
         applicable: false
-        na_reason: No schema or data migration; retry uses the existing read-only Doctor.
+        na_reason: No persistent schema or runtime state.
       cli_harness:
         applicable: true
-        evidence: PASS — tests/test_publication_error_recovery.py verifies timeout re-observation remains read-only.
+        evidence: PASS — complete AIPS preflight and Harness lifecycle passed.
       docs_schema:
         applicable: true
-        evidence: PASS — Human, Agent, Scenario and architecture documentation closure is synchronized.
-  - boundary: Candidate delivery and remote required checks
-    reason: This is an approved Core Change; verify the exact committed candidate and remote required checks before merging main.
-    checks:
-      static_lint:
-        applicable: true
-        evidence: PASS — git diff --check origin/main...HEAD.
-      unit:
-        applicable: true
-        evidence: PASS — 57 focused publication tests and 24 subtests passed.
-      integration:
-        applicable: true
-        evidence: PASS — exact-candidate Integration Gate passed on cc46a6c; no blockers.
-      contract:
-        applicable: true
-        evidence: PASS — tests/validate_repository.py completed with VALIDATION PASSED (267 scenarios).
-      e2e:
-        applicable: false
-        na_reason: No deployed system or UI changes.
-      security:
-        applicable: true
-        evidence: PASS — exact-candidate mandatory secret scan completed with zero findings.
-      migration_recovery:
-        applicable: false
-        na_reason: No persistent state or migration.
-      cli_harness:
-        applicable: true
-        evidence: PASS — exact-candidate Integration Gate passed on cc46a6c; no blockers.
-      docs_schema:
-        applicable: true
-        evidence: PASS — documentation impact closure is complete and repository validator passed.
-scope_recomputed_after_expansion: true
-actual_diff_reconciled: true
+        evidence: PASS — docs impact complete with zero required additions.
+
 candidate:
-  base_sha: 6cfcdeb2edaf67b3e48aa70adbcfd8aebd416dbd
-  changed_files_hash: 80562ebfad3824d174297b843d19bacef298129f5dabf7da67dbf35dc77b36f2
+  base_sha: fe4359ce46729aa084ef7860027ccf9c32254b80
+  changed_files_hash: 5311039adf1caa965c09c3069ec651cfab36482a47241d1406124110b71fb3bd
+
 review_evidence:
   required: false
+
+scope_recomputed_after_expansion: true
+actual_diff_reconciled: true
 blockers: []
 status: READY

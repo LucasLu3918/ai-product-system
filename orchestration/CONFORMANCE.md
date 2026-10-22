@@ -1153,6 +1153,8 @@ Scenario 262 locks stage-specific default-deny Profile diagnostics, kind/selecto
 
 ## Scenario 263 — Commit Safety Diagnostics
 
+The publication setting `AIPS_ENFORCE_REQUIRED_CHECKS=1` is orthogonal to staged-content safety: disabling AIPS Required Checks enforcement does not bypass commit or publication content scanning.
+
 Plan45 separately checks personal publication command form before scanning and classifies scanner policy, base, Git-object, file-read and internal failures with redacted diagnostics. Scenario 261 verifies rejected publication remains blocked and `NOT_EXECUTED`.
 
 Plan44's native failure observer reports bounded execution metadata only; it excludes raw Host errors and does not authorize retry or publication.

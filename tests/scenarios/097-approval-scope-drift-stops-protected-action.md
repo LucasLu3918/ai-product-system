@@ -11,4 +11,4 @@ Expected:
 - only valid final Co-Authored-By email metadata is exempted; real staged content and original-message secrets remain scanned.
 - personal mode is selected only when the fixed administrator trust-root file is absent; a present invalid/unreadable root fails closed without downgrade.
 - personal mode permits only the current `agent/`, `bugfix/`, `chore/`, `claude/`, `codex/`, `docs/`, `feature/`, `fix/`, `gemini/` or `work/` branch to push to its same-named remote engineering branch; direct protected/default branch push, deletion, tags and releases remain denied.
-- PR create/merge retain exact candidate/ref validation; merge into `main` additionally requires task authorization and passing required checks.
+- PR create/merge retain exact candidate/ref validation; merge into `main` requires explicit task intent, exact open/mergeable PR and live default-base validation. AIPS Required Checks enforcement is off by default and becomes strict only with `AIPS_ENFORCE_REQUIRED_CHECKS=1`; GitHub native protection remains effective.
