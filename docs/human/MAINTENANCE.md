@@ -317,6 +317,8 @@ Focused Intelligence context evidence must distinguish storage deduplication fro
 
 ## Impact-derived regression testing
 
+Independent-review evidence remains separate from Required Checks. When reviewing publication changes, verify `AIPS_ENFORCE_REQUIRED_CHECKS` and ensure its default affects only AIPS's own merge gate, not Doctor observations or GitHub rules.
+
 Publication Hook recovery tests assert zero inline Doctor calls, immediate fail-closed guidance and safe Prepare timeout fields (Scenario 260/261); exact-candidate evidence is recorded in the Core Change Matrix.
 
 Plan41 records scanner, CLI, documentation-closure, and exact-candidate Gate evidence in the canonical Core Change Test Matrix; its approved scope does not require independent review.
@@ -831,6 +833,8 @@ Protected dispatch 會逐筆重新讀取 merged PR，確認 `merged_at`、head S
 
 ## Runtime Content Safety Boundary
 
+Content-safety maintenance and publication Required Checks enforcement are separate controls; changing `AIPS_ENFORCE_REQUIRED_CHECKS` does not change scanner behavior.
+
 Publication timeout handling keeps the content-safety boundary explicit: output omits raw command and exception text while the protected operation remains denied.
 
 保留即時處理流程與所有安全檢查，僅調整偵測精確度；policy 變更需以固定良性／惡意樣本比較新舊結果，並驗證例外期限與精確範圍、診斷隱私、Git index/HEAD 不變性及 exact-candidate Gate。
@@ -849,5 +853,3 @@ Commit-form changes in the publication guard must prove that content not yet sta
 Changes to PII detector grammar need a versioned rule ID, a hex-encoded positive/negative corpus with a v1/v2 comparison, shared detection/redaction predicates, and no PII exception path. Code-level `chr(64)` workarounds for Git remotes can be removed once the installed runtime carries `pii.email.v2`.
 
 純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
-
-Publication maintenance: verify `AIPS_ENFORCE_REQUIRED_CHECKS` when reviewing merge behavior. Its default disables only AIPS's independent Required Checks gate; it does not change Doctor observations or GitHub rules.

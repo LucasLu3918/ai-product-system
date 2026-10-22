@@ -870,6 +870,8 @@ Scenario / validation history
 Documentation Placement Contract 會檢查 heading hierarchy、version/scenario-style heading 與 changed-line placement。新增功能不得只在 current-behavior 文件尾端追加 `vX.Y` / Scenario 說明；若確實需要新 topic，必須同時把 canonical section 加入 placement contract。
 ## Runtime Content Safety Boundary
 
+Runtime Content Safety remains independent from Required Checks policy. AIPS enforces Required Checks only when `AIPS_ENFORCE_REQUIRED_CHECKS=1`; GitHub native protections remain effective either way.
+
 Publication timeout output remains content-safe by omitting raw command and exception text; a denial remains `NOT_EXECUTED` until existing authority checks succeed.
 
 Plan45 scanner failures use stable `SECRET_SCAN_*` codes and safe recovery guidance; unsupported literal commands are rejected before scanning and never execute. This preserves the existing fail-closed content-safety policy.

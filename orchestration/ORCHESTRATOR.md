@@ -258,14 +258,14 @@ Publication Prepare and Diagnostic ID lookup provide safe evidence for this appr
 
 Runtime denial diagnostics and recovery instructions do not supply publication authority; the exact-candidate Gate, task authorization and native Host confirmation remain separate.
 
-Before merging a publication PR, validate exact head SHA, live default base, open/mergeable state and explicit task intent. AIPS additionally requires current target-branch Required Checks policy and passing check evidence only when `AIPS_ENFORCE_REQUIRED_CHECKS=1`; GitHub native protections remain effective. Read-only retries grant no permission.
+Before merging a publication PR, Doctor and Authority must use current target-branch Required Checks policy, exact head SHA and passing check evidence; read-only retries grant no permission.
 
 The Doctor reports the target policy branch separately from the candidate and preserves safe GitHub endpoint/status evidence. Its transient recovery guidance permits read-only re-observation only; it does not grant publication authority.
 
 For a blocked or first-time GitHub publication, run `aips publish doctor` and optionally `aips publish diagnose` on the literal merge command. Treat unavailable policy/check evidence as blocking, then follow safe next steps; never infer authorization or perform an unapproved policy change from the report.
 
 
-For remote publication, use `templates/git-publish-proposal.md` to preserve the exact candidate, changed files, validation evidence, commit plan and target. Personal mode proceeds for a task-authorized engineering branch/PR after candidate validation. Merge into `main` still requires explicit task intent and exact PR validation; AIPS Required Checks enforcement is opt-in with `AIPS_ENFORCE_REQUIRED_CHECKS=1` while GitHub native policy remains effective. Ordinary Claude/Gemini merges require native confirmation; explicitly task-authorized Claude `--auto` may enable GitHub auto-merge only through the same exact-candidate and passing-check guard, while Gemini retains `ask_user`. High-assurance mode requires the external grant. Re-evaluate if target or task scope changes.
+For remote publication, use `templates/git-publish-proposal.md` to preserve the exact candidate, changed files, validation evidence, commit plan and target. Personal mode proceeds for a task-authorized engineering branch/PR after required checks; merge into `main` still requires explicit task intent and required checks. Ordinary Claude/Gemini merges require native confirmation; explicitly task-authorized Claude `--auto` may enable GitHub auto-merge only through the same exact-candidate and passing-check guard, while Gemini retains `ask_user`. High-assurance mode requires the external grant. Re-evaluate if target or task scope changes.
 
 ## Creative / Brand work
 
@@ -387,6 +387,8 @@ When emitting a Structured Task Graph, treat tasks as writable by default. Set `
 For Evolution Radar semantic work, prefer the generated provider-neutral handoff when no scheduled provider is available rather than inventing a recommendation. For PR integration, stale target-base evidence must route back to refresh/revalidation rather than proceeding with an old PASS.
 
 ## Change-class handoff to Integration Gate
+
+For an explicitly requested personal-mode PR merge, validate open/non-draft/mergeable state, exact head, allowlisted branch and live default base. AIPS independently requires configured Required Checks and passing checks only when `AIPS_ENFORCE_REQUIRED_CHECKS=1`; GitHub native policy remains effective.
 
 For a retryable remote publication failure, Claude Hook returns a bounded denial immediately. Use `aips publish doctor --worktree . --format json` as a separate read-only observation, then re-prepare the exact candidate; neither diagnostic grants publication authority.
 

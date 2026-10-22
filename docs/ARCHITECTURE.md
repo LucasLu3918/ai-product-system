@@ -312,6 +312,8 @@ The alias candidate is deterministic and transparent. It is not an embedding pro
 
 ## Maintenance and publication evidence
 
+Personal publication policy: AIPS independently enforces Required Checks only when `AIPS_ENFORCE_REQUIRED_CHECKS=1`; GitHub's native branch protection and rulesets remain the merge enforcement boundary.
+
 Publication recovery remains on the existing read-only observation boundary: the Claude PreToolUse guard fails closed without waiting for Doctor, while Prepare returns stable, redacted timeout details. No publication authority or execution path changes.
 
 Plan42 adds bounded font-metadata inspection to commit and publication safety evidence; the content decision remains separate from Personal or High-Assurance publication approval.
@@ -1265,5 +1267,3 @@ flowchart LR
 ~~~
 
 The MCP plane is portable and ADVISORY; full MCP hosts use Resources / Prompts / Tools, while tool-only hosts use read-only catalog/read/workflow Tools over the same canonical sources. Native adapters remain a separate enhancement plane for verified TURN_NATIVE / TOOL_GUARDED behavior. The gateway is local stdio only and performs no provider/model call inside the server.
-
-Personal publication policy: AIPS independently enforces Required Checks only when `AIPS_ENFORCE_REQUIRED_CHECKS=1`; GitHub's native branch protection and rulesets remain the merge enforcement boundary.

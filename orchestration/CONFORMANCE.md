@@ -1139,7 +1139,7 @@ Scenario 263 is separate from publication Doctor and cannot satisfy PR merge che
 
 Plan40 verifies explicit publication reason codes, safe common Prepare/Hook bindings, independent lifecycle states, and optional verified Diagnostic ID lookup; all remain non-authorizing observations.
 
-Scenario 260 verifies the read-only `aips publish doctor`, Required Checks classification, literal merge diagnosis without execution or grant consumption, sanitized error output, and consistent runtime guidance. Doctor reports missing/permission-limited policy evidence accurately; Merge Authority blocks on that evidence only when `AIPS_ENFORCE_REQUIRED_CHECKS=1`. No repository policy mutation occurs, and GitHub native protection remains effective. Scenario 261 adds grouped dirty-path evidence and phase attribution through push, PR, checks, and exact-head merged recovery; diagnostics remain non-authorizing. Scenario 233 covers upstream Skill inventory and filtering without changing the canonical-only listing default.
+Scenario 260 verifies the read-only `aips publish doctor`, Required Checks classification, literal merge diagnosis without execution or grant consumption, sanitized error output, and consistent runtime guidance. Missing/permission-limited policy evidence remains blocking; no repository policy mutation or merge bypass is introduced. Scenario 261 adds grouped dirty-path evidence and phase attribution through push, PR, checks, and exact-head merged recovery; diagnostics remain non-authorizing. Scenario 233 covers upstream Skill inventory and filtering without changing the canonical-only listing default.
 
 ## Scenario 262 — ComfyUI Resource Authorization and Diagnostics
 
@@ -1152,6 +1152,8 @@ Git publication diagnostics do not alter ComfyUI discovery, Resource Authorizati
 Scenario 262 locks stage-specific default-deny Profile diagnostics, kind/selector/operation/destination/constraint matching, observed Hook URL binding, and structured redacted Runtime/Creative recovery. It verifies fixed loopback ComfyUI read-only model discovery, HTTP/method/path/redirect denials, shared static asset presets and evidence-only MPS reporting; no inference or external download is performed.
 
 ## Scenario 263 — Commit Safety Diagnostics
+
+The publication setting `AIPS_ENFORCE_REQUIRED_CHECKS=1` is orthogonal to staged-content safety: disabling AIPS Required Checks enforcement does not bypass commit or publication content scanning.
 
 Plan45 separately checks personal publication command form before scanning and classifies scanner policy, base, Git-object, file-read and internal failures with redacted diagnostics. Scenario 261 verifies rejected publication remains blocked and `NOT_EXECUTED`.
 

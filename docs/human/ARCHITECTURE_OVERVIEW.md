@@ -390,6 +390,8 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 
 ## Security 與 Governance
 
+個人模式的 PR merge 仍要求明確任務意圖與精確候選驗證；AIPS Required Checks 強制需設 `AIPS_ENFORCE_REQUIRED_CHECKS=1`，GitHub 原生分支保護持續生效。獨立審查證據與 Required Checks 是不同的 Gate 證據。
+
 Prepare timeout details are stable and redacted, while Hook remote failures remain denied until the existing publication checks establish fresh evidence and authority.
 
 Content-safety PASS is candidate evidence only and does not authorize PR merge or change publication mode.
@@ -663,6 +665,8 @@ Docs build 與 Pages hosting 分開驗證：PR / main 都能證明 VitePress bui
 Documentation Placement 對 behavior-bearing source 採 fail-closed mapping：只要 source 落在 Technology Guide 的廣域同步 surface，就必須先命中 subsystem placement rule。這避免新功能以「文件最後補充說明」逃過 topic architecture。
 ## Runtime Content Safety Boundary
 
+Commit and publication content-safety checks remain independent from the optional AIPS Required Checks merge gate; disabling that gate does not relax content scanning.
+
 Publication command-form checks run before candidate inspection, followed by the existing exact-tree/history secret scan. Scanner failures stay fail-closed and expose only stable redacted classifications; publication authority is unchanged.
 
 Static AVIF EXIF/XMP metadata is scanned across commit, candidate/history, preflight and Creative validation; the parser does not claim to decode AV1 image data.
@@ -684,5 +688,3 @@ The commit guard accepts quoted-delimiter heredoc messages, literal `git add` co
 Email rule `pii.email.v2` treats the `git` service user of an scp-like or `ssh://` Git remote as a host address, not an email; detection and redaction share that predicate and every other address still blocks.
 
 純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
-
-個人模式的 PR merge 仍要求明確任務意圖與精確候選驗證；AIPS Required Checks 強制需設 `AIPS_ENFORCE_REQUIRED_CHECKS=1`，GitHub 原生分支保護持續生效。

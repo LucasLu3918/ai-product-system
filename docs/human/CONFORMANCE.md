@@ -1953,6 +1953,8 @@ Current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md)
 
 ## Scenario 260 — Publication diagnostics and Doctor
 
+Scenario 097/260 also cover the opt-in merge gate: without `AIPS_ENFORCE_REQUIRED_CHECKS=1`, AIPS does not block on Required Checks evidence; Doctor remains read-only and GitHub native protections remain effective.
+
 Scenario 260/261 verifies immediate Claude Hook denial without an inline Doctor call, the manual read-only recovery command, and safe Prepare timeout fields.
 
 Scenario 261 verifies unsupported personal publication command forms are rejected before candidate scanning and that scanner policy, Git-object and file-read failures remain blocked with redacted diagnostics.
@@ -2019,6 +2021,8 @@ The lifecycle verifies default Git destination rejection, explicit exact-root op
 
 ## Scenario 266 — Content Safety Injection Context and Recovery
 
+Scenario 266 content-safety decisions remain unchanged by the personal PR merge setting `AIPS_ENFORCE_REQUIRED_CHECKS`.
+
 Publication timeout diagnostics preserve this content-safety boundary: raw command and exception text are omitted, as verified alongside the independent publication contract in Scenario 260/261.
 
 The fixed benign/malicious corpus verifies that common JavaScript data references pass, strong injection rules still block, ambiguous findings require review, and removed or unchanged staged lines do not block an unrelated edit. Publication-candidate injection checks inspect added diff lines while Secret/PII scanning retains the complete diff. Full staged Secret/PII coverage, exact expiring exceptions, safe reason/phase/fingerprint/recovery output, Hook parity and unchanged Git index/HEAD are covered by `tests/test_content_safety.py` and `tests/test_safety_diagnostics.py`.
@@ -2030,5 +2034,3 @@ The `pii.email.v2` corpus proves Git remote `git` userinfo (scp-like, `ssh://`, 
 純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
 
 Dependabot commits: the GitHub App bot noreply author and Dependabot's exact final `Signed-off-by` trailer are Git identity metadata decided by `config/git-publication.yaml`, not PII exceptions; `pii.email.v2` and every other address stay blocking, and the bot identity grants no authority.
-
-Scenario 097/260 also cover the opt-in merge gate: without `AIPS_ENFORCE_REQUIRED_CHECKS=1`, AIPS does not block on Required Checks evidence; Doctor remains read-only and GitHub native protections remain effective.

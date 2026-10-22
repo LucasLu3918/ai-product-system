@@ -465,6 +465,8 @@ SAL 2+ default registration requires an independently retained anchor. SAL 4 req
 The retention helper never deletes evidence or grants compaction authority. Expiry only creates a Human-review action and a minimal digest record.
 ## Runtime Content Safety Boundary
 
+Content Safety findings still block according to the existing scanner contract; the opt-in `AIPS_ENFORCE_REQUIRED_CHECKS=1` setting changes only the separate AIPS PR-merge checks gate, while GitHub-native protections remain effective.
+
 Prepare timeout diagnostics omit the raw command and exception text, and the Claude Hook remains denied while remote evidence is unavailable.
 
 Personal publication rejects unsupported literal command forms before scanning and reports scanner policy or candidate-read failures through stable redacted reason codes. Both paths remain non-authorizing and fail closed.
