@@ -14,68 +14,70 @@ matrix:
     checks:
       static_lint:
         applicable: true
-        evidence: PENDING
+        evidence: PASS — git diff --check passed; final exact candidate Gate also runs lint.
       unit:
         applicable: true
-        evidence: PENDING
+        evidence: PASS — 68 publication authority and diagnostics tests passed.
       integration:
         applicable: true
-        evidence: PENDING
+        evidence: Required — exact-candidate Core Integration Gate must pass before publication.
       contract:
         applicable: true
-        evidence: PENDING
+        evidence: PASS — repository preflight passed; validator covered 267 scenarios.
       e2e:
         applicable: false
         na_reason: No deployed UI or service behavior changes.
       security:
         applicable: true
-        evidence: PENDING
+        evidence: Required — exact-candidate mandatory secret scan and publication boundary review.
       migration_recovery:
         applicable: false
         na_reason: No persistent schema or runtime state; environment variable opt-in and PR revert provide recovery.
       cli_harness:
         applicable: true
-        evidence: PENDING
+        evidence: PASS — complete AIPS preflight and Harness lifecycle passed.
       docs_schema:
         applicable: true
-        evidence: PENDING
+        evidence: PASS — docs impact complete with zero required additions.
   - boundary: exact candidate delivery
     reason: Bind repository validation, documentation, secret scan and remote Required Checks evidence to the exact candidate.
     checks:
       static_lint:
         applicable: true
-        evidence: PENDING
+        evidence: PASS — git diff --check passed; final exact candidate Gate also runs lint.
       unit:
         applicable: true
-        evidence: PENDING
+        evidence: PASS — 68 publication authority and diagnostics tests passed; complete repository validator passed.
       integration:
         applicable: true
-        evidence: PENDING
+        evidence: Required — exact-candidate Core Integration Gate must pass before publication.
       contract:
         applicable: true
-        evidence: PENDING
+        evidence: PASS — repository preflight passed; validator covered 267 scenarios.
       e2e:
         applicable: false
         na_reason: No deployed UI or service behavior changes.
       security:
         applicable: true
-        evidence: PENDING
+        evidence: Required — exact-candidate mandatory secret scan and GitHub Required Checks evidence before merge.
       migration_recovery:
         applicable: false
         na_reason: No persistent schema or runtime state.
       cli_harness:
         applicable: true
-        evidence: PENDING
+        evidence: PASS — complete AIPS preflight and Harness lifecycle passed.
       docs_schema:
         applicable: true
-        evidence: PENDING
+        evidence: PASS — docs impact complete with zero required additions.
 
 candidate:
-  base_sha: null
-  changed_files_hash: null
+  base_sha: fe4359ce46729aa084ef7860027ccf9c32254b80
+  changed_files_hash: 5311039adf1caa965c09c3069ec651cfab36482a47241d1406124110b71fb3bd
+
+review_evidence:
+  required: false
 
 scope_recomputed_after_expansion: true
-actual_diff_reconciled: false
-
+actual_diff_reconciled: true
 blockers: []
-status: DRAFT
+status: READY
