@@ -37,6 +37,7 @@ if all(path.is_file() for path in required):
         ("INSPECT_COMFYUI_QUEUE_AND_HISTORY" in executor and "automatic_resubmission" in executor, "unknown single-POST acceptance must require manual recovery"),
         ("mps_dtype_unsupported" in executor and "gpu_out_of_memory" in executor, "hardware failures must retain their actual safe category"),
         ("workflows_import" in executor and "os.O_EXCL" in executor and "creative_ephemeral_required" in executor, "workflow import must be local, EPHEMERAL and create-only"),
+        ("def cli_success_response" in executor and "print(json.dumps(result" not in executor, "CLI stdout must use fixed acknowledgements instead of logging arbitrary creative/provider results"),
         ("workflows)" in dispatch and "creative workflows scan" in help_text and "creative workflows inspect" in help_text, "workflow subcommands must be publicly routed and documented"),
         ("mode: fixed" in bundle and "dynamic_local" in bundle, "dynamic mode must be opt-in with the fixed default preserved"),
         ("model inference UNVERIFIED" in required[7].read_text(encoding="utf-8"), "synthetic lifecycle must not claim real inference"),

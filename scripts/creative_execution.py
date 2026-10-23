@@ -2055,6 +2055,29 @@ def workflow_cli_response(action: str) -> dict[str, Any]:
             "readiness": {"inference": "INFERENCE_UNVERIFIED"}}
 
 
+def cli_success_response(action: str) -> dict[str, Any]:
+    """Keep command-line output bounded to fixed acknowledgements, never result data."""
+    if action == "workflows":
+        return {"status": "COMPLETED"}
+    status_by_action = {
+        "prepare": "PREPARED",
+        "discover": "READY",
+        "configure": "CONFIGURED",
+        "preflight": "READY",
+        "execute": "COMPLETED",
+        "generate-set": "COMPLETED",
+        "review": "RECORDED",
+        "review-assist": "ADVISORY_REVIEW",
+        "quality-check": "ADVISORY_REVIEW",
+        "feedback": "RECORDED",
+        "repair": "REVISED",
+        "compare": "COMPARED",
+        "quality-loop": "COMPLETED",
+        "trace": "READY",
+    }
+    return {"status": status_by_action.get(action, "COMPLETED")}
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="action", required=True)
@@ -2168,7 +2191,9 @@ def main() -> int:
             result = quality_loop(args.project, args.bundle, args.model, args.max_repairs, args.time_budget_seconds)
         else:
             result = read_trace(args.limit)
-        print(json.dumps(result, ensure_ascii=False))
+        # Keep arbitrary prompts, provider responses, local paths and trace data out of stdout.
+        response = workflow_cli_response(args.workflow_action) if args.action == "workflows" else cli_success_response(args.action)
+        print(json.dumps(response, ensure_ascii=False))
         return 0
     except Blocked as exc:
         print(json.dumps(exc.to_payload(), ensure_ascii=False))

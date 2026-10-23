@@ -133,7 +133,7 @@ ComfyUI 也可用 `model_profile: z-image-turbo` 執行同一模型：設定需�
 
 Creative Bundle 可選 `asset_preset: character | background | texture | ui_ornament`，使用共用角色、背景、材質紋理或 UI 裝飾提示指引。Preset 只影響提示組合，會將版本雜湊記入輸出 manifest；不選 Provider、不授權生成，也不改變既有 Workflow、人工視覺審查與使用者接受流程。
 
-`aips creative configure --project PROJECT --bundle RELATIVE.yaml` 從 stdin 接收 allowlisted JSON，回傳新的 Bundle 路徑；以該路徑 preflight，通過後才 execute。OpenCode 可直接使用相同 action。缺少模型或生成失敗時回報受阻，不改交 SVG；精緻插畫先校準代表性樣圖，完成後逐張檢查身份、人物結構、材質、光影與風格。
+`aips creative configure --project PROJECT --bundle RELATIVE.yaml` 從 stdin 接收 allowlisted JSON，建立 create-only 的設定版本；成功時 CLI 僅回固定狀態，不輸出 Bundle 路徑或設定內容。CLI 執行結果一律只提供固定狀態摘要；需要詳細資料時，請在受信任的程式流程中呼叫對應函式。OpenCode 可直接使用相同 action。缺少模型或生成失敗時回報受阻，不改交 SVG；精緻插畫先校準代表性樣圖，完成後逐張檢查身份、人物結構、材質、光影與風格。
 
 多個 Bundles 可用 `templates/creative/CREATIVE_JOB_MANIFEST.yaml` 列入工作清單，再執行 `aips creative generate-set --project PROJECT --manifest MANIFEST.yaml`；每項分別預檢，失敗後會繼續並保存結果，重跑時僅略過雜湊仍吻合的已完成項目。OpenCode 原生授權只來自目前提示，並依提示中的明確數量限制生成項目。
 
