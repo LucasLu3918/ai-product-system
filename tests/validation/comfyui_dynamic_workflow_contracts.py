@@ -24,6 +24,7 @@ if all(path.is_file() for path in required):
     workflow = required[1].read_text(encoding="utf-8")
     policy = required[2].read_text(encoding="utf-8")
     executor = required[3].read_text(encoding="utf-8")
+    discovery = executor.split("def discover_comfyui(", 1)[1].split("\ndef discover(", 1)[0]
     dispatch = required[4].read_text(encoding="utf-8")
     help_text = required[5].read_text(encoding="utf-8")
     bundle = required[6].read_text(encoding="utf-8")
@@ -37,7 +38,8 @@ if all(path.is_file() for path in required):
         ("INSPECT_COMFYUI_QUEUE_AND_HISTORY" in executor and "automatic_resubmission" in executor, "unknown single-POST acceptance must require manual recovery"),
         ("mps_dtype_unsupported" in executor and "gpu_out_of_memory" in executor, "hardware failures must retain their actual safe category"),
         ("workflows_import" in executor and "os.O_EXCL" in executor and "creative_ephemeral_required" in executor, "workflow import must be local, EPHEMERAL and create-only"),
-        ("def cli_success_response" in executor and "print(json.dumps(result" not in executor, "CLI stdout must use fixed acknowledgements instead of logging arbitrary creative/provider results"),
+        ("def workflow_cli_response" in executor and 'response = workflow_cli_response(args.workflow_action) if args.action == "workflows" else result' in executor, "workflow CLI stdout must use fixed acknowledgements while preserving other Creative CLI response contracts"),
+        ('"trusted_core_nodes"' not in discovery and '"denied_nodes"' not in discovery, "ComfyUI discovery must not expose a local node inventory"),
         ("workflows)" in dispatch and "creative workflows scan" in help_text and "creative workflows inspect" in help_text, "workflow subcommands must be publicly routed and documented"),
         ("mode: fixed" in bundle and "dynamic_local" in bundle, "dynamic mode must be opt-in with the fixed default preserved"),
         ("model inference UNVERIFIED" in required[7].read_text(encoding="utf-8"), "synthetic lifecycle must not claim real inference"),

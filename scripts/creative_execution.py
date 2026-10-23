@@ -926,19 +926,14 @@ def discover_comfyui(base_url: str | None = None) -> dict[str, Any]:
         capabilities: dict[str, str] = {}
         model_catalog: dict[str, list[str]] = {}
         model_components: dict[str, dict[str, list[str]]] = {}
-        trusted_nodes: list[str] = []
-        denied_nodes: dict[str, str] = {}
         for node_type, node in object_info.items():
             decision = classify_node(node_type, node)
             if decision["trust"] == "TRUSTED_CORE":
-                trusted_nodes.append(node_type)
                 choices = comfyui_capabilities.node_model_candidates(node)
                 if choices:
                     model_components[node_type] = choices
                     flattened = sorted({item for values in choices.values() for item in values})
                     model_catalog[node_type] = flattened[:100]
-            else:
-                denied_nodes[node_type] = decision["reason_code"]
         for node_type, field in (("CheckpointLoaderSimple", "ckpt_name"), ("UNETLoader", "unet_name"),
                                  ("CLIPLoader", "clip_name"), ("VAELoader", "vae_name")):
             choices = model_components.get(node_type, {}).get(field)
@@ -955,8 +950,6 @@ def discover_comfyui(base_url: str | None = None) -> dict[str, Any]:
         return {"status": "REACHABLE", "reason_code": "local_comfyui_reachable",
                 "endpoint": "127.0.0.1:8188", "node_capabilities": capabilities,
                 "model_catalog": model_catalog, "model_components": model_components,
-                "trusted_core_nodes": sorted(trusted_nodes)[:500],
-                "denied_nodes": dict(list(sorted(denied_nodes.items())[:100])),
                 "schema_sha256": schema_hash, "comfyui_version": comfy_version,
                 "readiness": {"command": "NOT_APPLICABLE", "runtime": "RUNTIME_VERIFIED",
                               "model": "MODEL_CATALOG_AVAILABLE" if catalog_available else "MODEL_CATALOG_INCOMPLETE", "preflight": "NOT_RUN",
@@ -2055,29 +2048,6 @@ def workflow_cli_response(action: str) -> dict[str, Any]:
             "readiness": {"inference": "INFERENCE_UNVERIFIED"}}
 
 
-def cli_success_response(action: str) -> dict[str, Any]:
-    """Keep command-line output bounded to fixed acknowledgements, never result data."""
-    if action == "workflows":
-        return {"status": "COMPLETED"}
-    status_by_action = {
-        "prepare": "PREPARED",
-        "discover": "READY",
-        "configure": "CONFIGURED",
-        "preflight": "READY",
-        "execute": "COMPLETED",
-        "generate-set": "COMPLETED",
-        "review": "RECORDED",
-        "review-assist": "ADVISORY_REVIEW",
-        "quality-check": "ADVISORY_REVIEW",
-        "feedback": "RECORDED",
-        "repair": "REVISED",
-        "compare": "COMPARED",
-        "quality-loop": "COMPLETED",
-        "trace": "READY",
-    }
-    return {"status": status_by_action.get(action, "COMPLETED")}
-
-
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="action", required=True)
@@ -2191,8 +2161,8 @@ def main() -> int:
             result = quality_loop(args.project, args.bundle, args.model, args.max_repairs, args.time_budget_seconds)
         else:
             result = read_trace(args.limit)
-        # Keep arbitrary prompts, provider responses, local paths and trace data out of stdout.
-        response = workflow_cli_response(args.workflow_action) if args.action == "workflows" else cli_success_response(args.action)
+        # Keep workflow command output bounded; preserve other Creative CLI contracts.
+        response = workflow_cli_response(args.workflow_action) if args.action == "workflows" else result
         print(json.dumps(response, ensure_ascii=False))
         return 0
     except Blocked as exc:
