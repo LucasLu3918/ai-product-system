@@ -1,78 +1,78 @@
 version: 1
 
 change:
-  id: required-checks-opt-in-20261022
-  summary: AIPS personal PR merge Required Checks enforcement becomes opt-in; GitHub policy observations and native protections remain unchanged.
+  id: extensible-comfyui-model-profiles
+  summary: Replace model-specific ComfyUI executor branches with validated data profiles over fixed, executor-reviewed topology families and add the FLUX 3 Klein Base workflow.
   boundary:
-    - personal PR merge authorization and confirmation contract
-    - Scenario 097/260 and Human/Agent guidance
-    - exact-candidate repository validation and remote publication
+    - profile registry parsing, topology-family validation, local component inventory and model-profile selection
+    - fixed FLUX 3 Klein Base workflow execution and prompt metadata sanitation
+    - creative lifecycle, public contracts, docs placement and exact-candidate publication
 
 matrix:
-  - boundary: personal PR merge authorization
-    reason: The approved change modifies whether AIPS independently blocks a protected PR merge based on Required Checks evidence.
+  - boundary: profile registry and topology safety
+    reason: Registry data becomes configurable while executor-owned allowlists must prevent arbitrary graph operations, new nodes, endpoints and unreviewed topology families.
     checks:
       static_lint:
         applicable: true
-        evidence: PASS — git diff --check passed; final exact candidate Gate also runs lint.
+        evidence: PASS — python compilation and git diff --check; exact candidate Gate still required.
       unit:
         applicable: true
-        evidence: PASS — 68 publication authority and diagnostics tests passed.
+        evidence: PASS — creative execution contracts validate registry schema, bounded profile fields, family settings and rejection paths.
       integration:
         applicable: true
-        evidence: Required — exact-candidate Core Integration Gate must pass before publication.
+        evidence: PASS — synthetic ComfyUI lifecycle covers exact component inventory, preflight, execution and safe same-family profile extension.
       contract:
         applicable: true
-        evidence: PASS — repository preflight passed; validator covered 267 scenarios.
+        evidence: PASS — Scenario 236 static contract and lifecycle evidence passed; exact candidate Gate remains required.
       e2e:
         applicable: false
-        na_reason: No deployed UI or service behavior changes.
+        na_reason: No deployed service or UI changes; actual model inference remains outside this profile registry change and has not been claimed.
       security:
         applicable: true
-        evidence: Required — exact-candidate mandatory secret scan and publication boundary review.
+        evidence: PASS — synthetic lifecycle asserts only reviewed graph families and exact loopback model inventory; mandatory exact-candidate secret scan remains required.
       migration_recovery:
         applicable: false
-        na_reason: No persistent schema or runtime state; environment variable opt-in and PR revert provide recovery.
+        na_reason: No persistent schema, user data migration or runtime state; registry and workflow are versioned templates and revert with the commit.
       cli_harness:
         applicable: true
-        evidence: PASS — complete AIPS preflight and Harness lifecycle passed.
+        evidence: PASS — existing creative execution prepare/preflight lifecycle exercised through the shared local executor; full exact-candidate Gate remains required.
       docs_schema:
         applicable: true
-        evidence: PASS — docs impact complete with zero required additions.
-  - boundary: exact candidate delivery
-    reason: Bind repository validation, documentation, secret scan and remote Required Checks evidence to the exact candidate.
+        evidence: PASS — canonical placement preview passes and registry/workflow schema contracts pass.
+  - boundary: exact candidate publication
+    reason: Bind repository validation, documentation closure, secret scan, Core matrix and remote checks to the exact candidate.
     checks:
       static_lint:
         applicable: true
-        evidence: PASS — git diff --check passed; final exact candidate Gate also runs lint.
+        evidence: PASS — git diff --check; exact-candidate Gate required.
       unit:
         applicable: true
-        evidence: PASS — 68 publication authority and diagnostics tests passed; complete repository validator passed.
+        evidence: PASS — focused creative contract/lifecycle checks; full repository validation required.
       integration:
         applicable: true
-        evidence: Required — exact-candidate Core Integration Gate must pass before publication.
+        evidence: Required — exact-candidate Core Integration Gate to be run before publication.
       contract:
         applicable: true
-        evidence: PASS — repository preflight passed; validator covered 267 scenarios.
+        evidence: Required — exact-candidate repository validator to be run before publication.
       e2e:
         applicable: false
-        na_reason: No deployed UI or service behavior changes.
+        na_reason: No deployed product endpoint or browser behavior changes.
       security:
         applicable: true
-        evidence: Required — exact-candidate mandatory secret scan and GitHub Required Checks evidence before merge.
+        evidence: Required — exact-candidate mandatory secret scan and security-boundary review.
       migration_recovery:
         applicable: false
-        na_reason: No persistent schema or runtime state.
+        na_reason: No persistent data or migration path changes.
       cli_harness:
         applicable: true
-        evidence: PASS — complete AIPS preflight and Harness lifecycle passed.
+        evidence: Required — exact-candidate creative Harness lifecycle is included in the Integration Gate.
       docs_schema:
         applicable: true
-        evidence: PASS — docs impact complete with zero required additions.
+        evidence: PASS — documentation placement preview passes; final candidate docs closure and schema checks remain in the Gate.
 
 candidate:
-  base_sha: fe4359ce46729aa084ef7860027ccf9c32254b80
-  changed_files_hash: 5311039adf1caa965c09c3069ec651cfab36482a47241d1406124110b71fb3bd
+  base_sha: d5b1f88d27140935ab86ec6ce2f17f8b69d3e33d
+  changed_files_hash: 435f64d758ecd6c72a1c915b6e039d07f74d8d83d3b04f323fa5fe46f3544157
 
 review_evidence:
   required: false

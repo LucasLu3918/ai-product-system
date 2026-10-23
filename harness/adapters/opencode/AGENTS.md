@@ -37,7 +37,7 @@ The OpenCode Z-Image Turbo configure schema accepts `model_profile`, `unet_name`
 
 On OpenCode V2, the custom creative tool is exposed in the Code Mode catalog as tools.creative_execution; call that exact catalog signature through the native execute tool. Mutation grants bind the native prompt digest, Session root, allowed actions and inferred output count; raw prompt text is not retained in the grant. Grants stay in memory and are replaced on every new prompt. A new response may receive a fresh grant from bounded structured continuation state; synthetic messages do not create grants.
 
-For local Z-Image Turbo generation, use the shared creative_execution capability mapping to the dedicated MFLUX command or the fixed ComfyUI split-loader workflow; the latter verifies local UNET, Qwen `lumina2` CLIP and VAE files and strips prompt-bearing PNG text metadata. Edit and other Z-Image variants remain unsupported.
+For local generation, use the shared creative_execution registry and its executor-reviewed ComfyUI topology families. Z-Image Turbo and FLUX 3 Klein Base use distinct fixed workflows and exact local component checks; adding a model within a family is data-only, but new nodes or families require code review. Strip prompt-bearing PNG text metadata. No profile enables editing unless an explicitly reviewed capability is added.
 
 For multiple configured Bundles, use aips creative generate-set --project PROJECT --manifest CREATIVE_JOB_MANIFEST.yaml. The bounded manifest runs each item's preflight, continues after failures, and resumes only when saved output and provenance hashes still match.
 

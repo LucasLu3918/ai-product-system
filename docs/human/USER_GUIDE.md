@@ -125,7 +125,7 @@ Project Diagnostics 只報告既有狀態，不會建立 Creative Bundle、啟�
 
 已安裝 Z-Image Turbo 權重時，可使用 MFLUX 專用 generate 命令。建議 8 步；此配對不支援 edit、ControlNet 或其他 Z-Image 變體。
 
-ComfyUI 也可用 `model_profile: z-image-turbo` 執行同一模型：設定需明列 UNET、Qwen CLIP、VAE 權重檔名，並使用 AIPS 隨附的固定 API 工作流。Preflight 會向 loopback ComfyUI 核對三項本機模型清單；此配對僅支援 generate。
+ComfyUI 也可用 `model_profile: z-image-turbo` 執行同一模型：設定需明列 UNET、Qwen CLIP、VAE 權重檔名，並使用 AIPS 隨附的固定 API 工作流。Preflight 會向 loopback ComfyUI 核對三項本機模型清單；此配對僅支援 generate。模型可透過 `templates/creative/COMFYUI_MODEL_PROFILES.yaml` 擴充，但只能沿用已審核的拓樸家族；FLUX 3 Klein Base 為另一個固定 workflow profile。
 
 先用 `aips creative discover --project PROJECT` 盤點，再由工具 prepare 建立角色規範。Discovery 只檢查已安裝的 MFLUX 命令／版本，並對固定 `127.0.0.1:8188` 的 ComfyUI 做唯讀 API 探測；不連 LAN 或外網，也不送出生成工作。只查固定 GET 路徑，核對 loopback IP、Port、Path、Method，停用 Proxy 並拒絕 Redirect；回傳核准內建載入器的有限模型名稱清單，不列出任意節點。狀態分開呈現命令、runtime、模型目錄、preflight 與 inference；服務回應或模型檔名存在都不代表推論已驗證。錯誤以 `status`、`phase`、`reason_code`、`source`、`retryable`、`trace_id` 和 `recovery.action` 提供繁中排除指引；HTTP 只顯示狀態碼，不輸出回應本文、認證資訊或本機 Profile 路徑。Apple Silicon 會標示 MPS 為靜態候選，FP8 權重可提出 advisory；FP16/BF16 名稱也不代表已支援，仍須另外執行並驗證實際推論才能確認相容性。
 
@@ -205,6 +205,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
+Creative runtime 由共用 Harness executor 執行；model profile 資料只選用程式已審核的 topology family，不會增加工具或權限。
+
 OpenCode keeps direct writes confined to the project and requires READY Project Intelligence without unresolved instruction conflicts. STALE freshness alone is advisory for this local L2 case; external actions retain the existing Human gate.
 
 The staged commit safety Hook also scans bounded AVIF metadata; its denial is a content-safety result and does not grant or change native tool authority.
@@ -280,6 +282,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 
 ## Roles、Skills 與重用
 
+Model profile registry 是 Creative runtime 設定，不會安裝 Skills，也不改變 Skill routing。
+
 Skill integration remains independent of project attachment: `aips attach` is explicit, and its local `.git/info/exclude` rules keep AIPS state out of ordinary staging without changing shared Skill installation behavior.
 
 Scenario 267 changes no Skill discovery or installation behavior; its lifecycle exercises Project Intelligence freshness and the OpenCode direct-write guard.
@@ -354,6 +358,8 @@ Architecture trade-off、Threat Model、視覺方向等主觀專業判斷不應�
 
 ## Deterministic Scheduler
 
+ComfyUI workflow 與 sampler 設定由固定 profile 決定；registry 擴充只能填入該 topology family 核准的值。
+
 Creative quality evidence does not alter Scheduler ownership, output budgets, or the Human decision required for publication.
 
 創作延續狀態只協助短風格選擇，不會排程或自動重試生成。每次產圖仍需明確執行動作，並通過本機引擎 preflight。
@@ -375,6 +381,8 @@ PR 驗證會把 Gate 與 Repository Health 報告放在 CI runner 的暫存位�
 Installation entrypoint workflow 保留既有 pull request 路徑與平台檢查，並以近期 job P95 加安全倍數設定明確逾時；逾時會作為該 job 的失敗呈現，不改變 required check 或 Human 核准權限。
 
 ## Execution Isolation 與 Runtime Resource
+
+ComfyUI profile 只使用固定 loopback endpoint 與 allowlisted workflow；新增模型仍須通過完整本機元件 inventory preflight。
 
 ComfyUI Resource Authorization remains independent of AVIF container inspection and does not authorize reading or transferring media assets.
 

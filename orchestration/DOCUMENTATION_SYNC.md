@@ -57,7 +57,6 @@ Creative job manifests and transient OpenCode prompt grants are described in the
 
 Project Diagnostics adds no creative generation behavior; shared CLI routing changes preserve the existing explicit creative lifecycle and its independent visual-review boundary.
 
-For Z-Image Turbo, synchronize generate-only MFLUX command and the single registered ComfyUI split-loader profile across creative, execution and Runtime docs. ComfyUI checks preinstalled UNET/CLIP/VAE files and strips prompt-bearing PNG text metadata; do not claim broader Z-Image, arbitrary split-model or edit support.
 
 For creative engine readiness, synchronize fixed-loopback ComfyUI discovery, MFLUX command/runtime/model stages, provider-specific recovery reason codes and advisory-only Apple Silicon FP8 warnings; real inference and performance remain separate evidence.
 
@@ -224,6 +223,9 @@ Documentation sync path normalization (Scenario 221): `documentation_sync.evalua
 
 
 ## Human documentation placement
+
+ComfyUI registry and fixed workflow additions map to Creative Direction, Technology Guide, Scenario 236 and this placement contract; profile data cannot introduce topology families.
+
 
 Project attach/detach behavior is synchronized across Existing Project guidance, Architecture/Technology and Scenario 044: `.ai/` remains opt-in, local `info/exclude` protects untracked workspace and archive paths, and `.gitignore` remains unchanged.
 

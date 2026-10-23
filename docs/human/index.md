@@ -74,6 +74,8 @@ features:
 
 ## 文件如何組織
 
+ComfyUI creative model profile registry 與已審核拓樸家族的文件入口，請參閱 User Guide、Technology Guide 及 `orchestration/CREATIVE_DIRECTION.md`。
+
 OpenCode 原生寫入行為及 READY+STALE 的有限 advisory 邊界，整理於 Harness 與 Project Intelligence；精確的允許／拒絕契約見 Scenario 267。
 
 發布問題排查見使用指南；安全錯誤輸出邊界與 Claude Hook 行為則交叉整理於安全保證、Harness 與 Scenario 261。

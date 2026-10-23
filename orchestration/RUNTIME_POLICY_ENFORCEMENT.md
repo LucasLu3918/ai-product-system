@@ -32,6 +32,8 @@ Task write authorization is not a substitute for the Runtime Action PEP. `aips r
 
 ## Runtime Action Envelope
 
+ComfyUI model registry data selects only already-reviewed executor topology families; it does not create a Runtime action, resource grant or new mutation authority.
+
 The commit-time font metadata scanner does not evaluate or broaden Runtime Action Envelope permissions; its ALLOW result remains separate from tool authorization.
 
 `orchestration/schemas/runtime-action.yaml` defines version 1. The action binds actor/task/runtime, tool/operation/arguments, resource, destination/trust, effective SAL, Change Boundary, data classes, protected assets, Resource Authorization profile, credential reference and required enforcement. SAL is not data classification. The action digest includes the normalized arguments, destination, risk/data labels, boundary and the Resource Authorization profile fingerprint; it excludes the approval ID.

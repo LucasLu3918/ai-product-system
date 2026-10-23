@@ -79,7 +79,6 @@ OpenCode host acceptance verifies adapter integration only. It does not verify l
 Provenance keeps raster validity separate from inference and visual review.
 
 
-Scenario 236 adds a separate explicit execution boundary for local MFLUX and loopback ComfyUI, including the fixed Z-Image Turbo split-loader graph and local model inventory checks; ComfyUI prompt PNG metadata is removed before AIPS output publication. Character identity and style review remain independent.
 
 Scenario 234/236 also cover deterministic bounded prompt compilation, evidence-ranked model advice, and optional loopback-only vision review. Its separate advisory report cannot complete Human visual review or user acceptance.
 
@@ -1097,6 +1096,8 @@ The branch lifecycle report classifies remote branches using current exact-SHA P
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+ComfyUI model profiles are Creative runtime data and do not add Skills, alter Skill Explorer inventory, or affect Skill routing.
+
 Scenario 044 separately covers AIPS project-local state lifecycle; it does not change upstream Skill inventory or installation behavior.
 
 Scenario 267 changes no Skill catalog or installation behavior; it adds a separate lifecycle contract for Project Intelligence freshness and native write decisions.
@@ -1143,6 +1144,8 @@ Plan40 verifies explicit publication reason codes, safe common Prepare/Hook bind
 Scenario 260 verifies the read-only `aips publish doctor`, Required Checks classification, literal merge diagnosis without execution or grant consumption, sanitized error output, and consistent runtime guidance. Missing/permission-limited policy evidence remains blocking; no repository policy mutation or merge bypass is introduced. Scenario 261 adds grouped dirty-path evidence and phase attribution through push, PR, checks, and exact-head merged recovery; diagnostics remain non-authorizing. Scenario 233 covers upstream Skill inventory and filtering without changing the canonical-only listing default.
 
 ## Scenario 262 — ComfyUI Resource Authorization and Diagnostics
+
+Scenario 236 profile entries may reuse executor-reviewed topology families only; graph operations and local resource authorization remain code-defined.
 
 ComfyUI authorization remains separate from AVIF metadata and Creative raster validity checks.
 

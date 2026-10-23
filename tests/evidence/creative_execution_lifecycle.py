@@ -13,6 +13,7 @@ from concurrent.futures import ThreadPoolExecutor
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from types import SimpleNamespace
+from typing import ClassVar
 from unittest.mock import patch
 
 import yaml
@@ -82,6 +83,9 @@ class FakeComfyHandler(BaseHTTPRequestHandler):
     fp8_unet = False
     unet_filename = None
     system_status = None
+    flux3 = False
+    extra_unets: ClassVar[list[str]] = []
+    extra_clips: ClassVar[list[str]] = []
 
     def log_message(self, *_args):
         return
@@ -108,20 +112,29 @@ class FakeComfyHandler(BaseHTTPRequestHandler):
         if self.path == "/object_info/CheckpointLoaderSimple":
             return self.send_bytes(json.dumps({"CheckpointLoaderSimple": {"input": {"required": {"ckpt_name": [["model.safetensors"]]}}}}).encode())
         if self.path == "/object_info/UNETLoader":
+            if type(self).flux3:
+                choices = ["flux3-image-klein-base-int8-convrot.safetensors", *type(self).extra_unets]
+                return self.send_bytes(json.dumps({"UNETLoader": {"input": {"required": {"unet_name": [choices]}}}}).encode())
             unet = type(self).unet_filename or ("z_image_turbo_fp8.safetensors" if type(self).fp8_unet else "z_image_turbo_bf16.safetensors")
             return self.send_bytes(json.dumps({"UNETLoader": {"input": {"required": {"unet_name": [[unet]]}}}}).encode())
         if self.path == "/object_info/CLIPLoader":
+            if type(self).flux3:
+                clips = ["qwen3vl_4b_int8_convrot.safetensors", "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors", *type(self).extra_clips]
+                return self.send_bytes(json.dumps({"CLIPLoader": {"input": {"required": {"clip_name": [clips], "type": [["flux3"]]}}}}).encode())
             return self.send_bytes(json.dumps({"CLIPLoader": {"input": {"required": {"clip_name": [["qwen_3_4b.safetensors"]], "type": [["lumina2"]]}}}}).encode())
         if self.path == "/object_info/VAELoader":
-            choices = [] if type(self).missing_vae else ["ae.safetensors"]
+            choices = [] if type(self).missing_vae else (["flux2-vae.safetensors"] if type(self).flux3 else ["ae.safetensors"])
             return self.send_bytes(json.dumps({"VAELoader": {"input": {"required": {"vae_name": [choices]}}}}).encode())
+        if self.path == "/object_info/TextGenerate":
+            return self.send_bytes(json.dumps({"TextGenerate": {"input": {"required": {"clip": [], "prompt": [], "max_length": [], "sampling_mode": []}, "optional": {"system_prompt": []}}}}).encode())
         if self.path.startswith("/view?"):
             from urllib.parse import parse_qs, urlsplit
             query = parse_qs(urlsplit(self.path).query)
             body = self.staged_reference if query.get("type") == ["input"] else PNG_WITH_PROMPT
             return self.send_bytes(body, "image/png")
         if self.path == "/history/fixture-job":
-            item = {self.prompt_id: {"status": {"status_str": "success", "completed": True}, "outputs": {"9": {"images": [{"filename": "generated.png", "subfolder": "", "type": "output"}]}}}}
+            image_ref = {"images": [{"filename": "generated.png", "subfolder": "", "type": "output"}]}
+            item = {self.prompt_id: {"status": {"status_str": "success", "completed": True}, "outputs": {"9": image_ref, "11": image_ref}}}
             return self.send_bytes(json.dumps(item).encode())
         self.send_error(404)
 
@@ -176,6 +189,13 @@ def zimage_workflow(project: Path) -> Path:
     }
     path = project / "zimage-workflow.json"
     path.write_text(json.dumps(workflow), encoding="utf-8")
+    return path
+
+
+def flux3_workflow(project: Path, filename: str = "flux3-workflow.json") -> Path:
+    source = ROOT / "templates/creative/COMFYUI_FLUX3_IMAGE_KLEIN_API.json"
+    path = project / filename
+    path.write_text(source.read_text(encoding="utf-8"), encoding="utf-8")
     return path
 
 
@@ -490,6 +510,68 @@ def comfy_cases(base: Path):
         expect_blocked(lambda: creative.preflight(zimage_project, zimage_bundle.name), "Z-Image Turbo accepted a malformed conditioning topology")
         zimage_path.write_text(json.dumps(json.loads(zimage_path.read_text()) | {"99": {"class_type": "CustomNode", "inputs": {}}}))
         expect_blocked(lambda: creative.preflight(zimage_project, zimage_bundle.name), "Z-Image Turbo accepted a custom node")
+
+        FakeComfyHandler.flux3 = True
+        flux3_project = fixture_project(base / "flux3-klein")
+        flux3_path = flux3_workflow(flux3_project)
+        flux3_config = {
+            "base_url": url, "workflow_path": flux3_path.name,
+            "model_profile": "flux3-image-klein-base-int8", "model_id": "flux3-image-klein-base",
+            "unet_name": "flux3-image-klein-base-int8-convrot.safetensors",
+            "clip_name": "qwen3vl_4b_int8_convrot.safetensors",
+            "prompt_upsampler_name": "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+            "vae_name": "flux2-vae.safetensors", "prompt_node_id": "5", "latent_node_id": "8",
+            "sampler_node_id": "9", "save_node_id": "11",
+        }
+        flux3_bundle, _ = write_bundle(
+            flux3_project, provider="comfyui_local", model={"id": "flux3-image-klein-base", "revision": "local-model-files", "license": "FLUX Kommunity License", "license_source": "https://huggingface.co/black-forest-labs/flux-3-image-klein-comfy"},
+            runtime="ComfyUI", runtime_version="fixture-1", comfyui=flux3_config,
+        )
+        flux3_prompt_count = FakeComfyHandler.prompts
+        flux3_ready = creative.preflight(flux3_project, flux3_bundle.name)
+        require(flux3_ready["status"] == "READY" and FakeComfyHandler.prompts == flux3_prompt_count, f"FLUX 3 Klein preflight was not ready or submitted a workflow: status={flux3_ready.get('status')} reason={flux3_ready.get('reason_code')} phase={flux3_ready.get('phase')}")
+        flux3_result = creative.execute(flux3_project, flux3_bundle.name)
+        require(flux3_result["status"] == "COMPLETE" and FakeComfyHandler.workflow["5"]["inputs"]["prompt"] == "Requested image brief: private creative prompt", "compiled FLUX 3 prompt was not routed through the prompt upsampler")
+        require(FakeComfyHandler.workflow["9"]["inputs"]["steps"] == 50 and FakeComfyHandler.workflow["9"]["inputs"]["cfg"] == 3.5 and FakeComfyHandler.workflow["8"]["inputs"]["width"] == 64, "FLUX 3 execution did not preserve fixed Base sampler settings or apply Bundle dimensions")
+        require(FakeComfyHandler.prompts == flux3_prompt_count + 1, "FLUX 3 execution did not submit exactly one explicit workflow")
+
+        bad_flux3 = json.loads(flux3_path.read_text())
+        bad_flux3["5"]["inputs"]["clip"] = ["2", 0]
+        flux3_path.write_text(json.dumps(bad_flux3), encoding="utf-8")
+        expect_blocked(lambda: creative.load_comfy_workflow(flux3_project.resolve(strict=True), flux3_config), "FLUX 3 accepted the image encoder in place of its prompt upsampler")
+        bad_flux3["5"]["inputs"]["clip"] = ["3", 0]
+        bad_flux3["9"]["inputs"]["cfg"] = 1
+        flux3_path.write_text(json.dumps(bad_flux3), encoding="utf-8")
+        expect_blocked(lambda: creative.load_comfy_workflow(flux3_project.resolve(strict=True), flux3_config), "FLUX 3 accepted distilled sampler settings for its Base model")
+
+        # A new model can reuse an audited topology family by adding data to the registry only.
+        future_profile = {
+            "model_id": "future-klein-base", "topology": "flux3_klein_base_t2i", "operation": "generate",
+            "components": {"unet_name": ["future-klein-base-int8.safetensors", "future-klein-base-fp8.safetensors"], "clip_name": ["future-qwenvl4b.safetensors", "future-qwenvl4b-fp8.safetensors"], "prompt_upsampler_name": ["future-qwen35-upsampler.safetensors"], "vae_name": ["flux2-vae.safetensors"]},
+            "clip_type": "flux3", "sampler": {"steps": 50, "cfg": 3.5, "sampler_name": "euler", "scheduler": "simple", "denoise": 1},
+        }
+        future_registry = yaml.safe_load(creative.COMFY_PROFILE_REGISTRY_PATH.read_text(encoding="utf-8"))
+        future_registry["profiles"]["future-klein-profile"] = future_profile
+        future_registry_path = base / "future-model-profiles.yaml"
+        future_registry_path.write_text(yaml.safe_dump(future_registry, sort_keys=False), encoding="utf-8")
+        FakeComfyHandler.extra_unets = ["future-klein-base-int8.safetensors"]
+        FakeComfyHandler.extra_clips = ["future-qwenvl4b.safetensors", "future-qwen35-upsampler.safetensors"]
+        future_project = fixture_project(base / "future-klein")
+        future_path = flux3_workflow(future_project, "future-workflow.json")
+        future_selection = {"unet_name": "future-klein-base-int8.safetensors", "clip_name": "future-qwenvl4b.safetensors", "prompt_upsampler_name": "future-qwen35-upsampler.safetensors", "vae_name": "flux2-vae.safetensors"}
+        future_workflow = json.loads(future_path.read_text())
+        future_workflow["1"]["inputs"]["unet_name"] = future_selection["unet_name"]
+        future_workflow["2"]["inputs"]["clip_name"] = future_selection["clip_name"]
+        future_workflow["3"]["inputs"]["clip_name"] = future_selection["prompt_upsampler_name"]
+        future_path.write_text(json.dumps(future_workflow), encoding="utf-8")
+        future_config = {**flux3_config, "workflow_path": future_path.name, "model_profile": "future-klein-profile", "model_id": "future-klein-base", **future_selection}
+        future_bundle, _ = write_bundle(future_project, provider="comfyui_local", model={"id": "future-klein-base", "revision": "local-model-files", "license": "fixture", "license_source": "local model card"}, runtime="ComfyUI", runtime_version="fixture-1", comfyui=future_config)
+        with patch.object(creative, "COMFY_PROFILE_REGISTRY_PATH", future_registry_path):
+            future_ready = creative.preflight(future_project, future_bundle.name)
+        require(future_ready["status"] == "READY" and future_ready["model_id"] == "future-klein-base", "data-only model profile could not reuse the audited FLUX 3 topology family")
+        FakeComfyHandler.flux3 = False
+        FakeComfyHandler.extra_unets = []
+        FakeComfyHandler.extra_clips = []
     finally:
         server.shutdown()
         server.server_close()

@@ -24,6 +24,8 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 ## 文件角色
 
+ComfyUI model profile registry 的 canonical 行為來源為 `scripts/creative_execution.py` 與 `templates/creative/COMFYUI_MODEL_PROFILES.yaml`。
+
 Scenario 267 changes no Skill discovery, installation or upstream trust behavior; it is a separate runtime guard contract.
 
 
@@ -203,7 +205,7 @@ Creative engine discovery and staged readiness are sourced from `scripts/creativ
 
 Project Diagnostics 的 Agent-facing read-only 與 UNVERIFIED 邊界保留在 `orchestration/PROJECT_INTELLIGENCE.md`、`harness/HARNESS_PROTOCOL.md` 與 OpenCode Adapter 指示中。
 
-Z-Image Turbo generate 的 MFLUX 命令映射與固定 ComfyUI split-loader profile 真實來源是 `scripts/creative_execution.py` 和 `templates/creative/COMFYUI_Z_IMAGE_TURBO_API.json`；本機產圖與人工審查流程由 `orchestration/CREATIVE_DIRECTION.md` 說明。
+ComfyUI model profile 與拓樸家族的真實來源是 `scripts/creative_execution.py`、`templates/creative/COMFYUI_MODEL_PROFILES.yaml` 及各家族固定 workflow template；目前包含 Z-Image Turbo 與 FLUX 3 Klein Base。可擴充 profile 只能重用已審核家族，新節點或家族仍需程式審核。本機產圖與人工審查流程由 `orchestration/CREATIVE_DIRECTION.md` 說明。
 
 角色圖片保留要求的媒材；以受限 configure 建立新的 Bundle，並載入校準、方向與視覺審查 skill。執行、圖片容器、人工審查與使用者接受分開回報。
 

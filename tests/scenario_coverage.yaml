@@ -2037,6 +2037,8 @@ scenarios:
     coverage: lifecycle
     evidence:
       - scripts/creative_execution.py
+      - templates/creative/COMFYUI_MODEL_PROFILES.yaml
+      - templates/creative/COMFYUI_FLUX3_IMAGE_KLEIN_API.json
       - scripts/creative_request_policy.py
       - scripts/creative_image_validation.py
       - templates/creative/CREATIVE_BUNDLE.yaml

@@ -70,7 +70,7 @@ Creative readiness changes also keep fixed loopback discovery, sanitized provide
 
 Shared CLI router 更新可能觸發 Creative Direction 文件審查；Project Diagnostics 只讀，不會執行 Creative Profile、Provider 或 Artwork lifecycle。
 
-固定模型配對新增 Z-Image Turbo generate 時，同步更新創意流程、Runtime 接入說明與 Scenario 236；執行證據與人工視覺接受仍分開。
+固定模型配對新增或擴充時，同步更新 registry、固定 workflow、Creative Direction、Runtime 接入說明與 Scenario 236；資料 profile 只能重用已審核拓樸家族，執行證據與人工視覺接受仍分開。
 
 角色圖片保留要求的媒材；以受限 configure 建立新的 Bundle，並載入校準、方向與視覺審查 skill。執行、圖片容器、人工審查與使用者接受分開回報。
 
@@ -553,6 +553,8 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
 ## Validation architecture consistency
+
+Scenario 236 lifecycle checks cover profile registry loading, exact local component inventory and rejection of unreviewed topology families.
 
 Scenario 044 lifecycle evidence covers repository-local excludes for attached AIPS state and detach archives while preserving the project `.gitignore`.
 

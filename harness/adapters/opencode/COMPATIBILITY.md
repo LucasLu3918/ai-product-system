@@ -101,7 +101,7 @@ Installation/doctor report file integrity and version probing separately; merely
 
 Official contracts: [V2 Skills](https://opencode.ai/v2/docs/skills/), [V2 Commands](https://opencode.ai/v2/docs/commands/), [V2 Instructions](https://opencode.ai/v2/docs/instructions/), [V2 MCP](https://opencode.ai/v2/docs/mcp/). V1 compatibility follows the explicitly selected [V1 documentation](https://opencode.ai/docs/).
 
-The local creative executor registers Z-Image Turbo generate via the dedicated MFLUX command or the fixed ComfyUI split-loader API workflow. ComfyUI verifies the local UNET, Qwen `lumina2` CLIP and VAE inventories and remains generate-only. Existing native request authority and configure/preflight/execute contracts apply without a new permission surface.
+The local creative executor uses a declarative ComfyUI profile registry over executor-reviewed topology families. Z-Image Turbo and FLUX 3 Klein Base each verify exact local component inventories and remain generate-only. Adding a model within an approved family does not add a permission surface; custom nodes and new topology families remain unsupported without code review.
 
 The OpenCode configure schema exposes the registered `model_profile`, `unet_name`, `clip_name` and `vae_name` fields. Read-only discovery checks only `127.0.0.1:8188`; FP8 compatibility remains advisory and real inference remains unverified.
 

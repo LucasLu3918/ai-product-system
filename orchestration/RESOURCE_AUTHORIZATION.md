@@ -14,6 +14,8 @@ It does not infer intent, discover permissions from prose, or grant protected pu
 
 ## Contract
 
+Creative model profile declarations do not create Resource Authorization grants or expand the fixed loopback ComfyUI destination, method or path allowlist.
+
 Media-format and EXIF/XMP checks are content-safety decisions; they do not create a Resource Authorization profile or grant provider, filesystem or network access.
 
 Commit font metadata inspection is a content-safety decision; it cannot authorize a tool action, push, merge, or release.
