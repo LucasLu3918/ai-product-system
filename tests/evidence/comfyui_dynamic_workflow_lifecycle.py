@@ -205,8 +205,15 @@ def main() -> int:
             expect_blocked(lambda: creative.workflows_import(root, workflow_source, "workflows/imported.json"), "workflow_import_target_invalid")
             inspect = creative.workflows_inspect(root, "workflow.json", base)
             require(inspect["status"] == "READY" and inspect["generation_executed"] is False, "P2 inspect performed work or failed to report candidates")
+            inspect_text = json.dumps(inspect)
+            require(MODEL not in inspect_text and "fixture-1" not in inspect_text
+                    and "model_candidates" not in inspect,
+                    "P2 inspect exposed model filenames, runtime version, or raw candidate lists")
             scan = creative.workflows_scan(root, base)
             require(scan["status"] == "READY" and scan["readiness"]["inference"] == "INFERENCE_UNVERIFIED", "A16 scan did not refresh live capabilities conservatively")
+            scan_text = json.dumps(scan)
+            require(MODEL not in scan_text and "fixture-1" not in scan_text,
+                    "A16 scan exposed model filenames or runtime version")
             require(Handler.prompts == 2, "scan/import/inspect caused generation")
         finally:
             instance.shutdown()

@@ -1963,7 +1963,7 @@ def workflows_scan(project: Path, base_url: str = DEFAULT_COMFYUI_BASE_URL) -> d
     root = project.expanduser().resolve(strict=True)
     if not root.is_dir() or is_git_workspace(root):
         raise Blocked("creative_ephemeral_required", "Workflow scan is restricted to a non-Git EPHEMERAL workspace.")
-    object_info, schema_hash, stats = _dynamic_capabilities(base_url)
+    object_info, _, _ = _dynamic_capabilities(base_url)
     trusted: list[str] = []
     denied: dict[str, str] = {}
     models: dict[str, dict[str, list[str]]] = {}
@@ -1976,11 +1976,11 @@ def workflows_scan(project: Path, base_url: str = DEFAULT_COMFYUI_BASE_URL) -> d
                 models[name] = candidates
         else:
             denied[name] = policy["reason_code"]
-    system = stats.get("system") if isinstance(stats.get("system"), dict) else {}
     return {"status": "READY", "reason_code": "local_comfyui_reachable", "endpoint": "loopback",
-            "comfyui_version": str(system.get("comfyui_version", "unknown"))[:128],
-            "schema_sha256": schema_hash, "trusted_core_nodes": sorted(trusted)[:500],
-            "denied_nodes": dict(list(sorted(denied.items())[:100])), "model_components": models,
+            "trusted_core_nodes": sorted(trusted)[:500],
+            "denied_nodes": dict(list(sorted(denied.items())[:100])),
+            "model_component_counts": {node: {field: len(names) for field, names in fields.items()}
+                                       for node, fields in models.items()},
             "generation_executed": False, "external_image_egress": False,
             "readiness": {"runtime": "RUNTIME_VERIFIED", "model": "CATALOG_INSPECTED", "inference": "INFERENCE_UNVERIFIED"}}
 
@@ -2023,7 +2023,6 @@ def workflows_import(project: Path, source: Path, destination: str) -> dict[str,
         if fd is not None:
             os.close(fd)
     return {"status": "IMPORTED", "path": target.relative_to(root).as_posix(),
-            "workflow_sha256": "sha256:" + hashlib.sha256(raw).hexdigest(),
             "node_count": len(workflow), "overwrite": False}
 
 
@@ -2033,14 +2032,16 @@ def workflows_inspect(project: Path, workflow_name: str, base_url: str = DEFAULT
         raise Blocked("creative_ephemeral_required", "Workflow inspection is restricted to a non-Git EPHEMERAL workspace.")
     _, info = load_comfy_workflow(root, {"base_url": base_url, "workflow_path": workflow_name,
                                          "mode": "dynamic_local", "settings_policy": "preserve_workflow_defaults"})
-    object_info, schema_hash, stats = _dynamic_capabilities(base_url)
+    object_info, _, _ = _dynamic_capabilities(base_url)
     analysis = comfyui_workflow.validate_schema(info["workflow"], object_info)
     node_classes = sorted({node["class_type"] for node in info["workflow"].values()})
-    system = stats.get("system") if isinstance(stats.get("system"), dict) else {}
-    return {"status": "READY", "workflow_sha256": digest(info["path"]), "schema_sha256": schema_hash,
-            "comfyui_version": str(system.get("comfyui_version", "unknown"))[:128],
+    model_candidate_counts = [
+        {"node_id": item["node_id"], "input_name": item["input_name"], "candidate_count": len(item["candidates"])}
+        for item in analysis["model_candidates"]
+    ]
+    return {"status": "READY",
             "node_count": len(info["workflow"]), "node_classes": node_classes,
-            "output_node_id": analysis["output_node_id"], "model_candidates": analysis["model_candidates"],
+            "output_node_id": analysis["output_node_id"], "model_candidate_counts": model_candidate_counts,
             "binding_candidates": analysis["binding_candidates"], "generation_executed": False,
             "external_image_egress": False, "readiness": {"inference": "INFERENCE_UNVERIFIED"}}
 
