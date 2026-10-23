@@ -8,6 +8,8 @@ The AIPS Runtime Content Safety Boundary is the common, sink-aware safety layer 
 
 The implementation is provider-neutral and does not require an external API credential. Deterministic detectors are authoritative for enforcement. Optional semantic detectors may provide advisory signals only.
 
+Imported ComfyUI API workflows remain untrusted project content. Dynamic execution parses bounded JSON as data, validates it against the live local schema and node policy, and never treats workflow strings or metadata as AIPS instructions. Fingerprint caching excludes workflow bodies, prompts and model filenames; this application-level validation does not establish ComfyUI process isolation or real inference safety.
+
 ## Contract
 
 Static AVIF EXIF/XMP metadata uses the existing media registry and strict scanner under an 8 MiB input and 1 MiB metadata limit; unknown or animated structures fail closed without decoding image payload as text.

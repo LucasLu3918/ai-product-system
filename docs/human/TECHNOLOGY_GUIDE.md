@@ -170,6 +170,8 @@ MFLUX 固定命令表新增 Z-Image Turbo generate：`mflux-generate-z-image-tur
 
 Local creative execution supports MFLUX through fixed argv and ComfyUI through a loopback-only allowlisted workflow. It is explicit, create-only, and never downloads weights. ComfyUI model declarations live in `templates/creative/COMFYUI_MODEL_PROFILES.yaml` and may reuse only executor-reviewed topology families; FLUX 3 Klein Base has its own built-in API workflow and fixed sampler settings.
 
+ComfyUI Bundles may opt into `workflow.mode: dynamic_local` with a project-relative API JSON workflow. The executor reads bounded `/object_info` schemas, validates graph links and required fields, permits only nodes whose runtime module identifies them as ComfyUI core nodes, and requires explicit bindings for prompt, seed, dimensions, output and any reference input. Loader model choices must exist in the corresponding local inventory. The `creative workflows scan|import|inspect` commands are read-only except import, which is project-confined and create-only. These three commands emit fixed status acknowledgements instead of node inventories, workflow bodies or provider responses; other Creative CLI actions retain their structured response contract. This is a local schema compatibility path, not a guarantee that arbitrary checkpoints or model architectures will run successfully.
+
 Ordinary ComfyUI discovery contacts only `127.0.0.1:8188`, uses fixed bounded GET paths, reports a capped allowlisted model catalog, disables proxies and refuses redirects. Every ComfyUI request validates a literal loopback IP, explicit port, method and path before connecting. Provider errors retain only safe HTTP status and structured reason/recovery metadata. Apple Silicon reports MPS as a static candidate; FP8 is an advisory warning, and neither FP16/BF16 metadata nor an available MPS backend proves actual inference compatibility.
 
 `templates/creative/CREATIVE_ASSET_PRESETS.yaml` supplies shared character, background, texture and UI ornament prompt guidance. The selected preset and registry hash are recorded in the execution manifest; presets do not select a provider or authorize generation.
@@ -331,6 +333,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 Content-safety detector changes are versioned (for example `pii.email.v2`) and bound to Scenario 266 with a fixed corpus; they never add a PII exception path.
 
 ## Quality & Verification
+
+The `creative workflows scan|import|inspect` routes are an explicit CLI contract; they do not modify the Skills CLI or Skill Explorer catalog.
 
 Creative lifecycle evidence includes fixed ComfyUI model profile families, local component inventory checks and rejection of unreviewed topology families.
 

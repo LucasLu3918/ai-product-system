@@ -40,10 +40,12 @@ mflux_executable: /absolute/path/to/mflux-generate-flux2
 # FLUX.1: mflux-generate; FLUX.2 Klein: mflux-generate-flux2 or
 # mflux-generate-flux2-edit; Qwen Image Edit 2511: mflux-generate-qwen-edit.
 
-# For ComfyUI, configure an API-format workflow containing only AIPS allowlisted built-in nodes.
+# Fixed mode preserves the existing checkpoint/Z-Image profile contracts. Opt into
+# dynamic_local only with a ComfyUI-exported API workflow and explicit bindings.
 # For edit, stage the same reference under ComfyUI's local input folder and set input_image_name;
 # preflight compares its bytes against input_image before any workflow is submitted.
 comfyui:
+  mode: fixed # fixed | dynamic_local
   base_url: http://127.0.0.1:8188
   workflow_path: workflows/creative-api.json
   checkpoint_node_id: "4"
@@ -53,5 +55,13 @@ comfyui:
   latent_node_id: "1"
   sampler_node_id: "3"
   save_node_id: "9"
+  # dynamic_local example: model IDs are provenance labels, not topology allowlists.
+  # settings_policy: preserve_workflow_defaults
+  # bindings:
+  #   prompt: {node_id: "6", input: text}
+  #   seed: {node_id: "3", input: seed}
+  #   width: {node_id: "1", input: width}
+  #   height: {node_id: "1", input: height}
+  #   output: {node_id: "9", kind: local_image}
   # For edit only, add input_image_node_id and input_image_name after staging
   # the matching reference under the ComfyUI local input folder.

@@ -57,7 +57,6 @@ Creative job manifests and transient OpenCode prompt grants are described in the
 
 Project Diagnostics adds no creative generation behavior; shared CLI routing changes preserve the existing explicit creative lifecycle and its independent visual-review boundary.
 
-
 For creative engine readiness, synchronize fixed-loopback ComfyUI discovery, MFLUX command/runtime/model stages, provider-specific recovery reason codes and advisory-only Apple Silicon FP8 warnings; real inference and performance remain separate evidence.
 
 Creative quality updates keep deterministic bounded prompt compilation, profile fingerprints, evidence-ranked model recommendations, optional loopback Ollama review, explicit current-user review authorization, and separate Human/user decisions aligned across Creative Direction, Human guidance, profile templates, Scenarios 234/236/238 and lifecycle contracts.
@@ -224,6 +223,8 @@ Documentation sync path normalization (Scenario 221): `documentation_sync.evalua
 
 ## Human documentation placement
 
+For Z-Image Turbo, synchronize the generate-only MFLUX command and single registered ComfyUI split-loader profile across creative, execution and Runtime docs. ComfyUI checks preinstalled UNET/CLIP/VAE files and strips prompt-bearing PNG text metadata. Separately, Scenario 268 covers opt-in schema-validated core-node API workflows with explicit bindings; do not claim arbitrary custom/API nodes, unsupported Z-Image variants, or verified real inference.
+
 ComfyUI registry and fixed workflow additions map to Creative Direction, Technology Guide, Scenario 236 and this placement contract; profile data cannot introduce topology families.
 
 
@@ -246,6 +247,8 @@ Plan47 maps versioned injection classification, added-line staged scanning, full
 Plan40 publication diagnostic changes synchronize stable reason-code behavior, safe Prepare/Hook candidate bindings, separate lifecycle states, and optional hash-chain-verified Diagnostic ID lookup across User Guide, Maintenance, Human/Agent Harness guidance and Scenario 261. Preserve the no-default-ledger, no-raw-command and no-added-authority boundaries.
 
 The plan39 Resource Authorization/ComfyUI boundary maps to User Guide Runtime Resource and Creative topics, Security Assurance, Architecture Overview, Technology Guide, and Scenario 262. Presets remain prompt guidance; MPS evidence stays static until real inference is separately authorized and observed.
+
+Model-agnostic local ComfyUI workflow changes map through the existing Creative Direction, Architecture, User Guide, Technology, Security, Harness, and Conformance topics. Scenario 268 tracks bounded `/object_info` and graph validation, trusted core-node classification, explicit bindings, local model inventory, create-only import/output and uncertain-submit recovery; keep actual inference and quality UNVERIFIED unless separately observed.
 
 Publication policy states and Claude's bounded recovery behavior are synchronized across the User Guide, Security Assurance, Harness adapter and Scenario 260/261. Skill Explorer and Skills CLI guidance remains canonical and independent.
 

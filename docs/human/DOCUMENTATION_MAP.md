@@ -24,6 +24,8 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 ## 文件角色
 
+Model-agnostic ComfyUI workflow usage belongs in the User Guide, implementation and security limits in Technology Guide and Security Assurance, with Scenario 268 as the synthetic evidence anchor.
+
 ComfyUI model profile registry 的 canonical 行為來源為 `scripts/creative_execution.py` 與 `templates/creative/COMFYUI_MODEL_PROFILES.yaml`。
 
 Scenario 267 changes no Skill discovery, installation or upstream trust behavior; it is a separate runtime guard contract.
@@ -152,6 +154,8 @@ Creative import command policy is owned by orchestration/CREATIVE_DIRECTION.md; 
 Creative asset authorization remains canonical in Creative Direction and adapter protocols; Git publication Diagnostic ID tracing stays in the publication authority/ledger path and is not a creative permission source.
 
 The plan39 source-to-topic mapping is maintained by the `plan39-comfyui-resource-authorization-diagnostics` placement rule and the `plan39-comfyui` documentation-sync entry; Scenario 262 is the verification-history anchor.
+
+Dynamic model-agnostic ComfyUI workflows are implemented by `scripts/comfyui_workflow.py`, `scripts/comfyui_workflow_policy.py`, `scripts/comfyui_capabilities.py` and `scripts/creative_execution.py`. Human usage is in the User Guide, implementation and security boundaries are in the Technology Guide and Security Assurance, and Scenario 268 is the synthetic verification-history anchor; fixed profiles remain the default.
 
 The Claude Code adapter documents one-shot retryable Doctor recovery; the OpenCode adapter retains explicit read-only recovery guidance.
 

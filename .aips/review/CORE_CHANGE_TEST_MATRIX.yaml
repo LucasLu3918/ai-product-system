@@ -1,82 +1,67 @@
 version: 1
-
 change:
-  id: extensible-comfyui-model-profiles
-  summary: Replace model-specific ComfyUI executor branches with validated data profiles over fixed, executor-reviewed topology families and add the FLUX 3 Klein Base workflow.
+  id: comfyui-model-agnostic-20261024
+  summary: Add opt-in model-agnostic dynamic local ComfyUI API workflows while preserving the fixed-profile default and local-only safety boundaries.
   boundary:
-    - profile registry parsing, topology-family validation, local component inventory and model-profile selection
-    - fixed FLUX 3 Klein Base workflow execution and prompt metadata sanitation
-    - creative lifecycle, public contracts, docs placement and exact-candidate publication
-
+    - runtime ComfyUI schema discovery, trusted-node classification, model inventory and graph validation
+    - explicit dynamic-local generate/edit bindings, workflow import/inspection, output confinement and uncertain-submit recovery
+    - Creative Bundle compatibility, declarative Z-Image/FLUX 3 profiles, fixed-profile readiness, provenance and privacy
+    - canonical human/agent docs, Scenario 268 and documentation closure
+    - exact-candidate content safety, secret scan, repository validation and remote publication
 matrix:
-  - boundary: profile registry and topology safety
-    reason: Registry data becomes configurable while executor-owned allowlists must prevent arbitrary graph operations, new nodes, endpoints and unreviewed topology families.
+  - boundary: dynamic ComfyUI workflow schema and graph contracts
+    reason: Runtime-provided node schemas and workflow graphs must be bounded and reject malformed, unsupported, untrusted or incompatible input before execution.
     checks:
-      static_lint:
-        applicable: true
-        evidence: PASS — python compilation and git diff --check; exact candidate Gate still required.
-      unit:
-        applicable: true
-        evidence: PASS — creative execution contracts validate registry schema, bounded profile fields, family settings and rejection paths.
-      integration:
-        applicable: true
-        evidence: PASS — synthetic ComfyUI lifecycle covers exact component inventory, preflight, execution and safe same-family profile extension.
-      contract:
-        applicable: true
-        evidence: PASS — Scenario 236 static contract and lifecycle evidence passed; exact candidate Gate remains required.
-      e2e:
-        applicable: false
-        na_reason: No deployed service or UI changes; actual model inference remains outside this profile registry change and has not been claimed.
-      security:
-        applicable: true
-        evidence: PASS — synthetic lifecycle asserts only reviewed graph families and exact loopback model inventory; mandatory exact-candidate secret scan remains required.
-      migration_recovery:
-        applicable: false
-        na_reason: No persistent schema, user data migration or runtime state; registry and workflow are versioned templates and revert with the commit.
-      cli_harness:
-        applicable: true
-        evidence: PASS — existing creative execution prepare/preflight lifecycle exercised through the shared local executor; full exact-candidate Gate remains required.
-      docs_schema:
-        applicable: true
-        evidence: PASS — canonical placement preview passes and registry/workflow schema contracts pass.
-  - boundary: exact candidate publication
-    reason: Bind repository validation, documentation closure, secret scan, Core matrix and remote checks to the exact candidate.
+      static_lint: {applicable: true, evidence: "PASS — Ruff checks and git diff --check passed."}
+      unit: {applicable: true, evidence: "PASS — capability, graph, binding, model-choice and policy contracts passed."}
+      integration: {applicable: true, evidence: "PASS — synthetic loopback schema discovery and submission lifecycle; full repository validation passed."}
+      contract: {applicable: true, evidence: "PASS — workflow contracts and Scenario 268 lifecycle passed, including fixed-profile readiness regression."}
+      e2e: {applicable: false, na_reason: "No local ComfyUI service or models are installed; live inference and visual quality remain UNVERIFIED; synthetic loopback covers HTTP contracts."}
+      security: {applicable: true, evidence: "Required — exact-candidate final-tree/history content-safety and secret scans in AIPS publication Gate."}
+      migration_recovery: {applicable: true, evidence: "PASS — create-only import/output, staged-reference hash binding and uncertain-submit no-retry recovery contracts; no persisted schema migration."}
+      cli_harness: {applicable: true, evidence: "PASS — workflow CLI contracts and full repository CLI/Harness validation passed."}
+      docs_schema: {applicable: true, evidence: "PASS — documentation impact closure 44/44 with zero required additions; Scenario 268 projections validated."}
+  - boundary: Creative Bundle compatibility and local execution safety
+    reason: The opt-in mode must preserve fixed-profile behavior and keep inputs, outputs, privacy, provenance and execution local and explicit.
     checks:
-      static_lint:
-        applicable: true
-        evidence: PASS — git diff --check; exact-candidate Gate required.
-      unit:
-        applicable: true
-        evidence: PASS — focused creative contract/lifecycle checks; full repository validation required.
-      integration:
-        applicable: true
-        evidence: Required — exact-candidate Core Integration Gate to be run before publication.
-      contract:
-        applicable: true
-        evidence: Required — exact-candidate repository validator to be run before publication.
-      e2e:
-        applicable: false
-        na_reason: No deployed product endpoint or browser behavior changes.
-      security:
-        applicable: true
-        evidence: Required — exact-candidate mandatory secret scan and security-boundary review.
-      migration_recovery:
-        applicable: false
-        na_reason: No persistent data or migration path changes.
-      cli_harness:
-        applicable: true
-        evidence: Required — exact-candidate creative Harness lifecycle is included in the Integration Gate.
-      docs_schema:
-        applicable: true
-        evidence: PASS — documentation placement preview passes; final candidate docs closure and schema checks remain in the Gate.
-
+      static_lint: {applicable: true, evidence: "PASS — Ruff checks and git diff --check passed."}
+      unit: {applicable: true, evidence: "PASS — creative execution contracts and fixed-profile lifecycle passed, including Z-Image/FLUX 3 profiles and empty model-catalog readiness."}
+      integration: {applicable: true, evidence: "PASS — dynamic loopback and creative execution lifecycles; full repository validation passed."}
+      contract: {applicable: true, evidence: "PASS — explicit bindings, installed model validation, fixed-profile compatibility and mode selection contracts passed."}
+      e2e: {applicable: false, na_reason: "No local ComfyUI runtime, models or target hardware; real inference, performance and visual review are not claimed."}
+      security: {applicable: true, evidence: "Required — exact-candidate final-tree/history scans and publication boundary checks in AIPS Gate."}
+      migration_recovery: {applicable: true, evidence: "PASS — create-only writes and recovery-required state prevent overwrite/duplicate submit; no model download or cloud fallback."}
+      cli_harness: {applicable: true, evidence: "PASS — full repository validation, creative request policy and native tool fixture lifecycles passed."}
+      docs_schema: {applicable: true, evidence: "PASS — canonical human/agent guidance updated and documentation impact closure complete."}
+  - boundary: documentation, scenario and generated projection closure
+    reason: The new execution mode and security boundary must be represented consistently in canonical docs, CLI help, indexes and scenario coverage.
+    checks:
+      static_lint: {applicable: true, evidence: "PASS — documentation placement and sync checks passed in full repository validation."}
+      unit: {applicable: true, evidence: "PASS — docs sync, conformance summary and Plan21 golden baseline lifecycles passed."}
+      integration: {applicable: true, evidence: "PASS — full repository validation passed with 268 scenarios."}
+      contract: {applicable: true, evidence: "PASS — Scenario 268 Human/Agent headings and history index validated."}
+      e2e: {applicable: false, na_reason: "Documentation and generated projections have no deployed runtime behavior."}
+      security: {applicable: true, evidence: "Required — candidate secret and content-safety scans in publication Gate."}
+      migration_recovery: {applicable: false, na_reason: "No documentation storage schema or migration changes."}
+      cli_harness: {applicable: true, evidence: "PASS — public CLI help golden baseline and full repository validator passed."}
+      docs_schema: {applicable: true, evidence: "PASS — docs impact complete at 44/44 with zero additions; capability registry projection check passed."}
+  - boundary: exact-candidate publication and merge evidence
+    reason: Bind the reviewed diff, strict scans, Core Integration Gate and remote Required Checks to one base/head candidate.
+    checks:
+      static_lint: {applicable: true, evidence: "PASS — Ruff and git diff --check passed; exact-candidate Gate remains required."}
+      unit: {applicable: true, evidence: "PASS — full repository validation passed."}
+      integration: {applicable: true, evidence: "Required — exact-candidate AIPS Core Integration Gate before publication/merge."}
+      contract: {applicable: true, evidence: "PASS — full repository validation passed at 268 scenarios."}
+      e2e: {applicable: false, na_reason: "No deployed service or local model runtime is part of this candidate; live inference remains UNVERIFIED."}
+      security: {applicable: true, evidence: "Required — exact-candidate final-tree/history scan and exact-head GitHub Required Checks before merge."}
+      migration_recovery: {applicable: false, na_reason: "No persistent schema migration or irreversible data operation."}
+      cli_harness: {applicable: true, evidence: "PASS — local AIPS repository validation and publication lifecycle contracts passed."}
+      docs_schema: {applicable: true, evidence: "PASS — final docs impact closure complete at 44/44."}
 candidate:
-  base_sha: d5b1f88d27140935ab86ec6ce2f17f8b69d3e33d
-  changed_files_hash: 435f64d758ecd6c72a1c915b6e039d07f74d8d83d3b04f323fa5fe46f3544157
-
+  base_sha: d9a66a89cb11848c86c957566dc91a4872d9b225
+  changed_files_hash: 125c47be96716be455e323662168435384b8ff62c8f7a0a6c09c13ec00847b89
 review_evidence:
   required: false
-
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []

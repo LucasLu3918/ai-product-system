@@ -8,6 +8,8 @@
 
 ## macOS / Linux
 
+Creative ComfyUI `dynamic_local` workflow support reuses the installed AIPS executor and Python dependencies. It does not install ComfyUI, custom nodes, model weights, or a remote service; the local ComfyUI API and selected model files must already be available. Workflow scan and preflight are read-only, while workflow import is an explicit project-confined create-only operation.
+
 安裝完成後，可在 Agent runtime 設定 `AIPS_ENFORCE_REQUIRED_CHECKS=1`，讓 AIPS 獨立要求可讀取的 Required Checks policy 與全部通過；不設定時只停用 AIPS 自身的門檻，GitHub 原生保護與 Runtime Content Safety 仍各自生效。
 
 Managed Runtime hooks keep content-safety and publication checks fail-closed. Remote publication diagnostics are read-only; timeout output omits raw commands and exception text.
@@ -60,6 +62,8 @@ aips mcp inspect
 ## Runtime integration
 
 ComfyUI model profiles 隨 AIPS registry 提供；安裝與 discovery 不下載權重，也不保證實際推論相容。
+
+Creative ComfyUI `dynamic_local` workflow support reuses the installed AIPS executor and Python dependencies. It does not install ComfyUI, custom nodes, model weights, or a remote service; the local ComfyUI API and selected model files must already be available. Workflow scan and preflight are read-only, while workflow import is an explicit project-confined create-only operation.
 
 一般專案不會自動建立 `.ai/`。只有明確執行 `aips attach <project>` 才會使用 project-local state；若專案位於 Git worktree，AIPS 會在本機 `info/exclude` 排除 `.ai/` 與 detach 封存目錄，不修改專案 `.gitignore`。
 

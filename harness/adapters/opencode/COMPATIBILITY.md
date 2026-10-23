@@ -103,6 +103,8 @@ Official contracts: [V2 Skills](https://opencode.ai/v2/docs/skills/), [V2 Comman
 
 The local creative executor uses a declarative ComfyUI profile registry over executor-reviewed topology families. Z-Image Turbo and FLUX 3 Klein Base each verify exact local component inventories and remain generate-only. Adding a model within an approved family does not add a permission surface; custom nodes and new topology families remain unsupported without code review.
 
+The executor also supports an explicitly selected `dynamic_local` ComfyUI API workflow with bounded schema and graph validation. Only runtime-identified core nodes, explicit value bindings and installed loader-model selections pass preflight; the user-controlled workflow body is never emitted into traces or the private fingerprint cache. Import is project-confined and create-only, scanning is loopback-only and read-only, and uncertain POST outcomes are not automatically retried. Synthetic tests establish adapter contracts only, not model inference or OpenCode host acceptance.
+
 The OpenCode configure schema exposes the registered `model_profile`, `unet_name`, `clip_name` and `vae_name` fields. Read-only discovery checks only `127.0.0.1:8188`; FP8 compatibility remains advisory and real inference remains unverified.
 
 The optional generate-set action accepts a bounded project-relative job manifest and maps only to the current prompt's explicit execute grant. Its shared CLI validates every Bundle, runs per-item preflight, continues after failures, and records hash-bound results for safe resume.

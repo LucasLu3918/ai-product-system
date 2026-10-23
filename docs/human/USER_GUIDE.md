@@ -127,6 +127,8 @@ Project Diagnostics 只報告既有狀態，不會建立 Creative Bundle、啟�
 
 ComfyUI 也可用 `model_profile: z-image-turbo` 執行同一模型：設定需明列 UNET、Qwen CLIP、VAE 權重檔名，並使用 AIPS 隨附的固定 API 工作流。Preflight 會向 loopback ComfyUI 核對三項本機模型清單；此配對僅支援 generate。模型可透過 `templates/creative/COMFYUI_MODEL_PROFILES.yaml` 擴充，但只能沿用已審核的拓樸家族；FLUX 3 Klein Base 為另一個固定 workflow profile。
 
+需要使用其他已安裝模型時，可在 Bundle 明確選擇 `workflow.mode: dynamic_local` 並提供專案內 API workflow JSON。`aips creative workflows scan` 只讀取本機 loopback `/object_info` 與工作流，`inspect` 回傳 privacy-bounded 狀態摘要，`import` 以 create-only 方式將來源複製到專案內；這三個工作流 CLI 子命令只輸出固定狀態，不回顯節點名稱、模型檔名、Runtime 版本、提示內容或工作流細節。一般 `creative discover` 保留有限且核准 loader 的模型目錄，但不列出節點清單。`preflight` 會核對節點 schema、圖連線、明確輸入綁定及本機 loader 模型。只允許 runtime 標示的 ComfyUI core nodes；API、custom、未知節點及隱含模型／參考圖選擇都會拒絕。動態模式不會自動替換固定 profile，也不下載權重；執行仍須明確要求，timeout 後不自動重送。合成驗證不代表實際推論或品質已驗證。
+
 先用 `aips creative discover --project PROJECT` 盤點，再由工具 prepare 建立角色規範。Discovery 只檢查已安裝的 MFLUX 命令／版本，並對固定 `127.0.0.1:8188` 的 ComfyUI 做唯讀 API 探測；不連 LAN 或外網，也不送出生成工作。只查固定 GET 路徑，核對 loopback IP、Port、Path、Method，停用 Proxy 並拒絕 Redirect；回傳核准內建載入器的有限模型名稱清單，不列出任意節點。狀態分開呈現命令、runtime、模型目錄、preflight 與 inference；服務回應或模型檔名存在都不代表推論已驗證。錯誤以 `status`、`phase`、`reason_code`、`source`、`retryable`、`trace_id` 和 `recovery.action` 提供繁中排除指引；HTTP 只顯示狀態碼，不輸出回應本文、認證資訊或本機 Profile 路徑。Apple Silicon 會標示 MPS 為靜態候選，FP8 權重可提出 advisory；FP16/BF16 名稱也不代表已支援，仍須另外執行並驗證實際推論才能確認相容性。
 
 Creative Bundle 可選 `asset_preset: character | background | texture | ui_ornament`，使用共用角色、背景、材質紋理或 UI 裝飾提示指引。Preset 只影響提示組合，會將版本雜湊記入輸出 manifest；不選 Provider、不授權生成，也不改變既有 Workflow、人工視覺審查與使用者接受流程。
@@ -205,6 +207,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
+Creative workflow commands remain explicit user-facing actions routed through the existing CLI and host authorization; schema inspection alone never submits a ComfyUI job.
+
 Creative runtime 由共用 Harness executor 執行；model profile 資料只選用程式已審核的 topology family，不會增加工具或權限。
 
 OpenCode keeps direct writes confined to the project and requires READY Project Intelligence without unresolved instruction conflicts. STALE freshness alone is advisory for this local L2 case; external actions retain the existing Human gate.
@@ -281,6 +285,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 詳細請看 [Global Harness 與 MCP](HARNESS.md)。
 
 ## Roles、Skills 與重用
+
+The `creative workflows` CLI is a separate workflow utility and does not add or change the Skills catalog or Skill Explorer behavior.
 
 Model profile registry 是 Creative runtime 設定，不會安裝 Skills，也不改變 Skill routing。
 
@@ -382,6 +388,8 @@ Installation entrypoint workflow 保留既有 pull request 路徑與平台檢查
 
 ## Execution Isolation 與 Runtime Resource
 
+Dynamic ComfyUI discovery is restricted to the configured loopback service, and import writes only a new workflow file within the selected project.
+
 ComfyUI profile 只使用固定 loopback endpoint 與 allowlisted workflow；新增模型仍須通過完整本機元件 inventory preflight。
 
 ComfyUI Resource Authorization remains independent of AVIF container inspection and does not authorize reading or transferring media assets.
@@ -437,6 +445,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 詳見 [Security Assurance](SECURITY_ASSURANCE.md)。
 
 ## Quality 與 Review
+
+Dynamic workflow synthetic lifecycle evidence verifies request and recovery contracts only; real model inference, hardware compatibility and visual quality remain unverified until separately observed.
 
 Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
 
@@ -881,6 +891,8 @@ Scenario / validation history
 
 Documentation Placement Contract 會檢查 heading hierarchy、version/scenario-style heading 與 changed-line placement。新增功能不得只在 current-behavior 文件尾端追加 `vX.Y` / Scenario 說明；若確實需要新 topic，必須同時把 canonical section 加入 placement contract。
 ## Runtime Content Safety Boundary
+
+Imported ComfyUI workflow JSON is untrusted project content and remains subject to content-safety review; schema validation does not make it trusted instructions.
 
 Runtime Content Safety remains independent from Required Checks policy. AIPS enforces Required Checks only when `AIPS_ENFORCE_REQUIRED_CHECKS=1`; GitHub native protections remain effective either way.
 

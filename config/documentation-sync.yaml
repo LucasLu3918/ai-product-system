@@ -429,6 +429,9 @@ rules:
       - scripts/creative_execution.py
       - scripts/creative_errors.py
       - scripts/creative_prompt_compiler.py
+      - scripts/comfyui_capabilities.py
+      - scripts/comfyui_workflow.py
+      - scripts/comfyui_workflow_policy.py
       - orchestration/schemas/resource-authorization-profile.yaml
       - orchestration/schemas/runtime-action.yaml
       - templates/automation/RESOURCE_AUTHORIZATION_PROFILE.yaml
@@ -438,8 +441,11 @@ rules:
       - tests/evidence/resource_authorization_lifecycle.py
       - tests/evidence/runtime_policy_lifecycle.py
       - tests/evidence/creative_execution_lifecycle.py
+      - tests/evidence/comfyui_dynamic_workflow_lifecycle.py
       - tests/validation/creative_execution_contracts.py
+      - tests/validation/comfyui_dynamic_workflow_contracts.py
       - tests/scenarios/262-comfyui-resource-authorization-diagnostics.md
+      - tests/scenarios/268-comfyui-model-agnostic-workflows.md
     human_docs:
       - docs/ARCHITECTURE.md
       - docs/human/ARCHITECTURE_OVERVIEW.md

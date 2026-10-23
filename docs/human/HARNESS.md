@@ -102,6 +102,8 @@ OpenCode creative_execution 使用共享 executor 的 ComfyUI model profile regi
 
 ComfyUI 的 `z-image-turbo` profile 使用 `templates/creative/COMFYUI_Z_IMAGE_TURBO_API.json` 固定 API 工作流；只有指定的 UNET、Qwen `lumina2` CLIP 與 VAE 權重會依 loopback `/object_info` 核對，不接受自訂節點或圖片編輯。
 
+明確選擇 `workflow.mode: dynamic_local` 的 Bundle 可透過共用 executor 檢查專案內 API workflow。動態模式依本機 `/object_info` schema 驗證 core node、圖連線與明列的欄位綁定；不改變 OpenCode 的原生權限，也不允許 custom/API nodes、Shell 任意執行、外網或隱含模型選擇。`aips creative workflows import` 是獨立的 create-only 專案檔案匯入操作。
+
 OpenCode creative tool 接受 array、messages 與 data envelope 格式；只取使用者文字作授權。prepare/configure/execute 與 read-only discover/preflight 分開判斷。每個新提示會撤銷舊動作授權並重新判斷；明確創作任務中的短風格選擇可使用同一 Session root 綁定、限時限回合且保留輸出額度的結構化狀態，產生當前回覆的新授權，不保存舊提示文字。取消、切換任務、擴大範圍或超出輸出數量後，延續授權失效。
 
 OpenCode's explicit `creative_execution.prepare` action creates versioned Profiles and a draft Bundle under the active EPHEMERAL Session scope. It cannot execute generation; preflight stays read-only and execution requires an explicit creative intent and a ready Bundle.

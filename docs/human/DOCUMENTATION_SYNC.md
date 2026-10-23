@@ -45,7 +45,7 @@ Plan47 adds versioned injection rules and scans added lines for injection while 
 
 Plan40 keeps reason-code mapping, candidate/runtime binding, diagnostic trace privacy, and separate planning/authorization/Host/execution states aligned across the User Guide, Maintenance, Claude and OpenCode adapter guidance, and Scenario 261. Diagnostic lookup reads only an explicitly configured, hash-chain-verified allowlisted event; it creates no ledger and grants no authority.
 
-Resource Authorization/Profile and local ComfyUI diagnostics use the existing Runtime Resource and Creative topics. Their canonical source mapping, four bounded asset presets, Scenario 262 and static-only MPS evidence are synchronized through the plan39 placement rule.
+Resource Authorization/Profile and local ComfyUI diagnostics use the existing Runtime Resource and Creative topics. Their canonical source mapping, four bounded asset presets, Scenario 262 and static-only MPS evidence are synchronized through the plan39 placement rule. Opt-in model-agnostic workflows add bounded local schema/graph validation and explicit input bindings under Scenario 268; custom/API nodes and implicit resource choices remain denied, and synthetic evidence does not claim inference.
 
 Required Checks policy, skipped provider outcomes and Claude's one-shot Doctor behavior are synchronized with Scenario 260/261.
 
@@ -110,6 +110,8 @@ Creative readiness changes synchronize command/runtime/model/preflight/inference
 Project Diagnostics 將 `aips project diagnose` 的唯讀行為、狀態 reason code、恢復建議與 UNVERIFIED Host 邊界放在 Human Project Intelligence、System Reference、Harness 與對應 Scenario；不可將靜態 MCP／設定檢查描述為實機執行證據。
 
 ComfyUI model profile 的模型清單、拓樸家族、元件檔名與固定設定由 registry template 和 executor 共管；只允許沿用已審核家族，新增節點／家族須程式審核。同步 Z-Image Turbo 與 FLUX 3 Klein Base 的 workflow、preflight 與 Scenario 236 證據，不擴大為任意節點或 editing。
+
+Z-Image Turbo 的 generate-only 能力說明放在 Creative／Execution／Runtime 主題內；ComfyUI 固定 split-loader API 工作流與可由本機 API 核對的三項權重維持原行為。另有明確 opt-in 的 `dynamic_local` 路徑，僅接受經本機 schema 驗證的 core-node graph 與明確綁定，拒絕 custom/API nodes；Scenario 268 不宣稱實際 inference 或 image quality。
 
 角色圖片保留要求的媒材；以受限 configure 建立新的 Bundle，並載入校準、方向與視覺審查 skill。執行、圖片容器、人工審查與使用者接受分開回報。
 

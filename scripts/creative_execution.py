@@ -23,8 +23,11 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+import comfyui_capabilities
+import comfyui_workflow
 import creative_trace as _creative_trace
 import yaml
+from comfyui_workflow_policy import classify_node, validate_node_id
 from creative_errors import Blocked, error_payload
 from creative_image_validation import valid_raster
 from creative_prompt_compiler import (
@@ -356,8 +359,10 @@ def validate_local_request(url: str, method: str, service: str) -> None:
     path = parsed.path
     method = method.upper()
     if service == "comfyui":
-        read_paths = {"/system_stats", *(f"/object_info/{node}" for node in COMFY_CORE_NODES)}
-        allowed = ((method == "GET" and path in read_paths and not parsed.query)
+        read_paths = {"/system_stats", "/object_info", *(f"/object_info/{node}" for node in COMFY_CORE_NODES)}
+        object_info_node = path.removeprefix("/object_info/") if path.startswith("/object_info/") else None
+        dynamic_object_info = object_info_node is not None and validate_node_id(object_info_node)
+        allowed = ((method == "GET" and (path in read_paths or dynamic_object_info) and not parsed.query)
                    or (method == "GET" and re.fullmatch(r"/history/[A-Za-z0-9_-]{1,128}", path) and not parsed.query)
                    or (method == "GET" and path == "/view" and _valid_comfy_view_query(parsed.query))
                    or (method == "POST" and path in {"/prompt", "/queue"} and not parsed.query))
@@ -415,7 +420,7 @@ def local_request(url: str, *, data: bytes | None = None, headers: dict[str, str
                                          source=service, http_status=status) from exc
         raise Blocked("provider_http_error", "Local provider rejected the request.", {"http_status": status},
                       phase="creative.provider_request", source=service) from exc
-    except (urllib.error.URLError, TimeoutError) as exc:
+    except (urllib.error.URLError, TimeoutError, OSError) as exc:
         raise TransientProviderError("Local provider could not be reached.", reason_code="comfy_unavailable",
                                      source=service) from exc
 
@@ -463,14 +468,20 @@ def load_comfy_workflow(root: Path, config: Any) -> tuple[str, dict[str, Any]]:
     if not isinstance(workflow_name, str):
         raise Blocked("comfy_workflow_invalid", "ComfyUI workflow_path is required.")
     path = confined(root, workflow_name, exists=True)
-    if path.suffix.lower() != ".json" or not path.is_file():
+    if path.suffix.lower() != ".json" or not path.is_file() or path.stat().st_size > comfyui_workflow.MAX_WORKFLOW_BYTES:
         raise Blocked("comfy_workflow_invalid", "ComfyUI workflow must be an in-project API-format JSON file.")
     try:
-        workflow = json.loads(path.read_text(encoding="utf-8"))
+        workflow = comfyui_workflow.parse_workflow(path.read_bytes())
     except (OSError, json.JSONDecodeError) as exc:
         raise Blocked("comfy_workflow_invalid", "ComfyUI workflow JSON could not be read.") from exc
     if not isinstance(workflow, dict) or not workflow:
         raise Blocked("comfy_workflow_invalid", "ComfyUI workflow must be a non-empty API-format object.")
+    if config.get("mode") == "dynamic_local":
+        if config.get("settings_policy", "preserve_workflow_defaults") != "preserve_workflow_defaults":
+            raise Blocked("comfy_settings_policy_invalid", "Dynamic ComfyUI mode must preserve all unbound workflow defaults.")
+        return base, {"path": path, "workflow": workflow, "config": config, "mode": "dynamic_local"}
+    if config.get("mode") not in {None, "fixed"}:
+        raise Blocked("comfy_workflow_mode_invalid", "ComfyUI mode must be fixed or dynamic_local.")
     for node in workflow.values():
         if not isinstance(node, dict) or node.get("class_type") not in COMFY_CORE_NODES or not isinstance(node.get("inputs"), dict):
             raise Blocked("comfy_custom_node_blocked", "Only the allowlisted built-in ComfyUI nodes are supported; custom nodes are blocked.")
@@ -630,6 +641,55 @@ def load_comfy_workflow(root: Path, config: Any) -> tuple[str, dict[str, Any]]:
 def verify_comfy(root: Path, bundle: dict[str, Any]) -> tuple[str, dict[str, Any]]:
     base, info = load_comfy_workflow(root, bundle.get("comfyui"))
     config = info["config"]
+    if info.get("mode") == "dynamic_local":
+        try:
+            stats = json.loads(local_request(base + "/system_stats", timeout=2, max_bytes=256 * 1024))
+            raw_schema = local_request(base + "/object_info", timeout=5, max_bytes=comfyui_capabilities.MAX_OBJECT_INFO_BYTES, service="comfyui")
+        except TransientProviderError as exc:
+            raise Blocked("comfy_unavailable", "Configured local ComfyUI is unavailable.", phase="creative.capabilities", source="comfyui") from exc
+        object_info, schema_hash = comfyui_capabilities.parse_object_info(raw_schema)
+        analysis = comfyui_workflow.validate_schema(info["workflow"], object_info)
+        settings = config.get("settings", {})
+        if not isinstance(settings, dict) or set(settings) - {"steps", "cfg"}:
+            raise Blocked("comfy_settings_invalid", "Dynamic ComfyUI settings may explicitly override only steps or cfg.", phase="creative.workflow_bindings", source="comfyui")
+        binding_values = {"seed": bundle.get("seed", 0), "width": bundle.get("width", 1024),
+                          "height": bundle.get("height", 1024), **settings}
+        bindings = comfyui_workflow.validate_bindings(config.get("bindings", {}), info["workflow"], analysis,
+                                                      object_info, binding_values)
+        if set(settings) - set(bindings):
+            raise Blocked("WORKFLOW_BINDING_REQUIRED", "Explicit steps/cfg settings require matching bindings.",
+                          {"settings": sorted(set(settings) - set(bindings))}, phase="creative.workflow_bindings", source="comfyui")
+        prompt = bundle.get("prompt")
+        if isinstance(prompt, str) and prompt.strip() and "prompt" not in bindings:
+            candidates = analysis["binding_candidates"]["prompt"]
+            reason = "WORKFLOW_BINDING_AMBIGUOUS" if len(candidates) > 1 else "WORKFLOW_BINDING_REQUIRED"
+            raise Blocked(reason, "Dynamic workflow needs an explicit prompt binding.", {"candidates": candidates[:16]}, phase="creative.workflow_bindings", source="comfyui")
+        image_nodes = [node_id for node_id, node in info["workflow"].items() if node["class_type"] == "LoadImage"]
+        reference = bindings.get("reference")
+        if bundle.get("operation") == "edit":
+            if len(bundle_input_images(root, bundle)) != 1 or not reference or image_nodes != [reference["node_id"]]:
+                raise Blocked("WORKFLOW_BINDING_REQUIRED", "Dynamic edit requires exactly one explicit local reference binding.", {"candidate_nodes": image_nodes[:16]}, phase="creative.workflow_bindings", source="comfyui")
+            image_name = config.get("input_image_name")
+            if not isinstance(image_name, str) or not image_name or Path(image_name).name != image_name:
+                raise Blocked("WORKFLOW_BINDING_INVALID", "Dynamic edit requires a safe staged input_image_name.", phase="creative.workflow_bindings", source="comfyui")
+            source = bundle_input_images(root, bundle)[0]
+            if source.stat().st_size > MAX_REFERENCE_BYTES:
+                raise Blocked("input_image_too_large", "Input image exceeds the 12 MiB limit.")
+            query = urllib.parse.urlencode({"filename": image_name, "subfolder": "", "type": "input"})
+            staged = local_request(base + "/view?" + query, timeout=5, max_bytes=MAX_REFERENCE_BYTES)
+            if hashlib.sha256(staged).digest() != hashlib.sha256(source.read_bytes()).digest():
+                raise Blocked("comfy_input_hash_mismatch", "Staged ComfyUI input does not match the selected project reference image.")
+        elif image_nodes:
+            raise Blocked("comfy_input_node_invalid", "Generate workflows cannot read implicit ComfyUI input files.", {"node_ids": image_nodes[:16]}, phase="creative.workflow_policy", source="comfyui")
+        if not isinstance(stats, dict):
+            raise Blocked("COMFY_SYSTEM_STATS_INVALID", "ComfyUI system capability response is invalid.", phase="creative.capabilities", source="comfyui")
+        version_value = stats.get("system", {}).get("comfyui_version") if isinstance(stats.get("system"), dict) else "unknown"
+        cache_status = comfyui_capabilities.record_private_snapshot(base, str(version_value or "unknown"), schema_hash, digest(info["path"]))
+        return base, {**info, "mode": "dynamic_local", "object_info": object_info,
+                      "analysis": analysis, "bindings": bindings, "save_nodes": [analysis["output_node_id"]],
+                      "prompt_id": None, "checkpoint_node_id": None, "latent_node_id": None,
+                      "sampler_node_id": None, "schema_sha256": schema_hash,
+                      "capability_cache": cache_status, "comfy_version": str(version_value or "unknown")[:128]}
     profile = info.get("profile")
     if profile is not None:
         if bundle["operation"] != profile["operation"] or bundle["model"]["id"] != profile["model_id"]:
@@ -848,7 +908,7 @@ def preflight(project: Path, bundle_path: str) -> dict[str, Any]:
 
 
 def discover_comfyui(base_url: str | None = None) -> dict[str, Any]:
-    """Probe only the explicitly allowlisted default loopback ComfyUI service."""
+    """Probe only the default loopback service and report bounded runtime capabilities."""
     base_url = base_url or DEFAULT_COMFYUI_BASE_URL
     if base_url != DEFAULT_COMFYUI_BASE_URL:
         return {**error_payload(status="NOT_PROBED", phase="creative.discovery", reason_code="default_loopback_only",
@@ -860,31 +920,37 @@ def discover_comfyui(base_url: str | None = None) -> dict[str, Any]:
         if not isinstance(stats, dict):
             raise Blocked("comfy_response_invalid", "Local ComfyUI returned invalid system metadata.",
                           phase="creative.discovery", source="comfyui")
+        raw_schema = local_request(base_url + "/object_info", timeout=5,
+                                   max_bytes=comfyui_capabilities.MAX_OBJECT_INFO_BYTES)
+        object_info, schema_hash = comfyui_capabilities.parse_object_info(raw_schema)
         capabilities: dict[str, str] = {}
         model_catalog: dict[str, list[str]] = {}
-        for node_type in ("CheckpointLoaderSimple", "UNETLoader", "CLIPLoader", "VAELoader"):
-            payload = json.loads(local_request(base_url + "/object_info/" + node_type, timeout=2, max_bytes=512 * 1024))
-            node = payload.get(node_type) if isinstance(payload, dict) else None
-            if not isinstance(node, dict):
-                raise Blocked("comfy_response_invalid", "Local ComfyUI returned invalid model metadata.",
-                              phase="creative.discovery", source="comfyui")
-            required = ((node.get("input") or {}).get("required") or {})
-            model_field = {"CheckpointLoaderSimple": "ckpt_name", "UNETLoader": "unet_name",
-                           "CLIPLoader": "clip_name", "VAELoader": "vae_name"}[node_type]
-            field = required.get(model_field)
-            choices = field[0] if isinstance(field, list) and field else None
-            model_catalog[node_type] = ([str(name)[:256] for name in choices[:100]
-                                         if isinstance(name, str) and name.strip()]
-                                        if isinstance(choices, list) else [])
-            capabilities[node_type] = (
-                "MODEL_CATALOG_AVAILABLE" if model_catalog[node_type]
-                else "MODEL_CATALOG_EMPTY" if isinstance(choices, list)
-                else "UNKNOWN"
-            )
-        catalog_available = all(value == "MODEL_CATALOG_AVAILABLE" for value in capabilities.values())
+        model_components: dict[str, dict[str, list[str]]] = {}
+        for node_type, node in object_info.items():
+            decision = classify_node(node_type, node)
+            if decision["trust"] == "TRUSTED_CORE":
+                choices = comfyui_capabilities.node_model_candidates(node)
+                if choices:
+                    model_components[node_type] = choices
+                    flattened = sorted({item for values in choices.values() for item in values})
+                    model_catalog[node_type] = flattened[:100]
+        for node_type, field in (("CheckpointLoaderSimple", "ckpt_name"), ("UNETLoader", "unet_name"),
+                                 ("CLIPLoader", "clip_name"), ("VAELoader", "vae_name")):
+            choices = model_components.get(node_type, {}).get(field)
+            if choices is not None:
+                model_catalog[node_type] = choices[:100]
+                capabilities[node_type] = "MODEL_CATALOG_AVAILABLE" if choices else "MODEL_CATALOG_EMPTY"
+            else:
+                capabilities[node_type] = "NODE_MISSING" if node_type not in object_info else "MODEL_CATALOG_UNKNOWN"
+        catalog_available = bool(model_components) and all(
+            capabilities.get(node_type) == "MODEL_CATALOG_AVAILABLE"
+            for node_type in ("CheckpointLoaderSimple", "UNETLoader", "CLIPLoader", "VAELoader")
+        )
+        comfy_version = str((stats.get("system") or {}).get("comfyui_version", "unknown"))[:128]
         return {"status": "REACHABLE", "reason_code": "local_comfyui_reachable",
                 "endpoint": "127.0.0.1:8188", "node_capabilities": capabilities,
-                "model_catalog": model_catalog,
+                "model_catalog": model_catalog, "model_components": model_components,
+                "schema_sha256": schema_hash, "comfyui_version": comfy_version,
                 "readiness": {"command": "NOT_APPLICABLE", "runtime": "RUNTIME_VERIFIED",
                               "model": "MODEL_CATALOG_AVAILABLE" if catalog_available else "MODEL_CATALOG_INCOMPLETE", "preflight": "NOT_RUN",
                               "inference": "INFERENCE_UNVERIFIED"},
@@ -1445,23 +1511,33 @@ def _cleanup_queued_comfy_job(base: str, prompt_id: str) -> None:
 
 
 def comfy_execute(bundle: dict[str, Any], provider: dict[str, Any], temp_output: Path, timeout: float) -> None:
-    workflow = json.loads(json.dumps(provider["workflow"]))
-    workflow[provider["prompt_id"]]["inputs"][provider.get("prompt_field", "text")] = bundle["prompt"]
-    workflow[provider["latent_node_id"]]["inputs"].update({"width": bundle.get("width", 1024), "height": bundle.get("height", 1024)})
-    sampler_inputs = {"seed": bundle.get("seed", 0)}
-    profile = provider.get("profile")
-    if profile is None or profile["sampler"].get("steps") is None:
-        sampler_inputs["steps"] = bundle.get("steps", 20)
-    else:
-        sampler_inputs["steps"] = profile["sampler"]["steps"]
-    if profile is not None:
-        sampler_inputs.update({key: value for key, value in profile["sampler"].items() if key != "steps"})
-    workflow[provider["sampler_node_id"]]["inputs"].update(sampler_inputs)
-    if bundle["operation"] == "edit":
+    if provider.get("mode") == "dynamic_local":
         cfg = provider["config"]
-        workflow[str(cfg["input_image_node_id"])]["inputs"]["image"] = cfg["input_image_name"]
-    for node_id in provider["save_nodes"]:
-        workflow[node_id]["inputs"]["filename_prefix"] = "aips_local"
+        prefix = "aips_" + uuid.uuid4().hex
+        values = {"prompt": bundle.get("prompt"), "seed": bundle.get("seed", 0),
+                  "width": bundle.get("width", 1024), "height": bundle.get("height", 1024)}
+        values.update(cfg.get("settings", {}))
+        if bundle["operation"] == "edit":
+            values["reference"] = cfg["input_image_name"]
+        workflow = comfyui_workflow.inject_bindings(provider["workflow"], provider["bindings"], values, prefix)
+    else:
+        workflow = json.loads(json.dumps(provider["workflow"]))
+        workflow[provider["prompt_id"]]["inputs"][provider.get("prompt_field", "text")] = bundle["prompt"]
+        workflow[provider["latent_node_id"]]["inputs"].update({"width": bundle.get("width", 1024), "height": bundle.get("height", 1024)})
+        sampler_inputs = {"seed": bundle.get("seed", 0)}
+        profile = provider.get("profile")
+        if profile is None or profile["sampler"].get("steps") is None:
+            sampler_inputs["steps"] = bundle.get("steps", 20)
+        else:
+            sampler_inputs["steps"] = profile["sampler"]["steps"]
+        if profile is not None:
+            sampler_inputs.update({key: value for key, value in profile["sampler"].items() if key != "steps"})
+        workflow[provider["sampler_node_id"]]["inputs"].update(sampler_inputs)
+        if bundle["operation"] == "edit":
+            cfg = provider["config"]
+            workflow[str(cfg["input_image_node_id"])]["inputs"]["image"] = cfg["input_image_name"]
+        for node_id in provider["save_nodes"]:
+            workflow[node_id]["inputs"]["filename_prefix"] = "aips_local"
     payload = json.dumps({"prompt": workflow, "client_id": str(uuid.uuid4())}, separators=(",", ":")).encode()
     started = time.monotonic()
     prompt_id = None
@@ -1476,6 +1552,11 @@ def comfy_execute(bundle: dict[str, Any], provider: dict[str, Any], temp_output:
             if history:
                 status = history.get("status") or {}
                 if status.get("status_str") == "error" or status.get("completed") is False and status.get("messages"):
+                    message_text = json.dumps(status.get("messages") or [], ensure_ascii=True).casefold()
+                    if ("mps" in message_text or "metal" in message_text) and ("dtype" in message_text or "type" in message_text):
+                        raise Blocked("mps_dtype_unsupported", "Local Apple Silicon MPS does not support this workflow dtype. Try a locally installed supported precision and review model documentation.", phase="creative.comfy_execute", source="comfyui")
+                    if "out of memory" in message_text or "cuda oom" in message_text or "mps backend out of memory" in message_text:
+                        raise Blocked("gpu_out_of_memory", "Local ComfyUI reported insufficient accelerator memory. Reduce image dimensions or choose a model already installed for this device.", phase="creative.comfy_execute", source="comfyui")
                     raise Blocked("comfy_execution_failed", "Local ComfyUI workflow failed; provider details were suppressed.")
                 outputs = history.get("outputs") or {}
                 for node_id in provider["save_nodes"]:
@@ -1494,7 +1575,9 @@ def comfy_execute(bundle: dict[str, Any], provider: dict[str, Any], temp_output:
         if prompt_id:
             _cleanup_queued_comfy_job(provider["base_url"], prompt_id)
             raise Blocked("comfy_job_recovery_required", "Accepted ComfyUI job needs recovery; queued deletion was requested without interrupting running jobs. Automatic resubmission is blocked.") from exc
-        raise
+        raise Blocked("comfy_job_recovery_required", "ComfyUI submission outcome is unknown after the single POST attempt. Inspect the queue/history before any explicit retry.",
+                      {"prompt_id": None, "retryable": False, "recovery": {"action": "INSPECT_COMFYUI_QUEUE_AND_HISTORY", "automatic_resubmission": False}},
+                      phase="creative.comfy_execute", source="comfyui") from exc
     except (json.JSONDecodeError, KeyError, TypeError, OSError) as exc:
         raise Blocked("comfy_response_invalid", "Local ComfyUI returned an invalid response.") from exc
     _cleanup_queued_comfy_job(provider["base_url"], prompt_id)
@@ -1595,6 +1678,9 @@ def execute(project: Path, bundle_path: str) -> dict[str, Any]:
             "prompt_compiler": "profile-driven-v1",
             "compiled_prompt_sha256": "sha256:" + hashlib.sha256(compiled_prompt.encode("utf-8")).hexdigest(),
             "workflow_sha256": digest(provider["path"]) if provider_name == "comfyui_local" else None,
+            "comfyui_workflow_mode": provider.get("mode", "fixed") if provider_name == "comfyui_local" else None,
+            "comfyui_schema_sha256": provider.get("schema_sha256") if provider_name == "comfyui_local" else None,
+            "comfyui_version": provider.get("comfy_version") if provider_name == "comfyui_local" else None,
             "input": input_records[0] if len(input_records) == 1 else None,
             "inputs": input_records if len(input_records) > 1 else [],
             "output": {"path": bundle["output_path"], "sha256": output_hash, "format": output.suffix.lower().lstrip("."), "bytes": output.stat().st_size},
@@ -1852,6 +1938,116 @@ def review(project: Path, manifest_name: str, reviewer: str, decision: str, note
     return {"status": "REVIEWED", "decision": decision, "manifest": str(manifest.relative_to(root))}
 
 
+def _dynamic_capabilities(base_url: str) -> tuple[dict[str, Any], str, dict[str, Any]]:
+    base = loopback_base(base_url)
+    try:
+        stats = json.loads(local_request(base + "/system_stats", timeout=2, max_bytes=256 * 1024))
+        raw_schema = local_request(base + "/object_info", timeout=5,
+                                   max_bytes=comfyui_capabilities.MAX_OBJECT_INFO_BYTES)
+    except TransientProviderError as exc:
+        raise Blocked("comfy_unavailable", "Configured local ComfyUI is unavailable.", phase="creative.capabilities", source="comfyui") from exc
+    if not isinstance(stats, dict):
+        raise Blocked("COMFY_SYSTEM_STATS_INVALID", "ComfyUI system capability response is invalid.", phase="creative.capabilities", source="comfyui")
+    object_info, schema_hash = comfyui_capabilities.parse_object_info(raw_schema)
+    return object_info, schema_hash, stats
+
+
+def workflows_scan(project: Path, base_url: str = DEFAULT_COMFYUI_BASE_URL) -> dict[str, Any]:
+    root = project.expanduser().resolve(strict=True)
+    if not root.is_dir() or is_git_workspace(root):
+        raise Blocked("creative_ephemeral_required", "Workflow scan is restricted to a non-Git EPHEMERAL workspace.")
+    object_info, _, _ = _dynamic_capabilities(base_url)
+    trusted: list[str] = []
+    denied: dict[str, str] = {}
+    models: dict[str, dict[str, list[str]]] = {}
+    for name, metadata in object_info.items():
+        policy = classify_node(name, metadata)
+        if policy["trust"] == "TRUSTED_CORE":
+            trusted.append(name)
+            candidates = comfyui_capabilities.node_model_candidates(metadata)
+            if candidates:
+                models[name] = candidates
+        else:
+            denied[name] = policy["reason_code"]
+    return {"status": "READY", "reason_code": "local_comfyui_reachable", "endpoint": "loopback",
+            "trusted_core_nodes": sorted(trusted)[:500],
+            "denied_nodes": dict(list(sorted(denied.items())[:100])),
+            "model_component_counts": {node: {field: len(names) for field, names in fields.items()}
+                                       for node, fields in models.items()},
+            "generation_executed": False, "external_image_egress": False,
+            "readiness": {"runtime": "RUNTIME_VERIFIED", "model": "CATALOG_INSPECTED", "inference": "INFERENCE_UNVERIFIED"}}
+
+
+def workflows_import(project: Path, source: Path, destination: str) -> dict[str, Any]:
+    root = project.expanduser().resolve(strict=True)
+    if not root.is_dir() or is_git_workspace(root):
+        raise Blocked("creative_ephemeral_required", "Workflow import is restricted to a non-Git EPHEMERAL workspace.")
+    candidate = source.expanduser()
+    if candidate.is_symlink() or not candidate.is_file():
+        raise Blocked("workflow_import_invalid", "Import source must be a regular local API workflow file.")
+    try:
+        size = candidate.stat().st_size
+        if size > comfyui_workflow.MAX_WORKFLOW_BYTES:
+            raise Blocked("WORKFLOW_TOO_LARGE", "Workflow exceeds the configured byte limit.")
+        raw = candidate.read_bytes()
+        workflow = comfyui_workflow.parse_workflow(raw)
+    except OSError as exc:
+        raise Blocked("workflow_import_invalid", "Local workflow source could not be read.") from exc
+    target = confined(root, destination)
+    if target.suffix.lower() != ".json" or target.exists() or target.is_symlink():
+        raise Blocked("workflow_import_target_invalid", "Import destination must be a new project-relative JSON file.")
+    current = root
+    for part in target.relative_to(root).parts[:-1]:
+        current = current / part
+        if current.is_symlink():
+            raise Blocked("workflow_import_target_invalid", "Import destination may not traverse symlinks.")
+    target.parent.mkdir(parents=True, exist_ok=True)
+    fd = None
+    try:
+        fd = os.open(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        with os.fdopen(fd, "wb") as stream:
+            fd = None
+            stream.write(raw)
+            stream.flush()
+            os.fsync(stream.fileno())
+    except FileExistsError as exc:
+        raise Blocked("workflow_import_target_exists", "Import is create-only; choose a new destination.") from exc
+    finally:
+        if fd is not None:
+            os.close(fd)
+    return {"status": "IMPORTED", "path": target.relative_to(root).as_posix(),
+            "node_count": len(workflow), "overwrite": False}
+
+
+def workflows_inspect(project: Path, workflow_name: str, base_url: str = DEFAULT_COMFYUI_BASE_URL) -> dict[str, Any]:
+    root = project.expanduser().resolve(strict=True)
+    if not root.is_dir() or is_git_workspace(root):
+        raise Blocked("creative_ephemeral_required", "Workflow inspection is restricted to a non-Git EPHEMERAL workspace.")
+    _, info = load_comfy_workflow(root, {"base_url": base_url, "workflow_path": workflow_name,
+                                         "mode": "dynamic_local", "settings_policy": "preserve_workflow_defaults"})
+    object_info, _, _ = _dynamic_capabilities(base_url)
+    analysis = comfyui_workflow.validate_schema(info["workflow"], object_info)
+    node_classes = sorted({node["class_type"] for node in info["workflow"].values()})
+    model_candidate_counts = [
+        {"node_id": item["node_id"], "input_name": item["input_name"], "candidate_count": len(item["candidates"])}
+        for item in analysis["model_candidates"]
+    ]
+    return {"status": "READY",
+            "node_count": len(info["workflow"]), "node_classes": node_classes,
+            "output_node_id": analysis["output_node_id"], "model_candidate_counts": model_candidate_counts,
+            "binding_candidates": analysis["binding_candidates"], "generation_executed": False,
+            "external_image_egress": False, "readiness": {"inference": "INFERENCE_UNVERIFIED"}}
+
+
+def workflow_cli_response(action: str) -> dict[str, Any]:
+    """Return a static CLI acknowledgement without echoing local workflow or model data."""
+    if action == "import":
+        return {"status": "IMPORTED", "overwrite": False}
+    return {"status": "READY", "generation_executed": False,
+            "external_image_egress": False,
+            "readiness": {"inference": "INFERENCE_UNVERIFIED"}}
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="action", required=True)
@@ -1866,6 +2062,19 @@ def main() -> int:
     prepare_parser.add_argument("--identity-feature", action="append", default=[])
     discover_parser = sub.add_parser("discover")
     discover_parser.add_argument("--project", type=Path, required=True)
+    workflows_parser = sub.add_parser("workflows", help="Inspect and import local ComfyUI API workflows.")
+    workflows_sub = workflows_parser.add_subparsers(dest="workflow_action", required=True)
+    workflows_scan_parser = workflows_sub.add_parser("scan")
+    workflows_scan_parser.add_argument("--project", type=Path, required=True)
+    workflows_scan_parser.add_argument("--base-url", default=DEFAULT_COMFYUI_BASE_URL)
+    workflows_import_parser = workflows_sub.add_parser("import")
+    workflows_import_parser.add_argument("--project", type=Path, required=True)
+    workflows_import_parser.add_argument("--workflow", type=Path, required=True)
+    workflows_import_parser.add_argument("--destination", default="workflows/imported-api.json")
+    workflows_inspect_parser = workflows_sub.add_parser("inspect")
+    workflows_inspect_parser.add_argument("--project", type=Path, required=True)
+    workflows_inspect_parser.add_argument("--workflow", required=True)
+    workflows_inspect_parser.add_argument("--base-url", default=DEFAULT_COMFYUI_BASE_URL)
     configure_parser = sub.add_parser("configure")
     configure_parser.add_argument("--project", type=Path, required=True)
     configure_parser.add_argument("--bundle", required=True)
@@ -1915,6 +2124,14 @@ def main() -> int:
             result = prepare(args.project, args.scope, args.character_id, args.character_name, args.summary, args.style_intent, args.prompt, args.identity_feature)
         elif args.action == "discover":
             result = discover(args.project)
+        elif args.action == "workflows":
+            if args.workflow_action == "scan":
+                workflows_scan(args.project, args.base_url)
+            elif args.workflow_action == "import":
+                workflows_import(args.project, args.workflow, args.destination)
+            else:
+                workflows_inspect(args.project, args.workflow, args.base_url)
+            result = workflow_cli_response(args.workflow_action)
         elif args.action == "configure":
             raw = args.settings_json if args.settings_json is not None else sys.stdin.read(32 * 1024 + 1)
             if len(raw) > 32 * 1024:
@@ -1944,7 +2161,9 @@ def main() -> int:
             result = quality_loop(args.project, args.bundle, args.model, args.max_repairs, args.time_budget_seconds)
         else:
             result = read_trace(args.limit)
-        print(json.dumps(result, ensure_ascii=False))
+        # Keep workflow command output bounded; preserve other Creative CLI contracts.
+        response = workflow_cli_response(args.workflow_action) if args.action == "workflows" else result
+        print(json.dumps(response, ensure_ascii=False))
         return 0
     except Blocked as exc:
         print(json.dumps(exc.to_payload(), ensure_ascii=False))

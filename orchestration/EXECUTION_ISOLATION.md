@@ -37,6 +37,8 @@ The optional E2B smoke test handles synthetic content only and emits a bounded r
 Guest artifacts must be treated as untrusted: validate relative paths and contents on the host, bind import to the source revision and Change Boundary, and run the existing Integration/Security Gate before Git operations. Sandbox capability grants no Git publication or deployment authority.
 Regardless of workspace isolation mode, every Remote Git publication candidate must also pass the built-in strict secret scan over its final tree and full `base..head` history; a sandbox does not replace this publication check.
 
+The local ComfyUI workflow adapter is a loopback resource boundary, not an OS process sandbox. Dynamic workflow JSON is size-bounded, project-confined and validated against the live local schema; node allowlisting and explicit input bindings do not claim isolation of ComfyUI itself or its installed extensions.
+
 ## Worktree ownership
 
 

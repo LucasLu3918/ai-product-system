@@ -14,6 +14,8 @@ It does not infer intent, discover permissions from prose, or grant protected pu
 
 ## Contract
 
+Creative's dynamic ComfyUI workflow mode applies the same least-privilege intent locally: schema discovery is read-only, workflow import is an explicit project-path write, and generation is a distinct execution action. Validating a workflow or recognizing a core node does not itself grant permission to submit a job.
+
 Creative model profile declarations do not create Resource Authorization grants or expand the fixed loopback ComfyUI destination, method or path allowlist.
 
 Media-format and EXIF/XMP checks are content-safety decisions; they do not create a Resource Authorization profile or grant provider, filesystem or network access.
