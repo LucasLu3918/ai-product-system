@@ -46,6 +46,8 @@ OpenCode integration retains system preflight and existing-host lifecycle checks
 
 ## Scenario 233 — Public CLI Help and Error Contracts
 
+The separate `creative workflows` routes preserve the Skills CLI surface and are covered by Scenario 268.
+
 Scenario 263 adds a read-only `aips safety diagnose commit` contract; Skill listing and publication authority remain separate.
 
 The additive publication Diagnostic ID lookup retains the existing CLI group and reports a verified allowlisted record without changing the command help or dispatcher contract.
@@ -1096,6 +1098,8 @@ The branch lifecycle report classifies remote branches using current exact-SHA P
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+Dynamic Creative workflow utilities do not add or modify Skills catalog entries or explorer behavior.
+
 ComfyUI model profiles are Creative runtime data and do not add Skills, alter Skill Explorer inventory, or affect Skill routing.
 
 Scenario 044 separately covers AIPS project-local state lifecycle; it does not change upstream Skill inventory or installation behavior.
@@ -1155,6 +1159,10 @@ Git publication diagnostics do not alter ComfyUI discovery, Resource Authorizati
 
 Scenario 262 locks stage-specific default-deny Profile diagnostics, kind/selector/operation/destination/constraint matching, observed Hook URL binding, and structured redacted Runtime/Creative recovery. It verifies fixed loopback ComfyUI read-only model discovery, HTTP/method/path/redirect denials, shared static asset presets and evidence-only MPS reporting; no inference or external download is performed.
 
+## Scenario 268 — Model-agnostic ComfyUI Workflows
+
+Scenario 268 covers opt-in model-agnostic local ComfyUI API workflows: bounded schema and graph parsing, runtime core-node trust classification, installed loader model validation, explicit bindings, safe create-only output, project-confined no-overwrite import and uncertain-submit no-retry recovery. The loopback lifecycle is synthetic; real model inference and visual quality remain UNVERIFIED.
+
 ## Scenario 263 — Commit Safety Diagnostics
 
 The publication setting `AIPS_ENFORCE_REQUIRED_CHECKS=1` is orthogonal to staged-content safety: disabling AIPS Required Checks enforcement does not bypass commit or publication content scanning.
@@ -1177,6 +1185,8 @@ Scenario 267 separately verifies that the creative Git write denial stays in for
 tests/evidence/opencode_integration_lifecycle.py verifies the AIPS creative import candidate and CLI flow, source/candidate hash checks, no overwrite or path escape, explicit Git-root opt-in, and unchanged Git index bytes. It uses synthetic local assets and does not stage or commit.
 
 ## Scenario 266 — Content Safety Injection Context and Recovery
+
+Imported ComfyUI workflow JSON remains untrusted project content under the existing injection and Change Boundary rules.
 
 The linked Scenario 260/261 publication tests verify immediate fail-closed Claude Hook recovery without an inline Doctor call and safe Prepare timeout fields; raw command and exception text remain excluded from diagnostic output.
 

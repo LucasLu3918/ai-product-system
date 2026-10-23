@@ -127,6 +127,15 @@ class FakeComfyHandler(BaseHTTPRequestHandler):
             return self.send_bytes(json.dumps({"VAELoader": {"input": {"required": {"vae_name": [choices]}}}}).encode())
         if self.path == "/object_info/TextGenerate":
             return self.send_bytes(json.dumps({"TextGenerate": {"input": {"required": {"clip": [], "prompt": [], "max_length": [], "sampling_mode": []}, "optional": {"system_prompt": []}}}}).encode())
+        if self.path == "/object_info":
+            vae_choices = [] if type(self).missing_vae else ["ae.safetensors"]
+            schema = {
+                "CheckpointLoaderSimple": {"python_module": "nodes", "input": {"required": {"ckpt_name": [["model.safetensors"]]}}, "output": ["MODEL", "CLIP", "VAE"]},
+                "UNETLoader": {"python_module": "nodes", "input": {"required": {"unet_name": [["z_image_turbo_bf16.safetensors"]]}}, "output": ["MODEL"]},
+                "CLIPLoader": {"python_module": "nodes", "input": {"required": {"clip_name": [["qwen_3_4b.safetensors"]]}}, "output": ["CLIP"]},
+                "VAELoader": {"python_module": "nodes", "input": {"required": {"vae_name": [vae_choices]}}, "output": ["VAE"]},
+            }
+            return self.send_bytes(json.dumps(schema).encode())
         if self.path.startswith("/view?"):
             from urllib.parse import parse_qs, urlsplit
             query = parse_qs(urlsplit(self.path).query)

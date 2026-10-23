@@ -903,6 +903,9 @@ placement_rules:
       - scripts/creative_execution.py
       - scripts/creative_errors.py
       - scripts/creative_prompt_compiler.py
+      - scripts/comfyui_capabilities.py
+      - scripts/comfyui_workflow.py
+      - scripts/comfyui_workflow_policy.py
       - orchestration/schemas/resource-authorization-profile.yaml
       - orchestration/schemas/runtime-action.yaml
       - templates/automation/RESOURCE_AUTHORIZATION_PROFILE.yaml
@@ -912,15 +915,18 @@ placement_rules:
       - tests/evidence/resource_authorization_lifecycle.py
       - tests/evidence/runtime_policy_lifecycle.py
       - tests/evidence/creative_execution_lifecycle.py
+      - tests/evidence/comfyui_dynamic_workflow_lifecycle.py
       - tests/validation/creative_execution_contracts.py
+      - tests/validation/comfyui_dynamic_workflow_contracts.py
       - tests/scenarios/262-comfyui-resource-authorization-diagnostics.md
+      - tests/scenarios/268-comfyui-model-agnostic-workflows.md
     placements:
       docs/ARCHITECTURE.md: [Runtime flow, End-to-end product delivery]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Creative Workflow, Security 與 Governance]
       docs/human/USER_GUIDE.md: [Creative Direction、Style 與 Brand, Execution Isolation 與 Runtime Resource]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Security & Governance]
       docs/human/SECURITY_ASSURANCE.md: [Runtime Policy Enforcement]
-      docs/human/CONFORMANCE.md: [Scenario 262 — ComfyUI Resource Authorization and Diagnostics]
+      docs/human/CONFORMANCE.md: [Scenario 262 — ComfyUI Resource Authorization and Diagnostics, Scenario 268 — Model-agnostic ComfyUI Workflows]
       orchestration/RESOURCE_AUTHORIZATION.md: [Contract, Enforcement truth, CLI]
       orchestration/RUNTIME_POLICY_ENFORCEMENT.md: [Runtime Action Envelope, Policy and decisions]
-      orchestration/CONFORMANCE.md: [Scenario 262 — ComfyUI Resource Authorization and Diagnostics]
+      orchestration/CONFORMANCE.md: [Scenario 262 — ComfyUI Resource Authorization and Diagnostics, Scenario 268 — Model-agnostic ComfyUI Workflows]

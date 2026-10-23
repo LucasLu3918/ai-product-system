@@ -27,6 +27,8 @@ Use `aips project diagnose <path>` for a read-only summary of existing Doctor, P
 
 For local creative execution, preflight the scoped Bundle and require explicit create/modify intent before invoking the structured tool; never route through arbitrary Shell. ComfyUI model profiles select only code-reviewed topology families; a data-only profile addition cannot grant a new node, endpoint or operation.
 
+For `dynamic_local` ComfyUI Bundles, use the workflow scan/import/inspect commands before preflight as needed. These operations do not generate; execution requires the separate explicit Creative action and remains bound to the current Bundle, local schema, loopback service and output scope.
+
 Use `prepare` only for the explicit user-directed setup action. Keep preparation, read-only preflight and explicit generation as separate steps; validation and review never trigger image inference.
 
 OpenCode dispatch resolves the existing AIPS Turn Context and preserves project-native instruction authority before runtime hooks act.

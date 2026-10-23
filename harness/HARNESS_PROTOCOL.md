@@ -55,6 +55,8 @@ Local Creative Bundle preparation is limited to an explicit project-relative sco
 
 OpenCode creative discovery reports MFLUX command/version state and probes only `http://127.0.0.1:8188` for ComfyUI. Keep model, preflight and real-inference readiness separate, and preserve provider reason codes without local paths or credentials.
 
+The optional ComfyUI `dynamic_local` workflow path reads bounded local `/object_info` schemas and a project-relative API graph. It permits runtime-identified core nodes only, requires explicit field bindings and validates loader choices against installed models; validation does not confer runtime permission, inference readiness or host acceptance. `aips creative workflows import` is a separate project-confined create-only file operation.
+
 ## Context budget
 
 OpenCode V2 applies a 12,000-byte UTF-8 cap to its transient AIPS Context and uses a session/prompt/target cache; the bounded trace records duration and size without prompt text.

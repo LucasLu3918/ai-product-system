@@ -59,7 +59,7 @@ case "${1:-help}" in
     sub="${2:-help}"
     shift 2 || true
     case "$sub" in
-      prepare|configure|discover)
+      prepare|configure|discover|workflows)
         "$(python_bin)" "$SYSTEM_DIR/scripts/creative_execution.py" "$sub" "$@"
         ;;
       scan|next-version|import-candidate|import)
@@ -69,7 +69,7 @@ case "${1:-help}" in
         "$(python_bin)" "$SYSTEM_DIR/scripts/creative_execution.py" "$sub" "$@"
         ;;
       help|-h|--help)
-        say "Usage: aips creative <prepare|configure|discover|scan|next-version|import-candidate|import|preflight|execute|generate-set|review|review-assist|trace> [options]"
+        say "Usage: aips creative <prepare|configure|discover|workflows|scan|next-version|import-candidate|import|preflight|execute|generate-set|review|review-assist|trace> [options]"
         ;;
       *) die "Unknown creative command: $sub" ;;
     esac

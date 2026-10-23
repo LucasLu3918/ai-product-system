@@ -39,6 +39,8 @@ On OpenCode V2, the custom creative tool is exposed in the Code Mode catalog as 
 
 For local generation, use the shared creative_execution registry and its executor-reviewed ComfyUI topology families. Z-Image Turbo and FLUX 3 Klein Base use distinct fixed workflows and exact local component checks; adding a model within a family is data-only, but new nodes or families require code review. Strip prompt-bearing PNG text metadata. No profile enables editing unless an explicitly reviewed capability is added.
 
+An explicit Bundle may opt into `workflow.mode: dynamic_local` for a project-local ComfyUI API workflow. The shared executor validates the local schema/graph, accepts runtime-identified core nodes only, enforces explicit prompt/seed/dimension/output/reference bindings and checks installed loader model names. Use `aips creative workflows scan|import|inspect` for the documented bounded workflow operations; import is create-only. This does not authorize arbitrary Shell/custom nodes, model download, external endpoints or automatic retry after uncertain submission.
+
 For multiple configured Bundles, use aips creative generate-set --project PROJECT --manifest CREATIVE_JOB_MANIFEST.yaml. The bounded manifest runs each item's preflight, continues after failures, and resumes only when saved output and provenance hashes still match.
 
 The `review-assist` action requires explicit visual-review intent in the current user prompt, stays bound to the active Session root, and uses only an already-installed local vision model. Its report is advisory and cannot grant generation, write or user-acceptance authority.

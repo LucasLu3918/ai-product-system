@@ -115,6 +115,7 @@ Each retained section maps to its existing anchor. Human versioned baselines rem
 | [## Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow](CONFORMANCE.md#scenario-231-advisory-security-inventory-and-secret-scanner-shadow) | Current Human guidance |
 | [## Scenario 260 — Publication diagnostics and Doctor](CONFORMANCE.md#scenario-260-publication-diagnostics-and-doctor) | Current Human guidance |
 | [## Scenario 262 — ComfyUI Resource Authorization and Diagnostics](CONFORMANCE.md#scenario-262-comfyui-resource-authorization-and-diagnostics) | Current Human guidance |
+| [## Scenario 268 — Model-agnostic ComfyUI Workflows](CONFORMANCE.md#scenario-268-model-agnostic-comfyui-workflows) | Current Human guidance |
 | [## Scenario 263 — Commit Safety Diagnostics](CONFORMANCE.md#scenario-263-commit-safety-diagnostics) | Current Human guidance |
 | [## Scenario 264 — Hash-bound Creative Git Asset Import](CONFORMANCE.md#scenario-264-hash-bound-creative-git-asset-import) | Current Human guidance |
 | [## Scenario 266 — Content Safety Injection Context and Recovery](CONFORMANCE.md#scenario-266-content-safety-injection-context-and-recovery) | Current Human guidance |
@@ -200,6 +201,7 @@ Each retained section maps to its existing anchor. Human versioned baselines rem
 | [## Scenario 259 — Matt Pocock Skill Integration and Explorer](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-259-matt-pocock-skill-integration-and-explorer) | Normative rule |
 | [## Scenario 260 — Publication diagnostics and Doctor](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-260-publication-diagnostics-and-doctor) | Normative rule |
 | [## Scenario 262 — ComfyUI Resource Authorization and Diagnostics](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-262-comfyui-resource-authorization-and-diagnostics) | Normative rule |
+| [## Scenario 268 — Model-agnostic ComfyUI Workflows](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-268-model-agnostic-comfyui-workflows) | Normative rule |
 | [## Scenario 263 — Commit Safety Diagnostics](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-263-commit-safety-diagnostics) | Normative rule |
 | [## Scenario 264 — Hash-bound Creative Git Asset Import](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-264-hash-bound-creative-git-asset-import) | Normative rule |
 | [## Scenario 266 — Content Safety Injection Context and Recovery](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-266-content-safety-injection-context-and-recovery) | Normative rule |

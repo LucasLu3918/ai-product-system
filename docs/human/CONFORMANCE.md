@@ -1744,6 +1744,8 @@ Diagnostic recommendations remain read-only and conditional.
 
 ## Scenario 233 — Public CLI Help and Error Contracts
 
+Scenario 268 adds explicit `creative workflows` routes while preserving the existing Skills CLI contract.
+
 Scenario 266 covers versioned injection classification, added-line checks, full-blob secret/PII scanning, and safe recovery diagnostics.
 
 
@@ -1779,6 +1781,8 @@ OpenCode host acceptance verifies adapter integration only. It does not verify l
 The lifecycle uses synthetic SVG/PNG fixtures to verify confined paths, active-content rejection, file dimensions and hashes, verified local-provider/license provenance, stable UTF-8 Traditional Chinese labels, non-overwriting deterministic sheet composition, and optional Creative Evidence manifest-digest binding. It does not invoke a model, download weights, attest identity consistency, or claim hardware performance; those require the user's local runtime and independent visual review.
 
 ## Scenario 235 — OpenCode Native Context and Action Guard
+
+Dynamic ComfyUI workflow validation does not bypass native prompt admission or the explicit Creative execution guard.
 
 Scenario 267 adds a READY+STALE local-write case and retains denial evidence for UNKNOWN freshness, non-READY Intelligence, authority conflicts, path escapes, creative Git writes and external actions.
 
@@ -1821,6 +1825,8 @@ Plan36 publication diagnostics preserve this topic's existing behavior and autho
 
 ## Scenario 236 — Local Creative Bundle Execution
 
+Scenario 268 extends this lifecycle with opt-in schema-validated local ComfyUI API workflows; it preserves the existing explicit execution and human visual-review boundaries.
+
 ComfyUI lifecycle evidence now covers the declarative profile registry, the FLUX 3 Klein Base topology, exact local component inventory checks, fixed sampler settings, safe same-family profile extension, and rejection of unregistered topology families.
 
 Scenario 236 retains the local-only generation workflow and Human review boundary; Scenario 262 adds read-only model inventory, strict HTTP request validation and bounded diagnostic recovery without running inference.
@@ -1833,6 +1839,8 @@ The existing OpenCode integration lifecycle also verifies hash-bound asset impor
 The cross-profile quality evidence extension is covered by Scenario 258; this creative execution scenario continues to distinguish generated artifacts, image checks, Human review and user acceptance.
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
+
+The separate `creative workflows` CLI does not add to or change the Skills catalog and Skill Explorer behavior.
 
 Scenario 236 的 ComfyUI model registry 不介入 Skill Explorer、Skill 執行或路由。
 
@@ -2005,6 +2013,8 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 
 ## Scenario 262 — ComfyUI Resource Authorization and Diagnostics
 
+Scenario 268 separately covers bounded schema-validated workflows and keeps real inference UNVERIFIED.
+
 Scenario 236 的 profile registry 只映射已審核的 workflow family；ComfyUI 資源探測仍限於 loopback 固定 API。
 
 ComfyUI authorization remains separate from AVIF metadata and Creative raster validity checks.
@@ -2014,6 +2024,10 @@ Commit Content Safety remains separate from ComfyUI Resource Authorization profi
 Publication Diagnostic IDs remain separate from ComfyUI discovery, Resource Authorization profiles, and Creative execution grants.
 
 Scenario 262 covers fail-closed Resource Authorization Profile/grant matching, Hook binding to observed URLs, fixed loopback ComfyUI model discovery and safe HTTP recovery, shared creative presets, and static-only MPS compatibility evidence.
+
+## Scenario 268 — Model-agnostic ComfyUI Workflows
+
+Scenario 268 verifies opt-in local API workflow import, scan and inspection; bounded graph/schema validation; runtime core-node allowlisting; installed loader model checks; explicit prompt/seed/dimension/output/reference bindings; create-only generation output; and no automatic resubmission after an uncertain POST. Synthetic loopback evidence does not verify real model inference, hardware compatibility or image quality.
 
 ## Scenario 263 — Commit Safety Diagnostics
 
@@ -2032,6 +2046,8 @@ Scenario 267 keeps this creative Git workspace denial unchanged; the advisory ap
 The lifecycle verifies default Git destination rejection, explicit exact-root opt-in, hash revalidation, create-only writes, and unchanged Git index bytes. The source remains a non-Git EPHEMERAL workspace; import does not stage or commit.
 
 ## Scenario 266 — Content Safety Injection Context and Recovery
+
+Imported ComfyUI workflow JSON remains project content subject to existing content-safety and Change Boundary review; validation does not promote it to trusted instructions.
 
 Scenario 266 content-safety decisions remain unchanged by the personal PR merge setting `AIPS_ENFORCE_REQUIRED_CHECKS`.
 

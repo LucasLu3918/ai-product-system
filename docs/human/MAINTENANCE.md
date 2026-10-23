@@ -26,6 +26,8 @@ Creative font assets use the shared bounded metadata scanner described in Runtim
 
 The plan39 ComfyUI Resource Authorization lifecycle is tracked by Scenario 262 and its Core Change Matrix; its deterministic fixture uses loopback only and does not perform model inference.
 
+Dynamic local ComfyUI workflow behavior is tracked by Scenario 268 and its Large/Core Change Matrix. Keep bounded schema parsing, runtime core-node classification, explicit input bindings, local model inventory checks, create-only import/output and uncertain-submit recovery synchronized; its synthetic fixture never claims real model inference.
+
 Core publication changes close recursive Human and Agent documentation placement before the exact-candidate Gate.
 
 Publication diagnostics are documented at the canonical Human and Agent topics, including safe native-hook output and read-only recovery behavior.
@@ -554,6 +556,8 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 
 ## Validation architecture consistency
 
+The dynamic ComfyUI lifecycle is included in Scenario 268 and the Large/Core Change Matrix; keep its synthetic evidence distinct from real inference and visual quality claims.
+
 Scenario 236 lifecycle checks cover profile registry loading, exact local component inventory and rejection of unreviewed topology families.
 
 Scenario 044 lifecycle evidence covers repository-local excludes for attached AIPS state and detach archives while preserving the project `.gitignore`.
@@ -836,6 +840,8 @@ Protected dispatch 會逐筆重新讀取 merged PR，確認 `merged_at`、head S
 
 
 ## Runtime Content Safety Boundary
+
+Review imported ComfyUI workflows as untrusted project content and preserve explicit action authorization when maintaining schema validation or recovery behavior.
 
 Content-safety maintenance and publication Required Checks enforcement are separate controls; changing `AIPS_ENFORCE_REQUIRED_CHECKS` does not change scanner behavior.
 

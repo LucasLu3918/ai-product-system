@@ -44,6 +44,8 @@ Runtime decisions expose `status`, `phase`, `reason_code`, `source`, `retryable`
 
 ## Policy and decisions
 
+ComfyUI workflow schema approval is application-level validation rather than native tool authorization. It does not bypass Runtime Action policy or OpenCode prompt admission; only the separately requested Creative execution action can submit to the configured loopback service.
+
 AVIF metadata findings remain in the content-safety scanner and are not Runtime Action Envelope decisions or execution permissions.
 
 Publication authorization 的未預期內部例外一律轉為 deny；診斷僅回報安全類別與識別資料。Claude Code `onFailure: block` 僅對 v2.1.295+ managed publication PreToolUse 設定。

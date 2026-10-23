@@ -465,6 +465,8 @@ SAL 2+ default registration requires an independently retained anchor. SAL 4 req
 The retention helper never deletes evidence or grants compaction authority. Expiry only creates a Human-review action and a minimal digest record.
 ## Runtime Content Safety Boundary
 
+Dynamic ComfyUI workflow JSON is untrusted project content; schema-valid core-node graphs still require explicit execution authorization and cannot expand the Change Boundary.
+
 Content Safety findings still block according to the existing scanner contract; the opt-in `AIPS_ENFORCE_REQUIRED_CHECKS=1` setting changes only the separate AIPS PR-merge checks gate, while GitHub-native protections remain effective.
 
 Prepare timeout diagnostics omit the raw command and exception text, and the Claude Hook remains denied while remote evidence is unavailable.
@@ -657,7 +659,7 @@ The independent-review isolation mechanism is present but not enabled as a defau
 
 Before a supported tool action executes, Runtime Policy Enforcement checks the action envelope against Resource Authorization and the deterministic runtime policy. The result is `ALLOW`, `DENY`, `REQUIRE_APPROVAL` or `BLOCKED`; policy conflicts use deny-overrides. An approval binds the exact action and policy digests, destination, data labels, Change Boundary and expiry.
 
-Resource Authorization matches grant kind, selector, operation, destination and declared constraints; network activity requires an explicit `network_allowed: true`. Runtime diagnostics distinguish Profile source failures and grant denials without emitting local paths, credentials, HTTP headers or response bodies. Read-only ComfyUI discovery is limited to fixed loopback methods/paths; MPS and precision observations remain static and do not establish inference compatibility.
+Resource Authorization matches grant kind, selector, operation, destination and declared constraints; network activity requires an explicit `network_allowed: true`. Runtime diagnostics distinguish Profile source failures and grant denials without emitting local paths, credentials, HTTP headers or response bodies. Read-only ComfyUI discovery is limited to fixed loopback methods/paths; MPS and precision observations remain static and do not establish inference compatibility. Opt-in `dynamic_local` workflow validation additionally rejects custom/API/unknown nodes, malformed or oversized graphs, unsafe output paths, implicit resource choices and loader models absent from local inventories. Its cache stores only bounded schema/workflow fingerprints, never prompt, workflow body or model filenames.
 
 SAL3/4 external egress also needs a verified native hook and a fresh provider receipt proving network allowlist enforcement. The current sandbox registry has no eligible verified egress provider, so these actions remain blocked. A pre-tool shell hook cannot observe every script, child process or SDK network call.
 

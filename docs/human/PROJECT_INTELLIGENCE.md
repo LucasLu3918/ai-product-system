@@ -429,6 +429,9 @@ Scenario 134 不改 production Retrieval / Turn Context。Local Trial PASS 也�
 Project Intelligence follows `orchestration/PROJECT_IDENTITY.md`. EPHEMERAL storage is workspace-scoped by canonical `workspace_id`; repository-wide writer coordination belongs to the isolation layer and uses `repository_id`.
 ## Runtime Content Safety Boundary
 
+Dynamic ComfyUI workflow JSON and imported workflow files are project content, not Project Intelligence instructions or canonical capability truth. Review them within the exact project Change Boundary; only runtime schema and inventory observations can establish current local compatibility, and scoped evidence does not upgrade repository-wide graph coverage.
+
+
 Publication recovery remains a read-only observation: retryable remote Hook failures return immediately with manual Doctor guidance; Prepare timeout diagnostics expose only stable codes, phase and allowlisted error class. These observations do not grant publication authority.
 
 Plan44 records bounded manual caller and adapter evidence where the repository graph lacks publication nodes; this does not promote repository-wide graph coverage or change publication authority.

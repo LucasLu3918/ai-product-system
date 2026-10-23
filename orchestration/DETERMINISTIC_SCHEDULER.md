@@ -83,6 +83,8 @@ Observed validation timing is diagnostic only. Capture complete exact-candidate 
 
 Creative generation is an explicit user action through `aips creative execute`; scheduler inspection, validation, and Gate runs never launch a configured image engine.
 
+`aips creative workflows scan`, `import` and `inspect` are separate explicit CLI operations. Scheduler readiness, workflow validation and repository Gates remain non-generative; only an explicit Creative execute request may submit a ComfyUI workflow.
+
 Turn Context task routes are resolved before scheduling and never grant Scheduler write authority; the task's approved boundary and lease remain authoritative.
 
 Sparse delegation does not require a Task Graph for primary-only bounded work. Existing CLI helpers perform repeatable checks; multiple justified writer tasks retain approved non-overlapping boundaries.

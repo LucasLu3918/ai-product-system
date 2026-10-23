@@ -20,6 +20,8 @@ features:
     details: Project Intelligence 保存可追溯的專案知識；每次工作只讀取相關指示與證據。
   - title: 依風險驗證變更
     details: Change Impact 追蹤呼叫端、使用端與資料邊界；Deterministic Gate 檢查明確規則。
+  - title: 使用本機創意工具
+    details: Creative 可明確使用已安裝的本機模型與經 schema 驗證的 ComfyUI 工作流；預檢不會啟動推論。
   - title: 重要決策由人掌握
     details: 驗證結果提供證據，不會自行授權合併、發布、上線或治理變更。
 ---
@@ -73,6 +75,8 @@ features:
 </figure>
 
 ## 文件如何組織
+
+本機 Creative 工作流支援明確選用已安裝模型與 schema 驗證的 ComfyUI API graph；固定 profile 維持預設，預檢不會啟動推論。
 
 ComfyUI creative model profile registry 與已審核拓樸家族的文件入口，請參閱 User Guide、Technology Guide 及 `orchestration/CREATIVE_DIRECTION.md`。
 

@@ -208,6 +208,8 @@ Reusable character artwork extends the existing Creative Direction path: hashed 
 
 The `creative_execution` path can prepare versioned Character/Style Profiles and an unconfigured Bundle before any engine is selected; its closed MFLUX registry fixes model/operation commands and bounds multi-reference edits to supported FLUX.2/Qwen operations. ComfyUI and FLUX.1 edits remain single-reference.
 
+An explicitly configured `dynamic_local` ComfyUI workflow adds schema-validated access to compatible installed core nodes while keeping fixed workflow profiles as the default. Local `/object_info`, bounded graph validation, explicit Bundle bindings and installed loader-model checks gate preflight; custom/API nodes and implicit model or input selection fail closed. Execution remains opt-in, loopback-only and create-only, with synthetic evidence separate from real inference and quality.
+
 OpenCode V2 prompt admission issues a fresh transient grant for each user response. A short creative selection can use root-bound, expiring structured Session state with finite turns and remaining outputs; Context and retrieved Project Intelligence remain advisory, and raw prior prompts are not retained. Cancellation, unrelated work, scope expansion and output-cap exhaustion revoke continuation. The local `generate-set` workflow records each Bundle outcome and resumes only after verifying saved provenance hashes.
 
 
@@ -263,6 +265,8 @@ Phase 4 在這條實作流程加入可選的 OpenAPI client generator adapter：
 Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行報告與目前 Profile、契約、工具、輸入、產物、Git 歷史及 Phase 3 provenance 交叉核對；舊 Profile 不受影響。共用 Widgets 參考專案執行本機 HTTP 服務與產生的 client，驗證工作流程及該案例行為。各真實產品的契約、測試和證據仍留在產品專案。
 
 ## Deterministic Execution
+
+Dynamic ComfyUI graph execution requires a separately requested Creative action after bounded schema validation; synthetic lifecycle evidence does not establish real inference or image quality.
 
 Creative model profile 透過固定 workflow family 和封閉 sampler 設定執行，並由 inventory preflight 核對本機元件。
 
