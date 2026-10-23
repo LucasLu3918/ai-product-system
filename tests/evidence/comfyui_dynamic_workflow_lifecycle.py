@@ -214,6 +214,13 @@ def main() -> int:
             scan_text = json.dumps(scan)
             require(MODEL not in scan_text and "fixture-1" not in scan_text,
                     "A16 scan exposed model filenames or runtime version")
+            cli_response = creative.workflow_cli_response("inspect")
+            require(cli_response == {"status": "READY", "generation_executed": False,
+                                     "external_image_egress": False,
+                                     "readiness": {"inference": "INFERENCE_UNVERIFIED"}},
+                    "P2 CLI response exposed runtime/workflow inspection details")
+            require(creative.workflow_cli_response("import") == {"status": "IMPORTED", "overwrite": False},
+                    "A17 CLI response exposed imported workflow details")
             require(Handler.prompts == 2, "scan/import/inspect caused generation")
         finally:
             instance.shutdown()

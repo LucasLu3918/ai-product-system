@@ -2046,6 +2046,15 @@ def workflows_inspect(project: Path, workflow_name: str, base_url: str = DEFAULT
             "external_image_egress": False, "readiness": {"inference": "INFERENCE_UNVERIFIED"}}
 
 
+def workflow_cli_response(action: str) -> dict[str, Any]:
+    """Return a static CLI acknowledgement without echoing local workflow or model data."""
+    if action == "import":
+        return {"status": "IMPORTED", "overwrite": False}
+    return {"status": "READY", "generation_executed": False,
+            "external_image_egress": False,
+            "readiness": {"inference": "INFERENCE_UNVERIFIED"}}
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="action", required=True)
@@ -2124,11 +2133,12 @@ def main() -> int:
             result = discover(args.project)
         elif args.action == "workflows":
             if args.workflow_action == "scan":
-                result = workflows_scan(args.project, args.base_url)
+                workflows_scan(args.project, args.base_url)
             elif args.workflow_action == "import":
-                result = workflows_import(args.project, args.workflow, args.destination)
+                workflows_import(args.project, args.workflow, args.destination)
             else:
-                result = workflows_inspect(args.project, args.workflow, args.base_url)
+                workflows_inspect(args.project, args.workflow, args.base_url)
+            result = workflow_cli_response(args.workflow_action)
         elif args.action == "configure":
             raw = args.settings_json if args.settings_json is not None else sys.stdin.read(32 * 1024 + 1)
             if len(raw) > 32 * 1024:
