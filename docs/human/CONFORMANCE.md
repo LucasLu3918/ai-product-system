@@ -1821,6 +1821,8 @@ Plan36 publication diagnostics preserve this topic's existing behavior and autho
 
 ## Scenario 236 — Local Creative Bundle Execution
 
+ComfyUI lifecycle evidence now covers the declarative profile registry, the FLUX 3 Klein Base topology, exact local component inventory checks, fixed sampler settings, safe same-family profile extension, and rejection of unregistered topology families.
+
 Scenario 236 retains the local-only generation workflow and Human review boundary; Scenario 262 adds read-only model inventory, strict HTTP request validation and bounded diagnostic recovery without running inference.
 
 Scenario 240 的 `tests/test_publication_planning.py` 覆蓋 worktree 綁定、精確 SHA/ref、舊指紋拒絕、Host denial、PR 重用與 squash merge 恢復；fixture 不等於真實 Host 或 REST 驗收。
@@ -1831,6 +1833,8 @@ The existing OpenCode integration lifecycle also verifies hash-bound asset impor
 The cross-profile quality evidence extension is covered by Scenario 258; this creative execution scenario continues to distinguish generated artifacts, image checks, Human review and user acceptance.
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
+
+Scenario 236 的 ComfyUI model registry 不介入 Skill Explorer、Skill 執行或路由。
 
 Project-local workspace excludes are covered separately by Scenario 044 and do not change upstream Skill inventory, routing or installation.
 
@@ -2000,6 +2004,8 @@ Dependabot commits: the GitHub App bot noreply author and Dependabot's exact fin
 Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
 ## Scenario 262 — ComfyUI Resource Authorization and Diagnostics
+
+Scenario 236 的 profile registry 只映射已審核的 workflow family；ComfyUI 資源探測仍限於 loopback 固定 API。
 
 ComfyUI authorization remains separate from AVIF metadata and Creative raster validity checks.
 

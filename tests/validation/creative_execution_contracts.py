@@ -12,6 +12,7 @@ required = (
     ROOT / "templates/creative/MODEL_CAPABILITY_PROFILE.yaml",
     ROOT / "templates/creative/VISUAL_REVIEW_REPORT.schema.json",
     ROOT / "templates/creative/COMFYUI_Z_IMAGE_TURBO_API.json",
+    ROOT / "templates/creative/COMFYUI_MODEL_PROFILES.yaml",
     ROOT / "tests/evidence/creative_execution_lifecycle.py",
     ROOT / "tests/evidence/creative_generate_set_lifecycle.py",
     ROOT / "templates/creative/CREATIVE_COLLECTION_PROFILE.yaml",
@@ -25,6 +26,7 @@ required = (
     ROOT / "scripts/creative_errors.py",
     ROOT / "templates/creative/CREATIVE_ASSET_PRESETS.yaml",
     ROOT / "tests/scenarios/262-comfyui-resource-authorization-diagnostics.md",
+    ROOT / "templates/creative/COMFYUI_FLUX3_IMAGE_KLEIN_API.json",
 )
 for path in required:
     if not path.is_file():
@@ -33,17 +35,19 @@ for path in required:
 if all(path.is_file() for path in required):
     bundle = yaml.safe_load(required[1].read_text(encoding="utf-8")) or {}
     executor = required[0].read_text(encoding="utf-8")
-    compiler = required[-4].read_text(encoding="utf-8")
-    docs = required[9].read_text(encoding="utf-8")
+    compiler = required[15].read_text(encoding="utf-8")
+    docs = required[10].read_text(encoding="utf-8")
     plugin = (ROOT / "harness/adapters/opencode/plugin.ts").read_text(encoding="utf-8")
     compatibility = (ROOT / "harness/adapters/opencode/COMPATIBILITY.md").read_text(encoding="utf-8")
+    profile_registry = yaml.safe_load(required[5].read_text(encoding="utf-8")) or {}
+    asset_presets = (ROOT / "templates/creative/CREATIVE_ASSET_PRESETS.yaml").read_text(encoding="utf-8")
     contracts = (
         (bundle.get("mode") == "EPHEMERAL", "Bundle template must default to EPHEMERAL"),
         ("BLOCKED_NO_ENGINE" in executor, "missing engines must fail closed"),
         ("shell=False" in executor and "subprocess.run" in executor, "MFLUX must use argv-only process execution"),
         ("ProxyHandler({})" in executor and "class NoRedirect" in executor, "ComfyUI requests must block proxies and redirects"),
         ("COMFY_CORE_NODES" in executor and "comfy_custom_node_blocked" in executor, "ComfyUI workflow must reject non-core nodes"),
-        ('model_profile == "z-image-turbo"' in executor and '"lumina2"' in executor and "comfy_model_unavailable" in executor, "Z-Image Turbo ComfyUI must remain a fixed, local-inventory-verified profile"),
+        ('profile_topology == "z_image_split_loader"' in executor and '"lumina2"' in executor and "comfy_model_unavailable" in executor, "Z-Image Turbo ComfyUI must remain a fixed, local-inventory-verified profile"),
         ("strip_png_text_metadata" in executor and "prompt-bearing PNG text chunks" in executor, "ComfyUI outputs must not persist prompt-bearing PNG metadata"),
         ("UNETLoader" in required[4].read_text(encoding="utf-8") and "ConditioningZeroOut" in required[4].read_text(encoding="utf-8"), "Z-Image Turbo API template must retain its fixed split-loader topology"),
         ("creative-execution-manifest.json" in executor and "PENDING" in executor, "execution must retain provenance and pending human review"),
@@ -54,7 +58,7 @@ if all(path.is_file() for path in required):
         ("exactly one hash-checked reference" in compatibility, "ComfyUI compatibility docs must state the single-reference boundary"),
         ('"review-assist"' in plugin and 'classification.intent !== "create"' in plugin and '180_000' in plugin, "OpenCode preparation, generation, and advisory review must remain explicit and bounded"),
         ('from creative_prompt_compiler import (' in executor and 'compile_creative_prompt' in executor and 'model_recommendation' in executor and 'from creative_errors import Blocked, error_payload' in executor and 'compiled_prompt_sha256' in executor and 'profile-driven-v1' in executor, "execution must preserve compiler and exception facades and record only the compiled prompt fingerprint"),
-        ('from creative_errors import Blocked' in required[-4].read_text(encoding="utf-8"), "the pure prompt compiler must depend on the shared error module, not the execution facade"),
+        ('from creative_errors import Blocked' in required[15].read_text(encoding="utf-8"), "the pure prompt compiler must depend on the shared error module, not the execution facade"),
         ('DEFAULT_OLLAMA_BASE_URL = "http://127.0.0.1:11434"' in executor and 'ProxyHandler({})' in executor and 'NoRedirect' in executor, "vision review must remain local-only with redirects and proxies disabled"),
         ('selected_model_changed": False' in compiler and 'quality_or_local_evidence_missing' in compiler, "model guidance must disclose missing evidence and cannot silently select a model"),
         ('ctx.session.hook("prompt"' in plugin and 'creativeAdmissions' in plugin and 'creative_admission_grant_missing' in plugin and 'slice(-64)' not in plugin, "OpenCode mutation authority must use current prompt admission, independent of transcript truncation"),
@@ -70,7 +74,14 @@ if all(path.is_file() for path in required):
         ('"model_catalog"' in executor and 'MODEL_CATALOG_EMPTY' in executor and 'INFERENCE_UNVERIFIED' in executor, "ComfyUI discovery must return a bounded model inventory without claiming inference"),
         ('"accelerator_backend"' in executor and '"mps_runtime_probe": "NOT_PERFORMED"' in executor and 'STATIC_METADATA_ONLY' in executor, "MPS compatibility must remain static evidence only"),
         ('"recovery"' in (ROOT / "scripts/creative_errors.py").read_text(encoding="utf-8") and 'trace_id' in (ROOT / "scripts/creative_errors.py").read_text(encoding="utf-8"), "creative errors must expose stable structured diagnostics and safe recovery"),
-        (all(name in required[-2].read_text(encoding="utf-8") for name in ("character:", "background:", "texture:", "ui_ornament:")), "shared creative asset presets must cover all four approved classes"),
+        (all(name in asset_presets for name in ("character:", "background:", "texture:", "ui_ornament:")), "shared creative asset presets must cover all four approved classes"),
+        (profile_registry.get("version") == 1 and isinstance(profile_registry.get("profiles"), dict), "ComfyUI profiles must be declared in a versioned registry"),
+        ("flux3-image-klein-base-int8" in profile_registry.get("profiles", {}), "FLUX 3 Klein Base must be represented as data in the profile registry"),
+        ("topology" in profile_registry.get("profiles", {}).get("flux3-image-klein-base-int8", {}), "profiles must reference a bounded topology family rather than provide arbitrary nodes"),
+        ("def load_comfy_profile(" in executor and "COMFY_PROFILE_REGISTRY_PATH" in executor, "ComfyUI model profiles must load through the declarative registry"),
+        ("TextGenerate" in executor and "prompt_upsampler_name" in executor, "FLUX 3 Klein must use a distinct built-in prompt upsampler component"),
+        ("TextGenerate" in required[-1].read_text(encoding="utf-8") and '"system_prompt"' in required[-1].read_text(encoding="utf-8"), "FLUX 3 Klein API template must provide the built-in prompt upsampler"),
+        ("flux3-image-klein-base-int8" in profile_registry["profiles"] and profile_registry["profiles"]["flux3-image-klein-base-int8"]["sampler"]["steps"] == 50, "Klein Base profile must use its registered base sampler defaults"),
     )
     for condition, message in contracts:
         if not condition:

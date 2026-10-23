@@ -34,7 +34,7 @@ OpenCode V2 captures Creative mutation authority at native prompt admission; its
 
 OpenCode 與 CLI 共用本機模型能力表；Z-Image Turbo 的新增 generate 配對會同時出現在 discovery、configure 與 preflight。
 
-OpenCode 的 Creative tool 仍使用同一個本機 executor；ComfyUI Z-Image profile 固定 split-loader topology，並在 preflight 驗證權重清單與清除輸出 PNG 的 prompt text metadata。
+OpenCode 的 Creative tool 仍使用同一個本機 executor；ComfyUI Z-Image profile 固定 split-loader topology，並在 preflight 驗證權重清單與清除輸出 PNG 的 prompt text metadata。ComfyUI model profile registry 可擴充已審核拓樸家族內的模型元件與固定設定；新節點與新拓樸家族仍須程式審核。
 
 OpenCode 創作 tool 支援 discover/configure，產圖意圖、原生檔案 guard 與 Shell effect policy 維持不同檢查；重新投影後仍須驗證實際 host hooks。
 
@@ -145,6 +145,8 @@ repository_id
 EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才使用 project-local .ai/。
 
 ## Creative Workflow
+
+Creative profile registry 支援同一審核拓樸家族中的新增模型；FLUX 3 Klein Base 使用獨立固定 workflow 與元件清單。
 
 Scenario 267's READY+STALE advisory does not relax the existing creative-write boundary in Git workspaces.
 
@@ -261,6 +263,8 @@ Phase 4 在這條實作流程加入可選的 OpenAPI client generator adapter：
 Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行報告與目前 Profile、契約、工具、輸入、產物、Git 歷史及 Phase 3 provenance 交叉核對；舊 Profile 不受影響。共用 Widgets 參考專案執行本機 HTTP 服務與產生的 client，驗證工作流程及該案例行為。各真實產品的契約、測試和證據仍留在產品專案。
 
 ## Deterministic Execution
+
+Creative model profile 透過固定 workflow family 和封閉 sampler 設定執行，並由 inventory preflight 核對本機元件。
 
 Claude publication Hook returns immediately with a fail-closed remote-error diagnosis; a separate read-only Doctor observation supplies endpoint evidence without changing the authorization boundary.
 
@@ -391,6 +395,8 @@ Dependabot commit 的機器人 noreply author 與最後一行精確的 `Signed-o
 Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
 ## Security 與 Governance
+
+ComfyUI profile registry 僅允許既有程式審核的節點拓樸與 loopback runtime，不可由資料設定引入遠端 endpoint 或新節點。
 
 個人模式的 PR merge 仍要求明確任務意圖與精確候選驗證；AIPS Required Checks 強制需設 `AIPS_ENFORCE_REQUIRED_CHECKS=1`，GitHub 原生分支保護持續生效。獨立審查證據與 Required Checks 是不同的 Gate 證據。
 

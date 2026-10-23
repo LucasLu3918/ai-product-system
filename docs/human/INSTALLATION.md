@@ -1,5 +1,7 @@
 # 安裝、更新與解除
 
+本機 ComfyUI profile 是 AIPS 內建 registry 資料；安裝與 discovery 不會下載權重，也不代表推論相容性已驗證。新增 profile 必須符合 executor 已審核的拓樸家族與本機已安裝元件清單。
+
 本指南整理 AIPS 的安裝生命週期（Install / Update / Uninstall）。支援 macOS、Linux 與 Windows + WSL；目前不宣稱 Windows 原生 PowerShell／CMD runtime 已支援。AIPS 需要 Python 3.12 以上。
 
 尚無可驗證的穩定版標籤時，安裝與更新會停止，不會自行改用開發分支。只有在你選擇追蹤可變動開發版時，才明確指定 `main`。
@@ -56,6 +58,8 @@ aips mcp inspect
 維護者要驗證完整 repository 時使用 `aips validate`。一般安裝不會在使用者電腦執行完整 CI，也不會連線修改 GitHub repository 設定。
 
 ## Runtime integration
+
+ComfyUI model profiles 隨 AIPS registry 提供；安裝與 discovery 不下載權重，也不保證實際推論相容。
 
 一般專案不會自動建立 `.ai/`。只有明確執行 `aips attach <project>` 才會使用 project-local state；若專案位於 Git worktree，AIPS 會在本機 `info/exclude` 排除 `.ai/` 與 detach 封存目錄，不修改專案 `.gitignore`。
 

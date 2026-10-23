@@ -168,7 +168,7 @@ MFLUX 固定命令表新增 Z-Image Turbo generate：`mflux-generate-z-image-tur
 
 本機創作支援 discover/prepare/configure/preflight/execute：設定採 allowlist 與 create-only Bundle，native Context envelope 經正規化再作使用者授權。PNG 容器檢查涵蓋 CRC、終止與 bounded decompression；JPEG/WEBP 僅作 bounded container checks，不能代替實際看圖或完整解碼。
 
-Local creative execution supports MFLUX through fixed argv and ComfyUI through a loopback-only allowlisted workflow. It is explicit, create-only, and never downloads weights.
+Local creative execution supports MFLUX through fixed argv and ComfyUI through a loopback-only allowlisted workflow. It is explicit, create-only, and never downloads weights. ComfyUI model declarations live in `templates/creative/COMFYUI_MODEL_PROFILES.yaml` and may reuse only executor-reviewed topology families; FLUX 3 Klein Base has its own built-in API workflow and fixed sampler settings.
 
 Ordinary ComfyUI discovery contacts only `127.0.0.1:8188`, uses fixed bounded GET paths, reports a capped allowlisted model catalog, disables proxies and refuses redirects. Every ComfyUI request validates a literal loopback IP, explicit port, method and path before connecting. Provider errors retain only safe HTTP status and structured reason/recovery metadata. Apple Silicon reports MPS as a static candidate; FP8 is an advisory warning, and neither FP16/BF16 metadata nor an available MPS backend proves actual inference compatibility.
 
@@ -331,6 +331,9 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 Content-safety detector changes are versioned (for example `pii.email.v2`) and bound to Scenario 266 with a fixed corpus; they never add a PII exception path.
 
 ## Quality & Verification
+
+Creative lifecycle evidence includes fixed ComfyUI model profile families, local component inventory checks and rejection of unreviewed topology families.
+
 
 Scenario 044 verifies the attach/detach ignore contract; it does not alter Skill Explorer routing or native Skill installation behavior.
 

@@ -9,6 +9,7 @@ This Core Change adds an AIPS-owned, local-only execution boundary for existing 
 - Add fixed, read-only AIPS diagnostics to the Shell Guard with stable allow/deny reason codes. Do not enable arbitrary shell, Python, or command templates.
 - Add a versioned Creative Bundle preflight and explicit execution lifecycle for non-Git EPHEMERAL projects, create-only output paths, and PNG/JPEG/WEBP assets.
 - Support an explicitly configured local MFLUX CLI and a loopback-only ComfyUI core-node workflow for generation and reference-based edit. Launch MFLUX with argv and `shell=False`; disable proxy use and redirects for ComfyUI.
+- Store ComfyUI model/component declarations in a versioned profile registry. New model entries may reuse an executor-reviewed topology family with family-bounded component allowlists and settings; registry data cannot add arbitrary nodes, links, inputs, operations or topology families. Include the FLUX 3 Klein Base INT8 profile using a dedicated built-in API workflow and keep its TextGenerate prompt upsampler separate from its Qwen visual encoder.
 - Capture model/runtime/license provenance, reference/output/workflow hashes, bounded measured timing, finite transient retries, and privacy-limited local trace data. Never persist raw prompts or image bytes in trace.
 - Require a separate human review decision for visual quality. A new manifest begins `PENDING`; deterministic validation cannot mark an image visually approved.
 - Integrate the bounded tool into the OpenCode V2 plugin only for an explicit creative create/modify request, and require preflight before execution.
@@ -19,6 +20,7 @@ This Core Change adds an AIPS-owned, local-only execution boundary for existing 
 - No model/runtime installation, weight download, cloud or paid image API, or external image egress.
 - No new Role, Agent, Skill, Capability authority, MCP server, policy engine, Constitution change, or automatic visual-quality judge.
 - No Git repository output target, overwrite, arbitrary ComfyUI node, remote ComfyUI host, or arbitrary subprocess.
+- No data-only mechanism for introducing arbitrary workflow topology; a new family or node set remains a code-reviewed Core Change.
 - No hardware performance or visual-quality claim without an actual configured local engine and independent image review.
 
 ## Boundaries and compatibility

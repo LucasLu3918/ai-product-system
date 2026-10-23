@@ -506,7 +506,7 @@ Remote publication timeouts remain fail-closed and non-authorizing. Claude Hook 
 Content-safety PASS is candidate evidence only and does not authorize PR merge or change publication mode.
 
 
-ComfyUI Resource Authorization remains separate from AVIF container validation and does not grant access to image payloads.
+ComfyUI Resource Authorization remains separate from AVIF container validation and does not grant access to image payloads. Declarative model profiles do not alter loopback-only authorization; executor-reviewed node and topology-family allowlists remain code-owned.
 
 Claude Code v2.1.295+ 的 publication PreToolUse guard 使用 `onFailure: block`；舊版或未知版維持相容設定並警示，不將支援能力推測為已啟用。
 The bounded font metadata scanner fails closed on missing dependencies, spoofed or malformed formats, size limits and Secret/PII/Injection findings. It does not grant runtime permission or alter Human approval.

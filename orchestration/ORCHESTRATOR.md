@@ -25,7 +25,7 @@ Read-only Project Diagnostics recommends inspection or conditional recovery and 
 
 Use `aips project diagnose <path>` for a read-only summary of existing Doctor, Project Intelligence, Harness and MCP static status. Review the suggested recovery action before execution; diagnostics do not bootstrap, refresh, attach or authorize a mutation.
 
-For local creative execution, preflight the scoped Bundle and require explicit create/modify intent before invoking the structured tool; never route through arbitrary Shell.
+For local creative execution, preflight the scoped Bundle and require explicit create/modify intent before invoking the structured tool; never route through arbitrary Shell. ComfyUI model profiles select only code-reviewed topology families; a data-only profile addition cannot grant a new node, endpoint or operation.
 
 Use `prepare` only for the explicit user-directed setup action. Keep preparation, read-only preflight and explicit generation as separate steps; validation and review never trigger image inference.
 

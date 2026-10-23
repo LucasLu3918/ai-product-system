@@ -159,7 +159,7 @@ The Codex managed block preserves eligible runtime primary model preference and 
 
 Codex PreToolUse support remains `EXPERIMENTAL` and `ADVISORY`: the local probe denies only its harmless synthetic command. Do not infer live runtime coverage or change user-global hook configuration from this evidence.
 
-Creative adapters share the closed executor registry, including Z-Image Turbo generate only through fixed MFLUX argv or the built-in ComfyUI split-loader workflow; local model inventory checks do not grant broader generation authority or arbitrary command arguments.
+Creative adapters share a declarative model profile registry and closed executor topology families. Registry data can select exact installed components within an audited family; it cannot add arbitrary nodes, workflow links or authority. Local model inventory checks do not grant broader generation authority or arbitrary command arguments.
 
 Publication diagnosis is a read-only capability. Runtime adapters may report the shared reason code, phase, safe next step and Required Checks state, but must not treat diagnosis as permission, expose raw host output, modify policy, or execute a merge.
 

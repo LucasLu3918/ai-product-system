@@ -98,7 +98,7 @@ OpenCode V2 derives Creative mutation authority from the current native prompt-a
 
 Runtime denial details now carry a bounded reason code, trace identifier and recovery action through the native Hook response; Profile paths, provider bodies and credentials remain excluded.
 
-OpenCode creative_execution 使用共享 executor 的 Z-Image Turbo generate 配對；新增模型不擴大 session authority 或允許任意命令。
+OpenCode creative_execution 使用共享 executor 的 ComfyUI model profile registry；新增模型僅能沿用已審核拓樸家族，不擴大 Session authority、工具權限或任意命令。
 
 ComfyUI 的 `z-image-turbo` profile 使用 `templates/creative/COMFYUI_Z_IMAGE_TURBO_API.json` 固定 API 工作流；只有指定的 UNET、Qwen `lumina2` CLIP 與 VAE 權重會依 loopback `/object_info` 核對，不接受自訂節點或圖片編輯。
 

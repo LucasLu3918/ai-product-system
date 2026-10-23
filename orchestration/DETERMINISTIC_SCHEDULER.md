@@ -1,5 +1,7 @@
 # Deterministic Scheduler
 
+Local creative model profiles are resolved by the shared executor before scheduling provider work. Registry expansion within an audited topology family does not change scheduler authority or admit arbitrary workflow graphs.
+
 Runtime invariant matrix 是既有 Integration Gate 的必要 deterministic check，依 `config/runtime-invariants.yaml` 驗證所有維度值對、案例上限與高風險組合。
 
 CLI help must not schedule validation work. Local preparation preserves gh configuration references while isolating AIPS state and rejects a mismatched venv before dependency checks. Docs impact follows the selected checkout. Existing timing evidence supports removal of accidental duplicate runs without skipping the required exact-candidate Gate or PR/main checks.
@@ -314,6 +316,8 @@ The Scheduler validates this structure and includes runtime requirements only fo
 
 Only `tcp` is supported in v0.51. Port IDs must be stable resource IDs, `preferred` is optional and non-authoritative, and `expose_as` accepts environment-variable names only.
 ## Runtime Content Safety Boundary
+
+Creative ComfyUI profile data selects only fixed, executor-reviewed workflow families and cannot define arbitrary graph operations.
 
 AVIF metadata checks run inside the existing bounded content-safety path and do not change scheduler readiness, task ownership or execution authority.
 
