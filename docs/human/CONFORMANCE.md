@@ -1825,6 +1825,8 @@ Plan36 publication diagnostics preserve this topic's existing behavior and autho
 
 ## Scenario 236 — Local Creative Bundle Execution
 
+FLUX 3 Klein lifecycle adds live `TextGenerate` Dynamic Combo schema and final payload checks before submission; unsupported options fail without posting, and the evidence does not establish Apple Silicon MPS inference.
+
 Scenario 268 extends this lifecycle with opt-in schema-validated local ComfyUI API workflows; it preserves the existing explicit execution and human visual-review boundaries.
 
 ComfyUI lifecycle evidence now covers the declarative profile registry, the FLUX 3 Klein Base topology, exact local component inventory checks, fixed sampler settings, safe same-family profile extension, and rejection of unregistered topology families.
@@ -1902,6 +1904,8 @@ Scenario 236 新增 Bundle 設定競爭／來源保留、native Context envelope
 Scenario 236 covers versioned no-overwrite Profile/Bundle preparation, fixed MFLUX model/operation CLI mapping, single-reference FLUX.1 edit, bounded multi-reference FLUX.2/Qwen edit, loopback ComfyUI with single-reference edit, create-only EPHEMERAL output, provenance, finite retry, privacy-bounded trace, and separate human visual review.
 
 The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies concurrent preparation allocates distinct versions, unconfigured engines remain blocked, preflight does not run a generator, explicit execution stays inside non-Git EPHEMERAL scope, MFLUX commands match the fixed capability registry, batch references remain bounded, model/runtime/license and profile hashes are bound to output provenance, ComfyUI is loopback-only with built-in nodes, the Z-Image Turbo split-loader graph and local model inventory are exact, prompt-bearing PNG text metadata is removed, edits use exactly one hash-matched staged input, retries are finite, no output is overwritten, review starts PENDING, and traces reject prompts, image data, secrets and paths. Real model execution, device performance and visual quality require a user-configured local engine and independent human inspection; no model is installed or downloaded by validation.
+
+FLUX 3 Klein coverage also validates the live `TextGenerate` Dynamic Combo schema and final serialized payload shape before submission, rejects incompatible options without a POST, and checks that synthetic node/exception diagnostics omit prompts, paths, credentials and tracebacks. The lifecycle is adapter evidence only; MPS inference remains unverified.
 
 Release history 更新（純依賴升級文件豁免，Scenario 221）已審查本區段：Skill 整合、Explorer 與重用行為不變。
 
@@ -2012,6 +2016,8 @@ Dependabot commits: the GitHub App bot noreply author and Dependabot's exact fin
 Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
 ## Scenario 262 — ComfyUI Resource Authorization and Diagnostics
+
+固定 FLUX 3 Klein workflow 在提交前核對 live `TextGenerate` schema 與最終序列化 payload；錯誤摘要有界且遮蔽敏感欄位，這不構成模型推論或 MPS 成功證據。
 
 Scenario 268 separately covers bounded schema-validated workflows and keeps real inference UNVERIFIED.
 

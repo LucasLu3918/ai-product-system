@@ -12,6 +12,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+FLUX 3 Klein schema compatibility updates belong to the existing Creative execution path and Scenario 236 evidence; they do not change character-artwork provenance, generation, or asset-import behavior.
+
 Scenario 267's changes are synchronized through the required Harness, Project Intelligence and OpenCode adapter documentation before publication.
 
 Creative raster and content-safety changes include the AVIF limits and Scenario 265 placement in the exact-candidate documentation review.
@@ -556,9 +558,11 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 
 ## Validation architecture consistency
 
+Creative lifecycle 的 runtime-schema assertions 與最終 payload 檢查屬 adapter 相容性證據；維護文件不得將其描述為實際模型、MPS 或視覺品質驗收。
+
 The dynamic ComfyUI lifecycle is included in Scenario 268 and the Large/Core Change Matrix; keep its synthetic evidence distinct from real inference and visual quality claims.
 
-Scenario 236 lifecycle checks cover profile registry loading, exact local component inventory and rejection of unreviewed topology families.
+Scenario 236 lifecycle checks cover profile registry loading, exact local component inventory, rejection of unreviewed topology families, and fixed FLUX 3 Klein `TextGenerate` schema/final-payload validation. These synthetic checks do not claim Apple Silicon MPS inference or VAE output acceptance.
 
 Scenario 044 lifecycle evidence covers repository-local excludes for attached AIPS state and detach archives while preserving the project `.gitignore`.
 

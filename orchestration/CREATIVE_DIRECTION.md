@@ -57,6 +57,8 @@ Material visual artifacts use `visual-quality-review`. Review against the approv
 
 ### Local ComfyUI model profiles
 
+For the fixed FLUX 3 Klein Base topology, preflight validates `TextGenerate` input types, numeric ranges, combo choices and the live `COMFY_DYNAMICCOMBO_V3` format from `/object_info/TextGenerate`. Preserve the runtime-provided Dynamic Combo API object shape; validate the final serialized workflow and its fixed links before the single `/prompt` POST. Provider failures may expose only allowlisted node ID/type, exception class and narrow safe argument summaries. Synthetic lifecycle evidence does not establish MPS inference.
+
 
 The READY+STALE advisory in Scenario 267 applies only to ordinary confined local L2 source writes; creative writes in Git workspaces retain the existing Project Intelligence guard.
 

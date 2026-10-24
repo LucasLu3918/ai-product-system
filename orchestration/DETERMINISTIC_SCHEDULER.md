@@ -83,7 +83,7 @@ Observed validation timing is diagnostic only. Capture complete exact-candidate 
 
 Creative generation is an explicit user action through `aips creative execute`; scheduler inspection, validation, and Gate runs never launch a configured image engine.
 
-`aips creative workflows scan`, `import` and `inspect` are separate explicit CLI operations. Scheduler readiness, workflow validation and repository Gates remain non-generative; only an explicit Creative execute request may submit a ComfyUI workflow.
+`aips creative workflows scan`, `import` and `inspect` are separate explicit CLI operations. The fixed FLUX 3 Klein executor validates the live `TextGenerate` schema and final serialized payload before the explicitly authorized single submission. Scheduler readiness, workflow validation and repository Gates remain non-generative; only an explicit Creative execute request may submit a ComfyUI workflow, and synthetic validation does not establish MPS inference.
 
 Turn Context task routes are resolved before scheduling and never grant Scheduler write authority; the task's approved boundary and lease remain authoritative.
 

@@ -1098,6 +1098,8 @@ The branch lifecycle report classifies remote branches using current exact-SHA P
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+FLUX 3 Klein `TextGenerate` preflight remains in the Creative executor; its schema and payload checks add no Skill catalog, Skill Explorer, or routing behavior.
+
 Dynamic Creative workflow utilities do not add or modify Skills catalog entries or explorer behavior.
 
 ComfyUI model profiles are Creative runtime data and do not add Skills, alter Skill Explorer inventory, or affect Skill routing.
@@ -1148,6 +1150,8 @@ Plan40 verifies explicit publication reason codes, safe common Prepare/Hook bind
 Scenario 260 verifies the read-only `aips publish doctor`, Required Checks classification, literal merge diagnosis without execution or grant consumption, sanitized error output, and consistent runtime guidance. Missing/permission-limited policy evidence remains blocking; no repository policy mutation or merge bypass is introduced. Scenario 261 adds grouped dirty-path evidence and phase attribution through push, PR, checks, and exact-head merged recovery; diagnostics remain non-authorizing. Scenario 233 covers upstream Skill inventory and filtering without changing the canonical-only listing default.
 
 ## Scenario 262 — ComfyUI Resource Authorization and Diagnostics
+
+FLUX 3 Klein lifecycle coverage checks live `TextGenerate` Dynamic Combo schema and final serialized payload preservation, blocks unsupported options before submission, and verifies bounded redacted node failure diagnostics. It does not establish MPS model execution.
 
 Scenario 236 profile entries may reuse executor-reviewed topology families only; graph operations and local resource authorization remain code-defined.
 
