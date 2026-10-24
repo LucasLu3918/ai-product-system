@@ -538,12 +538,11 @@ def validate_textgenerate_inputs(node_id: str, inputs: Any, node_info: Any, work
                       {"node_id": node_id, "node_type": "TextGenerate", "field": "sampling_mode"},
                       phase="creative.capabilities", source="comfyui")
     options = combo_spec[1].get("options")
-    mode_payload = inputs.get("sampling_mode")
-    if not isinstance(options, list) or not isinstance(mode_payload, dict) or set(mode_payload) != {"sampling_mode"}:
-        raise Blocked("comfy_textgenerate_schema_invalid", "TextGenerate sampling_mode payload does not match the installed Dynamic Combo format.",
+    selected = inputs.get("sampling_mode")
+    if not isinstance(options, list) or not isinstance(selected, str):
+        raise Blocked("comfy_textgenerate_schema_invalid", "TextGenerate sampling_mode API value does not match the installed Dynamic Combo format.",
                       {"node_id": node_id, "node_type": "TextGenerate", "field": "sampling_mode"},
                       phase="creative.capabilities", source="comfyui")
-    selected = mode_payload.get("sampling_mode")
     matches = [item for item in options if isinstance(item, dict) and item.get("key") == selected]
     if len(matches) != 1:
         raise Blocked("comfy_textgenerate_schema_invalid", "TextGenerate sampling_mode is not an installed Dynamic Combo option.",
@@ -740,7 +739,7 @@ def load_comfy_workflow(root: Path, config: Any) -> tuple[str, dict[str, Any]]:
                 or unet.get("unet_name") != config["unet_name"] or unet.get("weight_dtype") != "default"
                 or vae.get("vae_name") != config["vae_name"] or latent.get("batch_size") != 1
                 or textgen.get("clip") != [upsampler_node[0], 0] or textgen.get("max_length") != 1024
-                or textgen.get("sampling_mode") != {"sampling_mode": "off"} or textgen.get("thinking") is not False
+                or textgen.get("sampling_mode") != "off" or textgen.get("thinking") is not False
                 or textgen.get("use_default_template") is not True or textgen.get("mtp") != "off"
                 or not isinstance(textgen.get("system_prompt"), str) or not textgen["system_prompt"].strip()
                 or text.get("text") != [textgen_id, 0] or text.get("clip") != [encoder_node[0], 0]
@@ -1686,7 +1685,7 @@ def _comfy_execution_failure_details(status: Any) -> dict[str, Any]:
             output["exception_type"] = exception_type
         message = error.get("exception_message")
         if isinstance(message, str):
-            missing = re.search(r"missing required (?:positional )?argument ['\"]([A-Za-z_][A-Za-z0-9_]{0,63})['\"]", message)
+            missing = re.search(r"missing\s+(?:(?:[1-9]\d*)\s+)?required\s+(?:(?:positional|keyword-only)\s+)?argument\s*:?\s*['\"]([A-Za-z_][A-Za-z0-9_]{0,63})['\"]", message)
             unexpected = re.search(r"unexpected keyword argument ['\"]([A-Za-z_][A-Za-z0-9_]{0,63})['\"]", message)
             if missing:
                 output["reason_summary"] = f"missing required argument '{missing.group(1)}'"

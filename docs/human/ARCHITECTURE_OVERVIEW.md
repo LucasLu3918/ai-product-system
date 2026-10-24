@@ -150,7 +150,7 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 Creative profile registry 支援同一審核拓樸家族中的新增模型；FLUX 3 Klein Base 使用獨立固定 workflow 與元件清單。
 
-FLUX 3 的 `TextGenerate` preflight 會依本機 `/object_info` 驗證輸入型別、範圍及 Dynamic Combo 格式；送出前再驗證最終序列化工作流保留核准的節點與連線。這是介面相容性檢查，不代表模型已完成推論。
+FLUX 3 的 `TextGenerate` preflight 會依本機 `/object_info` 驗證輸入型別、範圍及 Dynamic Combo 選項 schema，並確認送往 API 的值是已核准選項鍵；ComfyUI 執行層會重建節點所需的巢狀值。送出前再驗證最終序列化工作流保留核准的節點與連線。這是介面相容性檢查，不代表模型已完成推論。
 
 Scenario 267's READY+STALE advisory does not relax the existing creative-write boundary in Git workspaces.
 

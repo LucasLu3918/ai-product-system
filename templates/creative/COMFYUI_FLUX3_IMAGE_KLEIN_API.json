@@ -34,7 +34,7 @@
       "clip": ["3", 0],
       "prompt": "",
       "max_length": 1024,
-      "sampling_mode": {"sampling_mode": "off"},
+      "sampling_mode": "off",
       "thinking": false,
       "use_default_template": true,
       "mtp": "off",

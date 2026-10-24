@@ -570,13 +570,13 @@ def comfy_cases(base: Path):
         flux3_result = creative.execute(flux3_project, flux3_bundle.name)
         require(flux3_result["status"] == "COMPLETE" and FakeComfyHandler.workflow["5"]["inputs"]["prompt"] == "Requested image brief: private creative prompt", "compiled FLUX 3 prompt was not routed through the prompt upsampler")
         require(FakeComfyHandler.workflow["9"]["inputs"]["steps"] == 50 and FakeComfyHandler.workflow["9"]["inputs"]["cfg"] == 3.5 and FakeComfyHandler.workflow["8"]["inputs"]["width"] == 64, "FLUX 3 execution did not preserve fixed Base sampler settings or apply Bundle dimensions")
-        require(FakeComfyHandler.workflow["5"]["inputs"]["sampling_mode"] == {"sampling_mode": "off"}, "final FLUX 3 payload changed the ComfyUI Dynamic Combo API shape")
+        require(FakeComfyHandler.workflow["5"]["inputs"]["sampling_mode"] == "off", "final FLUX 3 payload did not serialize the Dynamic Combo option key expected by ComfyUI's API parser")
         require(FakeComfyHandler.prompts == flux3_prompt_count + 1, "FLUX 3 execution did not submit exactly one explicit workflow")
 
         _, flux3_provider = creative.resolve_provider(flux3_project.resolve(strict=True), flux3_bundle_data)
         FakeComfyHandler.execution_error = {
             "node_id": "5", "node_type": "TextGenerate", "exception_type": "TypeError",
-            "exception_message": "missing required argument 'sampling_mode' for private creative prompt at /Users/lucas/private/profile.yaml token=synthetic-token",
+            "exception_message": "TextGenerate.execute() missing 1 required positional argument: 'sampling_mode' for private creative prompt at /Users/lucas/private/profile.yaml token=synthetic-token",
             "traceback": ["/Users/lucas/private/comfy/node.py"],
         }
         try:
