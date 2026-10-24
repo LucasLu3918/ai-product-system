@@ -11,6 +11,8 @@ When an AIPS Git publication candidate is prepared, the existing built-in scanne
 - Strict publication mode ignores no inline line/file bypass markers.
 - Lockfiles suppress only the generic secret-assignment detector; provider tokens and private-key patterns remain enabled.
 - Unreadable, oversized, unknown-format, invalid-policy, expired-allowlist or incomplete-history inputs are BLOCKED, never PASS.
+- The generic assignment detector does not classify the exact generated-password expression `Convert.ToBase64String(RandomNumberGenerator.GetBytes(n)).TrimEnd(...)` or parameterized SQL expression `+QUOTENAME(@password|@passwd|@pwd, ...)` as literal credentials; high-entropy literal assignments remain blocked.
+- JSON text files may be scanned up to 8,000,000 bytes; larger JSON and non-JSON text files over 2,000,000 bytes remain BLOCKED. Known provider-token and private-key detectors remain active at both limits.
 - Findings and CI evidence never include secret values; reports contain bounded metadata and hashes only.
 - Integration Gate refuses a missing/non-required/path-filtered scanner check and binds base/head, changed-file hash, policy hash and scanner hash into the candidate fingerprint.
 - Local publication preflight and GitHub Actions use the same scanner and policy; CI scans before installing expensive validation dependencies.

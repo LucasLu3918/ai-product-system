@@ -48,6 +48,10 @@ ASSIGNMENT = re.compile(
     ["']?([^\s"' ,;}{\]]{12,})["']?
     """
 )
+NON_LITERAL_SECRET_ASSIGNMENTS = (
+    re.compile(r"^['\"]?Convert\.ToBase64String\(RandomNumberGenerator\.GetBytes\(\d+\)\)\.TrimEnd\($", re.IGNORECASE),
+    re.compile(r"^['\"]?\+QUOTENAME\(@(?:password|passwd|pwd)\b$", re.IGNORECASE),
+)
 
 
 class ScanError(ValueError):
@@ -102,6 +106,10 @@ def load_policy(path: Path) -> tuple[dict[str, Any], str]:
     limits = policy.get("limits") or {}
     if not isinstance(limits, dict) or not isinstance(limits.get("max_file_bytes"), int) or limits["max_file_bytes"] < 1:
         raise ScanError("secret-scan policy requires a positive limits.max_file_bytes",
+                        reason_code="SECRET_SCAN_POLICY_INVALID", phase="content_scan.policy_validation")
+    json_limit = limits.get("max_json_file_bytes", limits["max_file_bytes"])
+    if not isinstance(json_limit, int) or json_limit < limits["max_file_bytes"]:
+        raise ScanError("secret-scan policy max_json_file_bytes must be an integer at least max_file_bytes",
                         reason_code="SECRET_SCAN_POLICY_INVALID", phase="content_scan.policy_validation")
     generated = policy.get("generated_paths") or []
     lockfiles = policy.get("lockfiles") or {}
@@ -278,6 +286,8 @@ def scan_text(
         if "generic-secret-assignment" not in disabled:
             for match in ASSIGNMENT.finditer(line):
                 value = match.group(2)
+                if any(pattern.match(value) for pattern in NON_LITERAL_SECRET_ASSIGNMENTS):
+                    continue
                 if placeholder(value):
                     continue
                 if len(value) < 20 or entropy(value) < 3.25:
@@ -300,6 +310,13 @@ def iter_files(root: Path, explicit: list[str], policy: dict[str, Any]) -> Itera
             relative = path.relative_to(root).as_posix()
             if not generated_path(relative, policy) and (path.suffix.lower() not in BINARY_EXT or path.suffix.lower() in FONT_EXT | {".m4a", ".avif"}):
                 yield path
+
+
+def max_scan_file_bytes(path: str, policy: dict[str, Any]) -> int:
+    limits = policy["limits"]
+    if PurePosixPath(path).suffix.lower() == ".json":
+        return limits.get("max_json_file_bytes", limits["max_file_bytes"])
+    return limits["max_file_bytes"]
 
 
 def scan_worktree(root: Path, policy: dict[str, Any], *, strict: bool, paths: list[str]) -> tuple[list[dict[str, Any]], list[str]]:
@@ -336,7 +353,7 @@ def scan_worktree(root: Path, policy: dict[str, Any], *, strict: bool, paths: li
                 continue
             if path.suffix.lower() in BINARY_EXT:
                 continue
-            if path.stat().st_size > policy["limits"]["max_file_bytes"]:
+            if path.stat().st_size > max_scan_file_bytes(relative, policy):
                 if strict:
                     blockers.append(f"candidate file exceeds scan limit: {relative}")
                 continue
@@ -398,8 +415,6 @@ def scan_candidate(root: Path, base: str, head: str, policy: dict[str, Any], *,
 
     findings: list[dict[str, Any]] = []
     blockers: list[str] = []
-    max_bytes = policy["limits"]["max_file_bytes"]
-
     # Scan the committed final tree, not a possibly dirty filesystem view.
     for mode, blob_sha, path in decode_tree_paths(git(root, "ls-tree", "-rz", "--full-tree", head_sha)):
         suffix = PurePosixPath(path).suffix.lower()
@@ -435,7 +450,7 @@ def scan_candidate(root: Path, base: str, head: str, policy: dict[str, Any], *,
                 if blocker:
                     blockers.append(blocker)
                 continue
-            if int(git_text(root, "cat-file", "-s", blob_sha)) > max_bytes:
+            if int(git_text(root, "cat-file", "-s", blob_sha)) > max_scan_file_bytes(path, policy):
                 blockers.append(f"candidate file exceeds scan limit: {normalize_path(path)}")
                 continue
             payload = git(root, "cat-file", "blob", blob_sha)
@@ -505,7 +520,7 @@ def scan_candidate(root: Path, base: str, head: str, policy: dict[str, Any], *,
                     if blocker:
                         blockers.append(blocker)
                     continue
-                if int(git_text(root, "cat-file", "-s", object_spec)) > max_bytes:
+                if int(git_text(root, "cat-file", "-s", object_spec)) > max_scan_file_bytes(path, policy):
                     blockers.append(f"candidate history file exceeds scan limit: {normalize_path(path)}")
                     continue
                 payload = git(root, "cat-file", "blob", object_spec)

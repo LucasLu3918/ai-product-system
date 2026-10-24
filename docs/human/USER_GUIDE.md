@@ -700,6 +700,8 @@ Retrieval index persistence is an internal, rebuildable cache boundary in `scrip
 
 ## Git Publication 與 Release
 
+Publication preflight scans the exact candidate tree and commit history. The scanner fails closed on oversized or unreadable content and keeps provider-token, private-key and high-entropy literal detection enabled.
+
 ### Claude Code 發布 Hook 遠端逾時
 
 Hook 遇到可重試的遠端觀測失敗時會立即拒絕並提供安全診斷，不會在同步 Hook 中等待 Doctor。請在同一候選工作樹執行唯讀命令 `aips publish doctor --worktree . --format json`；完成排除後重新執行 Prepare。逾時表示尚未完成遠端驗證，不代表授權或已執行。
@@ -903,6 +905,8 @@ Scenario / validation history
 
 Documentation Placement Contract 會檢查 heading hierarchy、version/scenario-style heading 與 changed-line placement。新增功能不得只在 current-behavior 文件尾端追加 `vX.Y` / Scenario 說明；若確實需要新 topic，必須同時把 canonical section 加入 placement contract。
 ## Runtime Content Safety Boundary
+
+The generic secret-assignment check ignores only the documented generated-password and parameterized SQL expression shapes. JSON evidence is scanned up to 8,000,000 bytes, other text up to 2,000,000 bytes, and larger inputs block publication.
 
 Imported ComfyUI workflow JSON is untrusted project content and remains subject to content-safety review; schema validation does not make it trusted instructions.
 

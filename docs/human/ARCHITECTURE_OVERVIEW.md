@@ -406,6 +406,8 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 
 ## Security 與 Governance
 
+Personal publication validates the exact candidate tree and history before release. Scanner failure blocks publication, and the detector keeps provider-token, private-key and high-entropy literal checks active.
+
 ComfyUI 執行錯誤只提供有界且過濾後的節點／例外摘要；提示、路徑、憑證及原始 traceback 不進入診斷回應。
 
 ComfyUI profile registry 僅允許既有程式審核的節點拓樸與 loopback runtime，不可由資料設定引入遠端 endpoint 或新節點。
@@ -686,6 +688,8 @@ Docs build 與 Pages hosting 分開驗證：PR / main 都能證明 VitePress bui
 
 Documentation Placement 對 behavior-bearing source 採 fail-closed mapping：只要 source 落在 Technology Guide 的廣域同步 surface，就必須先命中 subsystem placement rule。這避免新功能以「文件最後補充說明」逃過 topic architecture。
 ## Runtime Content Safety Boundary
+
+The publication scanner examines the exact candidate tree and commit history. Its generic assignment detector recognizes only the documented generated-password and parameterized SQL forms as non-literal values; provider-token, private-key and high-entropy literal checks remain active. JSON scanning is bounded at 8,000,000 bytes and larger inputs fail closed.
 
 Commit and publication content-safety checks remain independent from the optional AIPS Required Checks merge gate; disabling that gate does not relax content scanning.
 

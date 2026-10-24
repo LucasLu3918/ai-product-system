@@ -22,6 +22,8 @@ Publication diagnostics use shared reason codes and safe candidate bindings from
 
 Personal publication validates the literal executable and subcommand before candidate inspection, then requires the existing exact-candidate/history secret scan. Scanner failures use stable redacted diagnostics; no new authority component or path is introduced.
 
+The candidate scanner treats only the documented generated-password and parameterized SQL expression shapes as non-literal assignments. It keeps credential detectors active and scans JSON evidence under a finite 8,000,000-byte limit.
+
 Claude Code publication denials may trigger one bounded read-only Doctor observation for retryable network, rate-limit or GitHub server errors; the existing publication authority remains the only merge decision path.
 
 The publication Doctor uses the shared safe API observation path and keeps the candidate branch distinct from remote target-branch policy evidence.

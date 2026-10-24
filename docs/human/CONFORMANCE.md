@@ -1975,6 +1975,8 @@ Current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md)
 
 ## Scenario 260 — Publication diagnostics and Doctor
 
+Scenario 260 publication coverage includes exact-candidate and full-history secret scanning, strict failure on incomplete scans, and continued provider-token/private-key detection.
+
 Scenario 097/260 also cover the opt-in merge gate: without `AIPS_ENFORCE_REQUIRED_CHECKS=1`, AIPS does not block on Required Checks evidence; Doctor remains read-only and GitHub native protections remain effective.
 
 Scenario 260/261 verifies immediate Claude Hook denial without an inline Doctor call, the manual read-only recovery command, and safe Prepare timeout fields.
@@ -2036,6 +2038,8 @@ Scenario 262 covers fail-closed Resource Authorization Profile/grant matching, H
 Scenario 268 verifies opt-in local API workflow import, scan and inspection; bounded graph/schema validation; runtime core-node allowlisting; installed loader model checks; explicit prompt/seed/dimension/output/reference bindings; create-only generation output; and no automatic resubmission after an uncertain POST. Synthetic loopback evidence does not verify real model inference, hardware compatibility or image quality.
 
 ## Scenario 263 — Commit Safety Diagnostics
+
+The candidate scanner recognizes only the approved generated-password and parameterized SQL expression shapes as non-literal values. High-entropy literal assignments remain detectable; JSON text is bounded at 8,000,000 bytes and other text at 2,000,000 bytes, with oversized inputs blocked.
 
 The candidate/history publication scanner separately classifies policy, Git-object and file-read failures; Scenario 261 verifies those failures remain blocked without exposing paths or exception text.
 
