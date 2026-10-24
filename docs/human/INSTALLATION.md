@@ -61,7 +61,7 @@ aips mcp inspect
 
 ## Runtime integration
 
-ComfyUI model profiles 隨 AIPS registry 提供；安裝與 discovery 不下載權重，也不保證實際推論相容。
+ComfyUI model profiles 隨 AIPS registry 提供；固定 FLUX 3 Klein 執行前會檢查本機 `TextGenerate` schema 與最終 payload。安裝與 discovery 不下載權重；schema 通過不代表 MPS 或實際推論相容。
 
 Creative ComfyUI `dynamic_local` workflow support reuses the installed AIPS executor and Python dependencies. It does not install ComfyUI, custom nodes, model weights, or a remote service; the local ComfyUI API and selected model files must already be available. Workflow scan and preflight are read-only, while workflow import is an explicit project-confined create-only operation.
 

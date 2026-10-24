@@ -248,7 +248,7 @@ Plan40 publication diagnostic changes synchronize stable reason-code behavior, s
 
 The plan39 Resource Authorization/ComfyUI boundary maps to User Guide Runtime Resource and Creative topics, Security Assurance, Architecture Overview, Technology Guide, and Scenario 262. Presets remain prompt guidance; MPS evidence stays static until real inference is separately authorized and observed.
 
-Model-agnostic local ComfyUI workflow changes map through the existing Creative Direction, Architecture, User Guide, Technology, Security, Harness, and Conformance topics. Scenario 268 tracks bounded `/object_info` and graph validation, trusted core-node classification, explicit bindings, local model inventory, create-only import/output and uncertain-submit recovery; keep actual inference and quality UNVERIFIED unless separately observed.
+Model-agnostic local ComfyUI workflow changes map through the existing Creative Direction, Architecture, User Guide, Technology, Security, Harness, and Conformance topics. Scenario 268 tracks bounded `/object_info` and graph validation, trusted core-node classification, explicit bindings, local model inventory, create-only import/output and uncertain-submit recovery. Fixed FLUX 3 Klein changes also synchronize live `TextGenerate` input-schema checks and final serialized payload validation through Scenario 236; keep actual inference and quality UNVERIFIED unless separately observed.
 
 Publication policy states and Claude's bounded recovery behavior are synchronized across the User Guide, Security Assurance, Harness adapter and Scenario 260/261. Skill Explorer and Skills CLI guidance remains canonical and independent.
 

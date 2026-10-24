@@ -25,7 +25,7 @@ Read-only Project Diagnostics recommends inspection or conditional recovery and 
 
 Use `aips project diagnose <path>` for a read-only summary of existing Doctor, Project Intelligence, Harness and MCP static status. Review the suggested recovery action before execution; diagnostics do not bootstrap, refresh, attach or authorize a mutation.
 
-For local creative execution, preflight the scoped Bundle and require explicit create/modify intent before invoking the structured tool; never route through arbitrary Shell. ComfyUI model profiles select only code-reviewed topology families; a data-only profile addition cannot grant a new node, endpoint or operation.
+For local creative execution, preflight the scoped Bundle and require explicit create/modify intent before invoking the structured tool; never route through arbitrary Shell. ComfyUI model profiles select only code-reviewed topology families; the fixed FLUX 3 Klein executor validates the live `TextGenerate` input schema and final serialized payload before a single `/prompt` submission. A data-only profile addition cannot grant a new node, endpoint or operation, and schema validation does not certify MPS inference.
 
 For `dynamic_local` ComfyUI Bundles, use the workflow scan/import/inspect commands before preflight as needed. These operations do not generate; execution requires the separate explicit Creative action and remains bound to the current Bundle, local schema, loopback service and output scope.
 

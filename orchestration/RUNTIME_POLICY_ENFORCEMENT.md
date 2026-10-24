@@ -44,7 +44,7 @@ Runtime decisions expose `status`, `phase`, `reason_code`, `source`, `retryable`
 
 ## Policy and decisions
 
-ComfyUI workflow schema approval is application-level validation rather than native tool authorization. It does not bypass Runtime Action policy or OpenCode prompt admission; only the separately requested Creative execution action can submit to the configured loopback service.
+ComfyUI workflow schema and final serialized-payload validation are application-level checks rather than native tool authorization. They do not bypass Runtime Action policy or OpenCode prompt admission; only the separately requested Creative execution action can submit to the configured loopback service. Passing the fixed FLUX 3 Klein `TextGenerate` check does not establish MPS inference.
 
 AVIF metadata findings remain in the content-safety scanner and are not Runtime Action Envelope decisions or execution permissions.
 

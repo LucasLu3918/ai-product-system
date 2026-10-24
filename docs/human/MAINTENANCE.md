@@ -558,7 +558,7 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 
 The dynamic ComfyUI lifecycle is included in Scenario 268 and the Large/Core Change Matrix; keep its synthetic evidence distinct from real inference and visual quality claims.
 
-Scenario 236 lifecycle checks cover profile registry loading, exact local component inventory and rejection of unreviewed topology families.
+Scenario 236 lifecycle checks cover profile registry loading, exact local component inventory, rejection of unreviewed topology families, and fixed FLUX 3 Klein `TextGenerate` schema/final-payload validation. These synthetic checks do not claim Apple Silicon MPS inference or VAE output acceptance.
 
 Scenario 044 lifecycle evidence covers repository-local excludes for attached AIPS state and detach archives while preserving the project `.gitignore`.
 
