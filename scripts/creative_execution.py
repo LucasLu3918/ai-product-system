@@ -460,6 +460,157 @@ def comfy_component_matches(profile: dict[str, Any], key: str, selected: Any) ->
     return selected in choices if isinstance(choices, list) else selected == choices
 
 
+def _comfy_input_spec(value: Any) -> tuple[str, dict[str, Any]] | None:
+    if (not isinstance(value, (list, tuple)) or len(value) != 2
+            or not isinstance(value[0], str) or not isinstance(value[1], dict)):
+        return None
+    return value[0], value[1]
+
+
+def _validate_comfy_value(name: str, value: Any, spec: Any, node_id: str) -> None:
+    parsed = _comfy_input_spec(spec)
+    if parsed is None:
+        raise Blocked("comfy_textgenerate_schema_invalid", "TextGenerate runtime input schema is not in a supported API format.",
+                      {"node_id": node_id, "node_type": "TextGenerate", "field": name},
+                      phase="creative.capabilities", source="comfyui")
+    value_type, metadata = parsed
+    valid = (
+        value_type == "STRING" and isinstance(value, str)
+        or value_type == "BOOLEAN" and isinstance(value, bool)
+        or value_type == "INT" and isinstance(value, int) and not isinstance(value, bool)
+        or value_type == "FLOAT" and isinstance(value, (int, float)) and not isinstance(value, bool)
+        or value_type == "COMBO" and isinstance(value, str)
+    )
+    if not valid:
+        raise Blocked("comfy_textgenerate_schema_invalid", "TextGenerate workflow input type does not match the installed ComfyUI schema.",
+                      {"node_id": node_id, "node_type": "TextGenerate", "field": name},
+                      phase="creative.capabilities", source="comfyui")
+    if value_type in {"INT", "FLOAT"}:
+        bounds = [metadata[key] for key in ("min", "max") if key in metadata]
+        if any(not isinstance(bound, (int, float)) or isinstance(bound, bool) for bound in bounds):
+            raise Blocked("comfy_textgenerate_schema_invalid", "TextGenerate runtime range metadata is invalid.",
+                          {"node_id": node_id, "node_type": "TextGenerate", "field": name},
+                          phase="creative.capabilities", source="comfyui")
+        if ("min" in metadata and value < metadata["min"]) or ("max" in metadata and value > metadata["max"]):
+            raise Blocked("comfy_textgenerate_schema_invalid", "TextGenerate workflow value is outside the installed ComfyUI input range.",
+                          {"node_id": node_id, "node_type": "TextGenerate", "field": name},
+                          phase="creative.capabilities", source="comfyui")
+    options = metadata.get("options")
+    if value_type == "COMBO" and (not isinstance(options, list) or value not in options):
+        raise Blocked("comfy_textgenerate_schema_invalid", "TextGenerate workflow value is not an installed ComfyUI combo option.",
+                      {"node_id": node_id, "node_type": "TextGenerate", "field": name},
+                      phase="creative.capabilities", source="comfyui")
+
+
+def validate_textgenerate_inputs(node_id: str, inputs: Any, node_info: Any, workflow: dict[str, Any]) -> None:
+    """Validate the fixed TextGenerate payload against the live object_info schema."""
+    schema_inputs = node_info.get("input") if isinstance(node_info, dict) else None
+    required = schema_inputs.get("required") if isinstance(schema_inputs, dict) else None
+    optional = schema_inputs.get("optional", {}) if isinstance(schema_inputs, dict) else None
+    if not isinstance(required, dict) or not isinstance(optional, dict) or not isinstance(inputs, dict):
+        raise Blocked("comfy_textgenerate_schema_invalid", "Installed ComfyUI TextGenerate schema is incomplete.",
+                      {"node_id": node_id, "node_type": "TextGenerate"}, phase="creative.capabilities", source="comfyui")
+    if not set(required) <= set(inputs) or set(inputs) - (set(required) | set(optional)):
+        raise Blocked("comfy_textgenerate_schema_invalid", "TextGenerate workflow fields do not match the installed ComfyUI schema.",
+                      {"node_id": node_id, "node_type": "TextGenerate"}, phase="creative.capabilities", source="comfyui")
+    for name, spec in {**required, **optional}.items():
+        if name not in inputs or name == "sampling_mode":
+            continue
+        if name == "clip":
+            reference = inputs[name]
+            if (not isinstance(reference, list) or len(reference) != 2 or not isinstance(reference[0], str)
+                    or not isinstance(reference[1], int) or isinstance(reference[1], bool)
+                    or reference[0] not in workflow or workflow[reference[0]].get("class_type") != "CLIPLoader"):
+                raise Blocked("comfy_textgenerate_schema_invalid", "TextGenerate CLIP input is not connected to a registered local CLIPLoader.",
+                              {"node_id": node_id, "node_type": "TextGenerate", "field": name},
+                              phase="creative.capabilities", source="comfyui")
+            parsed = _comfy_input_spec(spec)
+            if parsed is None or parsed[0] != "CLIP":
+                raise Blocked("comfy_textgenerate_schema_invalid", "TextGenerate CLIP input type differs from the installed ComfyUI schema.",
+                              {"node_id": node_id, "node_type": "TextGenerate", "field": name},
+                              phase="creative.capabilities", source="comfyui")
+        else:
+            _validate_comfy_value(name, inputs[name], spec, node_id)
+
+    combo_spec = _comfy_input_spec(required.get("sampling_mode"))
+    if combo_spec is None or combo_spec[0] != "COMFY_DYNAMICCOMBO_V3":
+        raise Blocked("comfy_textgenerate_schema_invalid", "TextGenerate sampling_mode is not a supported Dynamic Combo schema.",
+                      {"node_id": node_id, "node_type": "TextGenerate", "field": "sampling_mode"},
+                      phase="creative.capabilities", source="comfyui")
+    options = combo_spec[1].get("options")
+    mode_payload = inputs.get("sampling_mode")
+    if not isinstance(options, list) or not isinstance(mode_payload, dict) or set(mode_payload) != {"sampling_mode"}:
+        raise Blocked("comfy_textgenerate_schema_invalid", "TextGenerate sampling_mode payload does not match the installed Dynamic Combo format.",
+                      {"node_id": node_id, "node_type": "TextGenerate", "field": "sampling_mode"},
+                      phase="creative.capabilities", source="comfyui")
+    selected = mode_payload.get("sampling_mode")
+    matches = [item for item in options if isinstance(item, dict) and item.get("key") == selected]
+    if len(matches) != 1:
+        raise Blocked("comfy_textgenerate_schema_invalid", "TextGenerate sampling_mode is not an installed Dynamic Combo option.",
+                      {"node_id": node_id, "node_type": "TextGenerate", "field": "sampling_mode"},
+                      phase="creative.capabilities", source="comfyui")
+    option_inputs = matches[0].get("inputs")
+    option_required = option_inputs.get("required", {}) if isinstance(option_inputs, dict) else None
+    option_optional = option_inputs.get("optional", {}) if isinstance(option_inputs, dict) else None
+    if not isinstance(option_required, dict) or not isinstance(option_optional, dict):
+        raise Blocked("comfy_textgenerate_schema_invalid", "TextGenerate Dynamic Combo option schema is incomplete.",
+                      {"node_id": node_id, "node_type": "TextGenerate", "field": "sampling_mode"},
+                      phase="creative.capabilities", source="comfyui")
+    if option_required or option_optional:
+        raise Blocked("comfy_textgenerate_schema_invalid", "AIPS fixed FLUX 3 profile requires the no-parameter sampling_mode option.",
+                      {"node_id": node_id, "node_type": "TextGenerate", "field": "sampling_mode"},
+                      phase="creative.capabilities", source="comfyui")
+
+
+def validate_final_comfy_workflow(workflow: Any, provider: dict[str, Any]) -> None:
+    """Keep the final fixed API workflow bound to the preflighted topology and fields."""
+    original = provider.get("workflow")
+    if not isinstance(workflow, dict) or not isinstance(original, dict) or set(workflow) != set(original):
+        raise Blocked("comfy_final_payload_invalid", "Final ComfyUI workflow nodes differ from the preflighted workflow.",
+                      phase="creative.payload_validation", source="comfyui")
+    profile = provider.get("profile")
+    prompt_id = provider.get("prompt_id")
+    latent_id = provider.get("latent_node_id")
+    sampler_id = provider.get("sampler_node_id")
+    save_ids = set(provider.get("save_nodes", []))
+    config = provider.get("config", {})
+    allowed: dict[str, set[str]] = {
+        str(prompt_id): {provider.get("prompt_field", "text")},
+        str(latent_id): {"width", "height"},
+        str(sampler_id): {"seed", "steps"},
+    }
+    for node_id in save_ids:
+        allowed.setdefault(str(node_id), set()).add("filename_prefix")
+    if isinstance(config, dict) and config.get("input_image_node_id") is not None:
+        allowed.setdefault(str(config["input_image_node_id"]), set()).add("image")
+    if profile is not None:
+        allowed[str(sampler_id)].update(profile.get("sampler", {}).keys())
+    for node_id, source_node in original.items():
+        candidate = workflow.get(node_id)
+        source_inputs = source_node.get("inputs") if isinstance(source_node, dict) else None
+        candidate_inputs = candidate.get("inputs") if isinstance(candidate, dict) else None
+        allowed_fields = allowed.get(str(node_id), set())
+        if (not isinstance(candidate, dict) or candidate.get("class_type") != source_node.get("class_type")
+                or not isinstance(source_inputs, dict) or not isinstance(candidate_inputs, dict)
+                or set(source_inputs) - set(candidate_inputs)
+                or set(candidate_inputs) - set(source_inputs) - allowed_fields):
+            raise Blocked("comfy_final_payload_invalid", "Final ComfyUI node fields differ from the preflighted topology.",
+                          {"node_id": str(node_id)[:32], "node_type": str(source_node.get("class_type", "unknown"))[:64]},
+                          phase="creative.payload_validation", source="comfyui")
+        for name, source_value in source_inputs.items():
+            if name not in allowed_fields and candidate_inputs[name] != source_value:
+                raise Blocked("comfy_final_payload_invalid", "Final ComfyUI node connection or fixed value changed after preflight.",
+                              {"node_id": str(node_id)[:32], "node_type": str(source_node["class_type"])[:64], "field": str(name)[:64]},
+                              phase="creative.payload_validation", source="comfyui")
+    if isinstance(profile, dict) and profile.get("topology") == "flux3_klein_base_t2i":
+        node_id = str(prompt_id)
+        schema = provider.get("textgen_schema")
+        if not isinstance(schema, dict):
+            raise Blocked("comfy_textgenerate_schema_invalid", "TextGenerate runtime schema was not retained through preflight.",
+                          {"node_id": node_id, "node_type": "TextGenerate"}, phase="creative.payload_validation", source="comfyui")
+        validate_textgenerate_inputs(node_id, workflow[node_id].get("inputs"), schema, workflow)
+
+
 def load_comfy_workflow(root: Path, config: Any) -> tuple[str, dict[str, Any]]:
     if not isinstance(config, dict):
         raise Blocked("comfy_config_invalid", "ComfyUI configuration is required for this provider.")
@@ -725,7 +876,12 @@ def verify_comfy(root: Path, bundle: dict[str, Any]) -> tuple[str, dict[str, Any
             optional = text_inputs.get("optional", {}) if isinstance(text_inputs, dict) else {}
             if (not isinstance(required, dict) or not {"clip", "prompt", "max_length", "sampling_mode"}.issubset(required)
                     or not isinstance(optional, dict) or "system_prompt" not in optional):
-                raise Blocked("comfy_model_unavailable", "The installed ComfyUI TextGenerate node does not expose the required built-in prompt-upsample inputs.")
+                raise Blocked("comfy_textgenerate_schema_invalid", "The installed ComfyUI TextGenerate node does not expose the required built-in prompt-upsample inputs.",
+                              {"node_id": str(info["prompt_id"]), "node_type": "TextGenerate"},
+                              phase="creative.capabilities", source="comfyui")
+            prompt_node = info["workflow"].get(str(info["prompt_id"]), {})
+            validate_textgenerate_inputs(str(info["prompt_id"]), prompt_node.get("inputs"), textgen_info, info["workflow"])
+            info["textgen_schema"] = textgen_info
     else:
         node_info = object_info.get("CheckpointLoaderSimple", {})
         required = ((node_info.get("input") or {}).get("required") or {})
@@ -1510,6 +1666,36 @@ def _cleanup_queued_comfy_job(base: str, prompt_id: str) -> None:
         pass
 
 
+def _comfy_execution_failure_details(status: Any) -> dict[str, Any]:
+    messages = status.get("messages") if isinstance(status, dict) else None
+    if not isinstance(messages, list):
+        return {}
+    for item in messages[:100]:
+        if not isinstance(item, (list, tuple)) or len(item) != 2 or item[0] != "execution_error" or not isinstance(item[1], dict):
+            continue
+        error = item[1]
+        output: dict[str, Any] = {}
+        node_id = error.get("node_id")
+        if isinstance(node_id, (str, int)) and re.fullmatch(r"[0-9]{1,12}", str(node_id)):
+            output["node_id"] = str(node_id)
+        node_type = error.get("node_type")
+        if isinstance(node_type, str) and re.fullmatch(r"[A-Za-z][A-Za-z0-9_]{0,63}", node_type):
+            output["node_type"] = node_type
+        exception_type = error.get("exception_type")
+        if isinstance(exception_type, str) and re.fullmatch(r"[A-Za-z][A-Za-z0-9_.]{0,63}", exception_type):
+            output["exception_type"] = exception_type
+        message = error.get("exception_message")
+        if isinstance(message, str):
+            missing = re.search(r"missing required (?:positional )?argument ['\"]([A-Za-z_][A-Za-z0-9_]{0,63})['\"]", message)
+            unexpected = re.search(r"unexpected keyword argument ['\"]([A-Za-z_][A-Za-z0-9_]{0,63})['\"]", message)
+            if missing:
+                output["reason_summary"] = f"missing required argument '{missing.group(1)}'"
+            elif unexpected:
+                output["reason_summary"] = f"unexpected keyword argument '{unexpected.group(1)}'"
+        return output
+    return {}
+
+
 def comfy_execute(bundle: dict[str, Any], provider: dict[str, Any], temp_output: Path, timeout: float) -> None:
     if provider.get("mode") == "dynamic_local":
         cfg = provider["config"]
@@ -1538,7 +1724,11 @@ def comfy_execute(bundle: dict[str, Any], provider: dict[str, Any], temp_output:
             workflow[str(cfg["input_image_node_id"])]["inputs"]["image"] = cfg["input_image_name"]
         for node_id in provider["save_nodes"]:
             workflow[node_id]["inputs"]["filename_prefix"] = "aips_local"
+        validate_final_comfy_workflow(workflow, provider)
     payload = json.dumps({"prompt": workflow, "client_id": str(uuid.uuid4())}, separators=(",", ":")).encode()
+    if provider.get("mode") != "dynamic_local":
+        serialized_payload = json.loads(payload)
+        validate_final_comfy_workflow(serialized_payload.get("prompt"), provider)
     started = time.monotonic()
     prompt_id = None
     try:
@@ -1553,11 +1743,12 @@ def comfy_execute(bundle: dict[str, Any], provider: dict[str, Any], temp_output:
                 status = history.get("status") or {}
                 if status.get("status_str") == "error" or status.get("completed") is False and status.get("messages"):
                     message_text = json.dumps(status.get("messages") or [], ensure_ascii=True).casefold()
+                    failure_details = _comfy_execution_failure_details(status)
                     if ("mps" in message_text or "metal" in message_text) and ("dtype" in message_text or "type" in message_text):
-                        raise Blocked("mps_dtype_unsupported", "Local Apple Silicon MPS does not support this workflow dtype. Try a locally installed supported precision and review model documentation.", phase="creative.comfy_execute", source="comfyui")
+                        raise Blocked("mps_dtype_unsupported", "Local Apple Silicon MPS does not support this workflow dtype. Try a locally installed supported precision and review model documentation.", failure_details, phase="creative.comfy_execute", source="comfyui")
                     if "out of memory" in message_text or "cuda oom" in message_text or "mps backend out of memory" in message_text:
-                        raise Blocked("gpu_out_of_memory", "Local ComfyUI reported insufficient accelerator memory. Reduce image dimensions or choose a model already installed for this device.", phase="creative.comfy_execute", source="comfyui")
-                    raise Blocked("comfy_execution_failed", "Local ComfyUI workflow failed; provider details were suppressed.")
+                        raise Blocked("gpu_out_of_memory", "Local ComfyUI reported insufficient accelerator memory. Reduce image dimensions or choose a model already installed for this device.", failure_details, phase="creative.comfy_execute", source="comfyui")
+                    raise Blocked("comfy_execution_failed", "Local ComfyUI workflow failed.", failure_details, phase="creative.comfy_execute", source="comfyui")
                 outputs = history.get("outputs") or {}
                 for node_id in provider["save_nodes"]:
                     images = (outputs.get(node_id) or {}).get("images") or []

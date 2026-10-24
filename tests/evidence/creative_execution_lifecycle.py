@@ -84,6 +84,8 @@ class FakeComfyHandler(BaseHTTPRequestHandler):
     unet_filename = None
     system_status = None
     flux3 = False
+    invalid_sampling_mode = False
+    execution_error = None
     extra_unets: ClassVar[list[str]] = []
     extra_clips: ClassVar[list[str]] = []
 
@@ -126,7 +128,17 @@ class FakeComfyHandler(BaseHTTPRequestHandler):
             choices = [] if type(self).missing_vae else (["flux2-vae.safetensors"] if type(self).flux3 else ["ae.safetensors"])
             return self.send_bytes(json.dumps({"VAELoader": {"input": {"required": {"vae_name": [choices]}}}}).encode())
         if self.path == "/object_info/TextGenerate":
-            return self.send_bytes(json.dumps({"TextGenerate": {"input": {"required": {"clip": [], "prompt": [], "max_length": [], "sampling_mode": []}, "optional": {"system_prompt": []}}}}).encode())
+            options = [
+                {"key": "on", "inputs": {"required": {"temperature": ["FLOAT", {"default": 0.7, "min": 0.01, "max": 2.0}], "top_k": ["INT", {"default": 64, "min": 0, "max": 1000}], "top_p": ["FLOAT", {"default": 0.95, "min": 0.0, "max": 1.0}], "min_p": ["FLOAT", {"default": 0.05, "min": 0.0, "max": 1.0}], "repetition_penalty": ["FLOAT", {"default": 1.05, "min": 0.0, "max": 5.0}], "seed": ["INT", {"default": 0, "min": 0, "max": 18446744073709551615}]}, "optional": {"presence_penalty": ["FLOAT", {"default": 0.0, "min": 0.0, "max": 5.0}]}}},
+                {"key": "off", "inputs": {"required": {}}},
+            ]
+            if type(self).invalid_sampling_mode:
+                options = options[:1]
+            schema = {"TextGenerate": {"input": {
+                "required": {"clip": ["CLIP", {}], "prompt": ["STRING", {"default": ""}], "max_length": ["INT", {"default": 512, "min": 1, "max": 32768}], "sampling_mode": ["COMFY_DYNAMICCOMBO_V3", {"options": options}]},
+                "optional": {"thinking": ["BOOLEAN", {"default": False}], "use_default_template": ["BOOLEAN", {"default": True}], "mtp": ["COMBO", {"options": ["auto", "off", "2", "3", "4", "5"]}], "system_prompt": ["STRING", {"forceInput": True}]},
+            }}}
+            return self.send_bytes(json.dumps(schema).encode())
         if self.path == "/object_info":
             vae_choices = [] if type(self).missing_vae else ["ae.safetensors"]
             schema = {
@@ -143,7 +155,10 @@ class FakeComfyHandler(BaseHTTPRequestHandler):
             return self.send_bytes(body, "image/png")
         if self.path == "/history/fixture-job":
             image_ref = {"images": [{"filename": "generated.png", "subfolder": "", "type": "output"}]}
-            item = {self.prompt_id: {"status": {"status_str": "success", "completed": True}, "outputs": {"9": image_ref, "11": image_ref}}}
+            status = {"status_str": "success", "completed": True}
+            if type(self).execution_error:
+                status = {"status_str": "error", "completed": True, "messages": [["execution_error", type(self).execution_error]]}
+            item = {self.prompt_id: {"status": status, "outputs": {"9": image_ref, "11": image_ref}}}
             return self.send_bytes(json.dumps(item).encode())
         self.send_error(404)
 
@@ -532,17 +547,56 @@ def comfy_cases(base: Path):
             "vae_name": "flux2-vae.safetensors", "prompt_node_id": "5", "latent_node_id": "8",
             "sampler_node_id": "9", "save_node_id": "11",
         }
-        flux3_bundle, _ = write_bundle(
+        flux3_bundle, flux3_bundle_data = write_bundle(
             flux3_project, provider="comfyui_local", model={"id": "flux3-image-klein-base", "revision": "local-model-files", "license": "FLUX Kommunity License", "license_source": "https://huggingface.co/black-forest-labs/flux-3-image-klein-comfy"},
             runtime="ComfyUI", runtime_version="fixture-1", comfyui=flux3_config,
         )
         flux3_prompt_count = FakeComfyHandler.prompts
         flux3_ready = creative.preflight(flux3_project, flux3_bundle.name)
         require(flux3_ready["status"] == "READY" and FakeComfyHandler.prompts == flux3_prompt_count, f"FLUX 3 Klein preflight was not ready or submitted a workflow: status={flux3_ready.get('status')} reason={flux3_ready.get('reason_code')} phase={flux3_ready.get('phase')}")
+
+        FakeComfyHandler.invalid_sampling_mode = True
+        try:
+            try:
+                creative.preflight(flux3_project, flux3_bundle.name)
+            except creative.Blocked as exc:
+                require(exc.reason_code == "comfy_textgenerate_schema_invalid", "unsupported TextGenerate Dynamic Combo did not return a stable preflight reason")
+            else:
+                raise AssertionError("FLUX 3 preflight accepted a server schema without the configured sampling_mode option")
+            require(FakeComfyHandler.prompts == flux3_prompt_count, "invalid TextGenerate schema submitted a ComfyUI workflow")
+        finally:
+            FakeComfyHandler.invalid_sampling_mode = False
+
         flux3_result = creative.execute(flux3_project, flux3_bundle.name)
         require(flux3_result["status"] == "COMPLETE" and FakeComfyHandler.workflow["5"]["inputs"]["prompt"] == "Requested image brief: private creative prompt", "compiled FLUX 3 prompt was not routed through the prompt upsampler")
         require(FakeComfyHandler.workflow["9"]["inputs"]["steps"] == 50 and FakeComfyHandler.workflow["9"]["inputs"]["cfg"] == 3.5 and FakeComfyHandler.workflow["8"]["inputs"]["width"] == 64, "FLUX 3 execution did not preserve fixed Base sampler settings or apply Bundle dimensions")
+        require(FakeComfyHandler.workflow["5"]["inputs"]["sampling_mode"] == {"sampling_mode": "off"}, "final FLUX 3 payload changed the ComfyUI Dynamic Combo API shape")
         require(FakeComfyHandler.prompts == flux3_prompt_count + 1, "FLUX 3 execution did not submit exactly one explicit workflow")
+
+        _, flux3_provider = creative.resolve_provider(flux3_project.resolve(strict=True), flux3_bundle_data)
+        FakeComfyHandler.execution_error = {
+            "node_id": "5", "node_type": "TextGenerate", "exception_type": "TypeError",
+            "exception_message": "missing required argument 'sampling_mode' for private creative prompt at /Users/lucas/private/profile.yaml token=synthetic-token",
+            "traceback": ["/Users/lucas/private/comfy/node.py"],
+        }
+        try:
+            try:
+                creative.comfy_execute(flux3_bundle_data, flux3_provider, base / "comfy-error.png", 3)
+            except creative.Blocked as exc:
+                payload = exc.to_payload()
+                diagnostic_text = repr(payload)
+                require(exc.reason_code == "comfy_execution_failed" and payload["diagnostics"].get("node_id") == "5"
+                        and payload["diagnostics"].get("node_type") == "TextGenerate"
+                        and payload["diagnostics"].get("exception_type") == "TypeError"
+                        and payload["diagnostics"].get("reason_summary") == "missing required argument 'sampling_mode'",
+                        "ComfyUI failure omitted its bounded node and exception identity")
+                require("private creative prompt" not in diagnostic_text and "/Users/lucas/private" not in diagnostic_text
+                        and "synthetic-token" not in diagnostic_text and "traceback" not in diagnostic_text,
+                        "ComfyUI failure diagnostics leaked prompt, path, credential-like content or traceback")
+            else:
+                raise AssertionError("synthetic TextGenerate execution error was not surfaced")
+        finally:
+            FakeComfyHandler.execution_error = None
 
         bad_flux3 = json.loads(flux3_path.read_text())
         bad_flux3["5"]["inputs"]["clip"] = ["2", 0]

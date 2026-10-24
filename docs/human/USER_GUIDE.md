@@ -127,6 +127,8 @@ Project Diagnostics 只報告既有狀態，不會建立 Creative Bundle、啟�
 
 ComfyUI 也可用 `model_profile: z-image-turbo` 執行同一模型：設定需明列 UNET、Qwen CLIP、VAE 權重檔名，並使用 AIPS 隨附的固定 API 工作流。Preflight 會向 loopback ComfyUI 核對三項本機模型清單；此配對僅支援 generate。模型可透過 `templates/creative/COMFYUI_MODEL_PROFILES.yaml` 擴充，但只能沿用已審核的拓樸家族；FLUX 3 Klein Base 為另一個固定 workflow profile。
 
+FLUX 3 Klein Base 預檢會讀取本機 `/object_info/TextGenerate`，檢查工作流欄位、型別、範圍及 `sampling_mode` Dynamic Combo 選項和值的 API 結構；不會把值猜改成字串。AIPS 在唯一一次 `/prompt` 前也會核對最終序列化工作流的節點、欄位與連線。ComfyUI 執行錯誤只回報安全摘要，不回傳原始訊息、提示、路徑或 traceback，也不會自動重送失敗工作。
+
 需要使用其他已安裝模型時，可在 Bundle 明確選擇 `workflow.mode: dynamic_local` 並提供專案內 API workflow JSON。`aips creative workflows scan` 只讀取本機 loopback `/object_info` 與工作流，`inspect` 回傳 privacy-bounded 狀態摘要，`import` 以 create-only 方式將來源複製到專案內；這三個工作流 CLI 子命令只輸出固定狀態，不回顯節點名稱、模型檔名、Runtime 版本、提示內容或工作流細節。一般 `creative discover` 保留有限且核准 loader 的模型目錄，但不列出節點清單。`preflight` 會核對節點 schema、圖連線、明確輸入綁定及本機 loader 模型。只允許 runtime 標示的 ComfyUI core nodes；API、custom、未知節點及隱含模型／參考圖選擇都會拒絕。動態模式不會自動替換固定 profile，也不下載權重；執行仍須明確要求，timeout 後不自動重送。合成驗證不代表實際推論或品質已驗證。
 
 先用 `aips creative discover --project PROJECT` 盤點，再由工具 prepare 建立角色規範。Discovery 只檢查已安裝的 MFLUX 命令／版本，並對固定 `127.0.0.1:8188` 的 ComfyUI 做唯讀 API 探測；不連 LAN 或外網，也不送出生成工作。只查固定 GET 路徑，核對 loopback IP、Port、Path、Method，停用 Proxy 並拒絕 Redirect；回傳核准內建載入器的有限模型名稱清單，不列出任意節點。狀態分開呈現命令、runtime、模型目錄、preflight 與 inference；服務回應或模型檔名存在都不代表推論已驗證。錯誤以 `status`、`phase`、`reason_code`、`source`、`retryable`、`trace_id` 和 `recovery.action` 提供繁中排除指引；HTTP 只顯示狀態碼，不輸出回應本文、認證資訊或本機 Profile 路徑。Apple Silicon 會標示 MPS 為靜態候選，FP8 權重可提出 advisory；FP16/BF16 名稱也不代表已支援，仍須另外執行並驗證實際推論才能確認相容性。

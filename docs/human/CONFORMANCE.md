@@ -1903,6 +1903,8 @@ Scenario 236 covers versioned no-overwrite Profile/Bundle preparation, fixed MFL
 
 The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies concurrent preparation allocates distinct versions, unconfigured engines remain blocked, preflight does not run a generator, explicit execution stays inside non-Git EPHEMERAL scope, MFLUX commands match the fixed capability registry, batch references remain bounded, model/runtime/license and profile hashes are bound to output provenance, ComfyUI is loopback-only with built-in nodes, the Z-Image Turbo split-loader graph and local model inventory are exact, prompt-bearing PNG text metadata is removed, edits use exactly one hash-matched staged input, retries are finite, no output is overwritten, review starts PENDING, and traces reject prompts, image data, secrets and paths. Real model execution, device performance and visual quality require a user-configured local engine and independent human inspection; no model is installed or downloaded by validation.
 
+FLUX 3 Klein coverage also validates the live `TextGenerate` Dynamic Combo schema and final serialized payload shape before submission, rejects incompatible options without a POST, and checks that synthetic node/exception diagnostics omit prompts, paths, credentials and tracebacks. The lifecycle is adapter evidence only; MPS inference remains unverified.
+
 Release history 更新（純依賴升級文件豁免，Scenario 221）已審查本區段：Skill 整合、Explorer 與重用行為不變。
 
 
