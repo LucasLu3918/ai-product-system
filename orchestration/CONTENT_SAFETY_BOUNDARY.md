@@ -19,6 +19,7 @@ Commit Hook and read-only `aips safety diagnose commit` call the same staged-can
 Personal publication rejects unsupported literal command forms before candidate inspection, then scans the exact final tree and commit history. Scanner policy, base, Git-object and file-read failures use stable redacted diagnostics and continue to block publication.
 
 The generic secret-assignment detector treats only the exact generated-password expression `Convert.ToBase64String(RandomNumberGenerator.GetBytes(n)).TrimEnd(...)` and parameterized SQL expression `+QUOTENAME(@password|@passwd|@pwd, ...)` as non-literal values. High-entropy literal assignments and provider-token/private-key patterns remain active. The scanner allows JSON text up to 8,000,000 bytes and other text up to 2,000,000 bytes; larger or incomplete inputs fail closed in both the final tree and candidate history.
+The generated-path policy also excludes exactly three approved Dewhollow Gate 1 runtime evidence paths: `docs/art/candidates/pixel-movement/gate1-runtime-evidence/videos/legacy-movement-and-farming.webm`, `.../pixel16-movement-and-farming.webm`, and `.../pixel32-movement-and-farming.webm`. Matching is by exact repository-relative path; no WebM extension-wide exemption is added, and the same relative paths are excluded in any repository using this shared policy. Other WebM files and near-matching paths retain the existing strict scan and size/UTF-8 failure behavior.
 
 All AIPS-owned persistence paths should call:
 

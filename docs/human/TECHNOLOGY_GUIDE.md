@@ -281,6 +281,8 @@ Dependabot commit 的機器人 noreply author 與最後一行精確的 `Signed-o
 
 ## Security & Governance
 
+The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; all other WebM paths and near-matches remain subject to strict candidate scanning.
+
 Personal publication runs an exact-candidate and full-history scan. Only the documented generated-password and parameterized SQL forms are treated as non-literal values; provider tokens, private keys and high-entropy literals remain detectable. The content-safety conformance suite verifies that oversized or incomplete inputs block publication.
 
 Personal PR merge keeps exact PR/head/base and mergeability validation. AIPS Required Checks enforcement is opt-in through `AIPS_ENFORCE_REQUIRED_CHECKS=1`; GitHub's own configured protection remains authoritative. Independent-review evidence is a separate check.
@@ -337,6 +339,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 Content-safety detector changes are versioned (for example `pii.email.v2`) and bound to Scenario 266 with a fixed corpus; they never add a PII exception path.
 
 ## Quality & Verification
+
+Scenario 263 records the three exact Dewhollow WebM evidence-path exceptions and regression coverage that keeps near-matches and other WebM files under strict scanning.
 
 Skill Explorer 的文件映射不影響 Creative runtime；本次增加的 FLUX 3 Klein 驗證只涵蓋 live `TextGenerate` schema 與最終 payload 相容性，MPS 推論仍未驗證。
 
@@ -652,7 +656,7 @@ Official Docs Site 使用 VitePress 1.6.x stable line，提供 sidebar、local s
 Documentation Placement 將每個 behavior-bearing source 綁到 canonical Human topic；Technology Guide 的廣域 trigger surface若出現尚未映射的新 source，CI 會 fail closed，要求先更新 placement contract。每條已知 subsystem rule 也明確限制 Technology Guide 可修改的 domain，因此版本新增功能不能再任意 append 到文件尾端。
 ## Runtime Content Safety Boundary
 
-The shared publication scanner recognizes only the documented generated-password and parameterized SQL forms as non-literal assignment values. Known provider tokens, private keys and high-entropy literals remain detectable, and oversized text or JSON remains fail-closed under its configured finite bound.
+The shared publication scanner recognizes only the documented generated-password and parameterized SQL forms as non-literal assignment values. Known provider tokens, private keys and high-entropy literals remain detectable, and oversized text or JSON remains fail-closed under its configured finite bound. The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; there is no extension-wide exemption, and the 2,000,000-byte text limit remains unchanged. The same exact relative paths are excluded in any repository using the shared policy.
 
 The optional `AIPS_ENFORCE_REQUIRED_CHECKS=1` merge gate does not change the content-safety scanner contract or candidate scanning.
 

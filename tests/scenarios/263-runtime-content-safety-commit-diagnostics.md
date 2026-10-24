@@ -13,6 +13,7 @@ Commit safety denials are actionable, structured, and content-redacted. The nati
 - Diagnostics expose stable reason code, phase, safe category/detector, diagnostic ID, retryability, Traditional Chinese recovery, and only a sanitized repository-relative path when safe. Matched values, raw exceptions, command text, and absolute paths never appear.
 - PNG, JPEG, WebP, M4A, MP3, TTF, OTF, WOFF, and WOFF2 metadata is scanned through bounded format-aware parsers. Font suffix/signature mismatch, malformed files, missing fontTools/Brotli, oversized compressed input or declared decompressed output, unsupported binary, and incomplete inspection fail closed with a specific reason.
 - Staged Git blob size is checked before reading. Hook, CLI, publication preview, and exact-candidate/history scanning share font metadata extraction and strict content scanning.
+- The three exact Dewhollow Gate 1 runtime evidence WebM paths listed in `config/secret-scan.yaml` are the only WebM path exceptions. Other WebM files and near-matches remain subject to strict scan limits and fail-closed parsing; no extension-wide WebM exemption is permitted.
 - `aips safety diagnose commit --worktree <repo> --message-file <path>` is read-only and shares the Hook implementation.
 - Human Authority, Required Checks, and Git Publish Approval remain separate and unchanged.
 

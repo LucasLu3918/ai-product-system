@@ -421,7 +421,7 @@ Security review verifies:
 - logs/traces/error paths redact sensitive headers/fields;
 - secret scanning evidence exists where practical for general review; every Remote Git publication candidate also passes the mandatory credential-free exact-candidate scan. CI 會在這項掃描通過後執行 repository preflight，兩者都早於完整相依套件與瀏覽器安裝。
 
-The built-in publication scan checks the final tree and all candidate commits from base to head, uses strict mode without inline bypass, and fails closed when the scan or history is incomplete. Its redacted report is bound to the scanner and policy hashes. The generic assignment detector recognizes only the registered generated-password and parameterized SQL expression shapes as non-literal values; known token and private-key patterns and high-entropy literal assignments remain active. JSON text files are scanned up to 8,000,000 bytes, while other text files retain the 2,000,000-byte ceiling; larger inputs block the candidate. External secret-scanning providers remain optional defense-in-depth.
+The built-in publication scan checks the final tree and all candidate commits from base to head, uses strict mode without inline bypass, and fails closed when the scan or history is incomplete. Its redacted report is bound to the scanner and policy hashes. The generic assignment detector recognizes only the registered generated-password and parameterized SQL expression shapes as non-literal values; known token and private-key patterns and high-entropy literal assignments remain active. JSON text files are scanned up to 8,000,000 bytes, while other text files retain the 2,000,000-byte ceiling; larger inputs block the candidate. External secret-scanning providers remain optional defense-in-depth. The only WebM exceptions are the three exact repository-relative Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; near-matches and all other WebM files retain strict scanning. These exact strings apply in any repository using the shared policy.
 
 若目前要求的操作明確需要 credential，且沒有 credential-free 路徑，該操作為 BLOCKED。若 credential 被宣告為 optional，則必須使用該能力定義的 `SKIPPED_NOT_CONFIGURED` / `ANALYSIS_PENDING` / `TRIAL_PENDING` 等非 PASS 狀態，且不得因此阻擋無關的 baseline validation 或 release。永遠不得以 hard-coded credential 取代缺失的 secret。
 
@@ -466,6 +466,8 @@ SAL 2+ default registration requires an independently retained anchor. SAL 4 req
 
 The retention helper never deletes evidence or grants compaction authority. Expiry only creates a Human-review action and a minimal digest record.
 ## Runtime Content Safety Boundary
+
+The only WebM exceptions are the three exact repository-relative Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; near-matches and all other WebM files retain strict scanning, and the 2,000,000-byte text limit is unchanged.
 
 The bounded publication scanner scans JSON text up to 8,000,000 bytes and other text up to 2,000,000 bytes. Oversized and incomplete files block publication.
 

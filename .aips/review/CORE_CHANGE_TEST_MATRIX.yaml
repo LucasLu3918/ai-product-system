@@ -1,41 +1,40 @@
 version: 1
 change:
-  id: secret-scan-baseline-compat-20261024
-  summary: Preserve strict candidate scanning while recognizing two demonstrated non-literal secret expressions and scanning bounded large JSON evidence.
+  id: dewhollow-exact-webm-policy-20261024
+  summary: Allow only three exact Dewhollow Gate 1 evidence videos through the text scanner while preserving strict scanning for all other WebM files and near-matches.
   boundary:
-    - scanner assignment and provider-token/private-key detection in scripts/check_secret_leakage.py
-    - secret-scan policy limits, final-tree and candidate-history handling in config/secret-scan.yaml
-    - focused scanner regressions and Scenario 176 behavior contract
-    - canonical security and maintenance guidance plus approved proposal evidence
-    - exact-candidate publication and protected-branch validation
+    - exact repository-relative generated-path exceptions in config/secret-scan.yaml
+    - scanner regression tests for those paths, near-matches, binary size limits and existing secret detectors in tests/test_secret_scan_baseline_compat.py
+    - Scenario 263 and synchronized canonical security, publication, maintenance, technology and user documentation
+    - exact-candidate publication scan, repository validation and protected-main checks
 matrix:
-  - boundary: scanner detection and bounded input policy
-    reason: The mandatory security scanner must avoid only the two approved false-positive expression shapes while detecting literal credentials and fully scanning in-limit JSON; incomplete input must remain blocked.
+  - boundary: exact Dewhollow WebM path exceptions
+    reason: These three fixed Gate 1 video artifacts are binary runtime evidence that cannot be meaningfully scanned as text; the exception must remain exact-path only and preserve fail-closed behavior for every other WebM and oversized input.
     checks:
-      static_lint: {applicable: true, evidence: "PASS — git diff --check passed; final exact-candidate validation remains required."}
-      unit: {applicable: true, evidence: "PASS — seven focused regressions passed for both expressions, literal credentials, provider token/private key patterns, and 2 MB/8 MB limits."}
-      integration: {applicable: true, evidence: "REQUIRED — scanner publication lifecycle validates final tree and full candidate history under the updated policy."}
-      contract: {applicable: true, evidence: "REQUIRED — Scenario 176 and candidate scanner binding are validated by the repository suite."}
-      e2e: {applicable: false, na_reason: "The change affects a local publication security scanner with deterministic CLI and repository lifecycle coverage; no deployed user flow is changed."}
-      security: {applicable: true, evidence: "REQUIRED — negative-path secret detector tests and exact-candidate final-tree/history scan."}
-      migration_recovery: {applicable: true, evidence: "PASS — no persisted data changes; reverting the scanner and policy restores prior limits and behavior."}
-      cli_harness: {applicable: true, evidence: "REQUIRED — full AIPS repository and publication lifecycle validation."}
-      docs_schema: {applicable: true, evidence: "REQUIRED — Scenario 176 and canonical security/maintenance documentation checks."}
-  - boundary: exact-candidate publication and required checks
-    reason: Bind the reviewed scanner, policy, documentation and evidence to one exact base/head and the protected main required check.
+      static_lint: {applicable: true, evidence: "PASS — git diff --check passed for base cc132f1..32bd339."}
+      unit: {applicable: true, evidence: "PASS — all 9 tests in tests/test_secret_scan_baseline_compat.py passed, including exact paths, near-matches, secret detectors and size limits."}
+      integration: {applicable: true, evidence: "REQUIRED — final exact-candidate Integration Gate after this matrix is committed."}
+      contract: {applicable: true, evidence: "PASS — Scenario 263 placement and full repository validator passed for candidate 32bd339; rerun in the final exact-candidate Gate."}
+      e2e: {applicable: false, na_reason: "Local scanner policy only; no deployed service or user-facing runtime changes."}
+      security: {applicable: true, evidence: "PASS — strict full-tree and base..head scan passed for 32bd339 with no findings or blockers; rerun against the final matrix-bound candidate before merge."}
+      migration_recovery: {applicable: false, na_reason: "No persisted data or schema change; reverting this exact-path policy restores prior behavior."}
+      cli_harness: {applicable: true, evidence: "REQUIRED — final exact-candidate AIPS publication lifecycle and full repository validator."}
+      docs_schema: {applicable: true, evidence: "PASS — documentation impact closure complete and placement audit passed for candidate 32bd339; final Gate will revalidate the committed matrix-bound tree."}
+  - boundary: exact candidate binding and publication
+    reason: Bind the reviewed scanner policy, tests, docs and validation evidence to one exact base/head and the canonical matrix.
     checks:
-      static_lint: {applicable: true, evidence: "REQUIRED — final diff and repository lint validation."}
-      unit: {applicable: true, evidence: "REQUIRED — focused regressions and full repository validation."}
+      static_lint: {applicable: true, evidence: "REQUIRED — final candidate diff check and repository validation."}
+      unit: {applicable: true, evidence: "REQUIRED — final candidate focused regressions and full repository validation."}
       integration: {applicable: true, evidence: "REQUIRED — exact-candidate AIPS Integration Gate before publication and merge."}
-      contract: {applicable: true, evidence: "REQUIRED — exact-candidate scanner and candidate binding contracts."}
-      e2e: {applicable: false, na_reason: "No deployed product service or user-facing runtime is changed."}
-      security: {applicable: true, evidence: "REQUIRED — exact-candidate tree/history scan and exact-head GitHub Required Checks before merge."}
-      migration_recovery: {applicable: false, na_reason: "No persistent schema, migration or irreversible data operation."}
-      cli_harness: {applicable: true, evidence: "REQUIRED — AIPS publication lifecycle and repository validation."}
-      docs_schema: {applicable: true, evidence: "REQUIRED — final documentation-impact closure and Scenario 176 validation."}
+      contract: {applicable: true, evidence: "REQUIRED — final candidate scanner, documentation and matrix-binding contracts."}
+      e2e: {applicable: false, na_reason: "No deployed product service or user-facing flow changes."}
+      security: {applicable: true, evidence: "REQUIRED — strict final-tree and complete base..head scan plus live exact-head PR/check observations."}
+      migration_recovery: {applicable: false, na_reason: "No persistent data, migration or irreversible operation."}
+      cli_harness: {applicable: true, evidence: "REQUIRED — final AIPS publication lifecycle and full repository validator."}
+      docs_schema: {applicable: true, evidence: "PASS — complete documentation closure; final candidate will re-run closure after matrix commit."}
 candidate:
-  base_sha: 439340287a3fea3f0f58b1ac95cf3da498453418
-  changed_files_hash: e74e85b6dcfc08562fb6e4d2894a998f8ef4a70252c4aa4273c9680e35840e04
+  base_sha: cc132f196e0f2c3fb6961747ad8291510b58fa29
+  changed_files_hash: 08eff627902edc556646c2420debd93d98bad0cefd96d3acda06e0dc089adade
 review_evidence:
   required: false
 scope_recomputed_after_expansion: true

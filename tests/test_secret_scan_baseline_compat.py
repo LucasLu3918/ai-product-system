@@ -52,6 +52,48 @@ class SecretScanBaselineCompatibilityTests(unittest.TestCase):
             ["github-token", "private-key"],
         )
 
+    def test_only_three_exact_generated_webm_paths_are_excluded(self):
+        policy, _ = scanner.load_policy(ROOT / "config/secret-scan.yaml")
+        expected = {
+            "docs/art/candidates/pixel-movement/gate1-runtime-evidence/videos/legacy-movement-and-farming.webm",
+            "docs/art/candidates/pixel-movement/gate1-runtime-evidence/videos/pixel16-movement-and-farming.webm",
+            "docs/art/candidates/pixel-movement/gate1-runtime-evidence/videos/pixel32-movement-and-farming.webm",
+        }
+        exact_webm_exceptions = {
+            path for path in policy["generated_paths"] if path.endswith(".webm")
+        }
+        self.assertEqual(exact_webm_exceptions, expected)
+        self.assertEqual(policy["limits"]["max_file_bytes"], 2_000_000)
+        for path in expected:
+            self.assertTrue(scanner.generated_path(path, policy), path)
+        for path in (
+            "docs/art/candidates/pixel-movement/gate1-runtime-evidence/videos/other.webm",
+            "docs/art/candidates/pixel-movement/gate1-runtime-evidence/videos/legacy-movement-and-farming-copy.webm",
+            "docs/art/candidates/pixel-movement/gate1-mapscene-ab/legacy-movement-and-farming.webm",
+        ):
+            self.assertFalse(scanner.generated_path(path, policy), path)
+
+    def test_exact_webm_paths_skip_large_payload_but_other_webm_stays_blocked(self):
+        policy, _ = scanner.load_policy(ROOT / "config/secret-scan.yaml")
+        exact = "docs/art/candidates/pixel-movement/gate1-runtime-evidence/videos/legacy-movement-and-farming.webm"
+        other = "docs/art/candidates/pixel-movement/gate1-runtime-evidence/videos/other.webm"
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            exact_path = root / exact
+            exact_path.parent.mkdir(parents=True)
+            exact_path.write_bytes(b"\x00" * 2_000_001)
+            findings, blockers = scanner.scan_worktree(root, policy, strict=True, paths=[])
+        self.assertEqual(findings, [])
+        self.assertEqual(blockers, [])
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            other_path = root / other
+            other_path.parent.mkdir(parents=True)
+            other_path.write_bytes(b"\x00" * 2_000_001)
+            findings, blockers = scanner.scan_worktree(root, policy, strict=True, paths=[])
+        self.assertEqual(findings, [])
+        self.assertEqual(blockers, [f"candidate file exceeds scan limit: {other}"])
+
     def test_json_over_text_limit_is_scanned_with_json_limit(self):
         marker = "ghp_" + "A" * 40
         payload = json.dumps({"note": "x" * 2_100_000 + " " + marker})
