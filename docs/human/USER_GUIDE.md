@@ -209,6 +209,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
+FLUX 3 Klein 的 `TextGenerate` runtime schema 檢查由既有 Harness executor 執行，並在唯一一次 ComfyUI `/prompt` 請求前驗證最終工作流；預檢不會啟動生成。
+
 Creative workflow commands remain explicit user-facing actions routed through the existing CLI and host authorization; schema inspection alone never submits a ComfyUI job.
 
 Creative runtime 由共用 Harness executor 執行；model profile 資料只選用程式已審核的 topology family，不會增加工具或權限。
@@ -288,6 +290,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 
 ## Roles、Skills 與重用
 
+這次 FLUX 3 Klein 修復只調整 Creative executor 與其預檢，不新增或改變 Roles、Skills 或 Skill Explorer 行為。
+
 The `creative workflows` CLI is a separate workflow utility and does not add or change the Skills catalog or Skill Explorer behavior.
 
 Model profile registry 是 Creative runtime 設定，不會安裝 Skills，也不改變 Skill routing。
@@ -366,6 +370,8 @@ Architecture trade-off、Threat Model、視覺方向等主觀專業判斷不應�
 
 ## Deterministic Scheduler
 
+Creative 執行仍由既有 executor 明確呼叫；FLUX 3 Klein 的 schema 預檢只驗證最終 payload，不會建立排程工作或重送失敗工作。
+
 ComfyUI workflow 與 sampler 設定由固定 profile 決定；registry 擴充只能填入該 topology family 核准的值。
 
 Creative quality evidence does not alter Scheduler ownership, output budgets, or the Human decision required for publication.
@@ -389,6 +395,8 @@ PR 驗證會把 Gate 與 Repository Health 報告放在 CI runner 的暫存位�
 Installation entrypoint workflow 保留既有 pull request 路徑與平台檢查，並以近期 job P95 加安全倍數設定明確逾時；逾時會作為該 job 的失敗呈現，不改變 required check 或 Human 核准權限。
 
 ## Execution Isolation 與 Runtime Resource
+
+FLUX 3 Klein 仍使用固定本機 ComfyUI workflow；`TextGenerate` 的 live schema 與最終序列化欄位會在 loopback `/prompt` 前核對，MPS 推論狀態獨立保留為未驗證。
 
 Dynamic ComfyUI discovery is restricted to the configured loopback service, and import writes only a new workflow file within the selected project.
 
@@ -447,6 +455,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 詳見 [Security Assurance](SECURITY_ASSURANCE.md)。
 
 ## Quality 與 Review
+
+最終工作流驗證與節點執行結果分開回報；synthetic lifecycle 通過不代表 FLUX 3 Klein 已在 Apple Silicon MPS 完成推論或 VAE 解碼。
 
 Dynamic workflow synthetic lifecycle evidence verifies request and recovery contracts only; real model inference, hardware compatibility and visual quality remain unverified until separately observed.
 

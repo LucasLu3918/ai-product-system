@@ -336,6 +336,8 @@ Content-safety detector changes are versioned (for example `pii.email.v2`) and b
 
 ## Quality & Verification
 
+Skill Explorer 的文件映射不影響 Creative runtime；本次增加的 FLUX 3 Klein 驗證只涵蓋 live `TextGenerate` schema 與最終 payload 相容性，MPS 推論仍未驗證。
+
 The `creative workflows scan|import|inspect` routes are an explicit CLI contract; they do not modify the Skills CLI or Skill Explorer catalog.
 
 Creative lifecycle evidence includes fixed ComfyUI model profile families, local component inventory checks and rejection of unreviewed topology families.

@@ -7,6 +7,8 @@ AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前�
 
 ## Runtime 與接入層
 
+Creative executor 在唯一一次 ComfyUI `/prompt` 前，使用本機 `/object_info/TextGenerate` 驗證固定 FLUX 3 Klein payload；此預檢不會代替節點執行或模型推論。
+
 Scenario 266 findings remain untrusted content and do not grant Runtime Context or action authority.
 
 
@@ -268,6 +270,8 @@ Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行
 
 ## Deterministic Execution
 
+FLUX 3 Klein 最終 payload 驗證位於 Creative 執行邊界，保留既有單次提交與不自動重送失敗工作的行為。
+
 Dynamic ComfyUI graph execution requires a separately requested Creative action after bounded schema validation; synthetic lifecycle evidence does not establish real inference or image quality.
 
 Creative model profile 透過固定 workflow family 和封閉 sampler 設定執行，並由 inventory preflight 核對本機元件。
@@ -402,6 +406,8 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 
 ## Security 與 Governance
 
+ComfyUI 執行錯誤只提供有界且過濾後的節點／例外摘要；提示、路徑、憑證及原始 traceback 不進入診斷回應。
+
 ComfyUI profile registry 僅允許既有程式審核的節點拓樸與 loopback runtime，不可由資料設定引入遠端 endpoint 或新節點。
 
 個人模式的 PR merge 仍要求明確任務意圖與精確候選驗證；AIPS Required Checks 強制需設 `AIPS_ENFORCE_REQUIRED_CHECKS=1`，GitHub 原生分支保護持續生效。獨立審查證據與 Required Checks 是不同的 Gate 證據。
@@ -467,6 +473,8 @@ Plan42 routes TTF/OTF/WOFF/WOFF2 font metadata through the existing strict conte
 The Claude/Gemini publication guard denies only command forms that could commit or publish: read-only commands with a dynamic directory or repository option, a dynamic path to a literal non-Git executable, `gh api` GET requests, local `git lfs` subcommands and repository-defined read-only Git aliases pass, while dynamic git/gh/shell executables, dynamic `-c`/`--config-env`/`--exec-path` values, API writes, publishing LFS subcommands and aliases that expand to commit or publication still fail closed (Scenario 099). Untracked files are listed in publication diagnostics but no longer make the worktree `DIRTY`; uncommitted tracked changes still block push and PR.
 
 ## Scenario Conformance 與 Agent Eval
+
+Creative adapter 的合成 conformance 證據會明確區分 schema／payload 相容性與真實模型推論；本次沒有 MPS 推論成功證據。
 
 Scenario 265 records AVIF metadata safety and preserves the distinction between deterministic container checks and visual-quality evidence.
 

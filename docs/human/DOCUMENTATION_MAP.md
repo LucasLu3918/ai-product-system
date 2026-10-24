@@ -24,6 +24,8 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 ## 文件角色
 
+Creative workflow 的新增 FLUX 3 Klein schema／payload 相容性證據位於 User Guide、Technology Guide 與 Scenario 236；Scenario 234/236 的角色創作流程沒有因此改變。
+
 Model-agnostic ComfyUI workflow usage belongs in the User Guide, implementation and security limits in Technology Guide and Security Assurance, with Scenario 268 as the synthetic evidence anchor. Fixed FLUX 3 Klein `TextGenerate` runtime-schema and final-payload checks are documented in those same topics and Scenario 236; they prove interface compatibility, not MPS inference.
 
 ComfyUI model profile registry 的 canonical 行為來源為 `scripts/creative_execution.py` 與 `templates/creative/COMFYUI_MODEL_PROFILES.yaml`。
@@ -138,6 +140,8 @@ Release history 更新（純依賴升級文件豁免，Scenario 221）已審查�
 Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
 ## Agent / machine canonical 文件
+
+The fixed FLUX 3 Klein runtime-schema validator and its lifecycle evidence are maintained with `scripts/creative_execution.py`, `tests/evidence/creative_execution_lifecycle.py`, and Scenario 236; this does not add a character-artwork capability or alter its provenance flow.
 
 Scenario 267 and the active `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml` record the READY+STALE native-write policy and its retained denial cases.
 

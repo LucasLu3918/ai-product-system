@@ -1035,8 +1035,6 @@ Scenario 236 extends the adapter with explicit intent, versioned Profile/Bundle 
 
 The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies preflight does not run a generator, explicit execution stays inside non-Git EPHEMERAL scope, model/runtime/license and profile hashes are bound to output provenance, ComfyUI is loopback-only with built-in nodes, edits use a hash-matched staged input, retries are finite, no output is overwritten, review starts PENDING, and traces reject prompts, image data, secrets and paths. Real model execution, device performance and visual quality require a user-configured local engine and independent human inspection; no model is installed or downloaded by validation.
 
-FLUX 3 Klein lifecycle coverage additionally checks live `TextGenerate` Dynamic Combo schema and final serialized payload preservation, blocks unsupported options before submission, and verifies bounded redacted node failure diagnostics. It does not establish MPS model execution.
-
 Required install/preflight and legacy-migration lifecycles need all Python validation requirements even for docs-only candidates. Provisioning contracts reject conditional or missing Python requirements and unconditional Chromium downloads; exact-plan optional evidence and browser-download selection remain unchanged.
 
 Plan21 helper consolidation preserves covered canonical fingerprints and keeps unresolved source relationships partial.
@@ -1100,6 +1098,8 @@ The branch lifecycle report classifies remote branches using current exact-SHA P
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+FLUX 3 Klein `TextGenerate` preflight remains in the Creative executor; its schema and payload checks add no Skill catalog, Skill Explorer, or routing behavior.
+
 Dynamic Creative workflow utilities do not add or modify Skills catalog entries or explorer behavior.
 
 ComfyUI model profiles are Creative runtime data and do not add Skills, alter Skill Explorer inventory, or affect Skill routing.
@@ -1150,6 +1150,8 @@ Plan40 verifies explicit publication reason codes, safe common Prepare/Hook bind
 Scenario 260 verifies the read-only `aips publish doctor`, Required Checks classification, literal merge diagnosis without execution or grant consumption, sanitized error output, and consistent runtime guidance. Missing/permission-limited policy evidence remains blocking; no repository policy mutation or merge bypass is introduced. Scenario 261 adds grouped dirty-path evidence and phase attribution through push, PR, checks, and exact-head merged recovery; diagnostics remain non-authorizing. Scenario 233 covers upstream Skill inventory and filtering without changing the canonical-only listing default.
 
 ## Scenario 262 — ComfyUI Resource Authorization and Diagnostics
+
+FLUX 3 Klein lifecycle coverage checks live `TextGenerate` Dynamic Combo schema and final serialized payload preservation, blocks unsupported options before submission, and verifies bounded redacted node failure diagnostics. It does not establish MPS model execution.
 
 Scenario 236 profile entries may reuse executor-reviewed topology families only; graph operations and local resource authorization remain code-defined.
 
