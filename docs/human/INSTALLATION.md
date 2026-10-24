@@ -8,6 +8,8 @@
 
 ## macOS / Linux
 
+The managed publication preflight uses the built-in exact-candidate secret scanner. It scans JSON files up to 8,000,000 bytes and other text files up to 2,000,000 bytes; files above those bounds block publication.
+
 Creative ComfyUI `dynamic_local` workflow support reuses the installed AIPS executor and Python dependencies. It does not install ComfyUI, custom nodes, model weights, or a remote service; the local ComfyUI API and selected model files must already be available. Workflow scan and preflight are read-only, while workflow import is an explicit project-confined create-only operation.
 
 安裝完成後，可在 Agent runtime 設定 `AIPS_ENFORCE_REQUIRED_CHECKS=1`，讓 AIPS 獨立要求可讀取的 Required Checks policy 與全部通過；不設定時只停用 AIPS 自身的門檻，GitHub 原生保護與 Runtime Content Safety 仍各自生效。

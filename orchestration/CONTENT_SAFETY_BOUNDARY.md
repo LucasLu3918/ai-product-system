@@ -18,6 +18,8 @@ Commit Hook and read-only `aips safety diagnose commit` call the same staged-can
 
 Personal publication rejects unsupported literal command forms before candidate inspection, then scans the exact final tree and commit history. Scanner policy, base, Git-object and file-read failures use stable redacted diagnostics and continue to block publication.
 
+The generic secret-assignment detector treats only the exact generated-password expression `Convert.ToBase64String(RandomNumberGenerator.GetBytes(n)).TrimEnd(...)` and parameterized SQL expression `+QUOTENAME(@password|@passwd|@pwd, ...)` as non-literal values. High-entropy literal assignments and provider-token/private-key patterns remain active. The scanner allows JSON text up to 8,000,000 bytes and other text up to 2,000,000 bytes; larger or incomplete inputs fail closed in both the final tree and candidate history.
+
 All AIPS-owned persistence paths should call:
 
 ```python

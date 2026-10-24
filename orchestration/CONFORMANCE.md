@@ -1169,6 +1169,8 @@ Scenario 268 covers opt-in model-agnostic local ComfyUI API workflows: bounded s
 
 ## Scenario 263 — Commit Safety Diagnostics
 
+Mandatory candidate scanning covers final-tree and full-history inputs, preserves provider-token/private-key and literal-assignment detection, and fails closed above the configured JSON and general text limits.
+
 The publication setting `AIPS_ENFORCE_REQUIRED_CHECKS=1` is orthogonal to staged-content safety: disabling AIPS Required Checks enforcement does not bypass commit or publication content scanning.
 
 Plan45 separately checks personal publication command form before scanning and classifies scanner policy, base, Git-object, file-read and internal failures with redacted diagnostics. Scenario 261 verifies rejected publication remains blocked and `NOT_EXECUTED`.
