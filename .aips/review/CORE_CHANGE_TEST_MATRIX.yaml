@@ -15,8 +15,9 @@ matrix:
   checks: &id001
     static_lint:
       applicable: true
-      evidence: 'REQUIRED: run focused lint and final repository validation on the
-        exact committed candidate.'
+      evidence: 'PASS: focused Ruff checks, touched-code debt ratchet, scheduler-gate
+        mypy and git diff --check passed; final repository validation remains bound
+        to the exact candidate Gate.'
     unit:
       applicable: true
       evidence: 'PASS: tests/evidence/creative_execution_lifecycle.py passed with
@@ -30,8 +31,9 @@ matrix:
     contract:
       applicable: true
       evidence: 'PASS: publish preview reports documentation placement PASS and no
-        required additions. REQUIRED: exact-candidate repository validation and Scenario
-        236 contract.'
+        required additions; tests/validation/creative_execution_contracts.py passes
+        with bounded multi-reference documentation assertions. Exact-candidate repository
+        validation runs in the Gate.'
     e2e:
       applicable: true
       evidence: 'PASS: synthetic loopback ComfyUI lifecycle verifies local Distilled
@@ -68,7 +70,7 @@ matrix:
   checks: *id001
 candidate:
   base_sha: 60f55a6a28cbca62c516fb7bddfe313eb4e35428
-  changed_files_hash: ccf8bd71f6826f355bd5068affaa00752084a5236ffae841fe5b48436e645a70
+  changed_files_hash: 2b316cbd1494cf3becfcdcbb0602aba1d716d274e812d02ab1f469965a21eb7b
 review_evidence:
   required: false
   scope_approvals:
