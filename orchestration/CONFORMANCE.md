@@ -1031,7 +1031,7 @@ Scenario 236 extends the existing lifecycle with create-only configuration/disco
 
 Creative readiness evidence also covers read-only fixed-loopback discovery, empty ComfyUI model catalogs, staged command/runtime/model/preflight/inference status, sanitized provider-specific recovery and an advisory Apple Silicon FP8 warning.
 
-Scenario 236 extends the adapter with explicit intent, versioned Profile/Bundle preparation, preflight and a local-only creative tool. Its MFLUX capability map fixes model/operation commands; FLUX.1 edit is single-reference, FLUX.2/Qwen multi-reference edit is bounded, and ComfyUI edit remains single-reference.
+Scenario 236 extends the adapter with explicit intent, versioned Profile/Bundle preparation, preflight and a local-only creative tool. Its MFLUX capability map fixes model/operation commands; FLUX.1 edit is single-reference, FLUX.2/Qwen multi-reference edit is bounded, and ComfyUI edit accepts one to eight ordered, explicitly bound references with staged-byte hash verification.
 
 The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies preflight does not run a generator, explicit execution stays inside non-Git EPHEMERAL scope, model/runtime/license and profile hashes are bound to output provenance, ComfyUI is loopback-only with built-in nodes, edits use a hash-matched staged input, retries are finite, no output is overwritten, review starts PENDING, and traces reject prompts, image data, secrets and paths. Real model execution, device performance and visual quality require a user-configured local engine and independent human inspection; no model is installed or downloaded by validation.
 
