@@ -223,6 +223,7 @@ def doctor(root: Path, *, pr_number: int | None = None, branch: str | None = Non
                               "authentication": "UNKNOWN", "merge_methods": [],
                               "required_checks": {"status": "UNKNOWN", "checks": []},
                               "pr": None, "blockers": [], "diagnostics": [], "next_steps": [], "phases": []}
+    strict_required_checks = os.environ.get("AIPS_ENFORCE_REQUIRED_CHECKS") == "1"
     def finish() -> dict[str, Any]:
         result["next_steps"] = [item["next_step"] for item in result["diagnostics"]
                                 if isinstance(item, dict) and isinstance(item.get("next_step"), str)]
@@ -320,7 +321,8 @@ def doctor(root: Path, *, pr_number: int | None = None, branch: str | None = Non
                              "source_complete": snapshot.get("source_complete") is True,
                              "api_write_performed": False}
         if policy_observation["status"] in {"UNKNOWN_PERMISSION", "UNAVAILABLE"}:
-            result["blockers"].append("protection_evidence_unavailable")
+            if strict_required_checks:
+                result["blockers"].append("protection_evidence_unavailable")
             item = authority.PublicationError("branch protection evidence unavailable",
                 policy_observation["reason_code"], phase="protection_policy_evidence").diagnostic()
             item["category"] = policy_observation["category"]
@@ -331,7 +333,8 @@ def doctor(root: Path, *, pr_number: int | None = None, branch: str | None = Non
                 for name, source in policy_observation["sources"].items() if isinstance(source, dict)}
             result["diagnostics"].append(item)
         elif policy_observation["status"] == "UNCONFIGURED":
-            result["blockers"].append("required_checks_unconfigured")
+            if strict_required_checks:
+                result["blockers"].append("required_checks_unconfigured")
             result["diagnostics"].append({"reason_code": "REQUIRED_CHECKS_UNCONFIGURED", "phase": "policy",
                 "category": "POLICY", "detail": "No branch-protection Required Checks were observed.",
                 "next_step": "Ask a repository administrator to review Required Checks configuration."})

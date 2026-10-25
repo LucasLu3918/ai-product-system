@@ -55,6 +55,8 @@ Material visual artifacts use `visual-quality-review`. Review against the approv
 
 ## Local character artwork
 
+Publication Hook scan evidence is limited to Git candidate/history Secret Scanning. It does not cache Creative review, authorize asset import, or change any image-generation or artwork provenance decision.
+
 ### Local ComfyUI model profiles
 
 For the fixed FLUX 3 Klein Base topology, preflight validates `TextGenerate` input types, numeric ranges, combo choices and the live `COMFY_DYNAMICCOMBO_V3` format from `/object_info/TextGenerate`. Preserve the runtime-provided Dynamic Combo API object shape; validate the final serialized workflow and its fixed links before the single `/prompt` POST. Provider failures may expose only allowlisted node ID/type, exception class and narrow safe argument summaries. Synthetic lifecycle evidence does not establish MPS inference.

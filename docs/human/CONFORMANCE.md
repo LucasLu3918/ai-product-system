@@ -1842,6 +1842,8 @@ The cross-profile quality evidence extension is covered by Scenario 258; this cr
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+Plan53 reuses the existing publication authority and scanner. It adds no Skill or Skill Explorer permission and grants no Git operation authority.
+
 The separate `creative workflows` CLI does not add to or change the Skills catalog and Skill Explorer behavior.
 
 Scenario 236 的 ComfyUI model registry 不介入 Skill Explorer、Skill 執行或路由。
@@ -1975,6 +1977,8 @@ Current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md)
 
 ## Scenario 260 — Publication diagnostics and Doctor
 
+Scenario 261 now also covers the bounded Hook deadline, safe upstream flags, exact short-lived scan evidence, and the distinction between ordinary Doctor visibility and strict Required Checks enforcement.
+
 Scenario 263 records the three exact Dewhollow WebM evidence-path exceptions and regression coverage that keeps near-matches and other WebM files under strict scanning.
 
 Scenario 260 publication coverage includes exact-candidate and full-history secret scanning, strict failure on incomplete scans, and continued provider-token/private-key detection.
@@ -2058,6 +2062,8 @@ Scenario 267 keeps this creative Git workspace denial unchanged; the advisory ap
 The lifecycle verifies default Git destination rejection, explicit exact-root opt-in, hash revalidation, create-only writes, and unchanged Git index bytes. The source remains a non-Git EPHEMERAL workspace; import does not stage or commit.
 
 ## Scenario 266 — Content Safety Injection Context and Recovery
+
+Publication scan evidence records a prior full Secret Scan only. Expiry or candidate/policy drift denies reuse; the final Gate continues to scan the complete candidate and history.
 
 Imported ComfyUI workflow JSON remains project content subject to existing content-safety and Change Boundary review; validation does not promote it to trusted instructions.
 

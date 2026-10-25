@@ -12,6 +12,10 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+Publication Hook, Doctor and evidence-cache changes must close the canonical placement preview for the affected guard, authority, scan-evidence, tests and Scenario 261 paths before the candidate is finalized. This review records the unchanged content-safety, Skill, independent-review and Creative boundaries when shared Guard or documentation-map triggers select those topics.
+
+Publication Hook, Doctor and evidence-cache changes must close the canonical placement preview for the affected guard, authority, scan-evidence, tests and Scenario 261 paths before the candidate is finalized.
+
 FLUX 3 Klein schema compatibility updates belong to the existing Creative execution path and Scenario 236 evidence; they do not change character-artwork provenance, generation, or asset-import behavior.
 
 Scenario 267's changes are synchronized through the required Harness, Project Intelligence and OpenCode adapter documentation before publication.
@@ -321,6 +325,8 @@ Focused Intelligence context evidence must distinguish storage deduplication fro
 
 ## Impact-derived regression testing
 
+For the publication Core boundary, review Hook timing/redaction, Doctor policy states, exact evidence invalidation, upstream flag parsing and full candidate/history scanning against the final matrix-bound diff.
+
 Independent-review evidence remains separate from Required Checks. When reviewing publication changes, verify `AIPS_ENFORCE_REQUIRED_CHECKS` and ensure its default affects only AIPS's own merge gate, not Doctor observations or GitHub rules.
 
 Publication Hook recovery tests assert zero inline Doctor calls, immediate fail-closed guidance and safe Prepare timeout fields (Scenario 260/261); exact-candidate evidence is recorded in the Core Change Matrix.
@@ -463,6 +469,8 @@ High-risk external runtime actions also require an exact, unexpired Approval Rec
 
 ## Public repository / CI consistency
 
+Publication preflight source and scenario changes must be represented in the canonical trigger maps; preview closure must include the Hook, authority, Doctor, exact scan evidence, tests and Scenario 261.
+
 Content-safety `pii.email.v2` only exempts the exact ASCII `git` service account in scp-style `git@<host>:path` and `ssh://` Git remotes; every other email is still blocked. `scripts/publication_transfer.py` and its lifecycle test use the literal `git@github.com:` remote string instead of splicing it together to avoid the scanner.
 
 Scenario 263 covers font parser bounds, staged blob size-before-read, scanner parity across commit/publication/history, and redacted diagnostics; exact-candidate validation remains required before publication.
@@ -557,6 +565,8 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
 ## Validation architecture consistency
+
+The publication guard change reuses existing authority and scanner contracts. It does not alter Skill Explorer admission, Skill trust, or independent review execution requirements.
 
 Creative lifecycle 的 runtime-schema assertions 與最終 payload 檢查屬 adapter 相容性證據；維護文件不得將其描述為實際模型、MPS 或視覺品質驗收。
 
@@ -844,6 +854,8 @@ Protected dispatch 會逐筆重新讀取 merged PR，確認 `merged_at`、head S
 
 
 ## Runtime Content Safety Boundary
+
+The publication evidence record can only reuse a successful full Secret Scan for an unchanged exact candidate. It does not relax content-safety checks or replace final-tree/history scanning.
 
 The only WebM exceptions are the three exact repository-relative Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; near-matches and all other WebM files retain strict scanning, and the 2,000,000-byte text limit is unchanged.
 

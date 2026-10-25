@@ -68,6 +68,8 @@ Pure dependency update documentation exemption (Scenario 221): `pure_dependency_
 
 ## Security invariants
 
+The publication Hook's short-lived scan evidence records a successful full Secret Scan but does not alter content-safety decisions or sink policy. Missing, stale, corrupt or mismatched evidence fails closed, and Prepare plus the final Integration Gate still scan the complete candidate and history.
+
 Publication timeout diagnostics omit raw command and exception text. A Claude PreToolUse remote failure remains denied, and manual Doctor recovery is read-only and cannot grant publication authority.
 
 AIPS publication hook 對未預期授權例外 fail closed；回傳與 opt-in ledger 限定 allowlist 例外類別，不攜帶原始訊息或命令。

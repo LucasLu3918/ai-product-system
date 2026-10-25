@@ -148,6 +148,8 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 ## Creative Workflow
 
+Git publication scan evidence is independent of Creative review, asset import and image-generation provenance; it cannot authorize any Creative action.
+
 Creative profile registry 支援同一審核拓樸家族中的新增模型；FLUX 3 Klein Base 使用獨立固定 workflow 與元件清單。
 
 FLUX 3 的 `TextGenerate` preflight 會依本機 `/object_info` 驗證輸入型別、範圍及 Dynamic Combo 選項 schema，並確認送往 API 的值是已核准選項鍵；ComfyUI 執行層會重建節點所需的巢狀值。送出前再驗證最終序列化工作流保留核准的節點與連線。這是介面相容性檢查，不代表模型已完成推論。
@@ -405,6 +407,8 @@ Dependabot commit 的機器人 noreply author 與最後一行精確的 `Signed-o
 Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
 ## Security 與 Governance
+
+Publication Hooks use an eight-second fail-closed deadline and may consume only a fresh, exact-candidate Secret Scan record from Prepare. The record is non-authorizing; every Hook invocation rechecks live Git and remote state, and the final Integration Gate repeats the full scan.
 
 The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; all other WebM paths and near-matches remain subject to strict candidate scanning.
 
@@ -690,6 +694,8 @@ Docs build 與 Pages hosting 分開驗證：PR / main 都能證明 VitePress bui
 
 Documentation Placement 對 behavior-bearing source 採 fail-closed mapping：只要 source 落在 Technology Guide 的廣域同步 surface，就必須先命中 subsystem placement rule。這避免新功能以「文件最後補充說明」逃過 topic architecture。
 ## Runtime Content Safety Boundary
+
+Publication scan evidence is a separate, short-lived cache of a successful full candidate/history scan. It cannot replace the scanner, relax content-safety policy, or authorize a protected operation.
 
 The publication scanner examines the exact candidate tree and commit history. Its generic assignment detector recognizes only the documented generated-password and parameterized SQL forms as non-literal values; provider-token, private-key and high-entropy literal checks remain active. JSON scanning is bounded at 8,000,000 bytes and larger inputs fail closed. The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; there is no extension-wide exemption, and the 2,000,000-byte text limit remains unchanged. The same exact relative paths are excluded in any repository using the shared policy.
 

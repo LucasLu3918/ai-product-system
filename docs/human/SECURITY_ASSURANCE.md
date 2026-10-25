@@ -467,6 +467,8 @@ SAL 2+ default registration requires an independently retained anchor. SAL 4 req
 The retention helper never deletes evidence or grants compaction authority. Expiry only creates a Human-review action and a minimal digest record.
 ## Runtime Content Safety Boundary
 
+Publication Hook 的短效 scan evidence 不會放寬內容安全判斷或 sink policy。它綁定精確候選與掃描器／政策摘要；任何漂移都拒絕使用，Prepare 與最終 Gate 仍完整掃描。
+
 The only WebM exceptions are the three exact repository-relative Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; near-matches and all other WebM files retain strict scanning, and the 2,000,000-byte text limit is unchanged.
 
 The bounded publication scanner scans JSON text up to 8,000,000 bytes and other text up to 2,000,000 bytes. Oversized and incomplete files block publication.
@@ -525,9 +527,9 @@ Publication diagnostic fields and optional ledger tracing are observability only
 
 Claude Code's publication Hook returns a bounded denial for retryable remote errors without invoking Doctor; a separate Doctor invocation remains read-only, and native Host confirmation and merge authority remain required.
 
-Publication Doctor reports only observed HTTP status and safe endpoint identity. Authentication, permission, missing resource, rate limit, service and network failures remain distinct; unknown policy evidence blocks, and diagnostic retries never run push, PR or merge actions.
+Publication Doctor reports only observed HTTP status and safe endpoint identity. Authentication, permission, missing resource, rate limit, service and network failures remain distinct. Unknown policy evidence remains `UNKNOWN_PERMISSION`/`UNAVAILABLE`; it blocks Doctor only when `AIPS_ENFORCE_REQUIRED_CHECKS=1`, while strict merge verification stays fail-closed. Diagnostic retries never run push, PR or merge actions.
 
-Personal PR merge accepts `gh pr merge --auto` only with an exact candidate/head binding. AIPS Required Checks enforcement is disabled by default and can be enabled with `AIPS_ENFORCE_REQUIRED_CHECKS=1`, which requires configured policy evidence and all required checks passing. For an explicitly task-authorized merge, Claude Code may enable GitHub auto-merge without a second Claude prompt; Gemini retains native `ask_user`. GitHub still enforces required checks and repository rules. This option does not issue a Human grant or bypass repository policy.
+Personal PR merge accepts `gh pr merge --auto` only with an exact candidate/head binding. AIPS Required Checks enforcement is disabled by default and can be enabled with `AIPS_ENFORCE_REQUIRED_CHECKS=1`, which requires configured policy evidence and all required checks passing. A publication Hook has an eight-second hard deadline and returns a structured fail-closed denial with its last safe phase and elapsed time when that budget expires. `aips publish prepare` may cache only a five-minute exact-candidate Secret Scan pass in the private user cache; every Hook call still revalidates current Git, remote, target, policy, and authorization state. Missing or stale evidence blocks the Hook, and Prepare plus the final Integration Gate still run the full candidate/history scan. For an explicitly task-authorized merge, Claude Code may enable GitHub auto-merge without a second Claude prompt; Gemini retains native `ask_user`. GitHub still enforces required checks and repository rules. This option does not issue a Human grant or bypass repository policy.
 
 Commit and publication scanning treats `.m4a` as structured audio: the scanner validates bounded top-level atoms and an M4A-compatible `ftyp` brand, scans readable `moov` metadata for secrets, and does not decode audio `mdat` bytes as text. Invalid/spoofed files fail closed; files above 8 MiB are rejected with Git LFS or external object storage guidance. The existing text-file scan limit, staged content-safety checks and other binary-format handling remain in force.
 

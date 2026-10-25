@@ -188,6 +188,8 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
         findings, blockers, _, _ = scan_candidate(root, base, head, policy)
         if findings or blockers:
             raise authority.PublicationError('candidate/history scan blocked', 'CONTENT_SCAN_BLOCKED')
+        from publication_scan_evidence import store as store_scan_evidence
+        evidence_digest = store_scan_evidence(root, scope, policy_digest=policy_hash)
         observation = {
             'worktree': str(root), 'repository_id': scope['repository_id'],
             'worktree_id': scope['worktree_id'], 'head': head, 'base': base,
@@ -198,6 +200,8 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
             'auto_merge': auto_merge,
             'title_digest': authority.digest(title), 'body_digest': authority.digest(body_bytes.hex()),
             'body_file': str(body_file),
+            'scan_evidence': {'status': 'PASS', 'binding_digest': evidence_digest,
+                              'expires_in_seconds': 300},
         }
         fingerprint = authority.digest(observation)
         result.update(observation=observation, fingerprint=fingerprint, scan='PASS')

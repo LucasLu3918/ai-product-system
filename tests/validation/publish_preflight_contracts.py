@@ -91,6 +91,13 @@ diagnostics_tests = subprocess.run(
 if diagnostics_tests.returncode:
     errors.append("Publication diagnostics lifecycle failed: " + diagnostics_tests.stderr[-2000:])
 
+scan_evidence_tests = subprocess.run(
+    [sys.executable, str(ROOT / "tests/test_publication_scan_evidence.py")],
+    cwd=ROOT, capture_output=True, text=True, check=False,
+)
+if scan_evidence_tests.returncode:
+    errors.append("Publication scan evidence lifecycle failed: " + scan_evidence_tests.stderr[-2000:])
+
 for rel in ("scripts/publication_diagnostics.py", "tests/test_publication_diagnostics.py"):
     if not (ROOT / rel).is_file():
         errors.append(f"Publication Doctor artifact missing: {rel}")

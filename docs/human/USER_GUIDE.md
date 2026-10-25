@@ -71,6 +71,8 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+Publication scan evidence applies only to a Git candidate Secret Scan. It does not cache creative review, authorize asset import, or change image-generation provenance.
+
 Creative outputs in Git workspaces retain their existing guard, even while ordinary confined local L2 source writes may proceed with READY but STALE Project Intelligence.
 
 Creative assets using static AVIF pass the bounded EXIF/XMP safety scan described in Runtime Content Safety; this does not establish visual quality or licensing.
@@ -209,6 +211,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
+Claude Code 的 managed publication Hook 在八秒內完成檢查；逾時會以安全 phase 與耗時回報 fail-closed 拒絕，不會自動重試。受保護的 push 前先執行 `aips publish prepare`，讓 Hook 使用五分鐘內、綁定精確候選的私有掃描證據。
+
 FLUX 3 Klein 的 `TextGenerate` runtime schema 檢查由既有 Harness executor 執行，並在唯一一次 ComfyUI `/prompt` 請求前驗證最終工作流；預檢不會啟動生成。
 
 Creative workflow commands remain explicit user-facing actions routed through the existing CLI and host authorization; schema inspection alone never submits a ComfyUI job.
@@ -289,6 +293,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 詳細請看 [Global Harness 與 MCP](HARNESS.md)。
 
 ## Roles、Skills 與重用
+
+Publication guard 重用既有的 command authority 與 Secret Scan；scan evidence 只是短效候選證據，不會新增 Role、Skill 或 Git 操作權限。
 
 這次 FLUX 3 Klein 修復只調整 Creative executor 與其預檢，不新增或改變 Roles、Skills 或 Skill Explorer 行為。
 
@@ -744,7 +750,7 @@ Personal Mode 的逐次合併確認和 High-Assurance Mode 的外部 signed gran
 
 首次設定或 PR 卡住時，可執行 `aips publish doctor --project-root <repo> [--pr <number>] --format yaml`。Doctor 只讀檢查 GitHub CLI 登入、repository merge methods、branch protection/ruleset 可見性、Required Checks 與指定 PR/head/checks，並列出安全的下一步。Required Checks 會明確回報未設定、權限未知、失敗、執行中、缺少／跳過、取消、PR head/base 過期或 GitHub 網路／限流／伺服器錯誤；任何空白或不可見證據都會阻擋，不會自動調整保護規則。GitHub 對 skipped check 的結果保留為 provider 成功，AIPS 仍以 `MISSING` 阻擋發布。Claude Code Hook 只會在可重試的網路、限流或伺服器錯誤時自動執行一次唯讀 Doctor。`aips publish diagnose` 也接受 literal `gh pr merge`，依 `AIPS_ENFORCE_REQUIRED_CHECKS=1` 設定驗證 Required Checks；預設仍驗證 PR、完整 head SHA、base 與 merge method，但標示 AIPS check gate 未啟用。Doctor 繼續回報即時政策／checks 狀態。輸出 `authorized: false`、`executed: false`，不執行 merge、不消耗 grant。Codex/OpenCode 的診斷仍不取代原生工具權限或 GitHub 保護。
 
-`aips publish doctor --worktree <candidate-root> --worktree-details` 是唯讀診斷，可選擇 `--branch <name>` 與 `--pr <number>`，輸出分階段證據、穩定原因碼、HTTP status、端點及已遮蔽的錯誤摘要。dirty 明細只列 repo-relative staged／modified／deleted／untracked 路徑與處理建議，不讀檔案內容、不會 stash、刪除或忽略檔案。HTTP 404 只有在分支存在且 effective-rules 證據完整時，才可判定沒有作用中的分支規則；當 `branch.protected` 為 true 而 classic protection 回覆 403 時，Required Checks policy 為 `UNKNOWN_PERMISSION`。其他未知證據也維持阻擋。`ALREADY_MERGED` 會導向 exact-head post-merge reconciliation，不會再次規劃 push、建 PR 或 merge。診斷與 `retryable` 欄位都不授予發布權限；主機拒絕、Human approval 或 required checks 仍依原流程處理。
+`aips publish doctor --worktree <candidate-root> --worktree-details` 是唯讀診斷，可選擇 `--branch <name>` 與 `--pr <number>`，輸出分階段證據、穩定原因碼、HTTP status、端點及已遮蔽的錯誤摘要。dirty 明細只列 repo-relative staged／modified／deleted／untracked 路徑與處理建議，不讀檔案內容、不會 stash、刪除或忽略檔案。HTTP 404 只有在分支存在且 effective-rules 證據完整時，才可判定沒有作用中的分支規則；當 `branch.protected` 為 true 而 classic protection 回覆 403 時，Required Checks policy 為 `UNKNOWN_PERMISSION`，並保留這個狀態與診斷。一般 Doctor 不會因權限不足或未設定 Required Checks 阻擋個人分支發布；只有 `AIPS_ENFORCE_REQUIRED_CHECKS=1` 的嚴格驗證會把未知／未設定狀態列為 blocker，merge 驗證仍對未知狀態 fail closed。`ALREADY_MERGED` 會導向 exact-head post-merge reconciliation，不會再次規劃 push、建 PR 或 merge。診斷與 `retryable` 欄位都不授予發布權限；主機拒絕、Human approval 或 GitHub 原生 required checks 仍依原流程處理。
 
 若開發 workspace 有未交付素材，保留原檔並建立獨立乾淨的工程分支 worktree，再將該 root 明確傳給 `prepare` 與原生 tool。素材清單至少記錄路徑、用途、SHA-256、大小、授權與部署來源；母帶需獨立備份，正式音訊經壓縮與音質驗收。Git LFS／物件儲存由專案決定，且部署必須驗證實體檔案可取得。Scanner 的文字、binary 與來源政策限制要各別診斷，不因檔案大小推論授權失敗。
 
@@ -752,7 +758,7 @@ Personal Mode 的逐次合併確認和 High-Assurance Mode 的外部 signed gran
 
 TTF、OTF、WOFF 與 WOFF2 字型也可通過有界 metadata 掃描；AIPS 會核對檔案簽章、格式、副檔名及解壓大小，並掃描字型名稱與廠商欄位。缺少解析套件、格式偽裝、損毀、超出上限或 metadata 命中 Secret／PII／Injection 規則時，commit 與發布都會阻擋。字型輸入上限為 8 MiB、宣告解壓上限為 32 MiB。
 
-發布前使用 `aips publish prepare --worktree <candidate-root> --title <title> --body-file <file>`；原生工具必須使用輸出的 `cwd` 與精確 `argv`。`--expected-fingerprint` 可拒絕舊觀察，`--host-denied` 只回報 Host 拒絕，`--auto-merge` 只規劃 GitHub `--auto`，要求非空且全部通過的 required checks，並保留原生 Human 授權。每次續行重新查詢遠端分支與 PR；PLANNED 不是授權，也不是完整 Integration Gate PASS。
+發布前使用 `aips publish prepare --worktree <candidate-root> --title <title> --body-file <file>`；原生工具必須使用輸出的 `cwd` 與精確 `argv`。成功完成完整候選／歷史 Secret Scan 後，Prepare 會在 private user cache 寫入五分鐘有效的掃描 evidence，精確綁定 repo/worktree、base/head、operation、remote、full target ref、remote OID、diff、scanner 與 policy。Hook 每次仍重驗 Git／遠端／目標；缺少、過期、毀損或不相符 evidence 會拒絕並要求重新 Prepare。此 evidence 不授權推送，完整候選／歷史掃描仍由 Prepare 和 final Integration Gate 執行。`--expected-fingerprint` 可拒絕舊觀察，`--host-denied` 只回報 Host 拒絕，`--auto-merge` 只規劃 GitHub `--auto`，要求非空且全部通過的 required checks，並保留原生 Human 授權。每次續行重新查詢遠端分支與 PR；PLANNED 不是授權，也不是完整 Integration Gate PASS。個人模式接受帶 `-u`／`--set-upstream` 的 push，但仍要求精確 candidate SHA、唯一 origin 與完整同名工程 branch ref。
 
 Prepare 與 `aips publish diagnose` 會並列候選驗證、授權與執行狀態。`PLANNED` 代表只完成規劃；`AWAITING_AUTHORITY` 代表需要 Human grant；Hook 的 `AUTHORIZED` 只代表 AIPS Hook 放行，Host 仍可能拒絕且指令尚未執行；`EXECUTED` 只能由實際執行結果確認。`next_step: PUSH`、掃描通過或觀測指紋都不會授予權限。診斷包含安全的 worktree ID、候選 SHA、完整 target ref、publication mode 與 AIPS 版本／revision，僅供核對環境，不作為授權憑證。未知錯誤會回報 `INTERNAL_DIAGNOSTIC_GAP`；已知分支目標不一致會回報 `PUSH_TARGET_BRANCH_MISMATCH`，並提供繁中排除步驟。
 
@@ -907,6 +913,8 @@ Scenario / validation history
 
 Documentation Placement Contract 會檢查 heading hierarchy、version/scenario-style heading 與 changed-line placement。新增功能不得只在 current-behavior 文件尾端追加 `vX.Y` / Scenario 說明；若確實需要新 topic，必須同時把 canonical section 加入 placement contract。
 ## Runtime Content Safety Boundary
+
+Publication scan evidence 只代表完整 Secret Scan 曾對精確候選通過，不改變內容安全政策；Prepare 和最終 Integration Gate 仍會執行完整候選與歷史掃描。
 
 The generic secret-assignment check ignores only the documented generated-password and parameterized SQL expression shapes. JSON evidence is scanned up to 8,000,000 bytes, other text up to 2,000,000 bytes, and larger inputs block publication. The only WebM exceptions are the three exact repository-relative Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; near-matches and all other WebM files retain strict scanning. These exact strings apply in any repository using the shared policy.
 
