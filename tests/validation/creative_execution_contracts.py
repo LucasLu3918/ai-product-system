@@ -55,7 +55,7 @@ if all(path.is_file() for path in required):
         ("MFLUX_CAPABILITIES" in executor and "mflux-generate-flux2-edit" in executor and "mflux-generate-qwen-edit" in executor, "MFLUX commands must use the closed capability registry"),
         ("MAX_REFERENCE_IMAGES = 8" in executor and "--image-paths" in executor, "MFLUX edit reference batches must be bounded and explicit"),
         ("def prepare(" in executor and "os.O_EXCL" in executor and "creative_ephemeral_required" in executor, "preparation must be confined, create-only and EPHEMERAL"),
-        ("exactly one hash-checked reference" in compatibility, "ComfyUI compatibility docs must state the single-reference boundary"),
+        ("one to eight ordered bound references" in compatibility and "source hash" in compatibility, "ComfyUI compatibility docs must state the bounded ordered reference contract and staged source-hash verification"),
         ('"review-assist"' in plugin and 'classification.intent !== "create"' in plugin and '180_000' in plugin, "OpenCode preparation, generation, and advisory review must remain explicit and bounded"),
         ('from creative_prompt_compiler import (' in executor and 'compile_creative_prompt' in executor and 'model_recommendation' in executor and 'from creative_errors import Blocked, error_payload' in executor and 'compiled_prompt_sha256' in executor and 'profile-driven-v1' in executor, "execution must preserve compiler and exception facades and record only the compiled prompt fingerprint"),
         ('from creative_errors import Blocked' in required[15].read_text(encoding="utf-8"), "the pure prompt compiler must depend on the shared error module, not the execution facade"),
