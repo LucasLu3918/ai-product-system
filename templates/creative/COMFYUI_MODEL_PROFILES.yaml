@@ -21,7 +21,7 @@ profiles:
 
   flux3-image-klein-base-int8:
     model_id: flux3-image-klein-base
-    topology: flux3_klein_base_t2i
+    topology: flux3_klein_t2i
     operation: generate
     components:
       unet_name: flux3-image-klein-base-int8-convrot.safetensors
@@ -32,6 +32,23 @@ profiles:
     sampler:
       steps: 50
       cfg: 3.5
+      sampler_name: euler
+      scheduler: simple
+      denoise: 1
+
+  flux3-image-klein-distilled-int8:
+    model_id: flux3-image-klein-distilled
+    topology: flux3_klein_t2i
+    operation: generate
+    components:
+      unet_name: flux3-image-klein-int8-convrot.safetensors
+      clip_name: qwen3vl_4b_int8_convrot.safetensors
+      prompt_upsampler_name: qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors
+      vae_name: flux2-vae.safetensors
+    clip_type: flux3
+    sampler:
+      steps: 16
+      cfg: 1
       sampler_name: euler
       scheduler: simple
       denoise: 1

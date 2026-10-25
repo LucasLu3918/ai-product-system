@@ -24,6 +24,8 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 ## 文件角色
 
+Base/Distilled sampler bounds and dynamic edit reference limits are documented in the User Guide and Scenario 236; neither change adds a Skill Explorer entry or changes upstream Skill trust.
+
 Skill catalog and Explorer guidance remain under the Skills documentation map. Publication Hook, scanner and Doctor implementation use the separate publication-preflight mapping and do not create new Skill capabilities.
 
 Creative workflow 的新增 FLUX 3 Klein schema／payload 相容性證據位於 User Guide、Technology Guide 與 Scenario 236；Scenario 234/236 的角色創作流程沒有因此改變。
@@ -217,7 +219,7 @@ Creative engine discovery and staged readiness are sourced from `scripts/creativ
 
 Project Diagnostics 的 Agent-facing read-only 與 UNVERIFIED 邊界保留在 `orchestration/PROJECT_INTELLIGENCE.md`、`harness/HARNESS_PROTOCOL.md` 與 OpenCode Adapter 指示中。
 
-ComfyUI model profile 與拓樸家族的真實來源是 `scripts/creative_execution.py`、`templates/creative/COMFYUI_MODEL_PROFILES.yaml` 及各家族固定 workflow template；目前包含 Z-Image Turbo 與 FLUX 3 Klein Base。可擴充 profile 只能重用已審核家族，新節點或家族仍需程式審核。本機產圖與人工審查流程由 `orchestration/CREATIVE_DIRECTION.md` 說明。
+ComfyUI model profile 與拓樸家族的真實來源是 `scripts/creative_execution.py`、`templates/creative/COMFYUI_MODEL_PROFILES.yaml` 及各家族固定 workflow template；目前包含 Z-Image Turbo 與 FLUX 3 Klein Base/Distilled。已審核家族可增加經欄位、範圍、runtime schema 與本機元件清單驗證的資料型 profile；新節點或家族仍需程式審核。動態 ComfyUI edit 的一至八張有序參考規則記錄於 Scenario 236。本機產圖與人工審查流程由 `orchestration/CREATIVE_DIRECTION.md` 說明。
 
 角色圖片保留要求的媒材；以受限 configure 建立新的 Bundle，並載入校準、方向與視覺審查 skill。執行、圖片容器、人工審查與使用者接受分開回報。
 

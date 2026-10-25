@@ -67,7 +67,7 @@ RASTER_SUFFIXES = set(REGISTERED_RASTER_SUFFIXES)
 MAX_IMAGE_BYTES = 25 * 1024 * 1024
 MAX_REFERENCE_BYTES = 12 * 1024 * 1024
 MAX_REFERENCE_BATCH_BYTES = 25 * 1024 * 1024
-MAX_REFERENCE_IMAGES = 8
+MAX_REFERENCE_IMAGES = comfyui_workflow.MAX_REFERENCE_BINDINGS
 MAX_PROMPT_CHARS = 4000
 MAX_VISION_IMAGE_BYTES = 12 * 1024 * 1024
 MAX_VISION_RESPONSE_BYTES = 64 * 1024
@@ -84,14 +84,15 @@ COMFY_CORE_NODES = COMFY_CHECKPOINT_NODES | COMFY_ZIMAGE_NODES | COMFY_FLUX3_NOD
 COMFY_PROFILE_REGISTRY_PATH = ROOT / "templates/creative/COMFYUI_MODEL_PROFILES.yaml"
 COMFY_PROFILE_COMPONENT_KEYS = {
     "z_image_split_loader": {"unet_name", "clip_name", "vae_name"},
-    "flux3_klein_base_t2i": {"unet_name", "clip_name", "prompt_upsampler_name", "vae_name"},
+    "flux3_klein_t2i": {"unet_name", "clip_name", "prompt_upsampler_name", "vae_name"},
 }
 COMFY_PROFILE_FAMILY_SETTINGS = {
     "z_image_split_loader": {"clip_type": "lumina2", "sampler": {
         "steps": None, "cfg": 1, "sampler_name": "res_multistep", "scheduler": "simple", "denoise": 1,
     }},
-    "flux3_klein_base_t2i": {"clip_type": "flux3", "sampler": {
-        "steps": 50, "cfg": 3.5, "sampler_name": "euler", "scheduler": "simple", "denoise": 1,
+    "flux3_klein_t2i": {"clip_type": "flux3", "sampler": {
+        "steps": (1, 100), "cfg": (0, 30), "sampler_name": {"euler"},
+        "scheduler": {"simple"}, "denoise": (0, 1),
     }},
 }
 MFLUX_CAPABILITIES: dict[str, dict[str, dict[str, str | None]]] = {
@@ -236,6 +237,10 @@ def bundle_input_images(root: Path, value: dict[str, Any]) -> list[Path]:
             raise Blocked("input_images_too_large", "Combined reference images exceed the 25 MiB limit.")
         paths.append(path)
     return paths
+
+
+def safe_comfy_input_name(value: Any) -> bool:
+    return isinstance(value, str) and bool(re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._ -]{0,254}", value))
 
 
 def read_bundle(project: Path, bundle_path: str, *, allow_existing_output: bool = False) -> tuple[Path, dict[str, Any]]:
@@ -442,6 +447,23 @@ def load_comfy_profile(profile_id: str) -> dict[str, Any]:
     model_id = profile.get("model_id")
     components = profile.get("components")
     sampler = profile.get("sampler")
+    sampler_valid = isinstance(sampler, dict) and set(sampler) == set(family["sampler"]) if family else False
+    if sampler_valid:
+        for key, allowed in family["sampler"].items():
+            value = sampler[key]
+            if allowed is None:
+                valid_value = value is None
+            elif isinstance(allowed, tuple):
+                valid_value = (isinstance(value, (int, float)) and not isinstance(value, bool)
+                               and (key != "steps" or isinstance(value, int))
+                               and allowed[0] <= value <= allowed[1])
+            elif isinstance(allowed, (int, float)) and not isinstance(allowed, bool):
+                valid_value = isinstance(value, (int, float)) and not isinstance(value, bool) and value == allowed
+            else:
+                valid_value = value in allowed if isinstance(value, str) else False
+            if not valid_value:
+                sampler_valid = False
+                break
     if (family is None or not isinstance(model_id, str) or not model_id.strip() or len(model_id) > 128
             or profile.get("operation") != "generate" or not isinstance(components, dict)
             or set(components) != COMFY_PROFILE_COMPONENT_KEYS[topology]
@@ -449,8 +471,7 @@ def load_comfy_profile(profile_id: str) -> dict[str, Any]:
                    or any(not isinstance(name, str) or not name.strip() or Path(name).name != name or len(name) > 256
                           for name in (value if isinstance(value, list) else [value]))
                    for value in components.values())
-            or profile.get("clip_type") != family["clip_type"]
-            or sampler != family["sampler"]):
+            or profile.get("clip_type") != family["clip_type"] or not sampler_valid):
         raise Blocked("comfy_model_profile_invalid", "ComfyUI model profile does not match an audited topology family.")
     return profile
 
@@ -601,7 +622,7 @@ def validate_final_comfy_workflow(workflow: Any, provider: dict[str, Any]) -> No
                 raise Blocked("comfy_final_payload_invalid", "Final ComfyUI node connection or fixed value changed after preflight.",
                               {"node_id": str(node_id)[:32], "node_type": str(source_node["class_type"])[:64], "field": str(name)[:64]},
                               phase="creative.payload_validation", source="comfyui")
-    if isinstance(profile, dict) and profile.get("topology") == "flux3_klein_base_t2i":
+    if isinstance(profile, dict) and profile.get("topology") == "flux3_klein_t2i":
         node_id = str(prompt_id)
         schema = provider.get("textgen_schema")
         if not isinstance(schema, dict):
@@ -640,7 +661,7 @@ def load_comfy_workflow(root: Path, config: Any) -> tuple[str, dict[str, Any]]:
     profile_topology = profile.get("topology") if profile else None
     prompt_id = str(config.get("prompt_node_id", ""))
     prompt_node = workflow.get(prompt_id)
-    prompt_type = "TextGenerate" if profile_topology == "flux3_klein_base_t2i" else "CLIPTextEncode"
+    prompt_type = "TextGenerate" if profile_topology == "flux3_klein_t2i" else "CLIPTextEncode"
     if not isinstance(prompt_node, dict) or prompt_node.get("class_type") != prompt_type:
         raise Blocked("comfy_prompt_node_invalid", f"prompt_node_id must identify the registered {prompt_type} prompt node.")
     save_nodes = [key for key, node in workflow.items() if node.get("class_type") == "SaveImage"]
@@ -700,7 +721,7 @@ def load_comfy_workflow(root: Path, config: Any) -> tuple[str, dict[str, Any]]:
             raise Blocked("comfy_workflow_topology_invalid", "Configured prompt or save node does not match the Z-Image Turbo topology.")
         checkpoint_node_id = None
         save_nodes = [save_id]
-    elif profile_topology == "flux3_klein_base_t2i":
+    elif profile_topology == "flux3_klein_t2i":
         expected_types = ["UNETLoader", "CLIPLoader", "CLIPLoader", "VAELoader", "TextGenerate", "CLIPTextEncode", "ConditioningZeroOut", "EmptyFlux2LatentImage", "KSampler", "VAEDecode", "SaveImage"]
         if len(workflow) != len(expected_types) or sorted(node["class_type"] for node in workflow.values()) != sorted(expected_types):
             raise Blocked("comfy_workflow_topology_invalid", "FLUX 3 Klein accepts only its exact built-in prompt-upsample topology.")
@@ -785,7 +806,7 @@ def load_comfy_workflow(root: Path, config: Any) -> tuple[str, dict[str, Any]]:
         raise Blocked("comfy_input_node_invalid", "input_image_node_id must match one built-in LoadImage node.")
     if profile is not None and (image_nodes or input_node_id is not None):
         raise Blocked("comfy_workflow_topology_invalid", "Registered ComfyUI model profiles do not accept input-image nodes.")
-    return base, {"path": path, "workflow": workflow, "prompt_id": prompt_id, "prompt_field": "prompt" if profile_topology == "flux3_klein_base_t2i" else "text", "save_nodes": save_nodes, "checkpoint_node_id": checkpoint_node_id, "latent_node_id": latent_node_id, "sampler_node_id": sampler_node_id, "config": config, "profile": profile}
+    return base, {"path": path, "workflow": workflow, "prompt_id": prompt_id, "prompt_field": "prompt" if profile_topology == "flux3_klein_t2i" else "text", "save_nodes": save_nodes, "checkpoint_node_id": checkpoint_node_id, "latent_node_id": latent_node_id, "sampler_node_id": sampler_node_id, "config": config, "profile": profile}
 
 
 def verify_comfy(root: Path, bundle: dict[str, Any]) -> tuple[str, dict[str, Any]]:
@@ -816,19 +837,32 @@ def verify_comfy(root: Path, bundle: dict[str, Any]) -> tuple[str, dict[str, Any
             raise Blocked(reason, "Dynamic workflow needs an explicit prompt binding.", {"candidates": candidates[:16]}, phase="creative.workflow_bindings", source="comfyui")
         image_nodes = [node_id for node_id, node in info["workflow"].items() if node["class_type"] == "LoadImage"]
         reference = bindings.get("reference")
+        references = bindings.get("references")
         if bundle.get("operation") == "edit":
-            if len(bundle_input_images(root, bundle)) != 1 or not reference or image_nodes != [reference["node_id"]]:
-                raise Blocked("WORKFLOW_BINDING_REQUIRED", "Dynamic edit requires exactly one explicit local reference binding.", {"candidate_nodes": image_nodes[:16]}, phase="creative.workflow_bindings", source="comfyui")
-            image_name = config.get("input_image_name")
-            if not isinstance(image_name, str) or not image_name or Path(image_name).name != image_name:
-                raise Blocked("WORKFLOW_BINDING_INVALID", "Dynamic edit requires a safe staged input_image_name.", phase="creative.workflow_bindings", source="comfyui")
-            source = bundle_input_images(root, bundle)[0]
-            if source.stat().st_size > MAX_REFERENCE_BYTES:
-                raise Blocked("input_image_too_large", "Input image exceeds the 12 MiB limit.")
-            query = urllib.parse.urlencode({"filename": image_name, "subfolder": "", "type": "input"})
-            staged = local_request(base + "/view?" + query, timeout=5, max_bytes=MAX_REFERENCE_BYTES)
-            if hashlib.sha256(staged).digest() != hashlib.sha256(source.read_bytes()).digest():
-                raise Blocked("comfy_input_hash_mismatch", "Staged ComfyUI input does not match the selected project reference image.")
+            sources = bundle_input_images(root, bundle)
+            if references is not None:
+                image_names = config.get("input_image_names")
+                if (reference is not None or not 1 <= len(sources) <= MAX_REFERENCE_IMAGES
+                        or len(sources) != len(references)
+                        or set(image_nodes) != {item["node_id"] for item in references}
+                        or not isinstance(image_names, list) or len(image_names) != len(references)
+                        or any(not safe_comfy_input_name(name) for name in image_names)):
+                    raise Blocked("WORKFLOW_BINDING_REQUIRED", "Multi-reference edit requires matching ordered local inputs, bindings, and staged names within the configured limit.", {"candidate_nodes": image_nodes[:16]}, phase="creative.workflow_bindings", source="comfyui")
+                staged_names = image_names
+            else:
+                if len(sources) != 1 or not reference or image_nodes != [reference["node_id"]]:
+                    raise Blocked("WORKFLOW_BINDING_REQUIRED", "Dynamic edit requires exactly one explicit local reference binding.", {"candidate_nodes": image_nodes[:16]}, phase="creative.workflow_bindings", source="comfyui")
+                image_name = config.get("input_image_name")
+                if not safe_comfy_input_name(image_name):
+                    raise Blocked("WORKFLOW_BINDING_INVALID", "Dynamic edit requires a safe staged input_image_name.", phase="creative.workflow_bindings", source="comfyui")
+                staged_names = [image_name]
+            for source, image_name in zip(sources, staged_names, strict=True):
+                if source.stat().st_size > MAX_REFERENCE_BYTES:
+                    raise Blocked("input_image_too_large", "Input image exceeds the 12 MiB limit.")
+                query = urllib.parse.urlencode({"filename": image_name, "subfolder": "", "type": "input"})
+                staged = local_request(base + "/view?" + query, timeout=5, max_bytes=MAX_REFERENCE_BYTES)
+                if hashlib.sha256(staged).digest() != hashlib.sha256(source.read_bytes()).digest():
+                    raise Blocked("comfy_input_hash_mismatch", "Staged ComfyUI input does not match the selected project reference image.")
         elif image_nodes:
             raise Blocked("comfy_input_node_invalid", "Generate workflows cannot read implicit ComfyUI input files.", {"node_ids": image_nodes[:16]}, phase="creative.workflow_policy", source="comfyui")
         if not isinstance(stats, dict):
@@ -852,7 +886,7 @@ def verify_comfy(root: Path, bundle: dict[str, Any]) -> tuple[str, dict[str, Any
             inventories = {}
             for node_type in ("UNETLoader", "CLIPLoader", "VAELoader"):
                 inventories[node_type] = json.loads(local_request(base + "/object_info/" + node_type, timeout=3, max_bytes=1024 * 1024)).get(node_type, {})
-            if profile["topology"] == "flux3_klein_base_t2i":
+            if profile["topology"] == "flux3_klein_t2i":
                 textgen_payload = json.loads(local_request(base + "/object_info/TextGenerate", timeout=3, max_bytes=1024 * 1024))
                 textgen_info = textgen_payload.get("TextGenerate", {}) if isinstance(textgen_payload, dict) else {}
         else:
@@ -862,14 +896,14 @@ def verify_comfy(root: Path, bundle: dict[str, Any]) -> tuple[str, dict[str, Any
     if profile is not None:
         fields = [("UNETLoader", "unet_name", config["unet_name"]), ("CLIPLoader", "type", profile["clip_type"]), ("VAELoader", "vae_name", config["vae_name"])]
         fields.append(("CLIPLoader", "clip_name", config["clip_name"]))
-        if profile["topology"] == "flux3_klein_base_t2i":
+        if profile["topology"] == "flux3_klein_t2i":
             fields.append(("CLIPLoader", "clip_name", config["prompt_upsampler_name"]))
         for node_type, field, selected in fields:
             required = ((inventories[node_type].get("input") or {}).get("required") or {})
             choices = required.get(field, [[]])[0]
             if not isinstance(choices, list) or selected not in choices:
                 raise Blocked("comfy_model_unavailable", "A configured ComfyUI profile component is not present in the local model list.")
-        if profile["topology"] == "flux3_klein_base_t2i":
+        if profile["topology"] == "flux3_klein_t2i":
             text_inputs = textgen_info.get("input", {}) if isinstance(textgen_info, dict) else {}
             required = text_inputs.get("required", {}) if isinstance(text_inputs, dict) else {}
             optional = text_inputs.get("optional", {}) if isinstance(text_inputs, dict) else {}
@@ -889,21 +923,32 @@ def verify_comfy(root: Path, bundle: dict[str, Any]) -> tuple[str, dict[str, Any
             raise Blocked("comfy_model_unavailable", "Selected ComfyUI checkpoint is not present in the local server model list.")
     if bundle["operation"] == "edit":
         input_images = bundle_input_images(root, bundle)
-        if len(input_images) != 1:
-            raise Blocked("comfy_input_count_unsupported", "The bounded ComfyUI workflow accepts exactly one staged edit reference.")
         cfg = info["config"]
-        node_id = str(cfg.get("input_image_node_id", ""))
-        node = info["workflow"].get(node_id)
-        image_name = cfg.get("input_image_name")
-        if not isinstance(node, dict) or node.get("class_type") != "LoadImage" or not isinstance(image_name, str) or Path(image_name).name != image_name:
-            raise Blocked("comfy_input_node_invalid", "Edit requires a LoadImage node and a filename already staged in ComfyUI input.")
-        source = input_images[0]
-        if source.stat().st_size > MAX_REFERENCE_BYTES:
-            raise Blocked("input_image_too_large", "Input image exceeds the 12 MiB limit.")
-        query = urllib.parse.urlencode({"filename": image_name, "subfolder": "", "type": "input"})
-        staged = local_request(base + "/view?" + query, timeout=5, max_bytes=MAX_REFERENCE_BYTES)
-        if hashlib.sha256(staged).digest() != hashlib.sha256(source.read_bytes()).digest():
-            raise Blocked("comfy_input_hash_mismatch", "Staged ComfyUI input does not match the selected project reference image.")
+        references = info.get("bindings", {}).get("references")
+        if references is not None:
+            names = cfg.get("input_image_names")
+            node_ids = [item["node_id"] for item in references]
+            load_nodes = [node_id for node_id, node in info["workflow"].items() if node["class_type"] == "LoadImage"]
+            if (not 1 <= len(input_images) <= MAX_REFERENCE_IMAGES or len(input_images) != len(references)
+                    or set(node_ids) != set(load_nodes)):
+                raise Blocked("comfy_input_count_unsupported", "ComfyUI multi-reference edit requires matching ordered bound local references within the configured limit.")
+            if not isinstance(names, list) or len(names) != len(references) or any(not safe_comfy_input_name(name) for name in names):
+                raise Blocked("comfy_input_node_invalid", "Multi-reference edit requires safe staged image names for every reference.")
+        else:
+            if len(input_images) != 1:
+                raise Blocked("comfy_input_count_unsupported", "The bounded ComfyUI workflow accepts exactly one staged edit reference.")
+            node_id = str(cfg.get("input_image_node_id", ""))
+            node = info["workflow"].get(node_id)
+            names = [cfg.get("input_image_name")]
+            if not isinstance(node, dict) or node.get("class_type") != "LoadImage" or not safe_comfy_input_name(names[0]):
+                raise Blocked("comfy_input_node_invalid", "Edit requires a LoadImage node and a filename already staged in ComfyUI input.")
+        for source, image_name in zip(input_images, names, strict=True):
+            if source.stat().st_size > MAX_REFERENCE_BYTES:
+                raise Blocked("input_image_too_large", "Input image exceeds the 12 MiB limit.")
+            query = urllib.parse.urlencode({"filename": image_name, "subfolder": "", "type": "input"})
+            staged = local_request(base + "/view?" + query, timeout=5, max_bytes=MAX_REFERENCE_BYTES)
+            if hashlib.sha256(staged).digest() != hashlib.sha256(source.read_bytes()).digest():
+                raise Blocked("comfy_input_hash_mismatch", "Staged ComfyUI input does not match the selected project reference image.")
     return base, info
 
 
@@ -1201,7 +1246,7 @@ def configure(project: Path, bundle_path: str, settings: dict[str, Any]) -> dict
     mapping_fields = {
         "model": {"id", "revision", "local_path", "license", "license_source"},
         "comfyui": {"base_url", "workflow_path", "checkpoint_node_id", "checkpoint_name", "model_id",
-                    "prompt_node_id", "latent_node_id", "sampler_node_id", "save_node_id", "input_image_node_id", "input_image_name",
+                    "prompt_node_id", "latent_node_id", "sampler_node_id", "save_node_id", "input_image_node_id", "input_image_name", "input_image_names",
                     "model_profile", "unet_name", "clip_name", "prompt_upsampler_name", "vae_name"},
     }
     for key, keys in mapping_fields.items():
@@ -1703,7 +1748,10 @@ def comfy_execute(bundle: dict[str, Any], provider: dict[str, Any], temp_output:
                   "width": bundle.get("width", 1024), "height": bundle.get("height", 1024)}
         values.update(cfg.get("settings", {}))
         if bundle["operation"] == "edit":
-            values["reference"] = cfg["input_image_name"]
+            if provider["bindings"].get("references") is not None:
+                values["references"] = cfg["input_image_names"]
+            else:
+                values["reference"] = cfg["input_image_name"]
         workflow = comfyui_workflow.inject_bindings(provider["workflow"], provider["bindings"], values, prefix)
     else:
         workflow = json.loads(json.dumps(provider["workflow"]))

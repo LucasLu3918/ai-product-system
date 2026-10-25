@@ -161,7 +161,7 @@ The Codex managed block preserves eligible runtime primary model preference and 
 
 Codex PreToolUse support remains `EXPERIMENTAL` and `ADVISORY`: the local probe denies only its harmless synthetic command. Do not infer live runtime coverage or change user-global hook configuration from this evidence.
 
-Creative adapters share a declarative model profile registry and closed executor topology families. Registry data can select exact installed components within an audited family; it cannot add arbitrary nodes, workflow links or authority. Local model inventory checks do not grant broader generation authority or arbitrary command arguments.
+Creative adapters share a declarative model profile registry and closed executor topology families. Registry data can select exact installed components and bounded sampler values within an audited family; the FLUX 3 Klein Base and Distilled profiles share one reviewed topology and retain live schema checks. Dynamic ComfyUI edit slots may bind one to eight ordered local references, with staged-byte hash verification. These data selections cannot add arbitrary nodes, workflow links, endpoint access or authority. Local model inventory checks do not grant broader generation authority or arbitrary command arguments.
 
 Publication diagnosis is a read-only capability. Runtime adapters may report the shared reason code, phase, safe next step and Required Checks state, but must not treat diagnosis as permission, expose raw host output, modify policy, or execute a merge.
 

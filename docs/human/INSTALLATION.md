@@ -67,7 +67,7 @@ aips mcp inspect
 
 The managed Claude Code publication Hook has an eight-second hard deadline. For protected pushes, run `aips publish prepare` first so the full candidate/history scan can create the short-lived private evidence record; the Hook rechecks candidate and remote state on every invocation.
 
-ComfyUI model profiles 隨 AIPS registry 提供；固定 FLUX 3 Klein 執行前會檢查本機 `TextGenerate` schema 與最終 payload。安裝與 discovery 不下載權重；schema 通過不代表 MPS 或實際推論相容。
+ComfyUI model profiles 隨 AIPS registry 提供；FLUX 3 Klein Base/Distilled 執行前會檢查本機 `TextGenerate` schema、元件清單與 profile sampler 設定。安裝與 discovery 不下載權重；schema 通過不代表 MPS 或實際推論相容。Dynamic ComfyUI edit 可接受一至八張有序、雜湊核對過的本機參考圖。
 
 Creative ComfyUI `dynamic_local` workflow support reuses the installed AIPS executor and Python dependencies. It does not install ComfyUI, custom nodes, model weights, or a remote service; the local ComfyUI API and selected model files must already be available. Workflow scan and preflight are read-only, while workflow import is an explicit project-confined create-only operation.
 

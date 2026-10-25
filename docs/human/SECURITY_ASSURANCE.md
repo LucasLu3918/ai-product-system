@@ -8,7 +8,7 @@ Security review depth is proportional to the actual product/feature risk. The sy
 
 Project Diagnostics 只輸出 allowlisted 狀態、穩定 reason code 與建議，不複製 Doctor 原始輸出、憑證、prompt 或來源片段；靜態 Runtime/MCP 能力不得升格為原生執行證據。
 
-The creative executor confines writes to a declared non-Git EPHEMERAL output directory, uses create-only raster outputs, and contacts only an explicitly configured local engine.
+The creative executor confines writes to a declared non-Git EPHEMERAL output directory, uses create-only raster outputs, and contacts only an explicitly configured local engine. ComfyUI edit references remain project-confined, capped at eight files with per-file and aggregate byte limits, mapped to contiguous ordered slots and hash-matched against staged local bytes.
 
 The OpenCode native guard is a narrow runtime check, not an operating-system sandbox. Claims remain ADVISORY until direct permission-hook execution is verified; MCP/custom tools and other processes remain outside its boundary.
 
@@ -510,6 +510,8 @@ Email rule `pii.email.v2` reads only the exact ASCII `git` userinfo of an scp-li
 Publication preflight `git_identity` accepts the GitHub App bot noreply form (`<numeric id>+<slug>[bot]` on `users.noreply.github.com`, `identity.allowed_bot_author_patterns`) only in the candidate commit author field; committer and local `user.email` keep the human noreply formats. Before the `commit_messages` PII scan, exact `identity.trailer_identities` entries (currently Dependabot's `Signed-off-by: dependabot[bot]` with GitHub's support address) are replaced by `git-identity-metadata` only in the final trailer block of a commit authored by the same bot. `pii.email.v2` is unchanged, every other address still blocks, a malformed policy fails closed, and a bot identity grants no authority.
 
 ## Runtime Policy Enforcement
+
+FLUX 3 Klein profile sampler bounds and dynamic reference counts do not create runtime actions or Resource Authorization grants. Loopback-only access, core-node schema, file-size limits, ordered slots and source-to-staged hash checks remain enforced before submission.
 
 Remote publication timeouts remain fail-closed and non-authorizing. Claude Hook never invokes a synchronous Doctor subprocess; its denial gives a manual read-only recovery command. Prepare exposes only stable timeout diagnostics and omits raw command and exception text (Scenarios 260/261).
 

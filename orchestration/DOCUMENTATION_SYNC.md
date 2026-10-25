@@ -227,7 +227,7 @@ The publication-preflight mapping includes the private scan-evidence module, upd
 
 For Z-Image Turbo, synchronize the generate-only MFLUX command and single registered ComfyUI split-loader profile across creative, execution and Runtime docs. ComfyUI checks preinstalled UNET/CLIP/VAE files and strips prompt-bearing PNG text metadata. Separately, Scenario 268 covers opt-in schema-validated core-node API workflows with explicit bindings; do not claim arbitrary custom/API nodes, unsupported Z-Image variants, or verified real inference.
 
-ComfyUI registry and fixed workflow additions map to Creative Direction, Technology Guide, Scenario 236 and this placement contract; profile data cannot introduce topology families.
+ComfyUI registry and fixed workflow additions map to Creative Direction, Technology Guide, Scenario 236 and this placement contract; data-only profiles may reuse an audited topology with bounded profile settings and automatic live-schema/component validation, but cannot introduce topology families. Dynamic ComfyUI edit documentation describes one-to-eight ordered local references with per-file staged-byte verification.
 
 
 Project attach/detach behavior is synchronized across Existing Project guidance, Architecture/Technology and Scenario 044: `.ai/` remains opt-in, local `info/exclude` protects untracked workspace and archive paths, and `.gitignore` remains unchanged.

@@ -37,6 +37,7 @@ OpenCode V2 captures Creative mutation authority at native prompt admission; its
 OpenCode 與 CLI 共用本機模型能力表；Z-Image Turbo 的新增 generate 配對會同時出現在 discovery、configure 與 preflight。
 
 OpenCode 的 Creative tool 仍使用同一個本機 executor；ComfyUI Z-Image profile 固定 split-loader topology，並在 preflight 驗證權重清單與清除輸出 PNG 的 prompt text metadata。ComfyUI model profile registry 可擴充已審核拓樸家族內的模型元件與固定設定；新節點與新拓樸家族仍須程式審核。
+Creative execution 仍由既有 Harness session/action boundary 控制；Base/Distilled profile 與 dynamic edit slots 不增加 Host 權限、安裝步驟或 Skill routing。
 
 OpenCode 創作 tool 支援 discover/configure，產圖意圖、原生檔案 guard 與 Shell effect policy 維持不同檢查；重新投影後仍須驗證實際 host hooks。
 
@@ -150,9 +151,11 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 Git publication scan evidence is independent of Creative review, asset import and image-generation provenance; it cannot authorize any Creative action.
 
-Creative profile registry 支援同一審核拓樸家族中的新增模型；FLUX 3 Klein Base 使用獨立固定 workflow 與元件清單。
+Creative profile registry 支援同一審核拓樸家族中的資料型模型擴充，並依家族規則驗證 sampler 欄位與數值；FLUX 3 Klein Base 和 Distilled 共用已審核 workflow topology，分別使用 50 steps / CFG 3.5 與 16 steps / CFG 1。新節點與新家族仍須程式審核。
 
 FLUX 3 的 `TextGenerate` preflight 會依本機 `/object_info` 驗證輸入型別、範圍及 Dynamic Combo 選項 schema，並確認送往 API 的值是已核准選項鍵；ComfyUI 執行層會重建節點所需的巢狀值。送出前再驗證最終序列化工作流保留核准的節點與連線。這是介面相容性檢查，不代表模型已完成推論。
+
+Dynamic ComfyUI edit 可把一至八張專案參考圖依序綁定至 `image_1` 至 `image_8`，每張最多 12 MiB、總量最多 25 MiB；預檢核對 staged bytes 與來源雜湊。這沿用原本 loopback 與 runtime core-node schema 邊界，不代表已驗證模型推論。
 
 Scenario 267's READY+STALE advisory does not relax the existing creative-write boundary in Git workspaces.
 
@@ -212,7 +215,7 @@ Z-Image Turbo 可使用 MFLUX 專用命令 `mflux-generate-z-image-turbo`，或 
 
 Reusable character artwork extends the existing Creative Direction path: hashed local identity/style profiles feed optional installed MFLUX or loopback ComfyUI built-in workflows, separate create-only raster assets receive provenance validation, and a deterministic composer typesets the character sheet. Read-only discovery distinguishes command, runtime, model inventory, preflight and inference readiness; its ordinary ComfyUI check only contacts `127.0.0.1:8188` through fixed GET paths and returns a capped built-in model catalog. Requests validate loopback IP, port, method and path, disable proxies and refuse redirects. Structured provider errors retain safe status and recovery guidance. Preflight never starts generation; unavailable engines return `BLOCKED_NO_ENGINE`. Shared asset presets cover character, background, texture and UI ornament guidance. On Apple Silicon, MPS and precision are static evidence only; real backend compatibility remains unverified. An independent human visual review checks identity and style fidelity. The helper does not infer quality or install/download image models.
 
-The `creative_execution` path can prepare versioned Character/Style Profiles and an unconfigured Bundle before any engine is selected; its closed MFLUX registry fixes model/operation commands and bounds multi-reference edits to supported FLUX.2/Qwen operations. ComfyUI and FLUX.1 edits remain single-reference.
+The `creative_execution` path can prepare versioned Character/Style Profiles and an unconfigured Bundle before any engine is selected; its closed MFLUX registry fixes model/operation commands. MFLUX keeps its supported model-specific reference rules; dynamic ComfyUI edits accept one to eight explicitly bound, hash-checked local references.
 
 An explicitly configured `dynamic_local` ComfyUI workflow adds schema-validated access to compatible installed core nodes while keeping fixed workflow profiles as the default. Local `/object_info`, bounded graph validation, explicit Bundle bindings and installed loader-model checks gate preflight; custom/API nodes and implicit model or input selection fail closed. Execution remains opt-in, loopback-only and create-only, with synthetic evidence separate from real inference and quality.
 
@@ -271,6 +274,8 @@ Phase 4 在這條實作流程加入可選的 OpenAPI client generator adapter：
 Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行報告與目前 Profile、契約、工具、輸入、產物、Git 歷史及 Phase 3 provenance 交叉核對；舊 Profile 不受影響。共用 Widgets 參考專案執行本機 HTTP 服務與產生的 client，驗證工作流程及該案例行為。各真實產品的契約、測試和證據仍留在產品專案。
 
 ## Deterministic Execution
+
+Dynamic ComfyUI reference counts and FLUX sampler profiles remain executor preflight inputs; they introduce no scheduler, checkpoint or resume state.
 
 FLUX 3 Klein 最終 payload 驗證位於 Creative 執行邊界，保留既有單次提交與不自動重送失敗工作的行為。
 
@@ -407,6 +412,8 @@ Dependabot commit 的機器人 noreply author 與最後一行精確的 `Signed-o
 Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
 ## Security 與 Governance
+
+Distilled sampler declarations and one-to-eight ordered reference bindings do not change Human approval, Resource Authorization or the loopback endpoint allowlist; every staged input is verified locally before workflow submission.
 
 Publication Hooks use an eight-second fail-closed deadline and may consume only a fresh, exact-candidate Secret Scan record from Prepare. The record is non-authorizing; every Hook invocation rechecks live Git and remote state, and the final Integration Gate repeats the full scan.
 
