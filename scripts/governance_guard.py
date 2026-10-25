@@ -9,8 +9,10 @@ import logging
 import os
 import re
 import shlex
+import signal
 import subprocess
 import sys
+import time
 import uuid
 from datetime import UTC
 from pathlib import Path, PurePosixPath
@@ -32,6 +34,9 @@ except ModuleNotFoundError:  # imported as a repository module
 PROTECTED = ("git_push", "git_tag", "gh_pr_create", "gh_pr_merge", "gh_release_create")
 CONTENT_SENSITIVE = ("git_commit", *PROTECTED)
 logger = logging.getLogger(__name__)
+HOOK_DEADLINE_SECONDS = 8.0
+_HOOK_STARTED_AT: float | None = None
+_HOOK_PHASE = "input_validation"
 READ_ONLY_GIT_ENV = {**os.environ, "GIT_OPTIONAL_LOCKS": "0"}
 SET_LIKE_KEYS = {"files", "boundaries", "operations"}
 ASSIGNMENT_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*=")
@@ -899,13 +904,16 @@ def deny_hook_input(runtime: str, reason: str, diagnostic: dict[str, Any] | None
     detail += " [" + reason + "]"
     if diagnostic is None:
         diagnostic = PublicationError("", reason).diagnostic()
-    trace_status = _record_publication_diagnostic(diagnostic, runtime)
+    trace_status = ("SKIPPED_DEADLINE" if reason == "HOOK_DEADLINE_EXCEEDED"
+                    else _record_publication_diagnostic(diagnostic, runtime))
     safe_fields = {key: diagnostic.get(key) for key in
                    ("diagnostic_id", "reason_code", "detail_code", "phase", "category", "detail", "detail_zh",
                     "blocking_rule", "blocking_rule_id", "source", "retryable", "recovery_mode", "next_step", "next_step_zh",
                     "findings")}
     if diagnostic.get('binding'):
         safe_fields['binding'] = diagnostic['binding']
+    if _HOOK_STARTED_AT is not None:
+        safe_fields['elapsed_ms'] = max(0, int((time.monotonic() - _HOOK_STARTED_AT) * 1000))
     safe_fields.update({"authorization_status": "DENIED", "execution_status": "NOT_EXECUTED",
                         "authorized": False, "executed": False, "trace_status": trace_status})
     detail += " [phase=" + str(safe_fields.get("phase") or "unknown") + \
@@ -924,7 +932,9 @@ def deny_hook_input(runtime: str, reason: str, diagnostic: dict[str, Any] | None
     return 0
 
 
-def hook(runtime: str) -> int:
+def _hook_impl(runtime: str) -> int:
+    global _HOOK_PHASE
+    _HOOK_PHASE = "input_validation"
     mode = 'unknown'
     try:
         payload = json.load(sys.stdin)
@@ -943,7 +953,8 @@ def hook(runtime: str) -> int:
         exit_match = re.search(r"\bexit(?:ed)?\s+(?:with\s+)?code\s*[:=]?\s*(\d+)\b", error_text, re.IGNORECASE)
         exit_code = int(exit_match.group(1)) if exit_match and int(exit_match.group(1)) <= 255 else None
         folded = error_text.casefold()
-        category = ("NETWORK_ERROR" if any(word in folded for word in ("timed out", "timeout", "connection refused", "network is unreachable"))
+        category = ("TIMEOUT_OBSERVED" if any(word in folded for word in ("timed out", "timeout"))
+                    else "NETWORK_ERROR" if any(word in folded for word in ("connection refused", "network is unreachable"))
                     else "AUTHENTICATION_ERROR" if any(word in folded for word in ("authentication failed", "permission denied", "not authorized"))
                     else "NATIVE_TOOL_ERROR")
         if payload.get("tool_name") != "Bash":
@@ -973,6 +984,7 @@ def hook(runtime: str) -> int:
         return deny_hook_input(runtime, "invalid_command")
     command = command_value
     try:
+        _HOOK_PHASE = "runtime_policy"
         from runtime_policy import action_from_hook, evaluate, load_policy
 
         runtime_action = action_from_hook(payload, runtime)
@@ -1025,6 +1037,7 @@ def hook(runtime: str) -> int:
             print(json.dumps({"decision": "deny", "reason": reason}))
         return 0
     try:
+        _HOOK_PHASE = "command_classification"
         operations = operations_for(command, Path(str(payload.get("cwd") or os.getcwd())).resolve())
     except Exception as exc:
         from publication_commands import CommandError
@@ -1044,6 +1057,7 @@ def hook(runtime: str) -> int:
     cwd = Path(str(payload.get("cwd") or os.getcwd())).resolve()
     for operation in operations:
         if operation in CONTENT_SENSITIVE:
+            _HOOK_PHASE = "content_safety"
             sink = {
                 "git_commit": "git_commit",
                 "git_push": "source_artifact",
@@ -1076,6 +1090,7 @@ def hook(runtime: str) -> int:
         reason = "content safety passed; no publish approval required"
     else:
         try:
+            _HOOK_PHASE = "publication_validation"
             if len(approval_operations) != 1:
                 raise ValueError('one protected publication operation per invocation required')
             from publication_authority import (
@@ -1088,7 +1103,9 @@ def hook(runtime: str) -> int:
                 parsed = shell_commands(command)
                 if len(parsed) != 1 or len(approval_operations) != 1:
                     raise PublicationError('one standalone publication operation required', reason_code='COMMAND_FORM_UNSUPPORTED')
-                publication = validate_personal_action(cwd, approval_operations[0], parsed[0])
+                _HOOK_PHASE = "publication_candidate_remote_and_evidence_validation"
+                publication = validate_personal_action(
+                    cwd, approval_operations[0], parsed[0], require_scan_evidence=True)
                 if approval_operations[0] == 'gh_pr_merge':
                     merge_confirmation = publication.get('merge_confirmation')
                     if not merge_confirmation:
@@ -1126,7 +1143,7 @@ def hook(runtime: str) -> int:
             else:
                 diagnostic = PublicationError(
                     'unclassified publication authorization failure', 'INTERNAL_DIAGNOSTIC_GAP',
-                    context={'error_class': type(exc).__name__}, phase='hook_authorization').diagnostic()
+                    context={'error_class': type(exc).__name__}, phase=_HOOK_PHASE).diagnostic()
             binding = _hook_binding(cwd, command, mode)
             if binding:
                 diagnostic['binding'] = binding
@@ -1145,6 +1162,9 @@ def hook(runtime: str) -> int:
                 reason = hook_diagnostic['reason_code'] + ': ' + hook_diagnostic['detail'] + ' ' + hook_diagnostic['next_step']
 
     if hook_diagnostic:
+        hook_diagnostic['elapsed_ms'] = max(
+            0, int((time.monotonic() - (_HOOK_STARTED_AT or time.monotonic())) * 1000))
+        _HOOK_PHASE = "diagnostic_recording"
         hook_diagnostic['trace_status'] = _record_publication_diagnostic(hook_diagnostic, runtime)
     success_binding = _hook_binding(cwd, command, mode) if ok and approval_operations else None
     if runtime == "claude-code":
@@ -1156,7 +1176,7 @@ def hook(runtime: str) -> int:
                 (" [phase=" + str(hook_diagnostic.get("phase")) + "; diagnostic_id=" +
                  str(hook_diagnostic.get("diagnostic_id")) + "]" if hook_diagnostic else ""),
             **({"additionalContext": "AIPS diagnostic: " + json.dumps({key: hook_diagnostic.get(key) for key in
-                ("diagnostic_id", "reason_code", "detail_code", "phase", "category", "error_class", "detail", "detail_zh",
+                ("diagnostic_id", "reason_code", "detail_code", "phase", "category", "error_class", "elapsed_ms", "detail", "detail_zh",
                  "blocking_rule", "blocking_rule_id", "source", "retryable",
                 "recovery_mode", "next_step", "next_step_zh",
                  "binding", "trace_status")}, ensure_ascii=False, separators=(",", ":")) +
@@ -1165,6 +1185,8 @@ def hook(runtime: str) -> int:
                    'status': 'AUTHORIZED', 'authorized': True,
                    'host_decision': 'NOT_EVALUATED', 'execution_status': 'NOT_EXECUTED',
                    'executed': False, 'binding': success_binding,
+                   'elapsed_ms': max(0, int((time.monotonic() - (_HOOK_STARTED_AT or time.monotonic())) * 1000)),
+                   'phase': _HOOK_PHASE,
                }, ensure_ascii=False, separators=(",", ":"))} if ok and approval_operations else {}),
         }}))
     else:
@@ -1174,6 +1196,8 @@ def hook(runtime: str) -> int:
                 'status': 'AUTHORIZED', 'authorized': True,
                 'host_decision': 'NOT_EVALUATED', 'execution_status': 'NOT_EXECUTED',
                 'executed': False, 'binding': success_binding,
+                'elapsed_ms': max(0, int((time.monotonic() - (_HOOK_STARTED_AT or time.monotonic())) * 1000)),
+                'phase': _HOOK_PHASE,
             }
         if ok and merge_confirmation:
             result['systemMessage'] = 'AIPS per-merge confirmation: ' + reason
@@ -1186,6 +1210,50 @@ def hook(runtime: str) -> int:
                 result["diagnostic"].update(authorized=False, executed=False)
         print(json.dumps(result))
     return 0
+
+
+class _HookDeadlineExceeded(BaseException):
+    pass
+
+
+def _hook_deadline_handler(_signum, _frame):
+    raise _HookDeadlineExceeded()
+
+
+def hook(runtime: str) -> int:
+    """Run one Hook under a hard, fail-closed wall-clock budget."""
+    global _HOOK_STARTED_AT, _HOOK_PHASE
+    previous_started, previous_phase = _HOOK_STARTED_AT, _HOOK_PHASE
+    _HOOK_STARTED_AT = time.monotonic()
+    _HOOK_PHASE = "input_validation"
+    old_handler = None
+    old_timer = (0.0, 0.0)
+    timer_active = False
+    try:
+        if hasattr(signal, "setitimer"):
+            import threading
+            if threading.current_thread() is threading.main_thread():
+                old_handler = signal.getsignal(signal.SIGALRM)
+                old_timer = signal.getitimer(signal.ITIMER_REAL)
+                signal.signal(signal.SIGALRM, _hook_deadline_handler)
+                signal.setitimer(signal.ITIMER_REAL, HOOK_DEADLINE_SECONDS)
+                timer_active = True
+        return _hook_impl(runtime)
+    except _HookDeadlineExceeded:
+        elapsed = max(0, int((time.monotonic() - (_HOOK_STARTED_AT or time.monotonic())) * 1000))
+        diagnostic = PublicationError(
+            "Hook exceeded its bounded execution deadline", "HOOK_DEADLINE_EXCEEDED",
+            phase=_HOOK_PHASE).diagnostic()
+        diagnostic["elapsed_ms"] = elapsed
+        return deny_hook_input(runtime, "HOOK_DEADLINE_EXCEEDED", diagnostic)
+    finally:
+        if timer_active:
+            signal.setitimer(signal.ITIMER_REAL, 0)
+            signal.signal(signal.SIGALRM, old_handler)
+            if old_timer[0] > 0:
+                remaining = max(0.001, old_timer[0] - (time.monotonic() - (_HOOK_STARTED_AT or time.monotonic())))
+                signal.setitimer(signal.ITIMER_REAL, remaining, old_timer[1])
+        _HOOK_STARTED_AT, _HOOK_PHASE = previous_started, previous_phase
 
 
 def main() -> int:

@@ -14,6 +14,8 @@ It does not infer intent, discover permissions from prose, or grant protected pu
 
 ## Contract
 
+Publication scan evidence is not a Resource Authorization grant: it describes one successful scanner result and cannot authorize a Git operation or expand a declared resource scope.
+
 Creative's dynamic ComfyUI workflow mode applies the same least-privilege intent locally: schema discovery is read-only, workflow import is an explicit project-path write, and generation is a distinct execution action. Fixed FLUX 3 Klein also validates the live `TextGenerate` schema and final serialized payload; neither validation grants permission to submit a job.
 
 Creative model profile declarations do not create Resource Authorization grants or expand the fixed loopback ComfyUI destination, method or path allowlist.

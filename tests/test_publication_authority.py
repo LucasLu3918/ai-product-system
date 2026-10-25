@@ -185,6 +185,18 @@ class PublicationTest(unittest.TestCase):
         observed = auth.validate_personal_action(self.repo, 'git_push', command)
         self.assertEqual(observed['candidate_commit'], self.head)
         self.assertEqual(observed['target_ref'], 'refs/heads/codex/test')
+        upstream = auth.validate_personal_action(
+            self.repo, 'git_push', ['git', 'push', '-u', 'origin', self.head + ':refs/heads/codex/test'])
+        self.assertEqual(upstream['target_ref'], observed['target_ref'])
+        self.assertEqual(upstream['candidate_commit'], observed['candidate_commit'])
+        long_upstream = auth.validate_personal_action(
+            self.repo, 'git_push', ['git', 'push', '--set-upstream', 'origin', self.head + ':refs/heads/codex/test'])
+        self.assertEqual(long_upstream['target_ref'], observed['target_ref'])
+        with patch('publication_scan_evidence.valid', return_value=False), \
+                self.assertRaises(auth.PublicationError) as missing_scan:
+            auth.validate_personal_action(self.repo, 'git_push', command,
+                                          require_scan_evidence=True)
+        self.assertEqual(missing_scan.exception.reason_code, 'PUBLICATION_SCAN_EVIDENCE_REQUIRED')
 
         self.run_git(self.repo, 'switch', '-c', 'feat/checked-prefix')
         feat_command = ['git', 'push', 'origin', self.head + ':refs/heads/feat/checked-prefix']
@@ -413,7 +425,8 @@ class PublicationTest(unittest.TestCase):
         self.assertNotIn('unreadable.txt', str(diagnostics))
 
     def test_unexpected_secret_scanner_failure_is_redacted_as_internal_error(self):
-        command = ['git', 'push', 'origin', self.head + ':refs/heads/codex/test']
+        self.run_git(self.repo, 'switch', '-c', 'codex/scanner-failure')
+        command = ['git', 'push', 'origin', self.head + ':refs/heads/codex/scanner-failure']
         with patch('publication_authority._personal_base', return_value=self.base), \
                 patch('check_secret_leakage.scan_candidate', side_effect=RuntimeError(
                     'private token https://secret.invalid/value')), \
@@ -858,9 +871,18 @@ class PublicationTest(unittest.TestCase):
         self.run_git(self.repo, 'fetch', 'origin', 'main')
         self.run_git(self.repo, 'switch', '-c', 'codex/hook-test')
         command = f'git push origin {self.head}:refs/heads/codex/hook-test'
+        import publication_scan_evidence
+        from check_secret_leakage import DEFAULT_POLICY, load_policy
+        cache = self.path / 'hook-cache'
+        with patch.dict(os.environ, {'XDG_CACHE_HOME': str(cache)}):
+            scope = auth.validate_personal_action(self.repo, 'git_push',
+                ['git', 'push', 'origin', self.head + ':refs/heads/codex/hook-test'])
+            _policy, policy_hash = load_policy(DEFAULT_POLICY)
+            publication_scan_evidence.store(self.repo, scope, policy_digest=policy_hash)
         payload = {'cwd': str(self.repo), 'tool_input': {'command': command}}
-        proc = subprocess.run([sys.executable, str(ROOT / 'scripts/governance_guard.py'), 'hook', '--runtime', 'claude-code'],
-                              input=json.dumps(payload), text=True, capture_output=True, check=False)
+        with patch.dict(os.environ, {'XDG_CACHE_HOME': str(cache)}):
+            proc = subprocess.run([sys.executable, str(ROOT / 'scripts/governance_guard.py'), 'hook', '--runtime', 'claude-code'],
+                                  input=json.dumps(payload), text=True, capture_output=True, check=False)
         self.assertEqual(proc.returncode, 0)
         response = json.loads(proc.stdout)['hookSpecificOutput']
         self.assertEqual(response['permissionDecision'], 'allow')

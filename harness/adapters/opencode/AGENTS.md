@@ -57,6 +57,8 @@ Ordinary generation grants permit bounded `quality-check` of manifests produced 
 
 ## Publication Root-Cause Recovery (Plan35)
 
+Plan53 changes are Claude Code publication-adapter behavior. OpenCode permissions and action guards remain separate; no OpenCode operation consumes the publication scan-evidence cache or gains Git authority from it.
+
 AVIF metadata inspection is a repository content-safety check, separate from OpenCode's verified runtime permission-hook boundary.
 
 共享 publication 診斷會 fail closed 處理非預期授權例外，回報 allowlist 錯誤類別與診斷 ID，且不輸出例外文字。Claude Code 的版本門檻僅適用其 native guard。

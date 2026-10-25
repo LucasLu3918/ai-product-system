@@ -4,6 +4,8 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ## Runtime flow
 
+Claude Code publication PreToolUse uses a bounded eight-second decision path. Each push still checks the exact candidate, full target ref, remote tip and current authority; a fresh, five-minute private Secret Scan record can avoid only the duplicate Hook scan and never authorizes execution.
+
 Project-local AIPS state is opt-in through `aips attach`. In Git worktrees, attach/detach maintain anchored `.ai/` and `.ai.detached-*` entries in repository-local `info/exclude`; non-Git projects need no Git metadata, and project `.gitignore` remains untouched.
 
 OpenCode direct local L2 writes use the Project Intelligence readiness and instruction checks; READY freshness that is STALE remains visible but is not a standalone denial for a confined source target. UNKNOWN, non-READY and independent guard conditions remain blocking.
@@ -321,6 +323,8 @@ flowchart LR
 The alias candidate is deterministic and transparent. It is not an embedding provider and does not change `semantic.status=NOT_CONFIGURED`. The committed Trial follows the FAIL → KEEP branch: required regressions and no synonym-recall improvement produce recommendation `HOLD`. Normal Turn Context retrieval therefore does not enable the alias lane.
 
 ## Maintenance and publication evidence
+
+Doctor keeps Required Checks permission failures visible as unknown. They become Doctor blockers only with `AIPS_ENFORCE_REQUIRED_CHECKS=1`; strict merge validation continues to block unknown policy evidence, while GitHub native rules remain active.
 
 Personal publication policy: AIPS independently enforces Required Checks only when `AIPS_ENFORCE_REQUIRED_CHECKS=1`; GitHub's native branch protection and rulesets remain the merge enforcement boundary.
 

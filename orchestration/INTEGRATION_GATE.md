@@ -313,6 +313,8 @@ Publication preflight `git_identity` accepts the GitHub App bot noreply form (`<
 
 ## Publication Root-Cause Recovery (Plan35)
 
+Plan53 Prepare evidence may prevent a duplicate scan inside the Claude Hook, but the exact-candidate Integration Gate always reruns the full Secret Scan over the final tree and `base..head` history before publication or merge.
+
 The Gate verifies Plan40's explicit publication error codes, candidate/runtime binding, separate plan/authorization/Host/execution states, redaction and optional verified diagnostic lookup against the exact candidate. Trace storage remains optional and cannot satisfy a required check or grant.
 
 An Integration Gate PASS is not Git merge authority. Revalidate exact PR HEAD/base and required checks at native execution; advisory recovery cannot set host permission to granted.

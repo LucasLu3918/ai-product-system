@@ -31,6 +31,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+The character-artwork trigger remains scoped to creative behavior. Publication evidence changes are documented in publication and security topics and do not change artwork or provenance guidance.
+
 Project lifecycle guidance records that `.ai/` is created only by explicit attach and that attach/detach keep AIPS state in repository-local Git excludes without changing `.gitignore`; Scenario 044 covers lifecycle behavior and tracked-file limits.
 
 OpenCode READY+STALE advisory behavior is documented with Project Intelligence and Harness current behavior; Scenario 267 and its lifecycle evidence are the executable contract.

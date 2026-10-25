@@ -93,14 +93,24 @@ class PublicationDiagnosticsTest(unittest.TestCase):
                 patch("publication_authority._remote_default_branch", return_value="main"), \
                 patch("publication_planning._prs", return_value=[]):
             result = diagnostics.doctor(self.root)
-        self.assertEqual(result["status"], "BLOCKED")
+        self.assertEqual(result["status"], "READY", result)
         self.assertEqual(result["policy"]["status"], "UNAVAILABLE")
+        self.assertEqual(result["policy"]["required_check_state"], "UNKNOWN_PERMISSION")
+        self.assertNotIn("protection_evidence_unavailable", result["blockers"])
         diagnosis = next(item for item in result["diagnostics"]
                          if item["reason_code"] == "REQUIRED_CHECKS_POLICY_PERMISSION")
         self.assertFalse(diagnosis["retryable"])
         self.assertEqual(diagnosis["category"], "PERMISSION")
         self.assertEqual(result["next_steps"], [item["next_step"] for item in result["diagnostics"]])
         self.assertNotIn("private detail", str(result))
+
+        with patch.dict(os.environ, {"AIPS_ENFORCE_REQUIRED_CHECKS": "1"}), \
+                patch("publication_diagnostics.subprocess.run", side_effect=run), \
+                patch("publication_authority._remote_default_branch", return_value="main"), \
+                patch("publication_planning._prs", return_value=[]):
+            strict = diagnostics.doctor(self.root)
+        self.assertEqual(strict["status"], "BLOCKED", strict)
+        self.assertIn("protection_evidence_unavailable", strict["blockers"])
 
     def test_policy_permission_and_transient_failures_keep_distinct_safe_categories(self):
         base = {"source_complete": False, "sources": {"branch_protection": {
@@ -239,7 +249,68 @@ class PublicationDiagnosticsTest(unittest.TestCase):
         self.assertEqual(payload["permissionDecision"], "deny")
         context = payload["additionalContext"]
         self.assertIn('"error_class":"RuntimeError"', context)
+        diagnostic = json.loads(context.removeprefix("AIPS diagnostic: ").split("; authorization_status=", 1)[0])
+        self.assertEqual(diagnostic["phase"], "publication_candidate_remote_and_evidence_validation")
+        self.assertGreaterEqual(diagnostic["elapsed_ms"], 0)
         self.assertNotIn("private token detail", output.getvalue())
+
+    def test_generic_git_reads_do_not_query_github(self):
+        from contextlib import redirect_stdout
+        from io import StringIO
+
+        real_run = subprocess.run
+        observed = []
+
+        def run(argv, *args, **kwargs):
+            observed.append(list(argv))
+            self.assertNotEqual(Path(argv[0]).name, "gh")
+            return real_run(argv, *args, **kwargs)
+
+        for command in ("git status --short", "git diff --stat"):
+            output = StringIO()
+            payload = {"cwd": str(self.root), "tool_input": {"command": command}}
+            with patch("governance_guard.subprocess.run", side_effect=run), \
+                    patch.object(governance_guard.sys, "stdin", StringIO(json.dumps(payload))), \
+                    redirect_stdout(output):
+                governance_guard.hook("claude-code")
+            self.assertEqual(output.getvalue().strip(), "{}")
+        self.assertFalse(any(Path(call[0]).name == "gh" for call in observed))
+
+    def test_hook_deadline_denial_reports_phase_and_elapsed_time(self):
+        import time
+        from contextlib import redirect_stdout
+        from io import StringIO
+
+        output = StringIO()
+
+        def slow_hook(_runtime):
+            governance_guard._HOOK_PHASE = "content_safety"
+            time.sleep(0.05)
+
+        with patch.object(governance_guard, "_hook_impl", side_effect=slow_hook), \
+                patch.object(governance_guard, "HOOK_DEADLINE_SECONDS", 0.01), \
+                patch.object(governance_guard, "_record_publication_diagnostic", return_value="NOT_CONFIGURED"), \
+                redirect_stdout(output):
+            governance_guard.hook("claude-code")
+        payload = json.loads(output.getvalue())["hookSpecificOutput"]
+        self.assertEqual(payload["permissionDecision"], "deny")
+        self.assertIn("HOOK_DEADLINE_EXCEEDED", payload["permissionDecisionReason"])
+        context = json.loads(payload["additionalContext"].removeprefix("AIPS diagnostic: ").split("; authorization_status=", 1)[0])
+        self.assertEqual(context["phase"], "content_safety")
+        self.assertGreaterEqual(context["elapsed_ms"], 1)
+
+    def test_post_tool_timeout_is_not_misclassified_as_network_failure(self):
+        from contextlib import redirect_stdout
+        from io import StringIO
+
+        output = StringIO()
+        payload = {"hook_event_name": "PostToolUseFailure", "tool_name": "Bash",
+                   "error": "command timed out while running"}
+        with patch.object(governance_guard.sys, "stdin", StringIO(json.dumps(payload))), \
+                redirect_stdout(output):
+            governance_guard.hook("claude-code")
+        rendered = json.loads(output.getvalue())["hookSpecificOutput"]["additionalContext"]
+        self.assertIn('"error_category":"TIMEOUT_OBSERVED"', rendered)
 
     def test_diagnostic_ledger_records_only_allowlisted_error_class(self):
         ledger = self.root / "diagnostics.jsonl"

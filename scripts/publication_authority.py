@@ -260,6 +260,8 @@ PUBLICATION_DIAGNOSTICS = {
     'PR_BASE_MISMATCH': ('The PR does not target the live default branch.', 'Re-plan for the verified default branch; do not retarget a stale merge.'),
     'REQUIRED_CHECKS_INCOMPLETE': ('Required PR checks are missing, pending, or failing.', 'Wait for the exact candidate’s required aggregate to pass, then re-observe.'),
     'REQUIRED_CHECKS_UNAVAILABLE': ('Required PR check state could not be observed.', 'Check GitHub access and connectivity, then re-read checks; do not merge on unknown state.'),
+    'PUBLICATION_SCAN_EVIDENCE_REQUIRED': ('Fresh exact-candidate secret-scan evidence is missing or no longer valid.', 'Run `aips publish prepare` for the current clean candidate, then retry the exact planned push within five minutes.'),
+    'HOOK_DEADLINE_EXCEEDED': ('The publication Hook reached its eight-second execution deadline.', 'No publication was authorized. Resolve the observed phase, then run one fresh read-only diagnosis or Prepare before retrying.'),
     'CREDENTIAL_BEARING_REMOTE': ('The configured remote URL contains credentials.', 'Remove credentials from the URL and use the host credential manager.'),
     'FORCE_WITH_LEASE_REQUIRED': ('The force update does not pin the observed target tip.', 'Use an exact target-and-tip lease only after a fresh candidate plan.'),
     'BASE_CHANGED': ('The live default base changed after the publication observation.', 'Discard the stale plan and revalidate the exact candidate against the new base.'),
@@ -291,7 +293,7 @@ PUBLICATION_DETAIL_DIAGNOSTICS = {
     'COMMAND_WRAPPER_UNSUPPORTED': ('A publication command uses an unsupported shell wrapper.', 'Use the standalone literal command emitted by the validated plan.', '發布指令使用不支援的 Shell 包裝形式。', '使用驗證計畫輸出的獨立原生指令。'),
     'SHELL_SYNTAX_UNSUPPORTED': ('A publication command uses shell syntax that AIPS cannot safely inspect.', 'Simplify the command to the standalone literal form emitted by the validated plan.', '發布指令使用 AIPS 無法安全檢查的 Shell 語法。', '改用驗證計畫輸出的獨立字面指令。'),
     'UNSUPPORTED_HEREDOC': ('A publication command uses a heredoc form AIPS cannot safely inspect.', 'Use a quoted heredoc or run the validated publication command separately.', '發布指令使用 AIPS 無法安全檢查的 heredoc 格式。', '改用加引號的 heredoc，或另外執行驗證過的發布指令。'),
-    'PUSH_UPSTREAM_OPTION_UNSUPPORTED': ('The upstream-setting push option is not supported for guarded publication.', 'Use the exact remote and full target ref from the validated plan without -u or --set-upstream.', '受保護的發布流程不支援設定 upstream 的 push 選項。', '依驗證計畫指定 remote 與完整目標 ref 執行，不要使用 -u 或 --set-upstream。'),
+    'PUSH_UPSTREAM_OPTION_UNSUPPORTED': ('The upstream-setting push option is not supported for guarded publication.', 'Use the exact remote and full target ref from the validated plan.', '受保護的發布流程不支援設定 upstream 的 push 選項。', '依驗證計畫指定 remote 與完整目標 ref 執行。'),
     'PUSH_OPTION_UNSUPPORTED': ('The push command includes an unsupported option.', 'Use only the options emitted by the validated publication plan.', 'Push 指令含有不支援的選項。', '只使用驗證發布計畫輸出的選項。'),
     'DYNAMIC_EXECUTABLE': ('The publication executable is dynamically selected and cannot be verified.', 'Use a literal executable name from a supported publication workflow.', '發布執行程式由動態內容選取，無法驗證。', '使用支援發布流程中的固定執行程式名稱。'),
     'DYNAMIC_SUBCOMMAND': ('The publication subcommand is dynamically selected and cannot be verified.', 'Use a literal Git or GitHub CLI subcommand.', '發布子命令由動態內容選取，無法驗證。', '使用固定的 Git 或 GitHub CLI 子命令。'),
@@ -305,6 +307,8 @@ PUBLICATION_DIAGNOSTICS_ZH = {
     'SECRET_SCAN_GIT_OBJECT_MISSING': ('秘密掃描需要的 Git 物件目前無法讀取。', '在此工作樹還原或取得候選歷史，再重新驗證。'),
     'SECRET_SCAN_FILE_UNREADABLE': ('秘密掃描器無法完整檢查候選檔案。', '修復候選內容的讀取或 UTF-8 編碼問題，再重新驗證。'),
     'SECRET_SCAN_POLICY_UNAVAILABLE': ('無法讀取必要的秘密掃描政策。', '恢復儲存庫秘密掃描政策的讀取權限，再重新驗證。'),
+    'PUBLICATION_SCAN_EVIDENCE_REQUIRED': ('目前候選缺少未過期的秘密掃描證據。', '對乾淨候選重新執行 `aips publish prepare`，並在五分鐘內重試精確推送。'),
+    'HOOK_DEADLINE_EXCEEDED': ('發布 Hook 超過八秒執行期限，已拒絕操作。', '確認診斷中的安全階段；完成該階段後再執行一次唯讀診斷或 Prepare。'),
     'SECRET_SCAN_INTERNAL_ERROR': ('秘密掃描器安全停止，未完成檢查。', '保留診斷 ID 與錯誤類型，修復本機掃描器後再重試。'),
     'INTERNAL_DIAGNOSTIC_GAP': ('AIPS 無法安全分類這項內部發布錯誤。', '保留診斷 ID 與錯誤類型，修正本機 AIPS 診斷映射後再重試。'),
     'PUSH_TARGET_BRANCH_MISMATCH': ('推送目標分支與目前工程分支不一致。', '確認選用的工作樹與完整目標 ref，再重新執行唯讀發布診斷。'),
@@ -720,11 +724,9 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
         flags = []
         while args and args[0].startswith('-'):
             flag, args = args[0], args[1:]
-            if flag not in {'--force', '-f', '--delete'} and not flag.startswith('--force-with-lease='):
-                detail_code = ('PUSH_UPSTREAM_OPTION_UNSUPPORTED'
-                               if flag in {'-u', '--set-upstream'} else 'PUSH_OPTION_UNSUPPORTED')
+            if flag not in {'--force', '-f', '--delete', '-u', '--set-upstream'} and not flag.startswith('--force-with-lease='):
                 raise PublicationError('unsupported push option', 'COMMAND_FORM_UNSUPPORTED',
-                                       detail_code=detail_code)
+                                       detail_code='PUSH_OPTION_UNSUPPORTED')
             flags.append(flag)
         if len(args) != 2 or not re.fullmatch(r'[A-Za-z0-9_.-]+', args[0]):
             raise PublicationError('one named remote and one explicit refspec required', reason_code='PUSH_METADATA_INVALID')
@@ -930,7 +932,15 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
     result['remote_state_enforcement'] = 'server_lease' if operation == 'git_push' else 'preexecution_observation'
     if operation == 'git_push':
         expected_lease = '--force-with-lease=' + target + ':' + (result['expected_remote_oid'] or '')
-        allowed_flags = ([], [expected_lease]) if personal else ([expected_lease], [expected_lease, '--delete'])
+        allowed_flags = (
+            [[], ['-u'], ['--set-upstream'], [expected_lease], [expected_lease, '-u'],
+             [expected_lease, '--set-upstream'], ['-u', expected_lease],
+             ['--set-upstream', expected_lease]]
+            if personal else
+            [[expected_lease], [expected_lease, '-u'], [expected_lease, '--set-upstream'],
+             ['-u', expected_lease], ['--set-upstream', expected_lease],
+             [expected_lease, '--delete']]
+        )
         if flags not in allowed_flags:
             raise PublicationError('one explicit target/tip force-with-lease required; unconditional force forbidden', reason_code='FORCE_WITH_LEASE_REQUIRED')
     if operation == 'gh_pr_merge' and result['pr_base_commit'] != result['expected_remote_oid']:
@@ -940,7 +950,8 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
     return result
 
 
-def validate_personal_action(cwd: Path, operation: str, argv: list[str]) -> dict[str, Any]:
+def validate_personal_action(cwd: Path, operation: str, argv: list[str], *,
+                             require_scan_evidence: bool = False) -> dict[str, Any]:
     """Validate personal publication; PR merge returns an exact per-call confirmation binding."""
     validate_action_form(operation, argv)
     if operation not in PERSONAL_PUBLICATION_OPERATIONS:
@@ -949,7 +960,7 @@ def validate_personal_action(cwd: Path, operation: str, argv: list[str]) -> dict
     base = _personal_base(root, operation, argv)
     from check_secret_leakage import DEFAULT_POLICY, load_policy, scan_candidate
     try:
-        policy, _ = load_policy(DEFAULT_POLICY)
+        policy, policy_hash = load_policy(DEFAULT_POLICY)
     except OSError as exc:
         raise PublicationError('mandatory candidate secret-scan policy is unavailable',
             'SECRET_SCAN_POLICY_UNAVAILABLE', phase='content_scan.policy_load',
@@ -962,6 +973,20 @@ def validate_personal_action(cwd: Path, operation: str, argv: list[str]) -> dict
         raise PublicationError('mandatory candidate secret-scan policy is invalid',
             safe['reason_code'], phase=safe['phase'],
             context={'error_class': safe['error_class'], 'component': safe['component']}) from exc
+    validated_scope = action(root, operation, argv, base, personal=True)
+    if require_scan_evidence:
+        try:
+            from publication_scan_evidence import valid as scan_evidence_valid
+            if not scan_evidence_valid(root, validated_scope, policy_digest=policy_hash):
+                raise PublicationError('fresh exact-candidate scan evidence required',
+                                       'PUBLICATION_SCAN_EVIDENCE_REQUIRED', phase='content_scan.evidence')
+        except PublicationError:
+            raise
+        except Exception as exc:
+            raise PublicationError('fresh exact-candidate scan evidence unavailable',
+                                   'PUBLICATION_SCAN_EVIDENCE_REQUIRED', phase='content_scan.evidence',
+                                   context={'error_class': type(exc).__name__}) from exc
+        return validated_scope
     try:
         scan_diagnostics: list[dict[str, Any]] = []
         findings, blockers, _, _ = scan_candidate(root, base, 'HEAD', policy, diagnostics=scan_diagnostics)
@@ -982,7 +1007,7 @@ def validate_personal_action(cwd: Path, operation: str, argv: list[str]) -> dict
             context={'error_class': safe['error_class'], 'component': safe['component']})
     if findings or blockers:
         raise PublicationError('mandatory candidate and history secret scan blocked publication', 'CONTENT_SCAN_BLOCKED')
-    return action(root, operation, argv, base, personal=True)
+    return validated_scope
 
 
 def proposal(cwd: Path, operation: str, argv: list[str], base: str) -> dict[str, Any]:

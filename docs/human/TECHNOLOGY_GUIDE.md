@@ -139,7 +139,7 @@ Skill Explorer 是離線生成的靜態 HTML，使用原生瀏覽器搜尋、分
 
 `publication_planning.py` 重用 authority、candidate/history scan 與 GitHub PR evidence，提供 read-only `prepare` / `diagnose`。指紋包含 worktree、HEAD/base、remote/PR、policy 與 PR body digest；任何漂移需重新規劃，不能用診斷代碼放行。
 
-`publication_diagnostics.py` 提供共享的穩定錯誤分類與只讀 GitHub Doctor。`aips publish diagnose` 接受 `gh pr merge` 並重用唯一的 publication authority 驗證精確 PR 與 SHA；`aips publish doctor` 觀察 auth、repository merge methods、branch protection/ruleset visibility、PR 與 required checks。所有命令回傳診斷而不執行發布／合併，也不寫入 GitHub policy 或消耗授權；缺少 Required Checks、API 權限不足及未知狀態均 fail closed。
+`publication_diagnostics.py` 提供共享的穩定錯誤分類與只讀 GitHub Doctor。`aips publish diagnose` 接受 `gh pr merge` 並重用唯一的 publication authority 驗證精確 PR 與 SHA；`aips publish doctor` 觀察 auth、repository merge methods、branch protection/ruleset visibility、PR 與 required checks。權限不足維持 `UNKNOWN_PERMISSION`／`UNAVAILABLE` 診斷；只在 `AIPS_ENFORCE_REQUIRED_CHECKS=1` 時，未知或未設定 Required Checks 才成為 Doctor blocker，strict merge 驗證對未知狀態仍 fail closed。
 
 The local creative CLI supports `import-candidate` followed by explicit `import --accept-hash`; it rechecks source bytes and refuses existing destinations.
 
@@ -399,6 +399,8 @@ The Skill Explorer is a static generated artifact from the canonical Skill regis
 The catalog contract verifies all 49 canonical Skills, all 38 vendored source paths and SHA-256 entrypoint digests, the 31/7 upstream installability split, overlap-based dispositions, and trigger-backed automatic routes. `$grill-with-docs` remains explicit-only in its native projection.
 
 `publication_planning.py` 重用 authority、candidate/history scan 與 GitHub PR evidence，提供 read-only `prepare` / `diagnose`。指紋包含 worktree、HEAD/base、remote/PR、policy 與 PR body digest；任何漂移需重新規劃，不能用診斷代碼放行。
+
+Claude Code publication Hook 使用八秒 hard deadline，結構化拒絕會記錄安全 phase 與 elapsed milliseconds。Prepare 完整掃描通過後，最多五分鐘的非授權 scan evidence 存在 private user cache，綁定 repository/worktree、base/head、push target、remote tip、diff、scanner 與 policy digest；Hook 每次重驗 live Git/remote state，並對缺少、過期、毀損或漂移 evidence fail closed。完整 candidate/history scan 仍是 Prepare 與 Integration Gate 必要步驟。
 
 The OpenCode integration lifecycle exercises candidate tampering, source drift, path and symlink rejection, destination races, cache privacy, and end-to-end CLI dispatch.
 

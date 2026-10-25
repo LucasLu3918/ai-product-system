@@ -8,6 +8,8 @@
 
 ## macOS / Linux
 
+Publication scan evidence is private user-cache data used only by the Claude Code Git Hook. It is separate from runtime content-safety setup and does not alter scanner policy or installation permissions.
+
 The managed publication preflight uses the built-in exact-candidate secret scanner. It scans JSON files up to 8,000,000 bytes and other text files up to 2,000,000 bytes; files above those bounds block publication. The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; there is no extension-wide exemption, and the 2,000,000-byte text limit remains unchanged. The same exact relative paths are excluded in any repository using the shared policy.
 
 Creative ComfyUI `dynamic_local` workflow support reuses the installed AIPS executor and Python dependencies. It does not install ComfyUI, custom nodes, model weights, or a remote service; the local ComfyUI API and selected model files must already be available. Workflow scan and preflight are read-only, while workflow import is an explicit project-confined create-only operation.
@@ -62,6 +64,8 @@ aips mcp inspect
 維護者要驗證完整 repository 時使用 `aips validate`。一般安裝不會在使用者電腦執行完整 CI，也不會連線修改 GitHub repository 設定。
 
 ## Runtime integration
+
+The managed Claude Code publication Hook has an eight-second hard deadline. For protected pushes, run `aips publish prepare` first so the full candidate/history scan can create the short-lived private evidence record; the Hook rechecks candidate and remote state on every invocation.
 
 ComfyUI model profiles 隨 AIPS registry 提供；固定 FLUX 3 Klein 執行前會檢查本機 `TextGenerate` schema 與最終 payload。安裝與 discovery 不下載權重；schema 通過不代表 MPS 或實際推論相容。
 

@@ -147,6 +147,7 @@ scenarios:
     evidence:
       - scripts/publication_authority.py
       - scripts/check_secret_leakage.py
+      - scripts/publication_scan_evidence.py
       - scripts/publication_planning.py
       - scripts/publication_diagnostics.py
       - scripts/governance_audit.py
@@ -160,6 +161,7 @@ scenarios:
       - tests/test_publication_diagnostics.py
       - tests/test_publication_error_recovery.py
       - tests/test_publication_planning.py
+      - tests/test_publication_scan_evidence.py
       - tests/test_governance_audit.py
       - tests/evidence/repository_governance_snapshot_lifecycle.py
       - tests/validation/repository_governance_snapshot_contracts.py

@@ -263,6 +263,8 @@ Execution IDs and runtime attestation are produced by the execution runtime and 
 - Release readiness also fails closed when `CHANGELOG.md` is unavailable or its canonical `## Unreleased` section is missing, duplicated, malformed, or non-empty; the check remains read-only.
 ## Validation de-duplication boundary
 
+Publication scan evidence is operation-specific and cannot be reused as Scheduler validation evidence. It is bound to one repository/worktree, candidate, push target, observed remote tip, diff, scanner and policy, and every Hook still performs live authority checks.
+
 GitHub auto-merge planning is not Scheduler execution: `aips publish prepare --auto-merge` binds the exact PR head and passing required checks, while native Human authorization remains a separate boundary.
 
 Timing summaries use complete same-candidate records, group by change class and deduplicate reruns. The observation/graduation policy still controls cohort readiness; P50/P95 alone cannot enable selective validation.

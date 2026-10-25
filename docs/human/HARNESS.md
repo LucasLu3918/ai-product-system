@@ -63,11 +63,11 @@ Native adapter discovery does not create project-local `.ai/`; explicit attach/d
 Content-safety controls remain separate from skill discovery, installation, and author trust decisions.
 
 
-Personal publication Hook denials preserve stable `SECRET_SCAN_*` reason/phase metadata without raw exception text or candidate paths. Unsupported literal command forms are denied before scanner work; the Hook does not authorize retry or execution.
+Personal publication Hook denials preserve stable reason/phase metadata without raw exception text or candidate paths. The Hook has an eight-second hard deadline and returns elapsed milliseconds plus the last safe phase on timeout. Before a protected push it still revalidates the exact candidate, full ref and current remote tip, then requires a fresh five-minute Secret Scan evidence record from `aips publish prepare`; missing or mismatched evidence denies without retry. Unsupported literal command forms are denied before scanner work; the Hook does not authorize retry or execution.
 
 Adapter action guards remain separate from staged AVIF content-safety diagnostics.
 
-Claude Code v2.1.295+ 的 managed publication PreToolUse guard 設定 `onFailure: block`；舊版/未知版不寫入不相容欄位並發出警示。UserPromptSubmit context hook 不套用此 failure policy。
+Claude Code v2.1.295+ 的 managed publication PreToolUse guard 設定 `onFailure: block`；舊版/未知版不寫入不相容欄位並發出警示。AIPS 另以八秒內部 deadline 回傳結構化拒絕；`PostToolUseFailure` 的 timeout 會標示 `TIMEOUT_OBSERVED`，不推測成網路故障。UserPromptSubmit context hook 不套用此 failure policy。
 獨立的 `PostToolUseFailure:Bash` observer 只回報已開始執行的原生指令失敗分類與可解析 exit code，不回傳原始錯誤、不重試也不授權。
 Creative asset import remains an explicit CLI operation. OpenCode native file permissions neither authorize nor execute the Git import path; the exact-hash candidate and separate Git publication boundary still apply.
 

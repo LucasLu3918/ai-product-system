@@ -83,6 +83,8 @@ For a candidate built in a shared workspace, first snapshot the intended head an
 
 ## System Update Preflight
 
+For publication recovery, a short-lived scan record may avoid one duplicate Hook scan, while the normal deterministic workflow still requires full candidate/history scanning in Prepare and the final Gate. The record does not change explicit publication intent or exact-candidate checks.
+
 The exact-candidate Integration Gate remains required after read-only Doctor or merge diagnosis; neither report replaces candidate-bound validation or merge approval.
 
 The AIPS CLI adds fixed read-only diagnostics and creative Bundle preflight; generation itself remains an explicit action outside preflight.

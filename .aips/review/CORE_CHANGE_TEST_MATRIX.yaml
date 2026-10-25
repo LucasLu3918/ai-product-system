@@ -1,40 +1,76 @@
 version: 1
 change:
-  id: dewhollow-exact-webm-policy-20261024
-  summary: Allow only three exact Dewhollow Gate 1 evidence videos through the text scanner while preserving strict scanning for all other WebM files and near-matches.
+  id: plan53-hook-publish-recovery
+  summary: Bound publication Hook execution, add exact-candidate expiring Secret Scan
+    evidence, support safe upstream push flags and scope unknown Required Checks Doctor
+    blockers to strict mode.
   boundary:
-    - exact repository-relative generated-path exceptions in config/secret-scan.yaml
-    - scanner regression tests for those paths, near-matches, binary size limits and existing secret detectors in tests/test_secret_scan_baseline_compat.py
-    - Scenario 263 and synchronized canonical security, publication, maintenance, technology and user documentation
-    - exact-candidate publication scan, repository validation and protected-main checks
+  - publication authority and push parsing
+  - Prepare and private scan evidence lifecycle
+  - Claude Code Hook deadline and diagnostics
+  - Required Checks Doctor semantics
+  - Scenario, documentation and exact candidate delivery
 matrix:
-  - boundary: exact Dewhollow WebM path exceptions
-    reason: These three fixed Gate 1 video artifacts are binary runtime evidence that cannot be meaningfully scanned as text; the exception must remain exact-path only and preserve fail-closed behavior for every other WebM and oversized input.
-    checks:
-      static_lint: {applicable: true, evidence: "PASS — git diff --check passed for base cc132f1..32bd339."}
-      unit: {applicable: true, evidence: "PASS — all 9 tests in tests/test_secret_scan_baseline_compat.py passed, including exact paths, near-matches, secret detectors and size limits."}
-      integration: {applicable: true, evidence: "REQUIRED — final exact-candidate Integration Gate after this matrix is committed."}
-      contract: {applicable: true, evidence: "PASS — Scenario 263 placement and full repository validator passed for candidate 32bd339; rerun in the final exact-candidate Gate."}
-      e2e: {applicable: false, na_reason: "Local scanner policy only; no deployed service or user-facing runtime changes."}
-      security: {applicable: true, evidence: "PASS — strict full-tree and base..head scan passed for 32bd339 with no findings or blockers; rerun against the final matrix-bound candidate before merge."}
-      migration_recovery: {applicable: false, na_reason: "No persisted data or schema change; reverting this exact-path policy restores prior behavior."}
-      cli_harness: {applicable: true, evidence: "REQUIRED — final exact-candidate AIPS publication lifecycle and full repository validator."}
-      docs_schema: {applicable: true, evidence: "PASS — documentation impact closure complete and placement audit passed for candidate 32bd339; final Gate will revalidate the committed matrix-bound tree."}
-  - boundary: exact candidate binding and publication
-    reason: Bind the reviewed scanner policy, tests, docs and validation evidence to one exact base/head and the canonical matrix.
-    checks:
-      static_lint: {applicable: true, evidence: "REQUIRED — final candidate diff check and repository validation."}
-      unit: {applicable: true, evidence: "REQUIRED — final candidate focused regressions and full repository validation."}
-      integration: {applicable: true, evidence: "REQUIRED — exact-candidate AIPS Integration Gate before publication and merge."}
-      contract: {applicable: true, evidence: "REQUIRED — final candidate scanner, documentation and matrix-binding contracts."}
-      e2e: {applicable: false, na_reason: "No deployed product service or user-facing flow changes."}
-      security: {applicable: true, evidence: "REQUIRED — strict final-tree and complete base..head scan plus live exact-head PR/check observations."}
-      migration_recovery: {applicable: false, na_reason: "No persistent data, migration or irreversible operation."}
-      cli_harness: {applicable: true, evidence: "REQUIRED — final AIPS publication lifecycle and full repository validator."}
-      docs_schema: {applicable: true, evidence: "PASS — complete documentation closure; final candidate will re-run closure after matrix commit."}
+- boundary: publication authority and push parsing
+  reason: Preserve exact remote/ref/candidate/lease validation while allowing only
+    standalone upstream flags.
+  checks: &id001
+    static_lint:
+      applicable: true
+      evidence: 'PASS: focused changed modules and test files pass Ruff; git diff
+        --check passes. The three existing governance_guard Ruff findings are unchanged
+        baseline warnings.'
+    unit:
+      applicable: true
+      evidence: 'PASS: 104 publication tests and 130 subtests passed across scan evidence,
+        diagnostics, planning and authority suites.'
+    integration:
+      applicable: true
+      evidence: 'REQUIRED: run the exact-candidate AIPS Integration Gate after commit
+        and before remote publication or merge.'
+    contract:
+      applicable: true
+      evidence: 'REQUIRED: final exact-candidate repository validation, publication
+        preflight contracts and Scenario 261.'
+    e2e:
+      applicable: true
+      evidence: 'PASS: fixture-backed Claude Code Hook subprocess lifecycle is included
+        in the 104 passing publication tests.'
+    security:
+      applicable: true
+      evidence: 'PASS: scan-evidence tampering, expiry, symlink and policy/candidate
+        drift cases passed. REQUIRED: full final-tree and base..head scan in the exact-candidate
+        Gate.'
+    migration_recovery:
+      applicable: true
+      evidence: 'PASS: absent, corrupt, expired, symlinked and mismatched evidence
+        fails closed; evidence stays in the private user cache.'
+    cli_harness:
+      applicable: true
+      evidence: 'PASS: Hook lifecycle and safe upstream flag cases passed. REQUIRED:
+        final repository Gate after commit.'
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: final docs-impact and documentation-placement preview reports
+        no required additions and placement PASS.'
+- boundary: Prepare and private scan evidence lifecycle
+  reason: Evidence is non-authorizing, private, short-lived and bound to exact repository,
+    worktree, candidate, target, remote, scanner and policy.
+  checks: *id001
+- boundary: Claude Code Hook deadline and diagnostics
+  reason: Bound wall-clock execution, report safe phase/elapsed evidence and never
+    classify a timeout as network failure.
+  checks: *id001
+- boundary: Required Checks Doctor semantics
+  reason: Preserve unknown policy truth; non-strict Doctor warns without blocking
+    ordinary branch workflows, while strict mode blocks unknown/unconfigured policy.
+  checks: *id001
+- boundary: Scenario, documentation and exact candidate delivery
+  reason: Bind all changed source/tests/docs and full Gate evidence to one exact candidate.
+  checks: *id001
 candidate:
-  base_sha: cc132f196e0f2c3fb6961747ad8291510b58fa29
-  changed_files_hash: 08eff627902edc556646c2420debd93d98bad0cefd96d3acda06e0dc089adade
+  base_sha: b5692acc1a34ae705f4b4c38577299fc37916328
+  changed_files_hash: 2bb50ed9fbe6e38d795209e5c0eff3dab86c2170151908df890b261ecddbaf4e
 review_evidence:
   required: false
 scope_recomputed_after_expansion: true

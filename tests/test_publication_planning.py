@@ -41,6 +41,7 @@ class PlanningTest(unittest.TestCase):
         temp = tempfile.TemporaryDirectory()
         self.addCleanup(temp.cleanup)
         self.root = Path(temp.name).resolve()
+        os.environ['XDG_CACHE_HOME'] = str(self.root / 'cache')
         self.repo, self.remote = self.root / 'repo', self.root / 'remote.git'
         self.repo.mkdir()
         self.git(self.repo, 'init', '-b', 'main')
@@ -271,7 +272,7 @@ class PlanningTest(unittest.TestCase):
         cases = [
             ('git push origin codex/plan30:refs/heads/codex/plan30', 'PUSH_SOURCE_NOT_EXACT_SHA', None),
             ('git push origin ' + self.head + ':codex/plan30', 'INVALID_TARGET_REF', None),
-            ('git push -u origin ' + self.head + ':refs/heads/codex/plan30', 'COMMAND_FORM_UNSUPPORTED', 'PUSH_UPSTREAM_OPTION_UNSUPPORTED'),
+            ('git push --mirror origin ' + self.head + ':refs/heads/codex/plan30', 'COMMAND_FORM_UNSUPPORTED', 'PUSH_OPTION_UNSUPPORTED'),
             ('pwd; git push origin main', 'COMMAND_FORM_UNSUPPORTED', 'MULTI_COMMAND_UNSUPPORTED'),
             ('git push origin main | cat', 'COMMAND_FORM_UNSUPPORTED', 'PIPE_UNSUPPORTED'),
             ('git push "', 'COMMAND_FORM_UNSUPPORTED', 'SHELL_SYNTAX_UNSUPPORTED'),
@@ -283,6 +284,11 @@ class PlanningTest(unittest.TestCase):
                 if detail_code:
                     self.assertEqual(item['detail_code'], detail_code)
                     self.assertNotIn(command, json.dumps(item))
+
+        upstream = planning.diagnose(
+            self.repo, 'git push -u origin ' + self.head + ':refs/heads/codex/plan30')
+        self.assertEqual(upstream['status'], 'VALIDATED', upstream)
+        self.assertFalse(upstream['authorized'])
 
 
     def test_push_target_must_match_current_engineering_branch(self):
@@ -300,6 +306,8 @@ class PlanningTest(unittest.TestCase):
         self.assertEqual(result['execution'], {
             'status': 'NOT_EXECUTED', 'attempted': False, 'completed': False})
         candidate = result['candidate']
+        self.assertEqual(result['observation']['scan_evidence']['status'], 'PASS')
+        self.assertEqual(result['observation']['scan_evidence']['expires_in_seconds'], 300)
         self.assertEqual(candidate['candidate_sha'], self.head)
         self.assertEqual(candidate['worktree_id'], result['observation']['worktree_id'])
         self.assertEqual(candidate['target_ref'], 'refs/heads/codex/plan30')

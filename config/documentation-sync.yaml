@@ -234,7 +234,14 @@ rules:
   - id: publication-preflight
     triggers:
       - scripts/publication_planning.py
+      - scripts/publication_authority.py
+      - scripts/publication_diagnostics.py
+      - scripts/publication_scan_evidence.py
+      - scripts/governance_guard.py
       - tests/test_publication_planning.py
+      - tests/test_publication_authority.py
+      - tests/test_publication_diagnostics.py
+      - tests/test_publication_scan_evidence.py
       - scripts/publish_preflight.py
       - scripts/publish_post_merge.py
       - scripts/browser_runtime.py
@@ -244,6 +251,7 @@ rules:
       - tests/evidence/publish_preflight_lifecycle.py
       - tests/validation/publish_preflight_contracts.py
       - tests/scenarios/165-ci-parity-publication-preflight.md
+      - tests/scenarios/261-publication-diagnostics-and-safe-recovery.md
     human_docs:
       - docs/human/MAINTENANCE.md
       - docs/human/USER_GUIDE.md

@@ -429,6 +429,8 @@ Scenario 134 不改 production Retrieval / Turn Context。Local Trial PASS 也�
 Project Intelligence follows `orchestration/PROJECT_IDENTITY.md`. EPHEMERAL storage is workspace-scoped by canonical `workspace_id`; repository-wide writer coordination belongs to the isolation layer and uses `repository_id`.
 ## Runtime Content Safety Boundary
 
+The publication Hook may reuse only a short-lived, integrity-checked record of a prior full scan. Candidate, repository/worktree, remote tip, target, diff, scanner or policy drift invalidates it; the record never replaces final candidate/history scanning.
+
 Candidate scanning reads the final tree and all commits in `base..head`; provider-token and private-key detection remain enabled. JSON text is scanned up to 8,000,000 bytes, while other text retains a 2,000,000-byte bound; an oversized or incomplete scan blocks publication. The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; there is no extension-wide exemption, and the 2,000,000-byte text limit remains unchanged. The same exact relative paths are excluded in any repository using the shared policy.
 
 Dynamic ComfyUI workflow JSON and imported workflow files are project content, not Project Intelligence instructions or canonical capability truth. Review them within the exact project Change Boundary; only runtime schema and inventory observations can establish current local compatibility, and scoped evidence does not upgrade repository-wide graph coverage.
