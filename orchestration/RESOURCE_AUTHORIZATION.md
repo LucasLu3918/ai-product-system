@@ -18,7 +18,7 @@ Publication scan evidence is not a Resource Authorization grant: it describes on
 
 Creative's dynamic ComfyUI workflow mode applies the same least-privilege intent locally: schema discovery is read-only, workflow import is an explicit project-path write, and generation is a distinct execution action. Fixed FLUX 3 Klein also validates the live `TextGenerate` schema and final serialized payload; neither validation grants permission to submit a job.
 
-Creative model profile declarations do not create Resource Authorization grants or expand the fixed loopback ComfyUI destination, method or path allowlist.
+Creative model profile declarations do not create Resource Authorization grants or expand the fixed loopback ComfyUI destination, method or path allowlist. FLUX 3 Klein Base/Distilled profiles share the audited topology; bounded ordered reference slots for dynamic edit remain subject to the same local schema, file-size and staged-byte checks.
 
 Media-format and EXIF/XMP checks are content-safety decisions; they do not create a Resource Authorization profile or grant provider, filesystem or network access.
 

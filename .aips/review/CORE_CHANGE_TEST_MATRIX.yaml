@@ -1,78 +1,79 @@
 version: 1
 change:
-  id: plan53-hook-publish-recovery
-  summary: Bound publication Hook execution, add exact-candidate expiring Secret Scan
-    evidence, support safe upstream push flags and scope unknown Required Checks Doctor
-    blockers to strict mode.
+  id: flux3-klein-distilled-multireference
+  summary: Add validated FLUX 3 Klein Distilled profile support and ordered one-to-eight
+    local ComfyUI edit references.
   boundary:
-  - publication authority and push parsing
-  - Prepare and private scan evidence lifecycle
-  - Claude Code Hook deadline and diagnostics
-  - Required Checks Doctor semantics
-  - Scenario, documentation and exact candidate delivery
+  - FLUX Klein profile and audited topology
+  - Dynamic ComfyUI reference bindings
+  - Compatibility, safety and synthetic execution
+  - Scenario, canonical documentation and exact-candidate delivery
 matrix:
-- boundary: publication authority and push parsing
-  reason: Preserve exact remote/ref/candidate/lease validation while allowing only
-    standalone upstream flags.
+- boundary: FLUX Klein profile and audited topology
+  reason: Profile sampler values are data-driven but range-checked; live schema, exact
+    local components and final serialized workflow remain enforced.
   checks: &id001
     static_lint:
       applicable: true
-      evidence: 'PASS: focused changed modules and test files pass Ruff; git diff
-        --check passes. The three existing governance_guard Ruff findings are unchanged
-        baseline warnings.'
+      evidence: 'REQUIRED: run focused lint and final repository validation on the
+        exact committed candidate.'
     unit:
       applicable: true
-      evidence: 'PASS: 104 publication tests and 130 subtests passed across scan evidence,
-        diagnostics, planning and authority suites.'
+      evidence: 'PASS: tests/evidence/creative_execution_lifecycle.py passed with
+        the synthetic provider suite, including ordered 3-reference binding/injection,
+        over-limit rejection, invalid Distilled sampler rejection, and Distilled preflight
+        plus execution at 16 steps / CFG 1.'
     integration:
       applicable: true
       evidence: 'REQUIRED: run the exact-candidate AIPS Integration Gate after commit
         and before remote publication or merge.'
     contract:
       applicable: true
-      evidence: 'REQUIRED: final exact-candidate repository validation, publication
-        preflight contracts and Scenario 261.'
+      evidence: 'PASS: publish preview reports documentation placement PASS and no
+        required additions. REQUIRED: exact-candidate repository validation and Scenario
+        236 contract.'
     e2e:
       applicable: true
-      evidence: 'PASS: fixture-backed Claude Code Hook subprocess lifecycle is included
-        in the 104 passing publication tests.'
+      evidence: 'PASS: synthetic loopback ComfyUI lifecycle verifies local Distilled
+        execution; no real model inference is claimed.'
     security:
       applicable: true
-      evidence: 'PASS: scan-evidence tampering, expiry, symlink and policy/candidate
-        drift cases passed. REQUIRED: full final-tree and base..head scan in the exact-candidate
-        Gate.'
+      evidence: 'PASS: bounded ordered local references, safe staged names, per-file
+        and batch caps, SHA-256 source/staged comparison, loopback-only requests,
+        core-node checks and single submission remain enforced. REQUIRED: final exact-candidate
+        secret scan.'
     migration_recovery:
-      applicable: true
-      evidence: 'PASS: absent, corrupt, expired, symlinked and mismatched evidence
-        fails closed; evidence stays in the private user cache.'
+      applicable: false
+      na_reason: No persisted data, schema migration or recovery format changes.
     cli_harness:
-      applicable: true
-      evidence: 'PASS: Hook lifecycle and safe upstream flag cases passed. REQUIRED:
-        final repository Gate after commit.'
+      applicable: false
+      na_reason: No CLI command signature or Harness authority behavior changes; Harness
+        documentation is synchronized.
     docs_schema:
       applicable: true
-      evidence: 'PASS: final docs-impact and documentation-placement preview reports
-        no required additions and placement PASS.'
-- boundary: Prepare and private scan evidence lifecycle
-  reason: Evidence is non-authorizing, private, short-lived and bound to exact repository,
-    worktree, candidate, target, remote, scanner and policy.
+      evidence: 'PASS: all publication-required canonical documentation paths are
+        changed and documentation placement passes. REQUIRED: final docs build in
+        the exact-candidate Gate.'
+- boundary: Dynamic ComfyUI reference bindings
+  reason: Ordered image_1..image_N slots stay within the existing eight-image and
+    byte budgets and verify all staged source hashes.
   checks: *id001
-- boundary: Claude Code Hook deadline and diagnostics
-  reason: Bound wall-clock execution, report safe phase/elapsed evidence and never
-    classify a timeout as network failure.
+- boundary: Compatibility, safety and synthetic execution
+  reason: Base and Z-Image behavior remain compatible; tests use local synthetic services
+    and do not generate a real image.
   checks: *id001
-- boundary: Required Checks Doctor semantics
-  reason: Preserve unknown policy truth; non-strict Doctor warns without blocking
-    ordinary branch workflows, while strict mode blocks unknown/unconfigured policy.
-  checks: *id001
-- boundary: Scenario, documentation and exact candidate delivery
-  reason: Bind all changed source/tests/docs and full Gate evidence to one exact candidate.
+- boundary: Scenario, canonical documentation and exact-candidate delivery
+  reason: Bind source, tests, 23 required documentation paths and final Gate evidence
+    to one exact candidate.
   checks: *id001
 candidate:
-  base_sha: b5692acc1a34ae705f4b4c38577299fc37916328
-  changed_files_hash: 2bb50ed9fbe6e38d795209e5c0eff3dab86c2170151908df890b261ecddbaf4e
+  base_sha: 60f55a6a28cbca62c516fb7bddfe313eb4e35428
+  changed_files_hash: ccf8bd71f6826f355bd5068affaa00752084a5236ffae841fe5b48436e645a70
 review_evidence:
-  required: false
+  required: true
+  scope_approvals:
+  - Core Change proposal approved by user
+  - 23-document publication closure approved by user
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []

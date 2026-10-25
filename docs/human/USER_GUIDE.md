@@ -129,7 +129,9 @@ Project Diagnostics 只報告既有狀態，不會建立 Creative Bundle、啟�
 
 ComfyUI 也可用 `model_profile: z-image-turbo` 執行同一模型：設定需明列 UNET、Qwen CLIP、VAE 權重檔名，並使用 AIPS 隨附的固定 API 工作流。Preflight 會向 loopback ComfyUI 核對三項本機模型清單；此配對僅支援 generate。模型可透過 `templates/creative/COMFYUI_MODEL_PROFILES.yaml` 擴充，但只能沿用已審核的拓樸家族；FLUX 3 Klein Base 為另一個固定 workflow profile。
 
-FLUX 3 Klein Base 預檢會讀取本機 `/object_info/TextGenerate`，檢查工作流欄位、型別、範圍及 `sampling_mode` Dynamic Combo 選項 schema。送往 ComfyUI API 的值是 schema 中選取的選項鍵（例如 `"off"`）；ComfyUI 會在執行層重建節點所需的巢狀值。AIPS 在唯一一次 `/prompt` 前也會核對最終序列化工作流的節點、欄位與連線。ComfyUI 執行錯誤只回報安全摘要，不回傳原始訊息、提示、路徑或 traceback，也不會自動重送失敗工作。
+FLUX 3 Klein Base 與 Distilled 共用已審核 workflow；Base 使用 50 steps / CFG 3.5，Distilled 使用 16 steps / CFG 1。預檢會讀取本機 `/object_info/TextGenerate`，檢查工作流欄位、型別、範圍及 `sampling_mode` Dynamic Combo 選項 schema。送往 ComfyUI API 的值是 schema 中選取的選項鍵（例如 `"off"`）；ComfyUI 會在執行層重建節點所需的巢狀值。AIPS 在唯一一次 `/prompt` 前也會核對最終序列化工作流的節點、欄位與連線。ComfyUI 執行錯誤只回報安全摘要，不回傳原始訊息、提示、路徑或 traceback，也不會自動重送失敗工作。
+
+明確選擇 `dynamic_local` 的 edit workflow 可設定一到八組依序排列的 `image_1` 至 `image_8` 參考綁定，並提供相同順序的本機 staged 檔名。每張上限 12 MiB、合計上限 25 MiB；預檢逐張比對來源與 staged bytes。模型 profile 不會啟用編輯能力或改變此參考圖邊界。
 
 需要使用其他已安裝模型時，可在 Bundle 明確選擇 `workflow.mode: dynamic_local` 並提供專案內 API workflow JSON。`aips creative workflows scan` 只讀取本機 loopback `/object_info` 與工作流，`inspect` 回傳 privacy-bounded 狀態摘要，`import` 以 create-only 方式將來源複製到專案內；這三個工作流 CLI 子命令只輸出固定狀態，不回顯節點名稱、模型檔名、Runtime 版本、提示內容或工作流細節。一般 `creative discover` 保留有限且核准 loader 的模型目錄，但不列出節點清單。`preflight` 會核對節點 schema、圖連線、明確輸入綁定及本機 loader 模型。只允許 runtime 標示的 ComfyUI core nodes；API、custom、未知節點及隱含模型／參考圖選擇都會拒絕。動態模式不會自動替換固定 profile，也不下載權重；執行仍須明確要求，timeout 後不自動重送。合成驗證不代表實際推論或品質已驗證。
 
@@ -218,6 +220,7 @@ FLUX 3 Klein 的 `TextGenerate` runtime schema 檢查由既有 Harness executor 
 Creative workflow commands remain explicit user-facing actions routed through the existing CLI and host authorization; schema inspection alone never submits a ComfyUI job.
 
 Creative runtime 由共用 Harness executor 執行；model profile 資料只選用程式已審核的 topology family，不會增加工具或權限。
+FLUX 3 Klein Base/Distilled 的資料型 profile 與動態 ComfyUI 參考圖綁定都沿用現有 Harness action grant；只有明確授權的 Creative execute 才能提交本機工作流。
 
 OpenCode keeps direct writes confined to the project and requires READY Project Intelligence without unresolved instruction conflicts. STALE freshness alone is advisory for this local L2 case; external actions retain the existing Human gate.
 
@@ -301,6 +304,7 @@ Publication guard 重用既有的 command authority 與 Secret Scan；scan evide
 The `creative workflows` CLI is a separate workflow utility and does not add or change the Skills catalog or Skill Explorer behavior.
 
 Model profile registry 是 Creative runtime 設定，不會安裝 Skills，也不改變 Skill routing。
+本次新增的 Distilled profile 與一至八張動態參考圖只擴充既有 Creative runtime 資料契約，不新增 Skill、Role、catalog 項目或安裝路由。
 
 Skill integration remains independent of project attachment: `aips attach` is explicit, and its local `.git/info/exclude` rules keep AIPS state out of ordinary staging without changing shared Skill installation behavior.
 
@@ -477,6 +481,7 @@ Commit diagnostics expose redacted evidence only; any independent review remains
 Publication lifecycle observations are not independent-review evidence and do not satisfy a Human review or a native Host decision.
 
 Creative presets add bounded prompt guidance only. They do not select a model, authorize generation or replace the existing workflow preflight and Human review.
+FLUX 3 Klein Distilled 的 synthetic lifecycle 與多參考圖綁定測試只驗證本機契約；不能取代獨立視覺審查、使用者接受或真實推論觀測。
 
 Publication authority tests cover the shared target-policy observation and the Claude-only bounded recovery path; they do not imply a change to Skill evaluation.
 

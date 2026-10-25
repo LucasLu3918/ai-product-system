@@ -82,7 +82,7 @@ Shared CLI router 更新可能觸發 Creative Direction 文件審查；Project D
 
 角色圖片保留要求的媒材；以受限 configure 建立新的 Bundle，並載入校準、方向與視覺審查 skill。執行、圖片容器、人工審查與使用者接受分開回報。
 
-Local character-art behavior is mapped through `config/documentation-placement.yaml` and `config/documentation-sync.yaml`; changes to its validator, Bundle, profile templates, OpenCode adapter, creative CLI routing or creative protocol keep the User Guide, Harness, Technology Guide, architecture overview, Scenario Conformance and Agent guidance in the same candidate. The synthetic lifecycle covers versioned no-overwrite preparation, fixed MFLUX capability/argv mapping, single-reference FLUX.1 edit, bounded multi-reference FLUX.2/Qwen edit, single-reference ComfyUI edit, the fixed Z-Image Turbo split-loader topology and fake providers only; exact-candidate validation never runs a project-configured engine, and a missing local engine remains `BLOCKED_NO_ENGINE`.
+Local character-art behavior is mapped through `config/documentation-placement.yaml` and `config/documentation-sync.yaml`; changes to its validator, Bundle, profile templates, OpenCode adapter, creative CLI routing or creative protocol keep the User Guide, Harness, Technology Guide, architecture overview, Scenario Conformance and Agent guidance in the same candidate. The synthetic lifecycle covers versioned no-overwrite preparation, fixed MFLUX capability/argv mapping, single-reference FLUX.1 edit, bounded multi-reference FLUX.2/Qwen edit, single-reference FLUX 3 Klein Base and Distilled generation on the audited topology, one-to-eight-reference dynamic ComfyUI edit with staged-byte hashes, the fixed Z-Image Turbo split-loader topology and fake providers only; exact-candidate validation never runs a project-configured engine, and a missing local engine remains `BLOCKED_NO_ENGINE`.
 
 Version 0.76.0 adds no-overwrite Profile/Bundle preparation and fixed MFLUX CLI mapping; these changes do not install providers or models.
 
@@ -572,7 +572,7 @@ Creative lifecycle 的 runtime-schema assertions 與最終 payload 檢查屬 ada
 
 The dynamic ComfyUI lifecycle is included in Scenario 268 and the Large/Core Change Matrix; keep its synthetic evidence distinct from real inference and visual quality claims.
 
-Scenario 236 lifecycle checks cover profile registry loading, exact local component inventory, rejection of unreviewed topology families, and fixed FLUX 3 Klein `TextGenerate` schema/final-payload validation. These synthetic checks do not claim Apple Silicon MPS inference or VAE output acceptance.
+Scenario 236 lifecycle checks cover profile registry loading, bounded sampler validation, exact local component inventory, rejection of unreviewed topology families, FLUX 3 Klein `TextGenerate` schema/final-payload validation, and ordered multi-reference binding and hash checks. These synthetic checks do not claim Apple Silicon MPS inference or VAE output acceptance.
 
 Scenario 044 lifecycle evidence covers repository-local excludes for attached AIPS state and detach archives while preserving the project `.gitignore`.
 

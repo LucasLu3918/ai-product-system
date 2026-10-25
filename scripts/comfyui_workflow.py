@@ -11,6 +11,7 @@ from comfyui_workflow_policy import require_safe_node, validate_node_id
 from creative_errors import Blocked
 
 MAX_WORKFLOW_BYTES = 4 * 1024 * 1024
+MAX_REFERENCE_BINDINGS = 8
 MAX_WORKFLOW_NODES = 256
 MAX_INPUTS_PER_NODE = 128
 MAX_WORKFLOW_NODE_BYTES = 256 * 1024
@@ -120,7 +121,7 @@ def validate_schema(workflow: dict[str, Any], object_info: dict[str, Any]) -> di
 
 
 def validate_bindings(bindings: Any, workflow: dict[str, Any], analysis: dict[str, Any], object_info: dict[str, Any] | None = None, values: dict[str, Any] | None = None) -> dict[str, Any]:
-    if not isinstance(bindings, dict) or set(bindings) - {"prompt", "seed", "width", "height", "steps", "cfg", "output", "reference"}:
+    if not isinstance(bindings, dict) or set(bindings) - {"prompt", "seed", "width", "height", "steps", "cfg", "output", "reference", "references", "reference_encoder"}:
         raise Blocked("WORKFLOW_BINDING_INVALID", "Dynamic workflow bindings contain unsupported names.", phase="creative.workflow_bindings", source="comfyui")
     validated: dict[str, Any] = {}
     for name in ("prompt", "seed", "width", "height", "steps", "cfg"):
@@ -169,6 +170,37 @@ def validate_bindings(bindings: Any, workflow: dict[str, Any], analysis: dict[st
         if not isinstance(node, dict) or node["class_type"] != "LoadImage" or input_name != "image" or input_name not in node["inputs"]:
             raise Blocked("WORKFLOW_BINDING_INVALID", "Reference binding must identify a core LoadImage image input.", phase="creative.workflow_bindings", source="comfyui")
         validated["reference"] = {"node_id": node_id, "input": input_name}
+    references = bindings.get("references")
+    if references is not None:
+        if not isinstance(references, list) or not 1 <= len(references) <= MAX_REFERENCE_BINDINGS:
+            raise Blocked("WORKFLOW_BINDING_INVALID", "Reference binding count exceeds the bounded local image limit.", phase="creative.workflow_bindings", source="comfyui")
+        validated_references = []
+        slots = set()
+        nodes = set()
+        for item in references:
+            if not isinstance(item, dict) or set(item) != {"node_id", "input", "slot"}:
+                raise Blocked("WORKFLOW_BINDING_INVALID", "Each reference binding must name node_id, input, and slot.", phase="creative.workflow_bindings", source="comfyui")
+            node_id, input_name, slot = str(item["node_id"]), item["input"], item["slot"]
+            node = workflow.get(node_id)
+            if (not isinstance(node, dict) or node["class_type"] != "LoadImage" or input_name != "image"
+                    or input_name not in node["inputs"] or slot != f"image_{len(validated_references) + 1}"
+                    or slot in slots or node_id in nodes):
+                raise Blocked("WORKFLOW_BINDING_INVALID", "Reference slots must map uniquely to core LoadImage image inputs.", phase="creative.workflow_bindings", source="comfyui")
+            slots.add(slot)
+            nodes.add(node_id)
+            validated_references.append({"node_id": node_id, "input": input_name, "slot": slot})
+        encoder = bindings.get("reference_encoder")
+        if not isinstance(encoder, dict) or set(encoder) != {"node_id", "input"}:
+            raise Blocked("WORKFLOW_BINDING_INVALID", "Multi-reference binding requires a Qwen image encoder binding.", phase="creative.workflow_bindings", source="comfyui")
+        encoder_node_id, encoder_input = str(encoder["node_id"]), encoder["input"]
+        encoder_node = workflow.get(encoder_node_id)
+        if (not isinstance(encoder_node, dict) or encoder_node["class_type"] != "TextEncodeQwenImage21"
+                or encoder_input != "images" or encoder_input not in encoder_node["inputs"]):
+            raise Blocked("WORKFLOW_BINDING_INVALID", "Reference encoder must target the Qwen Image 2.1 images input.", phase="creative.workflow_bindings", source="comfyui")
+        if slots != {f"image_{index}" for index in range(1, len(references) + 1)}:
+            raise Blocked("WORKFLOW_BINDING_INVALID", "Reference slots must be contiguous and ordered from image_1.", phase="creative.workflow_bindings", source="comfyui")
+        validated["references"] = validated_references
+        validated["reference_encoder"] = {"node_id": encoder_node_id, "input": encoder_input}
     return validated
 
 
@@ -184,4 +216,15 @@ def inject_bindings(workflow: dict[str, Any], bindings: dict[str, Any], values: 
     reference = bindings.get("reference")
     if reference is not None and values.get("reference") is not None:
         result[reference["node_id"]]["inputs"][reference["input"]] = values["reference"]
+    references = bindings.get("references")
+    reference_names = values.get("references")
+    if references is not None and reference_names is not None:
+        if len(references) != len(reference_names):
+            raise Blocked("WORKFLOW_BINDING_INVALID", "The number of staged references does not match the workflow bindings.", phase="creative.workflow_bindings", source="comfyui")
+        encoder = bindings["reference_encoder"]
+        image_map = {}
+        for binding, image_name in zip(references, reference_names, strict=True):
+            result[binding["node_id"]]["inputs"][binding["input"]] = image_name
+            image_map[binding["slot"]] = [binding["node_id"], 0]
+        result[encoder["node_id"]]["inputs"][encoder["input"]] = image_map
     return result

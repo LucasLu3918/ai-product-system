@@ -1816,6 +1816,8 @@ The synthetic multi-item lifecycle verifies per-item preflight, continue-on-fail
 
 ## Scenario 258 — Creative Quality Cross-profile Evidence
 
+The Distilled and multi-reference lifecycle fixtures add interface evidence only; they remain separate from independent visual review, user acceptance and real model quality evidence.
+
 Benchmark v2 records the registered three-archetype by six-case coverage matrix, confines and hash-binds completed raster outputs, and reports model, check and compiler failures separately. The lifecycle also checks legacy v1 readability, Human review and user-acceptance separation, and bounded privacy-safe failure evidence. Synthetic fixtures establish schema and path contracts only; real inference, visual quality and acceptance remain unverified until observed independently.
 
 The Skill integration adds a separate manual Scenario 259; it does not change creative quality evidence or imply writing model quality.
@@ -1829,7 +1831,7 @@ FLUX 3 Klein lifecycle adds live `TextGenerate` Dynamic Combo schema and final p
 
 Scenario 268 extends this lifecycle with opt-in schema-validated local ComfyUI API workflows; it preserves the existing explicit execution and human visual-review boundaries.
 
-ComfyUI lifecycle evidence now covers the declarative profile registry, the FLUX 3 Klein Base topology, exact local component inventory checks, fixed sampler settings, safe same-family profile extension, and rejection of unregistered topology families.
+ComfyUI lifecycle evidence now covers the declarative profile registry, the shared FLUX 3 Klein Base/Distilled topology, exact local component inventory checks, bounded per-profile sampler settings, safe same-family profile extension, and rejection of unregistered topology families.
 
 Scenario 236 retains the local-only generation workflow and Human review boundary; Scenario 262 adds read-only model inventory, strict HTTP request validation and bounded diagnostic recovery without running inference.
 
@@ -1903,9 +1905,9 @@ Z-Image Turbo 測試涵蓋專用 MFLUX generate 命令與固定 ComfyUI split-lo
 
 Scenario 236 新增 Bundle 設定競爭／來源保留、native Context envelope、使用者授權撤銷、唯讀預檢、媒材不符與損壞 PNG 檢查。實際 tool callback 使用無憑證 fixture；這不等於真實模型品質或使用者接受。
 
-Scenario 236 covers versioned no-overwrite Profile/Bundle preparation, fixed MFLUX model/operation CLI mapping, single-reference FLUX.1 edit, bounded multi-reference FLUX.2/Qwen edit, loopback ComfyUI with single-reference edit, create-only EPHEMERAL output, provenance, finite retry, privacy-bounded trace, and separate human visual review.
+Scenario 236 covers versioned no-overwrite Profile/Bundle preparation, fixed MFLUX model/operation CLI mapping, single-reference FLUX.1 edit, bounded multi-reference FLUX.2/Qwen edit, loopback ComfyUI with one-to-eight ordered staged-byte-verified references, Base and Distilled profile settings, create-only EPHEMERAL output, provenance, finite retry, privacy-bounded trace, and separate human visual review.
 
-The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies concurrent preparation allocates distinct versions, unconfigured engines remain blocked, preflight does not run a generator, explicit execution stays inside non-Git EPHEMERAL scope, MFLUX commands match the fixed capability registry, batch references remain bounded, model/runtime/license and profile hashes are bound to output provenance, ComfyUI is loopback-only with built-in nodes, the Z-Image Turbo split-loader graph and local model inventory are exact, prompt-bearing PNG text metadata is removed, edits use exactly one hash-matched staged input, retries are finite, no output is overwritten, review starts PENDING, and traces reject prompts, image data, secrets and paths. Real model execution, device performance and visual quality require a user-configured local engine and independent human inspection; no model is installed or downloaded by validation.
+The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies concurrent preparation allocates distinct versions, unconfigured engines remain blocked, preflight does not run a generator, explicit execution stays inside non-Git EPHEMERAL scope, MFLUX commands match the fixed capability registry, batch references remain bounded, model/runtime/license and profile hashes are bound to output provenance, ComfyUI is loopback-only with built-in nodes, Z-Image Turbo and shared FLUX 3 Klein topology checks match local inventories, prompt-bearing PNG text metadata is removed, dynamic edits bind one to eight ordered hash-matched staged inputs, retries are finite, no output is overwritten, review starts PENDING, and traces reject prompts, image data, secrets and paths. Real model execution, device performance and visual quality require a user-configured local engine and independent human inspection; no model is installed or downloaded by validation.
 
 FLUX 3 Klein coverage also validates the live `TextGenerate` Dynamic Combo schema and final serialized payload shape before submission, rejects incompatible options without a POST, and checks that synthetic node/exception diagnostics omit prompts, paths, credentials and tracebacks. The lifecycle is adapter evidence only; MPS inference remains unverified.
 
@@ -2024,6 +2026,8 @@ Dependabot commits: the GitHub App bot noreply author and Dependabot's exact fin
 Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
 ## Scenario 262 — ComfyUI Resource Authorization and Diagnostics
+
+Scenario 236 now exercises Base and Distilled on the same reviewed Klein topology and ordered one-to-eight local reference bindings. Resource grants, fixed loopback destinations and diagnostics remain unchanged; staged references are hash-checked before submission.
 
 固定 FLUX 3 Klein workflow 在提交前核對 live `TextGenerate` schema 與最終序列化 payload；錯誤摘要有界且遮蔽敏感欄位，這不構成模型推論或 MPS 成功證據。
 

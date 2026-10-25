@@ -34,7 +34,7 @@ Task write authorization is not a substitute for the Runtime Action PEP. `aips r
 
 ## Runtime Action Envelope
 
-ComfyUI model registry data selects only already-reviewed executor topology families; it does not create a Runtime action, resource grant or new mutation authority.
+ComfyUI model registry data selects only already-reviewed executor topology families and validated bounded sampler values; it does not create a Runtime action, resource grant or new mutation authority. Dynamic edit reference slots are ordered and capped at eight, with local staged-byte verification before the authorized workflow submission.
 
 The commit-time font metadata scanner does not evaluate or broaden Runtime Action Envelope permissions; its ALLOW result remains separate from tool authorization.
 

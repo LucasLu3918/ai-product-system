@@ -35,6 +35,43 @@ def require(condition: bool, message: str) -> None:
         raise AssertionError(message)
 
 
+def multi_reference_binding_cases() -> None:
+    require(creative.safe_comfy_input_name("reference 1.png"), "safe ComfyUI input filename was rejected")
+    require(not any(creative.safe_comfy_input_name(name) for name in ("../secret.png", "..\\secret.png", "..", "")),
+            "unsafe ComfyUI staged filename was accepted")
+    workflow = {
+        str(index): {"class_type": "LoadImage", "inputs": {"image": "placeholder.png"}}
+        for index in range(1, 4)
+    }
+    workflow["encoder"] = {"class_type": "TextEncodeQwenImage21", "inputs": {"images": {}}}
+    workflow["save"] = {"class_type": "SaveImage", "inputs": {"images": ["encoder", 0], "filename_prefix": "fixture"}}
+    analysis = {"nodes": []}
+    bindings = {
+        "references": [
+            {"node_id": node_id, "input": "image", "slot": f"image_{index}"}
+            for index, node_id in enumerate(("3", "1", "2"), start=1)
+        ],
+        "reference_encoder": {"node_id": "encoder", "input": "images"},
+    }
+    validated = creative.comfyui_workflow.validate_bindings(bindings, workflow, analysis)
+    injected = creative.comfyui_workflow.inject_bindings(
+        workflow, validated, {"references": ["a.png", "b.png", "c.png"]}, "fixture"
+    )
+    require(injected["encoder"]["inputs"]["images"] == {
+        "image_1": ["3", 0], "image_2": ["1", 0], "image_3": ["2", 0]
+    }, "three ordered local references were not injected")
+    too_many = {**bindings, "references": [
+        {"node_id": str(index), "input": "image", "slot": f"image_{index}"}
+        for index in range(1, creative.MAX_REFERENCE_IMAGES + 2)
+    ]}
+    expanded = {**workflow, **{
+        str(index): {"class_type": "LoadImage", "inputs": {"image": "placeholder.png"}}
+        for index in range(4, creative.MAX_REFERENCE_IMAGES + 2)
+    }}
+    expect_blocked(lambda: creative.comfyui_workflow.validate_bindings(too_many, expanded, analysis),
+                   "reference binding exceeded the shared resource bound")
+
+
 def write_bundle(project: Path, **overrides):
     output = {
         "version": 1, "mode": "EPHEMERAL", "operation": "generate", "provider": "mflux_local",
@@ -115,7 +152,7 @@ class FakeComfyHandler(BaseHTTPRequestHandler):
             return self.send_bytes(json.dumps({"CheckpointLoaderSimple": {"input": {"required": {"ckpt_name": [["model.safetensors"]]}}}}).encode())
         if self.path == "/object_info/UNETLoader":
             if type(self).flux3:
-                choices = ["flux3-image-klein-base-int8-convrot.safetensors", *type(self).extra_unets]
+                choices = ["flux3-image-klein-base-int8-convrot.safetensors", "flux3-image-klein-int8-convrot.safetensors", *type(self).extra_unets]
                 return self.send_bytes(json.dumps({"UNETLoader": {"input": {"required": {"unet_name": [choices]}}}}).encode())
             unet = type(self).unet_filename or ("z_image_turbo_fp8.safetensors" if type(self).fp8_unet else "z_image_turbo_bf16.safetensors")
             return self.send_bytes(json.dumps({"UNETLoader": {"input": {"required": {"unet_name": [[unet]]}}}}).encode())
@@ -573,6 +610,29 @@ def comfy_cases(base: Path):
         require(FakeComfyHandler.workflow["5"]["inputs"]["sampling_mode"] == "off", "final FLUX 3 payload did not serialize the Dynamic Combo option key expected by ComfyUI's API parser")
         require(FakeComfyHandler.prompts == flux3_prompt_count + 1, "FLUX 3 execution did not submit exactly one explicit workflow")
 
+        distilled_project = fixture_project(base / "flux3-klein-distilled")
+        distilled_path = flux3_workflow(distilled_project)
+        distilled_flow = json.loads(distilled_path.read_text())
+        distilled_flow["1"]["inputs"]["unet_name"] = "flux3-image-klein-int8-convrot.safetensors"
+        distilled_flow["9"]["inputs"].update({"steps": 16, "cfg": 1.0})
+        distilled_path.write_text(json.dumps(distilled_flow), encoding="utf-8")
+        distilled_config = {
+            **flux3_config, "workflow_path": distilled_path.name,
+            "model_profile": "flux3-image-klein-distilled-int8", "model_id": "flux3-image-klein-distilled",
+            "unet_name": "flux3-image-klein-int8-convrot.safetensors",
+        }
+        distilled_bundle, _ = write_bundle(
+            distilled_project, provider="comfyui_local",
+            model={"id": "flux3-image-klein-distilled", "revision": "local-model-files", "license": "FLUX Kommunity License", "license_source": "local model card"},
+            runtime="ComfyUI", runtime_version="fixture-1", comfyui=distilled_config,
+        )
+        distilled_ready = creative.preflight(distilled_project, distilled_bundle.name)
+        require(distilled_ready["status"] == "READY", "Distilled profile did not pass local schema and inventory validation")
+        distilled_result = creative.execute(distilled_project, distilled_bundle.name)
+        require(distilled_result["status"] == "COMPLETE" and FakeComfyHandler.workflow["9"]["inputs"]["steps"] == 16
+                and FakeComfyHandler.workflow["9"]["inputs"]["cfg"] == 1.0,
+                "Distilled execution did not use its registered sampler settings")
+
         _, flux3_provider = creative.resolve_provider(flux3_project.resolve(strict=True), flux3_bundle_data)
         FakeComfyHandler.execution_error = {
             "node_id": "5", "node_type": "TextGenerate", "exception_type": "TypeError",
@@ -607,9 +667,25 @@ def comfy_cases(base: Path):
         flux3_path.write_text(json.dumps(bad_flux3), encoding="utf-8")
         expect_blocked(lambda: creative.load_comfy_workflow(flux3_project.resolve(strict=True), flux3_config), "FLUX 3 accepted distilled sampler settings for its Base model")
 
+        distilled_profile = creative.load_comfy_profile("flux3-image-klein-distilled-int8")
+        require(distilled_profile["sampler"]["steps"] == 16 and distilled_profile["sampler"]["cfg"] == 1,
+                "Distilled profile did not retain its profile-specific sampler settings")
+        invalid_distilled = {**distilled_profile, "sampler": {**distilled_profile["sampler"], "steps": 0}}
+        fractional_steps = {**distilled_profile, "sampler": {**distilled_profile["sampler"], "steps": 16.5}}
+        invalid_registry = yaml.safe_load(creative.COMFY_PROFILE_REGISTRY_PATH.read_text(encoding="utf-8"))
+        invalid_registry["profiles"]["invalid-distilled"] = invalid_distilled
+        invalid_registry["profiles"]["fractional-steps"] = fractional_steps
+        invalid_registry_path = base / "invalid-distilled-profiles.yaml"
+        invalid_registry_path.write_text(yaml.safe_dump(invalid_registry, sort_keys=False), encoding="utf-8")
+        with patch.object(creative, "COMFY_PROFILE_REGISTRY_PATH", invalid_registry_path):
+            expect_blocked(lambda: creative.load_comfy_profile("invalid-distilled"),
+                           "invalid data-only profile sampler settings passed validation")
+            expect_blocked(lambda: creative.load_comfy_profile("fractional-steps"),
+                           "fractional sampler steps passed integer-field validation")
+
         # A new model can reuse an audited topology family by adding data to the registry only.
         future_profile = {
-            "model_id": "future-klein-base", "topology": "flux3_klein_base_t2i", "operation": "generate",
+            "model_id": "future-klein-base", "topology": "flux3_klein_t2i", "operation": "generate",
             "components": {"unet_name": ["future-klein-base-int8.safetensors", "future-klein-base-fp8.safetensors"], "clip_name": ["future-qwenvl4b.safetensors", "future-qwenvl4b-fp8.safetensors"], "prompt_upsampler_name": ["future-qwen35-upsampler.safetensors"], "vae_name": ["flux2-vae.safetensors"]},
             "clip_type": "flux3", "sampler": {"steps": 50, "cfg": 3.5, "sampler_name": "euler", "scheduler": "simple", "denoise": 1},
         }
@@ -825,6 +901,7 @@ def configure_cases(base: Path):
 
 
 def main() -> int:
+    multi_reference_binding_cases()
     with tempfile.TemporaryDirectory(prefix="aips-creative-execution-") as tmp:
         base = Path(tmp)
         state = base / "state"
