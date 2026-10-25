@@ -35,6 +35,7 @@ for path in required:
 if all(path.is_file() for path in required):
     bundle = yaml.safe_load(required[1].read_text(encoding="utf-8")) or {}
     executor = required[0].read_text(encoding="utf-8")
+    workflow_bindings = (ROOT / "scripts/comfyui_workflow.py").read_text(encoding="utf-8")
     compiler = required[15].read_text(encoding="utf-8")
     docs = required[10].read_text(encoding="utf-8")
     plugin = (ROOT / "harness/adapters/opencode/plugin.ts").read_text(encoding="utf-8")
@@ -53,7 +54,7 @@ if all(path.is_file() for path in required):
         ("creative-execution-manifest.json" in executor and "PENDING" in executor, "execution must retain provenance and pending human review"),
         ("aips creative preflight" in docs and "BLOCKED_NO_ENGINE" in docs, "Creative Direction must document preflight and missing-engine state"),
         ("MFLUX_CAPABILITIES" in executor and "mflux-generate-flux2-edit" in executor and "mflux-generate-qwen-edit" in executor, "MFLUX commands must use the closed capability registry"),
-        ("MAX_REFERENCE_IMAGES = 8" in executor and "--image-paths" in executor, "MFLUX edit reference batches must be bounded and explicit"),
+        ("MAX_REFERENCE_IMAGES = comfyui_workflow.MAX_REFERENCE_BINDINGS" in executor and "MAX_REFERENCE_BINDINGS = 8" in workflow_bindings and "len(multiple) <= MAX_REFERENCE_IMAGES" in executor and '"--image-paths"' in executor, "Creative edit reference batches must use the shared eight-image bound and explicit MFLUX arguments"),
         ("def prepare(" in executor and "os.O_EXCL" in executor and "creative_ephemeral_required" in executor, "preparation must be confined, create-only and EPHEMERAL"),
         ("one to eight ordered bound references" in compatibility and "source hash" in compatibility, "ComfyUI compatibility docs must state the bounded ordered reference contract and staged source-hash verification"),
         ('"review-assist"' in plugin and 'classification.intent !== "create"' in plugin and '180_000' in plugin, "OpenCode preparation, generation, and advisory review must remain explicit and bounded"),
