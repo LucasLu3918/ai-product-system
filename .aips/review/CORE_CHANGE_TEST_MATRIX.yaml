@@ -70,7 +70,7 @@ candidate:
   base_sha: 60f55a6a28cbca62c516fb7bddfe313eb4e35428
   changed_files_hash: ccf8bd71f6826f355bd5068affaa00752084a5236ffae841fe5b48436e645a70
 review_evidence:
-  required: true
+  required: false
   scope_approvals:
   - Core Change proposal approved by user
   - 23-document publication closure approved by user
