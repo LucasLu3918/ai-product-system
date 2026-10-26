@@ -1772,6 +1772,8 @@ Scenario 233 also covers `aips skills list`: localized/grouped text and JSON out
 
 `tests/evidence/skills_cli_lifecycle.py` and `tests/validation/skill_native_projection_contracts.py` cover native Skill install, repeat install, cross-Host ownership, conflicts, workspace isolation, digest-protected removal, Portable Command projection and legacy migration for Codex, Claude Code and Gemini CLI. These checks validate generated files and ownership behavior; real Host discovery and invocation remain unverified until exercised in each installed Host.
 
+Scenario 269 adds the `aips intelligence gc [--yes]` help line and command without changing existing CLI argument or error contracts.
+
 ## Scenario 234 — Local Character Artwork Provenance and Composition
 
 Creative image validation shares the bounded AVIF container check; provenance and visual review remain separate evidence.
@@ -1807,6 +1809,8 @@ The V2 creative tool additionally requires a create/modify intent and a successf
 This Scenario is the canonical evidence pointer for OpenCode V2 context routing, action readiness, plugin lifecycle, and explicit unsupported boundaries.
 
 The lifecycle covers separate prompt dimensions, Chinese creative-asset routing, Project Intelligence readiness, session-root binding, direct native path/symlink decisions, Shell argument effects, V2 plugin ownership, private EPHEMERAL asset metadata cache, bounded privacy trace, performance measurement, and version-aware install/repair/removal. OpenCode v2.0.24 acceptance uses a loopback mock model to verify actual Context delivery, a new EPHEMERAL creative asset native write Allow, and an existing-asset edit Deny with incomplete Project Intelligence. No provider credentials are needed. Linux/WSL, V1, production-provider behavior, MCP/custom-tool writes, arbitrary Shell effects and writes outside OpenCode remain unverified or out of scope; overall governance stays ADVISORY.
+
+Scenario 269 makes Turn Context refresh and Retrieval index instructions task-scoped; the READY+STALE allow case and the OpenCode guard denials from Scenario 267 are unchanged.
 
 ## Scenario 238 — Creative Task Authorization and Multi-item Execution
 

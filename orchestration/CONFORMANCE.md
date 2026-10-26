@@ -69,6 +69,8 @@ The upstream install lifecycle additionally asserts installation of every non-ca
 
 The native Skill projection lifecycle checks Codex, Claude Code and Gemini CLI paths, explicit Codex/Claude invocation metadata, Gemini activation consent, idempotent installation, shared Codex/Gemini ownership, conflicts, exact digest-based uninstall, workspace scoping and Portable Command migration. `tests/validation/skill_native_projection_contracts.py` validates the CLI/documentation contracts. These deterministic checks do not claim live Host discovery or invocation acceptance.
 
+Scenario 269 adds `aips intelligence gc [--yes]` (dry run by default) to the public help without changing existing command contracts.
+
 ## Scenario 234 — Local Character Artwork Provenance and Composition
 
 Scenario 240 adds worktree-bound publication prepare/diagnose regression; safe failure codes and live PR reuse are exercised by tests/test_publication_planning.py. Synthetic GitHub metadata does not establish real-host permission or REST acceptance.
@@ -107,6 +109,8 @@ Allowed coverage:
 - uncovered
 
 Automated coverage is deterministic + lifecycle + agent_eval.
+
+Scenario 269 changes only Turn Context preparation wording and task-scoped requirement fields; OpenCode guard decisions and their Scenario 267 evidence are unchanged.
 
 ## Admission rules
 

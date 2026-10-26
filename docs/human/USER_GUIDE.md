@@ -295,6 +295,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 
 詳細請看 [Global Harness 與 MCP](HARNESS.md)。
 
+Turn Context 只列出這一回合真正需要的準備步驟：READY+STALE 的 Intelligence 在任務相關主題未受影響時只是提示，不要求 refresh；唯讀或未選到主題的回合不會要求建立 Retrieval 索引。修改既有專案時仍須處理 Change Impact。
+
 ## Roles、Skills 與重用
 
 The JSON error result is a CLI contract only; it does not add a Role or Skill permission and cannot authorize a Git operation.
@@ -366,6 +368,8 @@ Reuse existing Skill / Template
 Plan36 publication diagnostics preserve this topic's existing authority boundaries.
 
 Release history 更新（純依賴升級文件豁免，Scenario 221）已審查本區段：Skill 整合、Explorer 與重用行為不變。
+
+`aips intelligence gc` 是新的維護指令，與 Skills CLI 分開：預設為 dry run，列出專案路徑已不存在的外部 Intelligence store；確認後加上 `--yes` 才會刪除，且不會刪除路徑仍存在或無法驗證的 store。
 
 ## Deterministic Automation
 

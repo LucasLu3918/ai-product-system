@@ -85,6 +85,8 @@ Commit 時的 AVIF 中繼資料掃描採用內建且有界的解析器，不需�
 
 MCP 設定可用 `aips mcp config --client <client>` 預覽。該命令不會替你寫入 Cursor、Copilot、Amp、Codex 或其他 Host 設定。
 
+重新安裝 Runtime adapter 時，Global Harness 區塊會寫入更新後的說明：READY+STALE 的 Intelligence 只在 Turn Context 設定 `refresh_required=true` 時才需要 targeted refresh；`retrieval_index_required=true` 時才需要建立索引。`aips intelligence gc` 預設只列出專案路徑已不存在的外部 store，加上 `--yes` 才刪除。
+
 ## 常見問題與排查
 
 ### `aips: command not found`

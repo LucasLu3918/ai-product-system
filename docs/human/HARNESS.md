@@ -239,7 +239,7 @@ Turn Context 固定載入精簡的 `SYSTEM_CORE.md`，再依任務選擇 canonic
 
 Workflow and Runtime adapters keep validation observation collection behind the existing repository Gate; their read-only artifact reports do not enable host actions, skip checks, or add Git publication authority.
 
-Repository mutation workflows resolve AIPS Turn Context before analysis, then use targeted intelligence refresh and Change Impact evidence before editing; commit-time publication gates additionally enforce public-repository identity and content-safety policy.
+Repository mutation workflows resolve AIPS Turn Context before analysis, then use Change Impact evidence before editing and refresh only the task-relevant Intelligence topics that Turn Context marks with `refresh_required`; commit-time publication gates additionally enforce public-repository identity and content-safety policy.
 
 同步路徑只解析 identity、freshness、indexes 與 relevant pointers；重型 Project bootstrap、site build、semantic enrichment 不放進 hot path。
 
