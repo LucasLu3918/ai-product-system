@@ -1108,7 +1108,7 @@ FLUX 3 Klein `TextGenerate` preflight remains in the Creative executor; its sche
 
 Dynamic Creative workflow utilities do not add or modify Skills catalog entries or explorer behavior.
 
-ComfyUI model profiles are Creative runtime data and do not add Skills, alter Skill Explorer inventory, or affect Skill routing. Base/Distilled sampler declarations and dynamic reference bindings remain inside the existing Creative contract. Scenario 270 covers the audited topology templates and the user-local profile draft and approve gate.
+ComfyUI model profiles are Creative runtime data and do not add Skills, alter Skill Explorer inventory, or affect Skill routing. Base/Distilled sampler declarations and dynamic reference bindings remain inside the existing Creative contract.
 
 Scenario 044 separately covers AIPS project-local state lifecycle; it does not change upstream Skill inventory or installation behavior.
 
@@ -1173,7 +1173,7 @@ Scenario 262 locks stage-specific default-deny Profile diagnostics, kind/selecto
 
 ## Scenario 268 — Model-agnostic ComfyUI Workflows
 
-Scenario 268 covers opt-in model-agnostic local ComfyUI API workflows: bounded schema and graph parsing, runtime core-node trust classification, installed loader model validation, explicit bindings, safe create-only output, project-confined no-overwrite import and uncertain-submit no-retry recovery. The loopback lifecycle is synthetic; real model inference and visual quality remain UNVERIFIED.
+Scenario 268 covers opt-in model-agnostic local ComfyUI API workflows: bounded schema and graph parsing, runtime core-node trust classification, installed loader model validation, explicit bindings, safe create-only output, project-confined no-overwrite import and uncertain-submit no-retry recovery. The loopback lifecycle is synthetic; real model inference and visual quality remain UNVERIFIED. Scenario 270 extends this topology work with audited template data, a generic validator, pre-refactor equivalence for every registered profile, and the user-local profile draft and approve gate.
 
 The creative profile registry supports FLUX Klein Base and Distilled through the shared audited topology with validated profile-specific sampler settings. Dynamic ComfyUI edits accept one to eight ordered, explicitly bound local references and verify every staged file against its source hash. MFLUX FLUX.1 remains single-reference; FLUX.2/Qwen edit uses the bounded `--image-paths` option.
 
