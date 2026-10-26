@@ -151,6 +151,8 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 ## Creative Workflow
 
+Creative execution is unaffected by the Claude Code publication recipe; committing generated assets still uses the same commit content-safety scan, and Prepare scan evidence (30 minutes, PR-bound) never authorizes creative output.
+
 Git publication scan evidence is independent of Creative review, asset import and image-generation provenance; it cannot authorize any Creative action.
 
 Creative profile registry 支援同一審核拓樸家族中的資料型模型擴充，並依家族規則驗證 sampler 欄位與數值；FLUX 3 Klein Base 和 Distilled 共用已審核 workflow topology，分別使用 50 steps / CFG 3.5 與 16 steps / CFG 1。新節點與新家族仍須程式審核。
@@ -416,6 +418,8 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 ## Security 與 Governance
 
 When `aips publish prepare` or `diagnose` fails locally in JSON mode, the CLI returns a redacted, stable diagnostic; the response grants no publication authority and text-mode behavior remains compatible.
+
+Claude Code publication denials carry a static English and Traditional Chinese recipe; Prepare scan evidence lasts 30 minutes and is bound separately to the planned push or PR creation.
 
 Distilled sampler declarations and one-to-eight ordered reference bindings do not change Human approval, Resource Authorization or the loopback endpoint allowlist; every staged input is verified locally before workflow submission.
 
@@ -707,6 +711,8 @@ Documentation Placement 對 behavior-bearing source 採 fail-closed mapping：�
 ## Runtime Content Safety Boundary
 
 This JSON fallback does not imply a successful scan or relax content-safety policy; publication remains fail-closed when candidate or history scanning cannot be completed.
+
+Claude Code quoted-heredoc (`<<'EOF'`) or single-quoted publication text is literal data that content safety still scans; real Shell expansion stays denied, and each denial names the supported recipe (Scenario 261).
 
 Publication scan evidence is a separate, short-lived cache of a successful full candidate/history scan. It cannot replace the scanner, relax content-safety policy, or authorize a protected operation.
 

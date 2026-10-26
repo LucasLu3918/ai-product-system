@@ -65,7 +65,7 @@ Native adapter discovery does not create project-local `.ai/`; explicit attach/d
 Content-safety controls remain separate from skill discovery, installation, and author trust decisions.
 
 
-Personal publication Hook denials preserve stable reason/phase metadata without raw exception text or candidate paths. The Hook has an eight-second hard deadline and returns elapsed milliseconds plus the last safe phase on timeout. Before a protected push it still revalidates the exact candidate, full ref and current remote tip, then requires a fresh five-minute Secret Scan evidence record from `aips publish prepare`; missing or mismatched evidence denies without retry. Unsupported literal command forms are denied before scanner work; the Hook does not authorize retry or execution.
+Personal publication Hook denials preserve stable reason/phase metadata without raw exception text or candidate paths. The Hook has an eight-second hard deadline and returns elapsed milliseconds plus the last safe phase on timeout. Before a protected push it still revalidates the exact candidate, full ref and current remote tip, then requires a fresh 30-minute Secret Scan evidence record from `aips publish prepare`; missing or mismatched evidence denies without retry. Unsupported literal command forms are denied before scanner work; the Hook does not authorize retry or execution.
 
 Adapter action guards remain separate from staged AVIF content-safety diagnostics.
 

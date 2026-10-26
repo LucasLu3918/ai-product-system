@@ -167,7 +167,7 @@ Publication diagnosis is a read-only capability. Runtime adapters may report the
 
 ## Publication Root-Cause Recovery (Plan35)
 
-The Claude Code publication Hook also enforces an eight-second internal deadline and returns a fail-closed diagnostic with the last safe phase and elapsed time. A fresh Prepare scan record can avoid a duplicate Hook scan for five minutes, but never skips live authority, target, candidate or remote-tip checks.
+The Claude Code publication Hook also enforces an eight-second internal deadline and returns a fail-closed diagnostic with the last safe phase and elapsed time. A fresh Prepare scan record can avoid a duplicate Hook scan for 30 minutes, but never skips live authority, target, candidate or remote-tip checks.
 
 Managed native guard 必須維持拒絕優先。Claude Code 只有 v2.1.295+ 的 publication PreToolUse 使用 `onFailure: block`；舊版/未知版本不注入該欄位並明確警示。
 Claude `PostToolUseFailure` is a separate diagnostic event and does not alter this version-bound blocking rule.

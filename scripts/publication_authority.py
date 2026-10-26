@@ -136,8 +136,8 @@ PUBLICATION_DIAGNOSTICS = {
     'PUBLICATION_REJECTED': ('Publication binding was rejected.', 'Inspect the candidate with aips publish prepare; retain the current authority boundary.', 'validation', 'POLICY'),
     'INTERNAL_DIAGNOSTIC_GAP': ('AIPS could not safely classify an internal publication failure.', 'Record the Diagnostic ID and error class; repair the local AIPS diagnostic mapping before retrying.', 'internal_diagnostics', 'INTERNAL'),
     'PUSH_TARGET_BRANCH_MISMATCH': ('Push target does not match the current engineering branch.', 'Verify the selected worktree and full target ref, then rerun read-only publication diagnosis.', 'push_validation', 'POLICY'),
-    'COMMAND_FORM_UNSUPPORTED': ('The publication command form is unsupported.', 'Use the standalone literal native command emitted by the validated plan; do not change it to bypass the guard.', 'command_validation', 'INVALID_ARGUMENT'),
-    'PUBLICATION_INPUT_UNBOUND': ('The publication input cannot be bound to the inspected operation.', 'Supply explicit literal input through a supported option or file, then revalidate.', 'command_validation', 'INVALID_ARGUMENT'),
+    'COMMAND_FORM_UNSUPPORTED': ('The publication command form is unsupported.', 'Use the standalone literal native command emitted by `aips publish prepare`, one per Bash call; do not change it to bypass the guard.', 'command_validation', 'INVALID_ARGUMENT'),
+    'PUBLICATION_INPUT_UNBOUND': ('The publication input cannot be bound to the inspected operation.', "Use literal input: a quoted `<<'EOF'` heredoc, a single-quoted string or a `-F`/`--body-file` file; variables, backticks and unquoted heredocs cannot be bound.", 'command_validation', 'INVALID_ARGUMENT'),
     'PUBLICATION_OPTION_INVALID': ('A required publication option is missing or unsupported.', 'Provide one explicit supported option value and revalidate.', 'command_validation', 'INVALID_ARGUMENT'),
     'SECRET_SCAN_POLICY_INVALID': ('The required secret-scan policy is invalid.', 'Repair the repository secret-scan policy and rerun publication validation.', 'content_scan.policy_validation', 'POLICY'),
     'SECRET_SCAN_ALLOWLIST_EXPIRED': ('The secret-scan allowlist contains an expired entry.', 'Remove or renew the expired allowlist entry with its approved fingerprint and rerun validation.', 'content_scan.allowlist_check', 'POLICY'),
@@ -165,7 +165,7 @@ PUBLICATION_DIAGNOSTICS = {
     'REQUIRED_CHECKS_POLICY_UNVERIFIED': ('Required-check configuration cannot be confirmed from the available evidence.', 'Run publish doctor; ask an administrator to verify branch protection visibility before retrying.', 'checks', 'UNAVAILABLE'),
     'HOST_MERGE_WITHOUT_REVIEW': ('Claude Code Auto Mode classified the request as Merge Without Review.', 'Use the normal interactive Host approval/review flow; do not rewrite commands to bypass the denial.', 'host', 'PERMISSION'),
     'HOST_READ_ONLY_DENIED': ('Claude Code denied a read-only publication diagnostic.', 'Run the same diagnostic in a trusted interactive environment or review exact permission rules; never infer merge approval.', 'host', 'PERMISSION'),
-    'PUSH_SOURCE_NOT_EXACT_SHA': ('Push source must equal the full candidate SHA.', 'Resolve HEAD and use its literal full SHA as the refspec source.'),
+    'PUSH_SOURCE_NOT_EXACT_SHA': ('Push source must equal the full candidate SHA.', 'Supported form: `git push origin <full-candidate-sha>:refs/heads/<current-branch>` (`-u` allowed) as emitted by `aips publish prepare`; a bare branch name or HEAD is not bound to the candidate.'),
     'INVALID_TARGET_REF': ('An explicit full target ref is required.', 'Use refs/heads/<current-engineering-branch>.'),
     'WORKTREE_DIRTY': ('The selected worktree has uncommitted content.', 'Preserve development files; review delivery scope or use a separate clean candidate worktree.'),
     'CWD_MISMATCH': ('The current worktree differs from the planned candidate.', 'Set the native tool working directory to the planned worktree and re-observe.'),
@@ -175,7 +175,7 @@ PUBLICATION_DIAGNOSTICS = {
     'AUTHORITY_CONFIG_INVALID': ('The present authority configuration cannot be used.', 'Repair the administrator trust root; do not remove it or fall back to personal mode.'),
     'HOST_PERMISSION_DENIED': ('The host denied the operation.', 'Resolve permissions through the host approval flow; do not retry using another command form.'),
     'CONTENT_SCAN_BLOCKED': ('Mandatory candidate/history content scanning failed.', 'Review the scanner policy and safe finding categories; resolve them and revalidate.'),
-    'PR_METADATA_INCOMPLETE': ('Explicit PR metadata is incomplete or ambiguous.', 'Provide unique --repo, --head, --base, --title and exactly one --body or --body-file.'),
+    'PR_METADATA_INCOMPLETE': ('Explicit PR metadata is incomplete or ambiguous.', "Supported form: `gh pr create --repo <owner/repo> --head <current-branch> --base <default-branch> --title <title> --body-file <file>` (or one literal --body, including a quoted `<<'EOF'` heredoc), as emitted by `aips publish prepare`."),
     'REMOTE_OBSERVATION_FAILED': ('Required repository or remote evidence is unavailable.', 'Diagnose network, authentication and repository configuration without printing raw errors.'),
     'CANDIDATE_CHANGED': ('Candidate or publication inputs changed after planning.', 'Discard the previous observation and create a fresh plan; reissue grants when required.'),
     'PR_STATE_AMBIGUOUS': ('PR state is ambiguous or stale.', 'Review matching PRs and remote head before continuing; do not create duplicate PRs.'),
@@ -260,7 +260,7 @@ PUBLICATION_DIAGNOSTICS = {
     'PR_BASE_MISMATCH': ('The PR does not target the live default branch.', 'Re-plan for the verified default branch; do not retarget a stale merge.'),
     'REQUIRED_CHECKS_INCOMPLETE': ('Required PR checks are missing, pending, or failing.', 'Wait for the exact candidate’s required aggregate to pass, then re-observe.'),
     'REQUIRED_CHECKS_UNAVAILABLE': ('Required PR check state could not be observed.', 'Check GitHub access and connectivity, then re-read checks; do not merge on unknown state.'),
-    'PUBLICATION_SCAN_EVIDENCE_REQUIRED': ('Fresh exact-candidate secret-scan evidence is missing or no longer valid.', 'Run `aips publish prepare` for the current clean candidate, then retry the exact planned push within five minutes.'),
+    'PUBLICATION_SCAN_EVIDENCE_REQUIRED': ('Fresh exact-candidate secret-scan evidence is missing or no longer valid.', 'Run `aips publish prepare` for the current clean candidate, then run its exact planned push or PR command within 30 minutes; re-run Prepare after each push.'),
     'HOOK_DEADLINE_EXCEEDED': ('The publication Hook reached its eight-second execution deadline.', 'No publication was authorized. Resolve the observed phase, then run one fresh read-only diagnosis or Prepare before retrying.'),
     'CREDENTIAL_BEARING_REMOTE': ('The configured remote URL contains credentials.', 'Remove credentials from the URL and use the host credential manager.'),
     'FORCE_WITH_LEASE_REQUIRED': ('The force update does not pin the observed target tip.', 'Use an exact target-and-tip lease only after a fresh candidate plan.'),
@@ -289,7 +289,9 @@ PUBLICATION_DIAGNOSTICS = {
 PUBLICATION_DETAIL_DIAGNOSTICS = {
     'REMOTE_OBSERVATION_TIMEOUT': ('A required remote observation timed out before it could be verified.', 'Manual read-only diagnostic command: `aips publish doctor --worktree . --format json`. Review its network or authentication finding, then rerun Prepare.', '必要的遠端觀測逾時，尚未完成驗證。', '唯讀診斷命令：`aips publish doctor --worktree . --format json`。依診斷排除網路或登入問題後重新執行 Prepare。'),
     'PIPE_UNSUPPORTED': ('A publication command was combined with a shell pipeline.', 'Run the exact approved publication command by itself; do not pipe it through another command.', '發布指令含有管線。', '單獨執行規劃產生的原生發布指令，不要串接管線。'),
-    'MULTI_COMMAND_UNSUPPORTED': ('A publication command was combined with another shell command.', 'Run one exact approved publication command at a time.', '發布指令與其他 Shell 命令組合。', '一次只執行一個經核准的原生發布指令。'),
+    'MULTI_COMMAND_UNSUPPORTED': ('A publication command was combined with another shell command.', 'Run one exact publication command per Bash call: first `git push origin <full-sha>:refs/heads/<branch>`, then re-run `aips publish prepare` and run the emitted `gh pr create ...` separately. Only literal `git add <paths> && git commit ...` may be chained.', '發布指令與其他 Shell 命令組合。', '每次 Bash 呼叫只執行一個發布指令：先執行 `git push origin <完整 SHA>:refs/heads/<分支>`，再重新執行 `aips publish prepare`，另外執行它輸出的 `gh pr create ...`。只有字面 `git add <路徑> && git commit ...` 可以串接。'),
+    'PUBLICATION_ARGUMENT_DYNAMIC': ('A publication argument uses shell expansion that AIPS cannot bind.', "Use literal arguments: a quoted `<<'EOF'` heredoc or single-quoted text for --title/--body, or `--body-file <file>`; `$VAR`, backticks and unquoted heredocs stay denied.", '發布引數使用 AIPS 無法綁定的 Shell 展開。', "改用字面引數：--title／--body 用加引號的 `<<'EOF'` heredoc 或單引號文字，或使用 `--body-file <檔案>`；`$VAR`、反引號與未加引號的 heredoc 仍會被拒絕。"),
+    'COMMIT_FORM_UNSUPPORTED': ('The commit command form cannot be inspected.', "Supported forms: `git commit -m \"$(cat <<'EOF'` ... `EOF` `)\"` with a quoted delimiter, `git commit -m '<text>'` or `git commit -F <file>`, optionally after literal `git add <paths> &&`.", 'Commit 指令格式無法檢查。', "支援格式：使用加引號分隔符的 `git commit -m \"$(cat <<'EOF'` ... `EOF` `)\"`、`git commit -m '<文字>'` 或 `git commit -F <檔案>`，前面可串接字面 `git add <路徑> &&`。"),
     'COMMAND_WRAPPER_UNSUPPORTED': ('A publication command uses an unsupported shell wrapper.', 'Use the standalone literal command emitted by the validated plan.', '發布指令使用不支援的 Shell 包裝形式。', '使用驗證計畫輸出的獨立原生指令。'),
     'SHELL_SYNTAX_UNSUPPORTED': ('A publication command uses shell syntax that AIPS cannot safely inspect.', 'Simplify the command to the standalone literal form emitted by the validated plan.', '發布指令使用 AIPS 無法安全檢查的 Shell 語法。', '改用驗證計畫輸出的獨立字面指令。'),
     'UNSUPPORTED_HEREDOC': ('A publication command uses a heredoc form AIPS cannot safely inspect.', 'Use a quoted heredoc or run the validated publication command separately.', '發布指令使用 AIPS 無法安全檢查的 heredoc 格式。', '改用加引號的 heredoc，或另外執行驗證過的發布指令。'),
@@ -307,13 +309,15 @@ PUBLICATION_DIAGNOSTICS_ZH = {
     'SECRET_SCAN_GIT_OBJECT_MISSING': ('秘密掃描需要的 Git 物件目前無法讀取。', '在此工作樹還原或取得候選歷史，再重新驗證。'),
     'SECRET_SCAN_FILE_UNREADABLE': ('秘密掃描器無法完整檢查候選檔案。', '修復候選內容的讀取或 UTF-8 編碼問題，再重新驗證。'),
     'SECRET_SCAN_POLICY_UNAVAILABLE': ('無法讀取必要的秘密掃描政策。', '恢復儲存庫秘密掃描政策的讀取權限，再重新驗證。'),
-    'PUBLICATION_SCAN_EVIDENCE_REQUIRED': ('目前候選缺少未過期的秘密掃描證據。', '對乾淨候選重新執行 `aips publish prepare`，並在五分鐘內重試精確推送。'),
+    'PUBLICATION_SCAN_EVIDENCE_REQUIRED': ('目前候選缺少未過期的秘密掃描證據。', '對乾淨候選重新執行 `aips publish prepare`，並在 30 分鐘內執行它規劃的精確 push 或 PR 指令；每次 push 後重新執行 Prepare。'),
     'HOOK_DEADLINE_EXCEEDED': ('發布 Hook 超過八秒執行期限，已拒絕操作。', '確認診斷中的安全階段；完成該階段後再執行一次唯讀診斷或 Prepare。'),
     'SECRET_SCAN_INTERNAL_ERROR': ('秘密掃描器安全停止，未完成檢查。', '保留診斷 ID 與錯誤類型，修復本機掃描器後再重試。'),
     'INTERNAL_DIAGNOSTIC_GAP': ('AIPS 無法安全分類這項內部發布錯誤。', '保留診斷 ID 與錯誤類型，修正本機 AIPS 診斷映射後再重試。'),
     'PUSH_TARGET_BRANCH_MISMATCH': ('推送目標分支與目前工程分支不一致。', '確認選用的工作樹與完整目標 ref，再重新執行唯讀發布診斷。'),
     'BRANCH_NOT_ALLOWLISTED': ('目前分支不符合允許的工程分支規則。', '在核准的工程分支上重新規劃；不要推送至受保護分支。'),
-    'PUSH_SOURCE_NOT_EXACT_SHA': ('推送來源不是目前候選的完整 SHA。', '重新確認候選 HEAD，使用該完整 SHA 與完整 refs/heads 目標重新診斷。'),
+    'PUSH_SOURCE_NOT_EXACT_SHA': ('推送來源不是目前候選的完整 SHA。', '支援格式：`git push origin <完整候選 SHA>:refs/heads/<目前分支>`（可加 `-u`），即 `aips publish prepare` 輸出的指令；只寫分支名稱或 HEAD 無法綁定候選。'),
+    'PR_METADATA_INCOMPLETE': ('PR 中繼資料不完整或有歧義。', "支援格式：`gh pr create --repo <owner/repo> --head <目前分支> --base <預設分支> --title <標題> --body-file <檔案>`（或一個字面 --body，可用加引號的 `<<'EOF'` heredoc），即 `aips publish prepare` 輸出的指令。"),
+    'PUBLICATION_INPUT_UNBOUND': ('發布輸入無法綁定到受檢查的操作。', "改用字面值輸入：加引號的 `<<'EOF'` heredoc、單引號字串或 `-F`／`--body-file` 檔案；不可使用變數、反引號或未加引號的 heredoc。"),
     'INVALID_TARGET_REF': ('推送目標 ref 格式不完整或無效。', '使用 refs/heads/<工程分支名稱>，並重新執行唯讀診斷。'),
     'WORKTREE_DIRTY': ('選用的工作樹仍有未提交內容。', '先檢閱並保留工作檔案，確認交付範圍後再建立乾淨候選。'),
     'CWD_MISMATCH': ('目前工作樹與規劃時選用的候選不同。', '切回原候選工作樹並重新確認 HEAD、分支與工作目錄。'),
@@ -326,7 +330,7 @@ PUBLICATION_DIAGNOSTICS_ZH = {
     'REQUIRED_CHECKS_FAILING': ('此候選有必要檢查失敗。', '修正失敗的檢查並確認同一候選 SHA 的必要檢查通過。'),
     'PR_HEAD_MISMATCH': ('PR 頭端與目前候選分支或 SHA 不符。', '重新讀取 PR 與候選資訊；不可更新或合併不相符的頭端。'),
     'PR_BASE_MISMATCH': ('PR 目標分支不是目前遠端預設分支。', '確認預設分支並重新規劃，不要沿用過期目標。'),
-    'COMMAND_FORM_UNSUPPORTED': ('發布指令格式不受支援。', '使用規劃輸出的獨立原生指令，不要改寫成繞過保護的形式。'),
+    'COMMAND_FORM_UNSUPPORTED': ('發布指令格式不受支援。', '使用 `aips publish prepare` 輸出的獨立原生指令，每次 Bash 呼叫只執行一個；不要改寫成繞過保護的形式。'),
     'PUBLICATION_REJECTED': ('發布綁定驗證未通過。', '重新執行 aips publish prepare 與唯讀診斷，檢查候選與授權界線。'),
     'STAGED_INDEX_UNAVAILABLE': ('無法讀取暫存索引。', '修復本機 Git index 後，重新執行唯讀 commit 安全診斷。'),
     'STAGED_BLOB_UNAVAILABLE': ('無法讀取暫存 Git blob。', '檢查暫存檔與本機 Git 物件資料庫後，重新執行唯讀診斷。'),
@@ -672,8 +676,12 @@ def _option(argv: list[str], option: str) -> str:
     return argv[index + 1]
 
 
-def validate_action_form(operation: str, argv: list[str]) -> None:
-    """Reject unsupported executable/subcommand wrappers before candidate inspection."""
+def validate_action_form(operation: str, argv: list[str], *, literal_marked: bool = False) -> None:
+    """Reject unsupported executable/subcommand wrappers before candidate inspection.
+
+    With ``literal_marked`` the argv comes from ``shell_commands(mark_dynamic=True)``: every word Bash
+    would expand carries a NUL marker, so a literal `$` or backtick in quoted text is allowed.
+    """
     expected = {
         'git_push': ['git', 'push'],
         'git_tag': ['git', 'tag'],
@@ -681,15 +689,19 @@ def validate_action_form(operation: str, argv: list[str]) -> None:
         'gh_pr_merge': ['gh', 'pr', 'merge'],
         'gh_release_create': ['gh', 'release', 'create'],
     }
-    if (operation not in expected or not argv or argv[:len(expected[operation])] != expected[operation]
-            or any('$' in word or '`' in word or '\0' in word for word in argv)):
+    if operation not in expected or not argv or argv[:len(expected[operation])] != expected[operation]:
         raise PublicationError('use a supported standalone literal publication command',
                                'COMMAND_FORM_UNSUPPORTED', phase='command_validation')
+    if any('\0' in word or not literal_marked and ('$' in word or '`' in word) for word in argv):
+        raise PublicationError('use a supported standalone literal publication command',
+                               'COMMAND_FORM_UNSUPPORTED', phase='command_validation',
+                               detail_code='PUBLICATION_ARGUMENT_DYNAMIC')
 
 
-def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: bool = False) -> dict[str, Any]:
+def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: bool = False,
+           literal_marked: bool = False) -> dict[str, Any]:
     """Observe a supported standalone literal command; implicit/multi-target pushes deny."""
-    validate_action_form(operation, argv)
+    validate_action_form(operation, argv, literal_marked=literal_marked)
     root = Path(git(cwd, 'rev-parse', '--show-toplevel')).resolve()
     head = git(root, 'rev-parse', 'HEAD^{commit}')
     if not re.fullmatch(r'[0-9a-f]{40,64}', base):
@@ -951,9 +963,10 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
 
 
 def validate_personal_action(cwd: Path, operation: str, argv: list[str], *,
-                             require_scan_evidence: bool = False) -> dict[str, Any]:
+                             require_scan_evidence: bool = False,
+                             literal_marked: bool = False) -> dict[str, Any]:
     """Validate personal publication; PR merge returns an exact per-call confirmation binding."""
-    validate_action_form(operation, argv)
+    validate_action_form(operation, argv, literal_marked=literal_marked)
     if operation not in PERSONAL_PUBLICATION_OPERATIONS:
         raise PublicationError('operation is unavailable in personal publication mode', reason_code='ASSURANCE_MODE_BLOCKED')
     root = Path(git(cwd, 'rev-parse', '--show-toplevel')).resolve()
@@ -973,7 +986,7 @@ def validate_personal_action(cwd: Path, operation: str, argv: list[str], *,
         raise PublicationError('mandatory candidate secret-scan policy is invalid',
             safe['reason_code'], phase=safe['phase'],
             context={'error_class': safe['error_class'], 'component': safe['component']}) from exc
-    validated_scope = action(root, operation, argv, base, personal=True)
+    validated_scope = action(root, operation, argv, base, personal=True, literal_marked=literal_marked)
     if require_scan_evidence:
         try:
             from publication_scan_evidence import valid as scan_evidence_valid

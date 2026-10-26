@@ -471,7 +471,7 @@ def _commit_chain(command: str) -> tuple[list[list[str]], list[str]]:
     import bashlex
     from publication_commands import inline_literal_heredocs, shell_commands
     unsupported = PublicationError("commit must be standalone or follow literal git add commands joined by &&",
-                                   reason_code='COMMAND_FORM_UNSUPPORTED')
+                                   reason_code='COMMAND_FORM_UNSUPPORTED', detail_code='COMMIT_FORM_UNSUPPORTED')
     normalized = inline_literal_heredocs(command)
     commands = shell_commands(normalized, mark_dynamic=True)
     if len(commands) == 1:
@@ -901,9 +901,12 @@ def deny_hook_input(runtime: str, reason: str, diagnostic: dict[str, Any] | None
         "CONTENT_INSPECTION_UNAVAILABLE": "AIPS content inspection could not complete; check the local scanner and Git state.",
     }
     detail = reason_messages.get(reason, "AIPS blocked this command during a required safety check.")
-    detail += " [" + reason + "]"
     if diagnostic is None:
         diagnostic = PublicationError("", reason).diagnostic()
+    if diagnostic.get("reason_code") == reason and diagnostic.get("next_step"):
+        # A static, input-free recipe stops agents from guessing command variants.
+        detail += " Next: " + str(diagnostic["next_step"])
+    detail += " [" + reason + "]"
     trace_status = ("SKIPPED_DEADLINE" if reason == "HOOK_DEADLINE_EXCEEDED"
                     else _record_publication_diagnostic(diagnostic, runtime))
     safe_fields = {key: diagnostic.get(key) for key in
@@ -1092,20 +1095,25 @@ def _hook_impl(runtime: str) -> int:
         try:
             _HOOK_PHASE = "publication_validation"
             if len(approval_operations) != 1:
-                raise ValueError('one protected publication operation per invocation required')
+                raise PublicationError('one protected publication operation per invocation required',
+                                       'COMMAND_FORM_UNSUPPORTED', phase='command_validation',
+                                       detail_code='MULTI_COMMAND_UNSUPPORTED')
             from publication_authority import (
                 publication_mode,
                 validate_personal_action,
             )
             mode = publication_mode()
             if mode == 'personal':
-                from publication_commands import shell_commands
-                parsed = shell_commands(command)
+                from publication_commands import command_form_detail, shell_commands
+                # Marked words let quoted literal `$`/backticks (for example a quoted heredoc PR
+                # body) through while every real expansion still carries a NUL marker and denies.
+                parsed = shell_commands(command, mark_dynamic=True)
                 if len(parsed) != 1 or len(approval_operations) != 1:
-                    raise PublicationError('one standalone publication operation required', reason_code='COMMAND_FORM_UNSUPPORTED')
+                    raise PublicationError('one standalone publication operation required', reason_code='COMMAND_FORM_UNSUPPORTED',
+                                           detail_code=command_form_detail(command))
                 _HOOK_PHASE = "publication_candidate_remote_and_evidence_validation"
                 publication = validate_personal_action(
-                    cwd, approval_operations[0], parsed[0], require_scan_evidence=True)
+                    cwd, approval_operations[0], parsed[0], require_scan_evidence=True, literal_marked=True)
                 if approval_operations[0] == 'gh_pr_merge':
                     merge_confirmation = publication.get('merge_confirmation')
                     if not merge_confirmation:

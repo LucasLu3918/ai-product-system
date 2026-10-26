@@ -888,6 +888,104 @@ class PublicationTest(unittest.TestCase):
         self.assertEqual(response['permissionDecision'], 'allow')
         self.assertIn('personal publication checks passed', response['permissionDecisionReason'])
 
+    def _in_process_hook(self, command):
+        import io
+        import json
+        payload = {'cwd': str(self.repo), 'tool_input': {'command': command}}
+        output = io.StringIO()
+        with patch('sys.stdin', io.StringIO(json.dumps(payload))), patch('sys.stdout', output), \
+                patch('runtime_policy.action_from_hook', return_value=None), \
+                patch('publication_authority.publication_mode', return_value='personal'), \
+                patch('publication_authority._remote_default_branch', return_value='main'), \
+                patch('publication_authority._tip', side_effect=lambda root, remote, ref:
+                      self.base if ref.endswith('/main') else self.head):
+            guard.hook('claude-code')
+        response = json.loads(output.getvalue())['hookSpecificOutput']
+        context = response.get('additionalContext', '')
+        diagnostic = (json.loads(context.split('AIPS diagnostic: ', 1)[1].split('; authorization_status')[0])
+                      if context.startswith('AIPS diagnostic: ') else {})
+        return response, diagnostic
+
+    def test_claude_hook_accepts_quoted_heredoc_pr_body_only_with_pr_scan_evidence(self):
+        import publication_scan_evidence
+        from check_secret_leakage import DEFAULT_POLICY, load_policy
+        self.run_git(self.repo, 'fetch', 'origin', 'main')
+        self.run_git(self.repo, 'switch', '-c', 'claude/hook-pr')
+        self.run_git(self.repo, 'remote', 'set-url', 'origin', 'https://github.com/owner/project.git')
+        prefix = 'gh pr create --repo owner/project --head claude/hook-pr --base main --title "fix: probe" --body '
+        body = "## Summary\n- keeps `code`, $HOME and don't literal\n\nGenerated with Claude Code"
+        heredoc = prefix + '"$(cat <<\'EOF\'\n' + body + '\nEOF\n)"'
+        self.assertEqual(shell_commands(heredoc, mark_dynamic=True)[0][-1], body)
+        cache = self.path / 'pr-cache'
+        with patch.dict(os.environ, {'XDG_CACHE_HOME': str(cache)}):
+            response, diagnostic = self._in_process_hook(heredoc)
+            self.assertEqual(response['permissionDecision'], 'deny')
+            self.assertEqual(diagnostic['reason_code'], 'PUBLICATION_SCAN_EVIDENCE_REQUIRED')
+            self.assertIn('30 minutes', diagnostic['next_step'])
+            _policy, policy_hash = load_policy(DEFAULT_POLICY)
+            with patch('publication_authority._remote_default_branch', return_value='main'), \
+                    patch('publication_authority._tip', side_effect=lambda root, remote, ref:
+                          self.base if ref.endswith('/main') else self.head):
+                push_scope = auth.action(self.repo, 'git_push',
+                                         ['git', 'push', 'origin', self.head + ':refs/heads/claude/hook-pr'],
+                                         self.base, personal=True)
+                publication_scan_evidence.store(self.repo, push_scope, policy_digest=policy_hash)
+                # Push evidence is bound to the push operation and target; it never covers a PR.
+                self.assertEqual(self._in_process_hook(heredoc)[1]['reason_code'], 'PUBLICATION_SCAN_EVIDENCE_REQUIRED')
+                pr_scope = auth.action(self.repo, 'gh_pr_create',
+                                       ['gh', 'pr', 'create', '--repo', 'owner/project', '--head', 'claude/hook-pr',
+                                        '--base', 'main', '--title', 'x', '--body', 'x'], self.base, personal=True)
+                publication_scan_evidence.store(self.repo, pr_scope, policy_digest=policy_hash)
+            response, _ = self._in_process_hook(heredoc)
+            self.assertEqual(response['permissionDecision'], 'allow', response)
+            self.assertEqual(self._in_process_hook(prefix + "'single quoted `ticks` $HOME'")[0]['permissionDecision'], 'allow')
+            for dynamic in [prefix + '"$BODY"', prefix + '"`whoami`"', prefix + '$"x"',
+                            prefix + '"$(cat <<EOF\n$HOME\nEOF\n)"', prefix + '"$(git rev-parse HEAD)"']:
+                with self.subTest(command=dynamic):
+                    response, diagnostic = self._in_process_hook(dynamic)
+                    self.assertEqual(response['permissionDecision'], 'deny')
+                    self.assertEqual(diagnostic['reason_code'], 'COMMAND_FORM_UNSUPPORTED')
+                    self.assertEqual(diagnostic['detail_code'], 'PUBLICATION_ARGUMENT_DYNAMIC')
+                    self.assertIn("<<'EOF'", diagnostic['next_step'])
+                    self.assertTrue(diagnostic['next_step_zh'])
+            # Content safety still reads the exact heredoc text.
+            leak = prefix + '"$(cat <<\'EOF\'\ntoken=github_pat_' + 'a' * 36 + '\nEOF\n)"'
+            response, diagnostic = self._in_process_hook(leak)
+            self.assertEqual(response['permissionDecision'], 'deny')
+            self.assertTrue(diagnostic['reason_code'].startswith('CONTENT_'), diagnostic)
+            self.assertNotIn('github_pat_', str(response))
+
+    def test_claude_hook_denials_name_the_supported_publication_recipe(self):
+        import json
+        self.run_git(self.repo, 'fetch', 'origin', 'main')
+        self.run_git(self.repo, 'switch', '-c', 'claude/hook-recipe')
+        cases = {
+            'git push -u origin claude/hook-recipe': ('PUSH_SOURCE_NOT_EXACT_SHA', None, ':refs/heads/<current-branch>'),
+            'git push -u origin HEAD': ('PUSH_SOURCE_NOT_EXACT_SHA', None, ':refs/heads/<current-branch>'),
+            f'git push -u origin {self.head}:refs/heads/claude/hook-recipe && gh pr create --title t --body b':
+                ('COMMAND_FORM_UNSUPPORTED', 'MULTI_COMMAND_UNSUPPORTED', 'one exact publication command per Bash call'),
+            'gh pr create --title "fix: probe" --body "$BODY"':
+                ('COMMAND_FORM_UNSUPPORTED', 'PUBLICATION_ARGUMENT_DYNAMIC', "<<'EOF'"),
+            'gh pr create --title t --body "$(cat <<EOF\n$HOME\nEOF\n)"':
+                ('COMMAND_FORM_UNSUPPORTED', 'PUBLICATION_ARGUMENT_DYNAMIC', "<<'EOF'"),
+        }
+        for command, (code, detail_code, recipe) in cases.items():
+            with self.subTest(command=command):
+                payload = {'cwd': str(self.repo), 'tool_input': {'command': command}}
+                proc = subprocess.run([sys.executable, str(ROOT / 'scripts/governance_guard.py'), 'hook', '--runtime', 'claude-code'],
+                                      input=json.dumps(payload), text=True, capture_output=True, check=False)
+                self.assertEqual(proc.returncode, 0, proc.stderr)
+                response = json.loads(proc.stdout)['hookSpecificOutput']
+                self.assertEqual(response['permissionDecision'], 'deny')
+                self.assertIn(code, response['permissionDecisionReason'])
+                self.assertIn(recipe, response['permissionDecisionReason'])
+                context = json.loads(response['additionalContext'].split('AIPS diagnostic: ', 1)[1].split('; authorization_status')[0])
+                self.assertEqual(context['reason_code'], code)
+                self.assertEqual(context.get('detail_code'), detail_code)
+                self.assertTrue(context['detail_zh'] and context['next_step_zh'])
+                self.assertNotIn('hook-recipe', proc.stdout)
+                self.assertNotIn('$BODY', proc.stdout)
+
 
 class ShellTest(unittest.TestCase):
     def test_strings_heredocs_and_executable_substitutions(self):
@@ -1066,6 +1164,24 @@ class GuardFalseDenialTest(unittest.TestCase):
                             'git add x && git commit -m x && git push origin main']:
             with self.subTest(command=unsupported):
                 self.assertEqual(self.hook(unsupported)['permissionDecision'], 'deny')
+
+    def test_unsupported_commit_forms_name_the_quoted_heredoc_recipe(self):
+        import json
+        (self.repo / 'file.txt').write_text('clean change\n')
+        self.git('add', 'file.txt')
+        for command, code in {'git commit -m "$(cat <<EOF\nfix: $HOME\nEOF\n)"': 'COMMAND_FORM_UNSUPPORTED',
+                              'git status && git commit -m x': 'COMMAND_FORM_UNSUPPORTED',
+                              'git commit -m "$MSG"': 'PUBLICATION_INPUT_UNBOUND'}.items():
+            with self.subTest(command=command):
+                response = self.hook(command)
+                self.assertEqual(response['permissionDecision'], 'deny')
+                self.assertIn("<<'EOF'", response['permissionDecisionReason'])
+                self.assertIn('[' + code + ']', response['permissionDecisionReason'])
+                context = json.loads(response['additionalContext'].split('AIPS diagnostic: ', 1)[1])
+                self.assertEqual(context['reason_code'], code)
+                self.assertIn("<<'EOF'", context['next_step_zh'])
+                self.assertNotIn('$HOME', response['permissionDecisionReason'])
+        self.assertEqual(self.hook(self.HEREDOC.format(body='fix: still allowed'))['permissionDecision'], 'allow')
 
     def test_unstaged_content_that_the_commit_includes_is_scanned(self):
         fixture_assignment = scanner_fixture_assignment() + '\n'

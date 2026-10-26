@@ -100,6 +100,8 @@ Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEM
 
 In JSON mode, failed local `prepare` and `diagnose` calls return stable, redacted errors; text output and successful schemas remain compatible.
 
+Personal publication parses Shell words with NUL-marked expansions, so quoted literal `$` and backticks remain data while real expansions deny.
+
 The Claude Code publication Hook fails closed immediately after retryable remote errors and provides a separate read-only Doctor command; it does not wait for Doctor inside the synchronous Hook. Prepare reports timeouts with stable, redacted diagnostics.
 
 Creative writes in Git workspaces retain their existing Project Intelligence guard; Scenario 267's stale advisory covers ordinary local L2 source writes only.
@@ -346,6 +348,8 @@ Content-safety detector changes are versioned (for example `pii.email.v2`) and b
 
 Scenario 261 regression coverage checks JSON and text error paths while preserving exit status and publication authority.
 
+Scenario 261 regression coverage includes quoted-heredoc PR bodies and content-safety scanning of the exact heredoc text.
+
 The Creative lifecycle test uses synthetic local providers to verify Base/Distilled profile settings and one-to-eight ordered staged-reference bindings. It does not certify real inference, image quality, independent review or user acceptance.
 
 Scenario 263 records the three exact Dewhollow WebM evidence-path exceptions and regression coverage that keeps near-matches and other WebM files under strict scanning.
@@ -408,7 +412,7 @@ The catalog contract verifies all 49 canonical Skills, all 38 vendored source pa
 
 `publication_planning.py` 重用 authority、candidate/history scan 與 GitHub PR evidence，提供 read-only `prepare` / `diagnose`。指紋包含 worktree、HEAD/base、remote/PR、policy 與 PR body digest；任何漂移需重新規劃，不能用診斷代碼放行。
 
-Claude Code publication Hook 使用八秒 hard deadline，結構化拒絕會記錄安全 phase 與 elapsed milliseconds。Prepare 完整掃描通過後，最多五分鐘的非授權 scan evidence 存在 private user cache，綁定 repository/worktree、base/head、push target、remote tip、diff、scanner 與 policy digest；Hook 每次重驗 live Git/remote state，並對缺少、過期、毀損或漂移 evidence fail closed。完整 candidate/history scan 仍是 Prepare 與 Integration Gate 必要步驟。
+Claude Code publication Hook 使用八秒 hard deadline，結構化拒絕會記錄安全 phase 與 elapsed milliseconds。Prepare 完整掃描通過後，最多 30 分鐘的非授權 scan evidence 存在 private user cache，綁定 repository/worktree、base/head、push target、remote tip、diff、scanner 與 policy digest；Hook 每次重驗 live Git/remote state，並對缺少、過期、毀損或漂移 evidence fail closed。完整 candidate/history scan 仍是 Prepare 與 Integration Gate 必要步驟。
 
 The OpenCode integration lifecycle exercises candidate tampering, source drift, path and symlink rejection, destination races, cache privacy, and end-to-end CLI dispatch.
 
@@ -647,6 +651,8 @@ Plan21 Phase 0 records one exact-main full-validation timing observation and pin
 
 Publication CLI behavior is documented in the User Guide and linked to its Scenario 261 conformance evidence.
 
+The Claude Code standard publication recipe lives in the Claude Code adapter and is linked to Scenario 261.
+
 Project lifecycle guidance is placed in the canonical Existing Project, Installation and Architecture topics; Scenario 044 is the lifecycle evidence source.
 
 OpenCode stale-freshness 行為須在 Human Harness、Project Intelligence 指南、adapter 契約與 Scenario 267 中保持一致。
@@ -669,6 +675,8 @@ Documentation Placement 將每個 behavior-bearing source 綁到 canonical Human
 ## Runtime Content Safety Boundary
 
 The JSON fallback is non-authorizing and cannot substitute for a successful full candidate and history scan.
+
+PR-bound scan evidence is non-authorizing and cannot substitute for the full candidate and history scan.
 
 The shared publication scanner recognizes only the documented generated-password and parameterized SQL forms as non-literal assignment values. Known provider tokens, private keys and high-entropy literals remain detectable, and oversized text or JSON remains fail-closed under its configured finite bound. The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; there is no extension-wide exemption, and the 2,000,000-byte text limit remains unchanged. The same exact relative paths are excluded in any repository using the shared policy.
 

@@ -315,6 +315,8 @@ Publication preflight `git_identity` accepts the GitHub App bot noreply form (`<
 
 Exact-candidate evidence remains separate from CLI error serialization: a structured failure is non-authorizing and cannot satisfy the required repository check.
 
+PR-bound Prepare scan evidence is separate from the exact-candidate Gate and cannot satisfy the required repository check.
+
 Plan53 Prepare evidence may prevent a duplicate scan inside the Claude Hook, but the exact-candidate Integration Gate always reruns the full Secret Scan over the final tree and `base..head` history before publication or merge.
 
 The Gate verifies Plan40's explicit publication error codes, candidate/runtime binding, separate plan/authorization/Host/execution states, redaction and optional verified diagnostic lookup against the exact candidate. Trace storage remains optional and cannot satisfy a required check or grant.
