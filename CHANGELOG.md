@@ -2,8 +2,6 @@
 
 ## Unreleased
 
-- Make Turn Context preparation task-scoped: READY+STALE Intelligence requires a targeted refresh only when task-relevant topics are affected, `retrieval_index_required` is set only when the task needs retrieval, and the hook names only the steps the turn requires; add dry-run-by-default `aips intelligence gc [--yes]` for external stores whose project path no longer exists. Change Impact and every existing hard stop are unchanged.
-
 - Return structured, redacted JSON diagnoses with safe recovery steps when publication prepare/diagnose encounters CLI-level errors; preserve text-mode output, exit status, and non-authorizing behavior.
 
 - Add opt-in model-agnostic local ComfyUI API workflows with bounded schema/graph validation, core-node trust checks, explicit input bindings, local model inventory validation, create-only workflow import/output, and no automatic retry after uncertain submission; fixed profiles remain the default and real inference is unverified.

@@ -2193,7 +2193,6 @@ scenarios:
     evidence:
       - tests/scenarios/269-task-scoped-intelligence-preparation.md
       - scripts/project_intelligence.py
-      - scripts/project_intelligence_gc.py
       - scripts/turn_context_hook.py
       - tests/evidence/intelligence_context_lifecycle.py
       - tests/test_intelligence_task_freshness.py

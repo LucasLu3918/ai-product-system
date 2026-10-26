@@ -13,7 +13,6 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 import project_intelligence as pi
-import project_intelligence_gc as gc
 import turn_context_hook as hook
 
 STALE = {"status": "STALE", "affected_topics": ["testing"]}
@@ -141,7 +140,7 @@ class IntelligenceGcTests(unittest.TestCase):
         live.mkdir()
         kept = self.store("a-live", str(live))
         orphan = self.store("b-gone", str(self.base / "gone"))
-        result = gc.collect(self.projects)
+        result = pi.gc_external_stores(self.projects)
         self.assertEqual(result["status"], "DRY_RUN")
         self.assertEqual([item["store"] for item in result["orphaned"]], [str(orphan)])
         self.assertEqual([item["store"] for item in result["kept"]], [str(kept)])
@@ -155,7 +154,7 @@ class IntelligenceGcTests(unittest.TestCase):
         orphan = self.store("b-gone", str(self.base / "gone"))
         (self.projects / "b-gone" / "runs").mkdir()
         empty_orphan = self.store("c-gone", str(self.base / "gone2"))
-        result = gc.collect(self.projects, apply=True)
+        result = pi.gc_external_stores(self.projects, apply=True)
         self.assertEqual(result["status"], "APPLIED")
         self.assertEqual(sorted(item["store"] for item in result["removed"]), sorted([str(orphan), str(empty_orphan)]))
         self.assertTrue(kept.is_dir())
@@ -171,7 +170,7 @@ class IntelligenceGcTests(unittest.TestCase):
         broken_link = self.base / "broken"
         broken_link.symlink_to(self.base / "nowhere")
         dangling = self.store("d-dangling", str(broken_link))
-        result = gc.collect(self.projects, apply=True)
+        result = pi.gc_external_stores(self.projects, apply=True)
         self.assertEqual(result["removed"], [])
         for path in (relative, unrecorded, missing_manifest, dangling):
             self.assertTrue(path.is_dir())
@@ -191,7 +190,7 @@ class IntelligenceGcTests(unittest.TestCase):
         real = self.projects / "b-store-link"
         real.mkdir()
         (real / "intelligence").symlink_to(outside_store, target_is_directory=True)
-        result = gc.collect(self.projects, apply=True)
+        result = pi.gc_external_stores(self.projects, apply=True)
         self.assertEqual(result["removed"], [])
         self.assertTrue(outside_store.is_dir())
         reasons = {item["workspace_id"]: item["reason"] for item in result["skipped"]}
@@ -201,17 +200,17 @@ class IntelligenceGcTests(unittest.TestCase):
         link = self.base / "projects-link"
         link.symlink_to(self.projects, target_is_directory=True)
         self.store("a-gone", str(self.base / "gone"))
-        result = gc.collect(link, apply=True)
+        result = pi.gc_external_stores(link, apply=True)
         self.assertEqual(result["status"], "REFUSED")
         self.assertTrue((self.projects / "a-gone" / "intelligence").is_dir())
 
     def test_missing_projects_dir(self) -> None:
-        self.assertEqual(gc.collect(self.base / "absent")["status"], "NO_STORES")
+        self.assertEqual(pi.gc_external_stores(self.base / "absent")["status"], "NO_STORES")
 
     def test_reappearing_root_is_not_deleted(self) -> None:
         gone = self.base / "gone"
         orphan = self.store("a-gone", str(gone))
-        original = gc._path_present
+        original = pi._gc_path_present
         calls = {"n": 0}
 
         def flaky(path: str) -> bool | None:
@@ -220,11 +219,11 @@ class IntelligenceGcTests(unittest.TestCase):
                 gone.mkdir(exist_ok=True)
             return original(path)
 
-        gc._path_present = flaky
+        pi._gc_path_present = flaky
         try:
-            result = gc.collect(self.projects, apply=True)
+            result = pi.gc_external_stores(self.projects, apply=True)
         finally:
-            gc._path_present = original
+            pi._gc_path_present = original
         self.assertEqual(result["removed"], [])
         self.assertTrue(orphan.is_dir())
         self.assertEqual(result["skipped"][0]["reason"], "changed_before_removal")
