@@ -215,10 +215,7 @@ def read_source_text(path: Path) -> str | None:
         return None
     if b"\x00" in raw[:8192]:
         return None
-    try:
-        return raw.decode("utf-8", errors="replace")
-    except Exception:
-        return None
+    return raw.decode("utf-8", errors="replace")
 
 
 def read_text_file(path: Path) -> str | None:
