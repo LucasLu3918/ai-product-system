@@ -513,6 +513,8 @@ Email rule `pii.email.v2` reads only the exact ASCII `git` userinfo of an scp-li
 
 Publication preflight `git_identity` accepts the GitHub App bot noreply form (`<numeric id>+<slug>[bot]` on `users.noreply.github.com`, `identity.allowed_bot_author_patterns`) only in the candidate commit author field; committer and local `user.email` keep the human noreply formats. Before the `commit_messages` PII scan, exact `identity.trailer_identities` entries (currently Dependabot's `Signed-off-by: dependabot[bot]` with GitHub's support address) are replaced by `git-identity-metadata` only in the final trailer block of a commit authored by the same bot. `pii.email.v2` is unchanged, every other address still blocks, a malformed policy fails closed, and a bot identity grants no authority.
 
+Scenario 269 refreshes only the CLI help golden vectors for `aips intelligence gc`; content-safety detection, sink policy and commit scanning are unchanged.
+
 ## Runtime Policy Enforcement
 
 FLUX 3 Klein profile sampler bounds and dynamic reference counts do not create runtime actions or Resource Authorization grants. Loopback-only access, core-node schema, file-size limits, ordered slots and source-to-staged hash checks remain enforced before submission.

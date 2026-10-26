@@ -35,6 +35,8 @@ Managed Runtime hooks keep content-safety and publication checks fail-closed. Re
 
 `--configure-shell` 會在 zsh 或 bash profile 加入有明確 AIPS 標記的 `PATH` 區塊，方便新終端找到 `aips`。若你自行管理 shell 設定，改用 `--no-configure-shell`。
 
+安裝後的 `aips --help` 與 `aips intelligence --help` 會列出 `aips intelligence gc [--yes]`；內容安全與 commit 掃描行為不變。
+
 ## Windows
 
 目前支援 Windows + WSL。在 PowerShell 執行安裝器後，請從 WSL terminal 使用 AIPS：

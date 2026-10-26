@@ -470,3 +470,5 @@ The `pii.email.v2` Git remote grammar changes only commit and publication PII fi
 Dependabot commit 的機器人 noreply author 與最後一行精確的 `Signed-off-by` trailer 屬於 Git 身分 metadata，由 `config/git-publication.yaml` 決定，不是 PII 例外；`pii.email.v2` 與其他位址仍會擋下，機器人身分不授予權限。
 
 Publication authorization is separate from Project Intelligence freshness: AIPS Required Checks enforcement is opt-in via `AIPS_ENFORCE_REQUIRED_CHECKS=1`; GitHub native protection remains effective.
+
+`aips intelligence gc` 只讀取 store 內記錄的專案路徑，不輸出 topic 內容；內容安全邊界不變（Scenario 269）。
