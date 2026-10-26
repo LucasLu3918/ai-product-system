@@ -474,3 +474,5 @@ Dependabot commit 的機器人 noreply author 與最後一行精確的 `Signed-o
 Publication authorization is separate from Project Intelligence freshness: AIPS Required Checks enforcement is opt-in via `AIPS_ENFORCE_REQUIRED_CHECKS=1`; GitHub native protection remains effective.
 
 `aips intelligence gc` 只讀取 store 內記錄的專案路徑，不輸出 topic 內容；內容安全邊界不變（Scenario 269）。
+
+新 worktree 沒有外部 store 時，`bootstrap` 會以 copy-on-write 方式從同一 repository 的 READY store 複製一份；來源 store 只讀不寫，`worktree_identity` 變動只有在 provenance 可證明時才是觀察。複製被拒絕或失敗時退回正常初始化，並標示 `intelligence_seed_fallback`（Scenario 270）。

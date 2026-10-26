@@ -34,6 +34,7 @@ from observed_stage import observed_stage
 from project_intelligence_context import SOURCE_NAMES, compact_context_manifest
 from project_intelligence_promotion import promotion_candidate as _promotion_candidate
 from project_intelligence_promotion import promotion_target as _promotion_target_impl
+from project_intelligence_seed import seed_worktree_store, seeded_worktree_change_proven
 from project_intelligence_storage import atomic_text, atomic_yaml, writer_lock
 from project_intelligence_temporal import temporal_query
 from retrieval_evaluation import (
@@ -458,15 +459,57 @@ def initial_intelligence(root: Path, pid: str, ident: dict[str, str], old_knowle
     }
 
 
+def seed_observation(result: dict[str, Any], attempt: dict[str, Any] | None) -> dict[str, Any]:
+    """Attach the fallback diagnostic when a seed was refused or failed; never a path."""
+    if attempt and attempt.get("status") in ("REFUSED", "FAILED"):
+        result["observations"] = [f"intelligence_seed_fallback:{attempt.get('reason_code')}"]
+    return result
+
+
+def seeded_bootstrap(root: Path, attempt: dict[str, Any]) -> dict[str, Any]:
+    store, mode, pid = intelligence_store(root)
+    intel = load_yaml(store / "PROJECT_INTELLIGENCE.yaml", {})
+    freshness_result = freshness(root)
+    review = render_review(root)
+    return {
+        "project_id": pid,
+        "mode": mode,
+        "store": str(store),
+        "status": "SEEDED",
+        "seeded_from": {
+            "project_id": attempt["source_project_id"],
+            "git_head": attempt["source_git_head"],
+            "selection": attempt["selection"],
+        },
+        "copied_artifact_count": attempt["copied_artifact_count"],
+        "excluded_artifact_count": attempt["excluded_artifact_count"],
+        "readiness": (intel.get("state") or {}).get("readiness"),
+        "freshness": freshness_result["status"],
+        "reasons": freshness_result.get("reasons", []),
+        "review_html": str(review),
+        "next": (
+            "Intelligence was seeded and is current for this worktree; no refresh is required."
+            if freshness_result["status"] == "CURRENT"
+            else "Intelligence was seeded; refresh only the affected topics listed in freshness reasons."
+        ),
+    }
+
+
 def bootstrap(root: Path) -> dict[str, Any]:
+    seed_attempt: dict[str, Any] | None = None
+    probe, probe_mode, _probe_pid = intelligence_store(root)
+    if probe_mode == "EPHEMERAL" and not (probe / "PROJECT_INTELLIGENCE.yaml").exists():
+        seed_attempt = seed_worktree_store(root, probe, schema_version=SCHEMA_VERSION)
+        if seed_attempt["status"] == "SEEDED":
+            return seeded_bootstrap(root, seed_attempt)
     store, mode, pid = intelligence_store(root, create=True)
     with writer_lock(store):
         if (store / "PROJECT_INTELLIGENCE.yaml").exists():
-            return {
+            return seed_observation({
                 "project_id": pid, "mode": mode, "store": str(store),
                 "status": "PRESERVED_EXISTING",
                 "next": "Use status and refresh-plan; enrich only affected topics before finalize.",
-            }
+            }, seed_attempt)
         files = safe_walk(root)
         inv = inventory(root, files)
         sources = discover_sources(root, files)
@@ -517,7 +560,7 @@ def bootstrap(root: Path) -> dict[str, Any]:
             "inventory": inv,
         })
     review = render_review(root)
-    return {
+    return seed_observation({
         "project_id": pid,
         "mode": mode,
         "store": str(store),
@@ -525,7 +568,7 @@ def bootstrap(root: Path) -> dict[str, Any]:
         "review": "UNREVIEWED",
         "review_html": str(review),
         "next": "Agent semantic enrichment + aips intelligence finalize",
-    }
+    }, seed_attempt)
 
 
 def git_dirty_paths(root: Path) -> list[str]:
@@ -593,8 +636,11 @@ def freshness(root: Path) -> dict[str, Any]:
     ident = repository_identity(root)
     stored_project = intel.get("project") or {}
     if stored_project.get("worktree_identity") and stored_project.get("worktree_identity") != ident["worktree_id"]:
-        reasons.append("worktree_identity_changed")
-        affected_topics.add("project-identity")
+        if seeded_worktree_change_proven(intel, ident, stored_project["worktree_identity"]):
+            observations.append("worktree_identity_seeded_from_same_repository")
+        else:
+            reasons.append("worktree_identity_changed")
+            affected_topics.add("project-identity")
 
     current_branch = run_git(root, ["branch", "--show-current"])
     old_branch = stored_project.get("branch")
