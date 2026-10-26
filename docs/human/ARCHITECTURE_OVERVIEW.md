@@ -226,6 +226,8 @@ OpenCode V2 prompt admission issues a fresh transient grant for each user respon
 
 Plan36 publication diagnostics preserve this topic's existing behavior and authority boundaries.
 
+Creative writes in Git workspaces keep their existing guard; task-scoped Intelligence refresh and Retrieval index guidance (Scenario 269) does not relax them.
+
 ## Planning 與 Product Delivery
 
 Plan44's exact candidate matrix binds diagnostic and adapter evidence to the final changed-file set.

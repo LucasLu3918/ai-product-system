@@ -145,6 +145,8 @@ Release history 更新（純依賴升級文件豁免，Scenario 221）已審查�
 
 Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
+`docs/human/PROJECT_INTELLIGENCE.md` 說明 READY+STALE 何時只是提示、何時需要 targeted refresh，以及 `aips intelligence gc` 的用法。
+
 ## Agent / machine canonical 文件
 
 `publication_scan_evidence.py` is mapped by `config/documentation-placement.yaml` to the publication-preflight Human topic; Scenario 261 remains the verification contract for the Hook and Doctor lifecycle.
@@ -292,6 +294,8 @@ Retrieval SQLite storage helpers are implemented in `scripts/retrieval_storage.p
 Publication diagnostics use `scripts/publication_authority.py`, `scripts/publication_planning.py`, and `scripts/repository_governance_snapshot.py` as machine sources; current behavior is explained in Git Publication, Security Assurance, Architecture Overview, and the Claude Code adapter.
 
 Runtime Content Safety 的字型格式、上限、失敗原因與 Authority 邊界以 `orchestration/CONTENT_SAFETY_BOUNDARY.md` 為 canonical；Hook/CLI/候選掃描 evidence 記錄於 Scenario 263。
+
+Task-scoped Turn Context 準備步驟（Scenario 269）的 canonical 規則位於 `harness/HARNESS_PROTOCOL.md` 與 `orchestration/PROJECT_INTELLIGENCE.md`。
 
 ## Shared canonical 文件
 

@@ -283,6 +283,8 @@ Plan36 publication diagnostics preserve this topic's existing behavior and autho
 
 Dependabot commit 的機器人 noreply author 與最後一行精確的 `Signed-off-by` trailer 屬於 Git 身分 metadata，由 `config/git-publication.yaml` 決定，不是 PII 例外；`pii.email.v2` 與其他位址仍會擋下，機器人身分不授予權限。
 
+Scenario 269 changes Turn Context preparation wording only; creative execution, external actions and the native write guard keep their existing controls.
+
 ## Security & Governance
 
 The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; all other WebM paths and near-matches remain subject to strict candidate scanning.

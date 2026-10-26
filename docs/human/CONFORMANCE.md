@@ -1784,6 +1784,8 @@ OpenCode host acceptance verifies adapter integration only. It does not verify l
 
 The lifecycle uses synthetic SVG/PNG fixtures to verify confined paths, active-content rejection, file dimensions and hashes, verified local-provider/license provenance, stable UTF-8 Traditional Chinese labels, non-overwriting deterministic sheet composition, and optional Creative Evidence manifest-digest binding. It does not invoke a model, download weights, attest identity consistency, or claim hardware performance; those require the user's local runtime and independent visual review.
 
+Scenario 269 keeps the creative Git write denial unchanged; only ordinary Turn Context refresh and index guidance becomes task-scoped.
+
 ## Scenario 235 — OpenCode Native Context and Action Guard
 
 Dynamic ComfyUI workflow validation does not bypass native prompt admission or the explicit Creative execution guard.
@@ -1920,6 +1922,8 @@ The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies c
 FLUX 3 Klein coverage also validates the live `TextGenerate` Dynamic Combo schema and final serialized payload shape before submission, rejects incompatible options without a POST, and checks that synthetic node/exception diagnostics omit prompts, paths, credentials and tracebacks. The lifecycle is adapter evidence only; MPS inference remains unverified.
 
 Release history 更新（純依賴升級文件豁免，Scenario 221）已審查本區段：Skill 整合、Explorer 與重用行為不變。
+
+Scenario 269 changes no Skill discovery or installation behavior; its lifecycle exercises Turn Context preparation and `aips intelligence gc`.
 
 
 ## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance

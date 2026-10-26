@@ -180,6 +180,8 @@ Brand System 可涵蓋 Brand Intent、Audience / Positioning、Purpose / Mission
 
 Plan36 publication diagnostics preserve this topic's existing authority boundaries.
 
+Creative 寫入在 Git 工作區仍維持既有的 Project Intelligence 防護；Scenario 269 只調整一般回合的 refresh 與索引提示，不放寬創作輸出。
+
 ## 需求釐清與 Planning
 
 Scenario 266 binds injection review to added candidate lines while Secret/PII scanning still covers the full candidate diff.

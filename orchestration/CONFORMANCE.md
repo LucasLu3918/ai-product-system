@@ -109,9 +109,6 @@ Allowed coverage:
 - uncovered
 
 Automated coverage is deterministic + lifecycle + agent_eval.
-
-Scenario 269 changes only Turn Context preparation wording and task-scoped requirement fields; OpenCode guard decisions and their Scenario 267 evidence are unchanged.
-
 ## Admission rules
 
 
@@ -1146,6 +1143,8 @@ The canonical Skill registry contains 49 AIPS Skills; the pinned 38-item upstrea
 `tests/evidence/skills_cli_lifecycle.py` also verifies upstream batch/selected install, optional-only eligibility, canonical duplicate skips, source-scoped ownership and uninstall across Codex, Claude, and Gemini; modified, unowned, and Portable Command files remain intact. Live Agent discovery is outside this fixture's evidence.
 
 Release history update for the pure dependency update documentation exemption (Scenario 221) reviewed this section: Skill integration, Explorer and reuse behavior are unchanged.
+
+Scenario 269 changes no Skill catalog or installation behavior; it adds task-scoped Turn Context preparation and the `aips intelligence gc` lifecycle.
 
 ## Scenario 260 — Publication diagnostics and Doctor
 

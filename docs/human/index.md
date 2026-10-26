@@ -99,6 +99,8 @@ OpenCode 原生寫入行為及 READY+STALE 的有限 advisory 邊界，整理於
 | 安全、品質與人工審查 | [安全保證](SECURITY_ASSURANCE.md)、[Conformance 驗證紀錄](CONFORMANCE.md) |
 | 維護、版本與文件治理 | [系統維護](MAINTENANCE.md)、[文件導覽](DOCUMENTATION_MAP.md) |
 
+Project Intelligence 的 refresh 與 Retrieval 索引提示依任務範圍判斷（Scenario 269）；細節見 Project Intelligence 與 Harness 文件。
+
 ## 閱讀方式
 
 文件以繁體中文說明操作與判斷方式；架構、Runtime、工具及狀態名稱會保留英文，首次出現時補上中文解釋。指令、路徑、設定欄位及錯誤代碼維持原樣，方便直接比對實際輸出。
