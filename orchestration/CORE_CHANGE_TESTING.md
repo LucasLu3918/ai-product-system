@@ -107,7 +107,7 @@ Validation Observation collection must distinguish a completed `NOT_READY` cohor
 
 For OpenCode runtime changes, exact-host acceptance is separate from fixtures and static registration. Record the host/platform/source boundary and preserve explicit unsupported-effect states; do not infer production model quality or universal interception.
 
-Accepted ComfyUI job recovery must test exact-ID queue deletion, no global interrupt and no automatic resubmission after timeout or polling failure. Inconclusive cleanup does not grant another submission.
+Accepted ComfyUI job recovery must test exact-ID queue deletion, targeted interrupt only for an AIPS-owned running prompt_id, no interrupt of foreign jobs or without readable queue evidence, ledger-based ownership after restart, privacy-bounded ledger fields and no automatic resubmission after timeout or polling failure. Inconclusive cleanup does not grant another submission.
 
 Plan27 lifecycle binds facade identity, sibling imports, bounded candidate depth, recovery ordering, stale native acceptance, privacy filters and missing-measurement behavior. Native loopback acceptance, real local inference, Human visual review and user acceptance remain separate evidence dimensions.
 

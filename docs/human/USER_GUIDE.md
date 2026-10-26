@@ -113,7 +113,7 @@ Creative task grants remain separate from Git authority; the personal PR merge c
 
 Creative grant 僅涵蓋已核准創作範圍；成品若要 commit／push／PR，需另依 Git Publication 與 Release 流程取得 signed external grant。
 
-ComfyUI 已接受工作後若逾時或輪詢失敗，AIPS 只請求移除該 queued job，阻擋自動重送，不中斷其他正在執行的工作。先檢查 Provider 狀態，再明確重試。
+ComfyUI 已接受工作後若逾時或輪詢失敗，AIPS 會讀取本機 queue：自己送出且仍在排隊的工作以確切 ID 移除；自己送出且正在執行的工作以指定 `prompt_id` 中斷；其他工作一律不碰，也不自動重送，並回報重新檢查後的 `job_state`。AIPS 重啟後可執行 `aips creative recover`，只處理本機 ledger 記錄為 AIPS 擁有且已超過自身逾時的工作。先檢查 Provider 狀態，再明確重試。
 
 使用 `templates/creative/QUALITY_BENCHMARK.json` 與 `templates/creative/CREATIVE_QUALITY_DATASET.yaml` 記錄本地 trial。資料集提供三種角色 archetype、六類案例，共 18 個 profile-case 覆蓋格；每筆 v2 evidence 指定 `profile_id`、`case_id` 與 `COMPLETE`／`FAILED`。失敗另分 model、check、compiler 階段與受限 reason code。以 `python scripts/creative_quality_benchmark.py --project <workspace> --evidence <report.json>` 核對輸出及雜湊。角色、服裝、構圖、參考圖編輯與恢復由人工分別評分；user acceptance 獨立記錄。缺漏維持 UNKNOWN，v1 舊 evidence 可讀但 coverage 為 UNVERIFIED。資料集是覆蓋矩陣，不是生成結果或品質標籤。
 

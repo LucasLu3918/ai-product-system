@@ -1899,7 +1899,7 @@ The native lifecycle fixture additionally checks `--upstream --all`, selected up
 
 Publication regression 增加 signed/unsigned、expiry、scope drift、8-way atomic consumption、shell AST／Hook deny 與 staged content 測試；由 governance validator 執行 `tests/test_publication_authority.py`。Fixture evidence 不證明 production issuer 或 universal subprocess enforcement。
 
-已接受的 ComfyUI 工作逾時或輪詢失敗時，測試 exact-ID queued cleanup、禁止全域 interrupt 與禁止自動重送；未知的 running completion 保持未驗證。
+已接受的 ComfyUI 工作逾時或輪詢失敗時，測試 exact-ID queued cleanup、只對 AIPS 擁有且正在執行的 prompt_id 送出指定 interrupt、不中斷他人工作、queue 無法讀取時不 interrupt、重啟後依本機 ledger 辨識擁有權（`aips creative recover`）與禁止自動重送；未知的 running completion 保持未驗證。
 
 Scenario 236 covers bounded `creative discover`, `preflight`, `execute`, `review`, and `trace` command contracts. Discovery probes installed MFLUX command/version status and only the fixed loopback ComfyUI service, separates command/runtime/model/preflight/inference evidence, and never starts a workflow. Static Apple Silicon FP8 warnings remain advisory; unavailable-engine recovery retains provider-specific reason codes without local path disclosure. Only explicit execution starts a configured local engine.
 

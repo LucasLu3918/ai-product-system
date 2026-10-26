@@ -8,6 +8,7 @@ import subprocess
 import sys
 import tempfile
 import threading
+import time
 import zlib
 from concurrent.futures import ThreadPoolExecutor
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -881,6 +882,184 @@ def profile_parameter_cases(base: Path, flux3_config: dict, flux3_bundle: dict) 
     require(FakeComfyHandler.prompts == prompts_before, "runtime budget checks submitted a ComfyUI workflow")
 
 
+class OwnedJobComfyHandler(BaseHTTPRequestHandler):
+    """Stateful synthetic ComfyUI queue mirroring the 0.42.x /queue and targeted /interrupt contract."""
+    running: ClassVar[list[str]] = []
+    pending: ClassVar[list[str]] = []
+    requests: ClassVar[list[tuple[str, str, object]]] = []
+    honor_interrupt = True
+    accept_as = "pending"
+    queue_status: int | None = None
+    accepted = 0
+
+    def log_message(self, *_args):
+        return
+
+    def _json(self, value, status: int = 200):
+        body = json.dumps(value).encode()
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def do_GET(self):
+        cls = type(self)
+        cls.requests.append(("GET", self.path, None))
+        if self.path == "/queue":
+            if cls.queue_status is not None:
+                return self._json({"error": "fixture"}, cls.queue_status)
+            # Items carry a private workflow and extra data that the executor must never copy.
+            item = lambda number, prompt_id: [number, prompt_id, {"1": {"inputs": {"text": "private queued prompt"}}}, {"client_id": "x"}, []]
+            return self._json({"queue_running": [item(0, prompt_id) for prompt_id in cls.running],
+                               "queue_pending": [item(index + 1, prompt_id) for index, prompt_id in enumerate(cls.pending)]})
+        if self.path.startswith("/history/"):
+            return self._json({})
+        self.send_error(404)
+
+    def do_POST(self):
+        cls = type(self)
+        body = json.loads(self.rfile.read(int(self.headers.get("Content-Length", "0"))) or b"{}")
+        cls.requests.append(("POST", self.path, body))
+        if self.path == "/prompt":
+            cls.accepted += 1
+            prompt_id = f"00000000-0000-4000-8000-{cls.accepted:012d}"
+            (cls.running if cls.accept_as == "running" else cls.pending).append(prompt_id)
+            return self._json({"prompt_id": prompt_id, "number": cls.accepted})
+        if self.path == "/queue":
+            cls.pending[:] = [item for item in cls.pending if item not in body.get("delete", [])]
+            return self._json({})
+        if self.path == "/interrupt":
+            # Targeted interrupt: only the named running prompt is stopped (server-side re-check).
+            if cls.honor_interrupt and body.get("prompt_id") in cls.running:
+                cls.running.remove(body["prompt_id"])
+            return self._json({})
+        self.send_error(404)
+
+
+def owned_job_recovery_cases(base: Path) -> None:
+    base.mkdir(parents=True, exist_ok=True)
+    handler = OwnedJobComfyHandler
+    server = HTTPServer(("127.0.0.1", 0), handler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    url = f"http://127.0.0.1:{server.server_port}"
+    provider = {"base_url": url, "workflow": {"1": {"inputs": {}}, "2": {"inputs": {}}, "3": {"inputs": {}}, "4": {"inputs": {}}},
+                "prompt_id": "1", "latent_node_id": "2", "sampler_node_id": "3", "save_nodes": ["4"],
+                "config": {"model_profile": "flux3-image-klein-base-int8"}}
+    bundle = {"prompt": "private owned-job prompt", "operation": "generate"}
+    foreign = "ffffffff-0000-4000-8000-000000000001"
+
+    def reset(*, running=(), pending=(), honor=True, accept_as="pending", queue_status=None):
+        handler.running[:] = list(running)
+        handler.pending[:] = list(pending)
+        handler.requests.clear()
+        handler.honor_interrupt, handler.accept_as, handler.queue_status = honor, accept_as, queue_status
+
+    def timed_out(timeout: float = 0.3) -> creative.Blocked:
+        try:
+            creative.comfy_execute(bundle, provider, base / "never.png", timeout)
+        except creative.Blocked as exc:
+            require(exc.reason_code == "comfy_job_recovery_required", "owned-job timeout used the wrong reason code")
+            require(not (base / "never.png").exists(), "owned-job timeout left an output")
+            require(sum(path == "/prompt" for method, path, _ in handler.requests if method == "POST") == 1, "timeout resubmitted the job")
+            return exc
+        raise AssertionError("owned-job timeout unexpectedly completed")
+
+    def posts(path: str) -> list[object]:
+        return [body for method, request_path, body in handler.requests if method == "POST" and request_path == path]
+
+    try:
+        # Loopback allowlist: GET /queue and POST /interrupt only, with no query; nothing else is opened.
+        creative.validate_local_request(url + "/interrupt", "POST", "comfyui")
+        creative.validate_local_request(url + "/queue", "GET", "comfyui")
+        for method, path in (("GET", "/interrupt"), ("POST", "/interrupt?all=1"), ("GET", "/queue?x=1"), ("POST", "/free"), ("POST", "/history")):
+            expect_blocked(lambda method=method, path=path: creative.validate_local_request(url + path, method, "comfyui"),
+                           f"allowlist accepted {method} {path}")
+        expect_blocked(lambda: creative.validate_local_request("http://192.0.2.1:8188/interrupt", "POST", "comfyui"),
+                       "non-loopback interrupt was accepted")
+
+        # 1. Owned job running at timeout while a foreign job waits: targeted interrupt of only the owned id.
+        reset(pending=[foreign], accept_as="running")
+        exc = timed_out()
+        details = exc.diagnostics
+        owned_id = posts("/interrupt")[0]["prompt_id"] if posts("/interrupt") else None
+        require(posts("/interrupt") == [{"prompt_id": owned_id}] and owned_id != foreign, "interrupt was not targeted at the owned prompt_id")
+        require(handler.pending == [foreign] and posts("/queue") == [], "foreign queued job was touched")
+        require(details["job_state"] == "CLEARED" and details["interrupt_requested"] is True and details["ownership"] == "AIPS_OWNED"
+                and details["recovery"]["automatic_resubmission"] is False, "owned interrupt did not report a re-checked final state")
+        require(creative.owned_comfy_jobs(url) == [], "cleared owned job was kept in the ledger")
+        payload = json.dumps(exc.to_payload(), ensure_ascii=False)
+        require("private" not in payload and str(base) not in payload and "aips creative recover" in payload,
+                "recovery payload leaked prompt text/paths or lacked Traditional Chinese recovery")
+
+        # 2. Foreign job running, owned job still queued: exact-id delete, never interrupt.
+        reset(running=[foreign])
+        exc = timed_out()
+        require(posts("/interrupt") == [] and handler.running == [foreign], "a foreign running job was interrupted")
+        require(len(posts("/queue")) == 1 and foreign not in posts("/queue")[0]["delete"], "queued owned job was not deleted by exact id")
+        require(exc.diagnostics["job_state"] == "CLEARED" and exc.diagnostics["other_jobs_running"] == 1, "foreign job count missing")
+
+        # 3. Queue unreadable: no interrupt without ownership evidence; ledger keeps the job for explicit recovery.
+        reset(queue_status=500)
+        exc = timed_out()
+        require(posts("/interrupt") == [] and exc.diagnostics["job_state"] == "UNKNOWN"
+                and exc.diagnostics["recovery"]["action"] == "RUN_AIPS_CREATIVE_RECOVER", "unknown queue state permitted interrupt")
+        unknown = [item["prompt_id"] for item in creative.owned_comfy_jobs(url)]
+        require(len(unknown) == 1, "unknown-state job was not retained in the owned-job ledger")
+
+        # 4. Interrupt not honored (e.g. older ComfyUI or a busy node): STILL_RUNNING is reported, never resubmitted.
+        time.sleep(1.1)  # The ledger rounds the job timeout up to whole seconds; let it elapse.
+        handler.queue_status = None
+        handler.running[:] = unknown
+        handler.pending.clear()
+        handler.requests.clear()
+        handler.honor_interrupt = False
+        with patch.object(creative, "COMFY_RECHECK_INTERVAL_SECONDS", 0.01):
+            stuck = creative.recover_comfy_jobs(url)
+        require(stuck["status"] == "RECOVERY_INCOMPLETE" and stuck["jobs"] == [{"prompt_id": unknown[0], "profile_id": "flux3-image-klein-base-int8", "state": "STILL_RUNNING"}]
+                and posts("/prompt") == [], "unhonored interrupt was not reported as STILL_RUNNING")
+        require(len(creative.owned_comfy_jobs(url)) == 1, "still-running job was released from the ledger")
+
+        # 5. Restart: a new process recognizes ownership from the ledger alone and interrupts only that id.
+        handler.requests.clear()
+        handler.honor_interrupt = True
+        handler.running[:] = unknown
+        cli = subprocess.run([sys.executable, str(ROOT / "scripts/creative_execution.py"), "recover", "--base-url", url],
+                             capture_output=True, text=True, timeout=30, check=False, env=os.environ.copy())
+        recovered = json.loads(cli.stdout)
+        require(cli.returncode == 0 and recovered["status"] == "RECOVERED" and recovered["job_state"] == "CLEARED"
+                and posts("/interrupt") == [{"prompt_id": unknown[0]}] and recovered["automatic_resubmission"] is False,
+                "restart recovery did not interrupt the ledger-owned job: " + cli.stdout + cli.stderr)
+        require(creative.owned_comfy_jobs(url) == [] and "private" not in cli.stdout and str(base) not in cli.stdout,
+                "recovery did not release the ledger or leaked private data")
+
+        # 6. Ownership is bound to the endpoint and the job's own deadline.
+        reset(running=["00000000-0000-4000-8000-0000000000aa"])
+        require(creative.record_owned_comfy_job("http://127.0.0.1:1", "00000000-0000-4000-8000-0000000000aa", None, 0), "fixture record failed")
+        require(creative.record_owned_comfy_job(url, "00000000-0000-4000-8000-0000000000bb", None, 3600), "fixture record failed")
+        handler.running.append("00000000-0000-4000-8000-0000000000bb")
+        idle = creative.recover_comfy_jobs(url)
+        require(idle["status"] == "NOTHING_TO_RECOVER" and idle["active_within_timeout"] == 1 and posts("/interrupt") == [],
+                "recovery interrupted a job owned by another endpoint or still inside its own timeout")
+        ledger = creative.comfy_job_ledger_path()
+        require(ledger.stat().st_mode & 0o777 == 0o600 and ledger.parent.stat().st_mode & 0o777 == 0o700, "ledger permissions are not private")
+        document = json.loads(ledger.read_text(encoding="utf-8"))
+        require(all(set(item) == {"prompt_id", "submitted_at", "profile_id", "timeout_seconds", "binding_sha256"} for item in document["jobs"])
+                and "127.0.0.1" not in ledger.read_text(encoding="utf-8") and "private" not in ledger.read_text(encoding="utf-8"),
+                "ledger stored fields beyond the privacy-bounded schema")
+        document["jobs"][-1]["timeout_seconds"] = 0
+        ledger.write_text(json.dumps(document), encoding="utf-8")
+        require(all(item["prompt_id"] != "00000000-0000-4000-8000-0000000000bb" for item in creative.owned_comfy_jobs(url)),
+                "a tampered ledger entry still proved ownership")
+        require(creative.recover_comfy_jobs(url)["status"] == "NOTHING_TO_RECOVER" and posts("/interrupt") == [],
+                "a tampered ledger entry caused an interrupt")
+        creative.release_owned_comfy_jobs({"00000000-0000-4000-8000-0000000000aa", "00000000-0000-4000-8000-0000000000bb"})
+    finally:
+        server.shutdown()
+        thread.join(timeout=2)
+
+
 def output_magic(path: Path) -> bool:
     return creative.output_magic(path)
 
@@ -1090,6 +1269,7 @@ def main() -> int:
         prepare_cases(base / "prepare")
         cli_prepare_case(base / "cli")
         comfy_cases(base / "comfy")
+        owned_job_recovery_cases(base / "owned-jobs")
         trace = creative.read_trace(100)
         require(trace["status"] == "READY", "privacy-limited creative trace was not readable")
         trace_file = creative.trace_path()
