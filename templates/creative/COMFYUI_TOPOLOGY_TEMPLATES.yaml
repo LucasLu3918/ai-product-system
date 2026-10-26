@@ -1,0 +1,129 @@
+# Audited ComfyUI topology templates (version 1).
+# Each template is a data-only description of one built-in node graph. The
+# generic validator in scripts/comfyui_topology.py checks a workflow against it.
+# The executor owns the reviewed template ids (COMFY_TOPOLOGY_TEMPLATE_IDS in
+# scripts/creative_execution.py), the core node allowlist (COMFY_CORE_NODES and
+# scripts/comfyui_workflow_policy.py) and the sampler/upsampler value families in
+# COMFYUI_MODEL_PROFILES.yaml. This file cannot add a template id, a node class
+# outside the core allowlist, an input image, or any network-capable node.
+#
+# Schema:
+#   clip_type: CLIP type that every CLIPLoader must carry (must equal profile clip_type).
+#   components: profile file-name components; each must be referenced below.
+#   upsampler: true when the profile may carry an upsampler family (upsampler.*).
+#   roles: prompt {node, field}, latent, sampler, save -> logical node names.
+#   nodes: logical name -> {class_type, inputs (exact input key set), select?}.
+#     select {field, component}: required when a class appears more than once; the
+#     node is the one whose field equals the configured component value.
+#   links: "node.field: source.index" -> the input must equal [source node id, index].
+#   bindings: each entry targets one node (or every node of class_type) and sets one field:
+#     component: the configured component file name; profile: clip_type or
+#     upsampler.max_length; profile_group: every non-null key of profile[group]
+#     (sampler); value: a literal; constraint: nonempty_string.
+#   inventory: local model-list checks (class_type.field from component or profile).
+#   runtime_schema_class: class whose live object_info schema must cover the prompt node.
+version: 1
+templates:
+  z_image_split_loader:
+    clip_type: lumina2
+    components: [unet_name, clip_name, vae_name]
+    upsampler: false
+    roles:
+      prompt: {node: text, field: text}
+      latent: latent
+      sampler: sampler
+      save: save
+    nodes:
+      unet: {class_type: UNETLoader, inputs: [unet_name, weight_dtype]}
+      clip: {class_type: CLIPLoader, inputs: [clip_name, type, device]}
+      vae: {class_type: VAELoader, inputs: [vae_name]}
+      text: {class_type: CLIPTextEncode, inputs: [text, clip]}
+      zero: {class_type: ConditioningZeroOut, inputs: [conditioning]}
+      latent: {class_type: EmptySD3LatentImage, inputs: [width, height, batch_size]}
+      shift: {class_type: ModelSamplingAuraFlow, inputs: [model, shift]}
+      sampler: {class_type: KSampler, inputs: [model, positive, negative, latent_image, seed, steps, cfg, sampler_name, scheduler, denoise]}
+      decode: {class_type: VAEDecode, inputs: [samples, vae]}
+      save: {class_type: SaveImage, inputs: [images, filename_prefix]}
+    links:
+      shift.model: unet.0
+      sampler.model: shift.0
+      text.clip: clip.0
+      zero.conditioning: text.0
+      sampler.positive: text.0
+      sampler.negative: zero.0
+      sampler.latent_image: latent.0
+      decode.samples: sampler.0
+      decode.vae: vae.0
+      save.images: decode.0
+    bindings:
+      - {node: unet, field: unet_name, component: unet_name}
+      - {node: clip, field: clip_name, component: clip_name}
+      - {node: vae, field: vae_name, component: vae_name}
+      - {class_type: CLIPLoader, field: type, profile: clip_type}
+      - {node: sampler, profile_group: sampler}
+      - {node: unet, field: weight_dtype, value: default}
+      - {class_type: CLIPLoader, field: device, value: default}
+      - {node: shift, field: shift, value: 3}
+      - {node: latent, field: batch_size, value: 1}
+    inventory:
+      - {class_type: UNETLoader, field: unet_name, component: unet_name}
+      - {class_type: CLIPLoader, field: type, profile: clip_type}
+      - {class_type: VAELoader, field: vae_name, component: vae_name}
+      - {class_type: CLIPLoader, field: clip_name, component: clip_name}
+
+  flux3_klein_t2i:
+    clip_type: flux3
+    components: [unet_name, clip_name, prompt_upsampler_name, vae_name]
+    upsampler: true
+    runtime_schema_class: TextGenerate
+    roles:
+      prompt: {node: textgen, field: prompt}
+      latent: latent
+      sampler: sampler
+      save: save
+    nodes:
+      unet: {class_type: UNETLoader, inputs: [unet_name, weight_dtype]}
+      clip_encoder: {class_type: CLIPLoader, inputs: [clip_name, type, device], select: {field: clip_name, component: clip_name}}
+      clip_upsampler: {class_type: CLIPLoader, inputs: [clip_name, type, device], select: {field: clip_name, component: prompt_upsampler_name}}
+      vae: {class_type: VAELoader, inputs: [vae_name]}
+      textgen: {class_type: TextGenerate, inputs: [clip, prompt, max_length, sampling_mode, thinking, use_default_template, mtp, system_prompt]}
+      text: {class_type: CLIPTextEncode, inputs: [text, clip]}
+      zero: {class_type: ConditioningZeroOut, inputs: [conditioning]}
+      latent: {class_type: EmptyFlux2LatentImage, inputs: [width, height, batch_size]}
+      sampler: {class_type: KSampler, inputs: [model, positive, negative, latent_image, seed, steps, cfg, sampler_name, scheduler, denoise]}
+      decode: {class_type: VAEDecode, inputs: [samples, vae]}
+      save: {class_type: SaveImage, inputs: [images, filename_prefix]}
+    links:
+      textgen.clip: clip_upsampler.0
+      text.text: textgen.0
+      text.clip: clip_encoder.0
+      zero.conditioning: text.0
+      sampler.model: unet.0
+      sampler.positive: text.0
+      sampler.negative: zero.0
+      sampler.latent_image: latent.0
+      decode.samples: sampler.0
+      decode.vae: vae.0
+      save.images: decode.0
+    bindings:
+      - {node: unet, field: unet_name, component: unet_name}
+      - {node: vae, field: vae_name, component: vae_name}
+      - {class_type: CLIPLoader, field: type, profile: clip_type}
+      - {class_type: CLIPLoader, field: device, value: default}
+      - {node: unet, field: weight_dtype, value: default}
+      - {node: sampler, profile_group: sampler}
+      - {node: textgen, field: max_length, profile: upsampler.max_length}
+      - {node: textgen, field: sampling_mode, value: "off"}
+      - {node: textgen, field: thinking, value: false}
+      - {node: textgen, field: use_default_template, value: true}
+      - {node: textgen, field: mtp, value: "off"}
+      - {node: textgen, field: system_prompt, constraint: nonempty_string}
+      - {node: latent, field: width, value: 1024}
+      - {node: latent, field: height, value: 1024}
+      - {node: latent, field: batch_size, value: 1}
+    inventory:
+      - {class_type: UNETLoader, field: unet_name, component: unet_name}
+      - {class_type: CLIPLoader, field: type, profile: clip_type}
+      - {class_type: VAELoader, field: vae_name, component: vae_name}
+      - {class_type: CLIPLoader, field: clip_name, component: clip_name}
+      - {class_type: CLIPLoader, field: clip_name, component: prompt_upsampler_name}

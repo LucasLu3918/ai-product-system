@@ -1108,7 +1108,7 @@ FLUX 3 Klein `TextGenerate` preflight remains in the Creative executor; its sche
 
 Dynamic Creative workflow utilities do not add or modify Skills catalog entries or explorer behavior.
 
-ComfyUI model profiles are Creative runtime data and do not add Skills, alter Skill Explorer inventory, or affect Skill routing. Base/Distilled sampler declarations and dynamic reference bindings remain inside the existing Creative contract.
+ComfyUI model profiles are Creative runtime data and do not add Skills, alter Skill Explorer inventory, or affect Skill routing. Base/Distilled sampler declarations and dynamic reference bindings remain inside the existing Creative contract. Scenario 270 covers the audited topology templates and the user-local profile draft and approve gate.
 
 Scenario 044 separately covers AIPS project-local state lifecycle; it does not change upstream Skill inventory or installation behavior.
 

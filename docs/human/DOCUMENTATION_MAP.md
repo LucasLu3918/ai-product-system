@@ -36,7 +36,7 @@ Creative workflow 的新增 FLUX 3 Klein schema／payload 相容性證據位於 
 
 Model-agnostic ComfyUI workflow usage belongs in the User Guide, implementation and security limits in Technology Guide and Security Assurance, with Scenario 268 as the synthetic evidence anchor. Fixed FLUX 3 Klein `TextGenerate` runtime-schema and final-payload checks are documented in those same topics and Scenario 236; they prove interface compatibility, not MPS inference.
 
-ComfyUI model profile registry 的 canonical 行為來源為 `scripts/creative_execution.py` 與 `templates/creative/COMFYUI_MODEL_PROFILES.yaml`。
+ComfyUI model profile registry 的 canonical 行為來源為 `scripts/creative_execution.py` 與 `templates/creative/COMFYUI_MODEL_PROFILES.yaml`。 拓撲範本資料的 canonical 來源為 `templates/creative/COMFYUI_TOPOLOGY_TEMPLATES.yaml` 與 `scripts/comfyui_topology.py`；使用者本機 profile 的草擬與核准由 `scripts/creative_profiles.py` 負責。
 
 Scenario 267 changes no Skill discovery, installation or upstream trust behavior; it is a separate runtime guard contract.
 

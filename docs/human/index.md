@@ -84,7 +84,7 @@ Publication Hook recovery and Required Checks Doctor semantics live in the User 
 
 本機 Creative 工作流支援明確選用已安裝模型與 schema 驗證的 ComfyUI API graph；固定 profile 維持預設，預檢不會啟動推論。
 
-ComfyUI creative model profile registry、已審核拓樸家族、FLUX 3 Klein Base/Distilled sampler profiles、dynamic edit 有序多參考圖，以及 `TextGenerate` runtime schema／最終 payload 預檢的文件入口，請參閱 User Guide、Technology Guide、Security Assurance 及 `orchestration/CREATIVE_DIRECTION.md`；Scenario 236 是合成驗證依據，不代表 MPS 推論已驗證。
+ComfyUI creative model profile registry、已審核拓樸家族、FLUX 3 Klein Base/Distilled sampler profiles、dynamic edit 有序多參考圖，以及 `TextGenerate` runtime schema／最終 payload 預檢的文件入口，請參閱 User Guide、Technology Guide、Security Assurance 及 `orchestration/CREATIVE_DIRECTION.md`；Scenario 236 是合成驗證依據，不代表 MPS 推論已驗證。 使用者本機 profile 只能引用已審核拓撲範本，核准需互動式確認（Scenario 270）。
 
 OpenCode 原生寫入行為及 READY+STALE 的有限 advisory 邊界，整理於 Harness 與 Project Intelligence；精確的允許／拒絕契約見 Scenario 267。
 

@@ -1839,7 +1839,7 @@ FLUX 3 Klein lifecycle adds live `TextGenerate` Dynamic Combo schema and final p
 
 Scenario 268 extends this lifecycle with opt-in schema-validated local ComfyUI API workflows; it preserves the existing explicit execution and human visual-review boundaries.
 
-ComfyUI lifecycle evidence now covers the declarative profile registry, the shared FLUX 3 Klein Base/Distilled topology, exact local component inventory checks, bounded per-profile sampler settings, safe same-family profile extension, and rejection of unregistered topology families.
+ComfyUI lifecycle evidence now covers the declarative profile registry, the shared FLUX 3 Klein Base/Distilled topology, exact local component inventory checks, bounded per-profile sampler settings, safe same-family profile extension, and rejection of unregistered topology families. Scenario 270 adds the audited topology template validator, pre-refactor equivalence for every registered profile, and the user-local draft and approve gate.
 
 Scenario 236 retains the local-only generation workflow and Human review boundary; Scenario 262 adds read-only model inventory, strict HTTP request validation and bounded diagnostic recovery without running inference.
 

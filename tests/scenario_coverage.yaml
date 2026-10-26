@@ -2196,3 +2196,14 @@ scenarios:
       - scripts/turn_context_hook.py
       - tests/evidence/intelligence_context_lifecycle.py
       - tests/test_intelligence_task_freshness.py
+  - id: "270"
+    path: tests/scenarios/270-audited-topology-templates-and-local-profiles.md
+    coverage: lifecycle
+    evidence:
+      - scripts/creative_execution.py
+      - scripts/comfyui_topology.py
+      - scripts/creative_profiles.py
+      - templates/creative/COMFYUI_TOPOLOGY_TEMPLATES.yaml
+      - tests/fixtures/creative_topology/golden_before_refactor.json
+      - tests/test_creative_topology_templates.py
+      - tests/validation/creative_execution_contracts.py
