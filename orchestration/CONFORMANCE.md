@@ -1098,6 +1098,8 @@ The branch lifecycle report classifies remote branches using current exact-SHA P
 
 Publication CLI diagnostics do not change Skill Explorer admission or grant a Skill publication authority; see Scenario 261 for the separate CLI contract.
 
+Publication recipe diagnostics do not change Skill Explorer admission or grant a Skill publication authority; see Scenario 261.
+
 The publication Hook changes reuse existing authority and scanning code; they do not add a Skill, alter Skill Explorer trust, or grant Git operations.
 
 FLUX 3 Klein `TextGenerate` preflight remains in the Creative executor; its schema and payload checks add no Skill catalog, Skill Explorer, or routing behavior.
@@ -1199,6 +1201,8 @@ tests/evidence/opencode_integration_lifecycle.py verifies the AIPS creative impo
 ## Scenario 266 — Content Safety Injection Context and Recovery
 
 CLI error serialization is not scan evidence; content-safety and complete candidate/history scans remain fail-closed.
+
+Quoted-heredoc publication text remains subject to content safety; recipe-bearing denials are not scan evidence.
 
 The publication evidence cache is independent of injection classification and sink decisions. It stores only an exact-candidate full Secret Scan pass and fails closed on expiry, corruption or policy drift.
 

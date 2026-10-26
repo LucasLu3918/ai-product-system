@@ -433,6 +433,8 @@ Project Intelligence follows `orchestration/PROJECT_IDENTITY.md`. EPHEMERAL stor
 
 JSON-mode publication errors expose only stable, allowlisted diagnostics; they neither serialize raw exception details nor replace the final candidate/history scan.
 
+Publication recipe diagnostics are static text; they never echo commands and do not replace the final candidate/history scan.
+
 The publication Hook may reuse only a short-lived, integrity-checked record of a prior full scan. Candidate, repository/worktree, remote tip, target, diff, scanner or policy drift invalidates it; the record never replaces final candidate/history scanning.
 
 Candidate scanning reads the final tree and all commits in `base..head`; provider-token and private-key detection remain enabled. JSON text is scanned up to 8,000,000 bytes, while other text retains a 2,000,000-byte bound; an oversized or incomplete scan blocks publication. The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; there is no extension-wide exemption, and the 2,000,000-byte text limit remains unchanged. The same exact relative paths are excluded in any repository using the shared policy.

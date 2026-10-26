@@ -394,6 +394,8 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 
 When local publication preflight fails in JSON mode, use its stable redacted reason to repair and re-observe; the diagnostic itself grants neither retry nor merge authority.
 
+When a publication command is denied, follow the static recipe in `next_step`/`next_step_zh` instead of trying command variants; run one publication command per Bash call.
+
 For an explicitly requested personal-mode PR merge, validate open/non-draft/mergeable state, exact head, allowlisted branch and live default base. AIPS independently requires configured Required Checks and passing checks only when `AIPS_ENFORCE_REQUIRED_CHECKS=1`; GitHub native policy remains effective.
 
 For a retryable remote publication failure, Claude Hook returns a bounded denial immediately. Use `aips publish doctor --worktree . --format json` as a separate read-only observation, then re-prepare the exact candidate; neither diagnostic grants publication authority.

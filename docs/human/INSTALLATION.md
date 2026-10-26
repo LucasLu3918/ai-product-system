@@ -10,6 +10,8 @@
 
 The installed CLI returns stable, redacted JSON errors for local `prepare` and `diagnose` failures; this changes output format only and does not grant publication permission.
 
+The installed Claude Code adapter includes the standard publication recipe; Prepare scan evidence now lasts 30 minutes and still binds the exact candidate, operation, target and policy.
+
 Publication scan evidence is private user-cache data used only by the Claude Code Git Hook. It is separate from runtime content-safety setup and does not alter scanner policy or installation permissions.
 
 The managed publication preflight uses the built-in exact-candidate secret scanner. It scans JSON files up to 8,000,000 bytes and other text files up to 2,000,000 bytes; files above those bounds block publication. The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; there is no extension-wide exemption, and the 2,000,000-byte text limit remains unchanged. The same exact relative paths are excluded in any repository using the shared policy.
@@ -66,6 +68,8 @@ aips mcp inspect
 維護者要驗證完整 repository 時使用 `aips validate`。一般安裝不會在使用者電腦執行完整 CI，也不會連線修改 GitHub repository 設定。
 
 ## Runtime integration
+
+Installing the Claude Code adapter adds the standard publication recipe to the managed `CLAUDE.md` block; it grants no publication permission.
 
 The managed Claude Code publication Hook has an eight-second hard deadline. For protected pushes, run `aips publish prepare` first so the full candidate/history scan can create the short-lived private evidence record; the Hook rechecks candidate and remote state on every invocation.
 

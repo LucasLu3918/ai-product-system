@@ -1848,6 +1848,8 @@ The cross-profile quality evidence extension is covered by Scenario 258; this cr
 
 Publication CLI error serialization remains a separate contract and grants Skills no new Git or publication authority; see Scenario 261.
 
+Publication recipe diagnostics grant Skills no new Git or publication authority; see Scenario 261.
+
 Plan53 reuses the existing publication authority and scanner. It adds no Skill or Skill Explorer permission and grants no Git operation authority.
 
 The separate `creative workflows` CLI does not add to or change the Skills catalog and Skill Explorer behavior.
@@ -1985,6 +1987,8 @@ Current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md)
 
 Scenario 261 covers structured JSON errors from failed `prepare` and `diagnose` calls, with safe recovery guidance and no implied retry or publication authority.
 
+Scenario 261 also covers quoted-heredoc PR text, dynamic-argument denials with `PUBLICATION_ARGUMENT_DYNAMIC`, PR-bound scan evidence and the 30-minute evidence lifetime.
+
 Scenario 261 now also covers the bounded Hook deadline, safe upstream flags, exact short-lived scan evidence, and the distinction between ordinary Doctor visibility and strict Required Checks enforcement.
 
 Scenario 263 records the three exact Dewhollow WebM evidence-path exceptions and regression coverage that keeps near-matches and other WebM files under strict scanning.
@@ -2074,6 +2078,8 @@ The lifecycle verifies default Git destination rejection, explicit exact-root op
 ## Scenario 266 — Content Safety Injection Context and Recovery
 
 A CLI JSON error response contains only allowlisted diagnostics; scan failures continue to block publication and never produce successful scan evidence.
+
+PR-bound scan evidence comes only from the same exact-candidate Prepare scan; a push-bound record never satisfies a PR creation.
 
 Publication scan evidence records a prior full Secret Scan only. Expiry or candidate/policy drift denies reuse; the final Gate continues to scan the complete candidate and history.
 

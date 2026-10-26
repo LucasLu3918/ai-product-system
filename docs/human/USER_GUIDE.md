@@ -71,6 +71,8 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+Claude Code 發布寫法調整不影響 Creative 流程；提交產出素材仍經相同 commit 內容安全掃描，Prepare 掃描證據（30 分鐘、綁定 PR）不授權任何創作輸出。
+
 Publication scan evidence applies only to a Git candidate Secret Scan. It does not cache creative review, authorize asset import, or change image-generation provenance.
 
 Creative outputs in Git workspaces retain their existing guard, even while ordinary confined local L2 source writes may proceed with READY but STALE Project Intelligence.
@@ -298,6 +300,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 ## Roles、Skills 與重用
 
 The JSON error result is a CLI contract only; it does not add a Role or Skill permission and cannot authorize a Git operation.
+
+Publication denial recipes are CLI guidance only; they add no Role or Skill permission and cannot authorize a Git operation.
 
 Publication guard 重用既有的 command authority 與 Secret Scan；scan evidence 只是短效候選證據，不會新增 Role、Skill 或 Git 操作權限。
 
@@ -924,6 +928,8 @@ Documentation Placement Contract 會檢查 heading hierarchy、version/scenario-
 ## Runtime Content Safety Boundary
 
 A structured publication error is not evidence of a successful content-safety or Secret Scan; incomplete scans continue to block publication.
+
+Quoted-heredoc PR text is still scanned by content safety; a secret or PII finding in it blocks the command.
 
 Publication scan evidence 只代表完整 Secret Scan 曾對精確候選通過，不改變內容安全政策；Prepare 和最終 Integration Gate 仍會執行完整候選與歷史掃描。
 

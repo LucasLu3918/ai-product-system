@@ -223,6 +223,8 @@ Review actual:
 
 Local JSON diagnostics from `prepare` or `diagnose` do not satisfy publication validation, scan evidence, or merge requirements; rerun the read-only checks after correcting the reported cause.
 
+A recipe in a publication denial is guidance only; it neither authorizes the command nor satisfies scan evidence or merge requirements.
+
 Personal publication requires an exact final-tree and candidate-history scan. Only the approved generated-password and parameterized SQL forms are treated as non-literal assignments; provider-token, private-key and high-entropy literal checks remain active.
 
 Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
@@ -470,6 +472,8 @@ The retention helper never deletes evidence or grants compaction authority. Expi
 ## Runtime Content Safety Boundary
 
 The error serializer excludes raw exception text, paths, commands, and credentials; scan-evidence denials remain fail-closed.
+
+Claude Code quoted-heredoc (`<<'EOF'`) or single-quoted publication text is literal data that content safety still scans; real Shell expansion stays denied, and each denial names the supported recipe (Scenario 261).
 
 Publication Hook 的短效 scan evidence 不會放寬內容安全判斷或 sink policy。它綁定精確候選與掃描器／政策摘要；任何漂移都拒絕使用，Prepare 與最終 Gate 仍完整掃描。
 

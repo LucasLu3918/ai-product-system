@@ -118,6 +118,8 @@ Publication Doctor and literal merge diagnosis are read-only observations. They 
 
 The bounded timeout and Prepare evidence lifecycle apply to the managed Claude Code publication Hook. They do not change OpenCode native file permissions, which remain unable to authorize Git push or merge.
 
+The 30-minute Prepare scan evidence, PR-bound evidence and recipe-bearing denials apply to the managed Claude Code publication Hook; they do not change OpenCode enforcement status.
+
 Publication recovery guidance 不改變 OpenCode native 權限。共享 Hook 診斷只回報安全的錯誤類別及診斷 ID；Claude Code v2.1.295+ 的 `onFailure: block` 是其專屬版本能力。
 The additive Plan40 diagnostic fields are observations only: stable reason code, phase, safe candidate/runtime binding, and independent plan/authorization/Host/execution states. A Diagnostic ID is retrievable only from a configured hash-chain-verified ledger; OpenCode does not gain publication or merge authority.
 

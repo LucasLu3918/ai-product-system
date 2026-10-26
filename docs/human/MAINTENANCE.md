@@ -12,6 +12,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+A Claude Code adapter change (for example the standard publication recipe) also touches the OpenCode compatibility notes, so the harness and character-artwork documentation rules apply together.
+
 Publication Hook, Doctor and evidence-cache changes must close the canonical placement preview for the affected guard, authority, scan-evidence, tests and Scenario 261 paths before the candidate is finalized. This review records the unchanged content-safety, Skill, independent-review and Creative boundaries when shared Guard or documentation-map triggers select those topics.
 
 Publication Hook, Doctor and evidence-cache changes must close the canonical placement preview for the affected guard, authority, scan-evidence, tests and Scenario 261 paths before the candidate is finalized.
@@ -568,6 +570,8 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 
 Publication diagnostics regression tests cover structured JSON failures, compatible text output, safe recovery, and unchanged publication authority.
 
+Publication regression tests also cover quoted-heredoc PR text, recipe-bearing denials, PR-bound scan evidence and the 30-minute evidence TTL.
+
 The publication guard change reuses existing authority and scanner contracts. It does not alter Skill Explorer admission, Skill trust, or independent review execution requirements.
 
 Creative lifecycle 的 runtime-schema assertions 與最終 payload 檢查屬 adapter 相容性證據；維護文件不得將其描述為實際模型、MPS 或視覺品質驗收。
@@ -858,6 +862,8 @@ Protected dispatch 會逐筆重新讀取 merged PR，確認 `merged_at`、head S
 ## Runtime Content Safety Boundary
 
 A structured CLI error is not scan evidence; incomplete or failed candidate/history scans continue to block publication.
+
+Scan evidence is reused only for the identical candidate, operation, target, remote tip and policy digest; any drift requires a fresh Prepare scan.
 
 The publication evidence record can only reuse a successful full Secret Scan for an unchanged exact candidate. It does not relax content-safety checks or replace final-tree/history scanning.
 

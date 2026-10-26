@@ -55,6 +55,8 @@ Material visual artifacts use `visual-quality-review`. Review against the approv
 
 ## Local character artwork
 
+Creative execution is unaffected by the Claude Code publication recipe; committing generated assets still uses the same commit content-safety scan, and Prepare scan evidence (30 minutes, PR-bound) never authorizes creative output.
+
 Publication Hook scan evidence is limited to Git candidate/history Secret Scanning. It does not cache Creative review, authorize asset import, or change any image-generation or artwork provenance decision.
 
 ### Local ComfyUI model profiles
