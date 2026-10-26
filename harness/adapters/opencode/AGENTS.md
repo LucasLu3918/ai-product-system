@@ -2,6 +2,8 @@
 
 Direct local L2 source writes may use READY Project Intelligence with STALE freshness as advisory context; keep the stale state visible and preserve every independent guard denial.
 
+Refresh only the topics in `targeted_refresh` when the Context sets `refresh_required=true`, and build the Retrieval index only when `retrieval_index_required=true`.
+
 The dedicated aips creative import-candidate / import CLI is separate from OpenCode native file actions. Git destinations remain denied unless the user explicitly selects the hash-bound create-only import flow.
 
 

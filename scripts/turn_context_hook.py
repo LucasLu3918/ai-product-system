@@ -27,6 +27,55 @@ def resolve(runtime: str, prompt: str, project: str) -> dict:
     return json.loads(r.stdout)
 
 
+def freshness_lines(intelligence: dict, req: dict) -> list[str]:
+    """Render freshness as an instruction only when this task must refresh."""
+    if req.get("refresh_required"):
+        topics = ",".join((req.get("targeted_refresh") or [])[:12])
+        if req.get("freshness_advisory"):
+            return [
+                f"freshness_advisory=STALE task-relevant topics affected ({req.get('refresh_reason')})",
+                "targeted_refresh=" + topics,
+            ]
+        return ["targeted_refresh=" + topics]
+    if req.get("freshness_advisory"):
+        return [
+            (
+                "freshness_advisory=STALE advisory only; task-relevant topics are not affected "
+                f"({req.get('refresh_reason')}); no refresh needed for this task"
+            ),
+        ]
+    if intelligence.get("freshness") == "STALE" and req.get("targeted_refresh"):
+        # Legacy manifests without task-scoped refresh fields.
+        return ["targeted_refresh=" + ",".join(req["targeted_refresh"][:12])]
+    return []
+
+
+def next_step_line(data: dict, req: dict, intelligence: dict, fail: dict) -> str:
+    """Summarize only the preparation steps this turn actually requires."""
+    mutation = bool((data.get("task") or {}).get("mutation_likely"))
+    steps: list[str] = []
+    if req.get("initialize_intelligence"):
+        steps.append("initialize Intelligence")
+    if req.get("semantic_enrichment_required") and not req.get("initialize_intelligence"):
+        steps.append("complete semantic enrichment to READY")
+    if req.get("refresh_required") or ("refresh_required" not in req and req.get("targeted_refresh")):
+        steps.append("refresh the targeted topics")
+    if req.get("retrieval_index_required"):
+        steps.append("build the Retrieval index")
+    if mutation:
+        if req.get("change_impact_required", True):
+            steps.append("resolve Change Impact")
+        steps.append("preserve valid native conventions, then implement")
+        prefix = "For this existing-project mutation: "
+        if fail.get("mode") == "closed":
+            reasons = ",".join(str(item) for item in (fail.get("reasons") or [])) or "unspecified"
+            prefix = f"Mutation blocked until fail_closed_reasons={reasons} are resolved: "
+        return prefix + "; ".join(steps) + "."
+    if steps:
+        return "Before relying on Intelligence for this task: " + "; ".join(steps) + "."
+    return "Read-only turn: no Intelligence refresh, index build or Change Impact is required."
+
+
 def compact_context(data: dict) -> str:
     if "error" in data:
         return f"AIPS turn context unavailable: {data['error']}"
@@ -66,8 +115,7 @@ def compact_context(data: dict) -> str:
         lines.append("project_core_summary=" + str(core["summary"])[:6400])
     if recall.get("temporal_assertions"):
         lines.append("active_temporal_assertions=" + ",".join(str(item.get("id")) for item in recall["temporal_assertions"] if item.get("id"))[:1000])
-    if req.get("targeted_refresh"):
-        lines.append("targeted_refresh=" + ",".join(req["targeted_refresh"][:12]))
+    lines.extend(freshness_lines(intelligence, req))
     if ctx.get("project_native"):
         lines.append("project_sources=" + ",".join(ctx["project_native"][:12]))
     if ctx.get("intelligence_topics"):
@@ -80,7 +128,9 @@ def compact_context(data: dict) -> str:
     if retrieval.get("remediation"):
         lines.append("retrieval_next_step=" + str(retrieval["remediation"])[:400])
     if req.get("retrieval_index_required"):
-        lines.append("retrieval_index_required=True (Agent should run: aips intelligence index --project <project>)")
+        lines.append("retrieval_index_required=True (this task needs retrieval; Agent should run: aips intelligence index --project <project>)")
+    elif retrieval.get("status") == "INDEX_MISSING" and "retrieval_needed" in req:
+        lines.append("retrieval_index=MISSING (not needed for this task; no index build required)")
     retrieval_results = retrieval.get("results") or []
     if retrieval_results:
         lines.append("retrieval_evidence:")
@@ -96,10 +146,7 @@ def compact_context(data: dict) -> str:
                 compact = snippet[:900].replace("\n", "\n    ")
                 lines.append("    " + compact)
 
-    lines.append(
-        "For existing-project mutation: satisfy Intelligence initialization/refresh/readiness, "
-        "ensure Retrieval Intelligence when requested, resolve Change Impact, preserve valid native conventions, then implement."
-    )
+    lines.append(next_step_line(data, req, intelligence, fail))
     hard_budget = max(1, int(telemetry.get("hard_budget_tokens") or 7600))
     truncated = False
 

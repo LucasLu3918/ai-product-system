@@ -1772,6 +1772,8 @@ Scenario 233 also covers `aips skills list`: localized/grouped text and JSON out
 
 `tests/evidence/skills_cli_lifecycle.py` and `tests/validation/skill_native_projection_contracts.py` cover native Skill install, repeat install, cross-Host ownership, conflicts, workspace isolation, digest-protected removal, Portable Command projection and legacy migration for Codex, Claude Code and Gemini CLI. These checks validate generated files and ownership behavior; real Host discovery and invocation remain unverified until exercised in each installed Host.
 
+Scenario 269 adds the `aips intelligence gc [--yes]` help line and command without changing existing CLI argument or error contracts.
+
 ## Scenario 234 — Local Character Artwork Provenance and Composition
 
 Creative image validation shares the bounded AVIF container check; provenance and visual review remain separate evidence.
@@ -1781,6 +1783,8 @@ Creative preset guidance and ComfyUI discovery remain static and local; Scenario
 OpenCode host acceptance verifies adapter integration only. It does not verify local image generation, visual quality or user acceptance.
 
 The lifecycle uses synthetic SVG/PNG fixtures to verify confined paths, active-content rejection, file dimensions and hashes, verified local-provider/license provenance, stable UTF-8 Traditional Chinese labels, non-overwriting deterministic sheet composition, and optional Creative Evidence manifest-digest binding. It does not invoke a model, download weights, attest identity consistency, or claim hardware performance; those require the user's local runtime and independent visual review.
+
+Scenario 269 keeps the creative Git write denial unchanged; only ordinary Turn Context refresh and index guidance becomes task-scoped.
 
 ## Scenario 235 — OpenCode Native Context and Action Guard
 
@@ -1807,6 +1811,8 @@ The V2 creative tool additionally requires a create/modify intent and a successf
 This Scenario is the canonical evidence pointer for OpenCode V2 context routing, action readiness, plugin lifecycle, and explicit unsupported boundaries.
 
 The lifecycle covers separate prompt dimensions, Chinese creative-asset routing, Project Intelligence readiness, session-root binding, direct native path/symlink decisions, Shell argument effects, V2 plugin ownership, private EPHEMERAL asset metadata cache, bounded privacy trace, performance measurement, and version-aware install/repair/removal. OpenCode v2.0.24 acceptance uses a loopback mock model to verify actual Context delivery, a new EPHEMERAL creative asset native write Allow, and an existing-asset edit Deny with incomplete Project Intelligence. No provider credentials are needed. Linux/WSL, V1, production-provider behavior, MCP/custom-tool writes, arbitrary Shell effects and writes outside OpenCode remain unverified or out of scope; overall governance stays ADVISORY.
+
+Scenario 269 makes Turn Context refresh and Retrieval index instructions task-scoped; the READY+STALE allow case and the OpenCode guard denials from Scenario 267 are unchanged.
 
 ## Scenario 238 — Creative Task Authorization and Multi-item Execution
 
@@ -1918,6 +1924,8 @@ The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies c
 FLUX 3 Klein coverage also validates the live `TextGenerate` Dynamic Combo schema and final serialized payload shape before submission, rejects incompatible options without a POST, and checks that synthetic node/exception diagnostics omit prompts, paths, credentials and tracebacks. The lifecycle is adapter evidence only; MPS inference remains unverified.
 
 Release history 更新（純依賴升級文件豁免，Scenario 221）已審查本區段：Skill 整合、Explorer 與重用行為不變。
+
+Scenario 269 changes no Skill discovery or installation behavior; its lifecycle exercises Turn Context preparation and `aips intelligence gc`.
 
 
 ## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance
@@ -2098,3 +2106,5 @@ The `pii.email.v2` corpus proves Git remote `git` userinfo (scp-like, `ssh://`, 
 純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
 
 Dependabot commits: the GitHub App bot noreply author and Dependabot's exact final `Signed-off-by` trailer are Git identity metadata decided by `config/git-publication.yaml`, not PII exceptions; `pii.email.v2` and every other address stay blocking, and the bot identity grants no authority.
+
+Scenario 269 refreshes only the CLI help golden vectors for `aips intelligence gc`; content-safety detection, sink policy and commit scanning are unchanged.

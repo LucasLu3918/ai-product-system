@@ -622,7 +622,11 @@ EPHEMERAL remains the default. Explicit attach/detach in a Git worktree add root
 
 Content-safety findings are advisory retrieval inputs and do not change Project Intelligence authority or graph completeness.
 
-When readiness is READY and freshness is STALE, preserve freshness and targeted refresh guidance but treat staleness as advisory for confined local L2 source writes. Non-READY readiness, UNKNOWN freshness, unavailable canonical protocols, unresolved instruction authority, path escape, creative writes and external/high-risk actions retain their existing stop conditions.
+When readiness is READY and freshness is STALE, preserve freshness but treat staleness as advisory for confined local L2 source writes. `requirements.refresh_required` is true and `targeted_refresh` lists topics only when task-relevant topics are affected or irrelevance cannot be proven (`refresh_reason` explains which); otherwise the Turn Context states that no refresh is needed for the task. Non-READY readiness, UNKNOWN freshness, unavailable canonical protocols, unresolved instruction authority, path escape, creative writes and external/high-risk actions retain their existing stop conditions.
+
+`requirements.retrieval_index_required` is true only when `retrieval_needed` is true (a non-empty prompt that is a likely mutation or selects Intelligence topics) and the index is missing; other turns report `retrieval_index_status` without an instruction to build it.
+
+`aips intelligence gc` lists external stores under the user config `projects/` directory whose recorded project root no longer exists. It is a dry run by default; `--yes` removes only those `intelligence` stores, re-checks the path before removal, skips symlinked or unverifiable entries, and preserves other workspace data such as runs.
 
 
 Security-boundary Change Impact may use a manually reviewed publication caller/consumer scope when the repository-wide Impact Graph is partial; unknown paths remain explicit.

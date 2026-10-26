@@ -226,6 +226,8 @@ Behavior-bearing source changes must first map every new source path in `config/
 
 Plan36 publication diagnostics preserve this topic's existing behavior and authority boundaries.
 
+Scenario 269 places task-scoped refresh and Retrieval index policy in existing current-behavior sections without adding a new topic.
+
 ## Official Docs Site
 
 網站的使用者說明以繁體中文為主，第一次出現的專有名詞以中文解釋並補充英文；命令、API／欄位名稱、路徑與機器狀態維持 canonical 拼法。首頁應按讀者任務導覽，不得以變更備忘錄取代操作說明。架構圖與流程圖需指向目前實際邊界，並附上文字替代說明與圖說。

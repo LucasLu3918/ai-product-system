@@ -142,3 +142,5 @@ For OpenCode V2, mutation authority comes from the native prompt-admission hook 
 Creative generation and Git publication remain separate authority boundaries. Publication Doctor is a read-only repository readiness observation; it does not authorize publishing generated assets or alter any Creative Bundle.
 
 Plan36 changes only Git publication diagnostics. It does not change creative task authorization, asset import, generation, or review behavior.
+
+Scenario 269 task-scoped Intelligence guidance does not relax the creative Git workspace write guard.

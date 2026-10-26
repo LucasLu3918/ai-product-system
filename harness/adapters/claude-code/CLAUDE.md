@@ -6,7 +6,7 @@ If hook context is unavailable, resolve before analysis/mutation:
 
 `aips intelligence context --runtime claude-code --project "$PWD" --prompt "<current user request>"`
 
-Preserve existing Claude/project memory. Existing-project mutations require Intelligence initialization/targeted refresh plus Change Impact before editing.
+Preserve existing Claude/project memory. Existing-project mutations require initialized READY Intelligence plus Change Impact before editing. READY+STALE freshness is advisory: refresh only the topics listed in `targeted_refresh` when the Turn Context sets `refresh_required=true`, and build the Retrieval index only when `retrieval_index_required=true`.
 
 For publication blocks, use the read-only `aips publish doctor` and `aips publish diagnose --worktree <root> --command '<literal command>'`. Doctor observes the remote default policy branch separately from the candidate/source branch; `--branch` explicitly overrides the policy target. Report the stable reason code, phase, blocker source/rule, safe endpoint/status category, Traditional Chinese recovery step and Required Checks state; never expose raw GitHub output or infer success from missing evidence. Prepare and Hook may expose matching hashed worktree ID, candidate SHA, target ref, publication mode and AIPS runtime version/revision. These observations do not authorize a command. `PLANNED` and `next_step: PUSH` are not permission; Hook `AUTHORIZED` means only that AIPS allowed the tool, while the Host may still deny and execution has not started. Only verified action results can be `EXECUTED`.
 

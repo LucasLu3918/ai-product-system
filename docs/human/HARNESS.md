@@ -169,6 +169,8 @@ BeforeTool 可執行相同的受支援 Runtime Policy 檢查；Codex 與不支�
 
 純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
 
+Claude Code、Codex 與 OpenCode adapter 的 Global Harness 說明改為：只有 Turn Context 設定 `refresh_required=true` 才做 targeted refresh，`retrieval_index_required=true` 才建立索引；Change Impact 不變。
+
 ## MCP Interoperability
 
 ~~~bash
@@ -239,7 +241,7 @@ Turn Context 固定載入精簡的 `SYSTEM_CORE.md`，再依任務選擇 canonic
 
 Workflow and Runtime adapters keep validation observation collection behind the existing repository Gate; their read-only artifact reports do not enable host actions, skip checks, or add Git publication authority.
 
-Repository mutation workflows resolve AIPS Turn Context before analysis, then use targeted intelligence refresh and Change Impact evidence before editing; commit-time publication gates additionally enforce public-repository identity and content-safety policy.
+Repository mutation workflows resolve AIPS Turn Context before analysis, then use Change Impact evidence before editing and refresh only the task-relevant Intelligence topics that Turn Context marks with `refresh_required`; commit-time publication gates additionally enforce public-repository identity and content-safety policy.
 
 同步路徑只解析 identity、freshness、indexes 與 relevant pointers；重型 Project bootstrap、site build、semantic enrichment 不放進 hot path。
 

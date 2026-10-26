@@ -74,7 +74,7 @@ Retrieval relations are disposable lexical candidates. Relation-extraction behav
 
 ATTACHED 仍須使用者明確執行 `aips attach`。在 Git worktree 中，AIPS 以 repository-local `.git/info/exclude` 排除 `.ai/` 與 `.ai.detached-*`，不修改共用的專案 `.gitignore`；既有追蹤狀態不會被改寫。
 
-Turn Context preserves freshness and targeted refresh guidance. READY+STALE freshness is advisory for a confined local L2 source write; UNKNOWN and non-READY states remain blocking.
+Turn Context preserves freshness and emits task-scoped targeted refresh guidance only when task-relevant topics are affected. READY+STALE freshness is advisory for a confined local L2 source write; UNKNOWN and non-READY states remain blocking.
 
 Scenario 266 provides local deterministic safety evidence; it does not substitute for independent review or grant approval.
 
@@ -227,6 +227,8 @@ OpenCode V2 prompt admission issues a fresh transient grant for each user respon
 
 
 Plan36 publication diagnostics preserve this topic's existing behavior and authority boundaries.
+
+Creative writes in Git workspaces keep their existing guard; task-scoped Intelligence refresh and Retrieval index guidance (Scenario 269) does not relax them.
 
 ## Planning 與 Product Delivery
 
@@ -741,3 +743,5 @@ The commit guard accepts quoted-delimiter heredoc messages, literal `git add` co
 Email rule `pii.email.v2` treats the `git` service user of an scp-like or `ssh://` Git remote as a host address, not an email; detection and redaction share that predicate and every other address still blocks.
 
 純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
+
+Scenario 269 refreshes only the CLI help golden vectors for `aips intelligence gc`; content-safety detection, sink policy and commit scanning are unchanged.

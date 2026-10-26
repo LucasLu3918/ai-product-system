@@ -21,7 +21,7 @@ Git worktree 內的 `.ai/` 仍須明確 attach 才會建立；attach/detach 只�
 - `intelligence_missing`：需要時手動執行 `aips intelligence bootstrap --project <path>`；補足必要語意主題並完成審查後，再執行 `aips intelligence finalize --project <path>`。
 - `intelligence_partial`：依 status 補足必要語意主題與證據，再 finalize。
 - `intelligence_stale`：先檢視 `aips intelligence refresh-plan --project <path>`；確認影響範圍後才執行 refresh。
-- readiness 為 `READY` 且 freshness 為 `STALE`：Context 會保留 stale 狀態與 targeted refresh 指引，但不單獨阻擋受限的本地 L2 原始碼寫入；`UNKNOWN`、非 READY 與其他既有停止條件仍有效。
+- readiness 為 `READY` 且 freshness 為 `STALE`：Context 會保留 stale 狀態，但不單獨阻擋受限的本地 L2 原始碼寫入；只有任務相關主題受影響時才設定 `refresh_required` 與 `targeted_refresh`，`retrieval_index_required` 也只在任務需要檢索時為 true；`UNKNOWN`、非 READY 與其他既有停止條件仍有效。
 - `intelligence_blocked`：先處理阻擋原因，不略過 gate。
 
 重新執行 `aips intelligence status --project <path>` 或 `aips project diagnose <path>` 驗證結果。Runtime 設定與 MCP 靜態能力不證明 Host 中 Hook／工具確實執行；未取得原生實機證據時維持 `UNVERIFIED`。
@@ -472,3 +472,5 @@ The `pii.email.v2` Git remote grammar changes only commit and publication PII fi
 Dependabot commit 的機器人 noreply author 與最後一行精確的 `Signed-off-by` trailer 屬於 Git 身分 metadata，由 `config/git-publication.yaml` 決定，不是 PII 例外；`pii.email.v2` 與其他位址仍會擋下，機器人身分不授予權限。
 
 Publication authorization is separate from Project Intelligence freshness: AIPS Required Checks enforcement is opt-in via `AIPS_ENFORCE_REQUIRED_CHECKS=1`; GitHub native protection remains effective.
+
+`aips intelligence gc` 只讀取 store 內記錄的專案路徑，不輸出 topic 內容；內容安全邊界不變（Scenario 269）。

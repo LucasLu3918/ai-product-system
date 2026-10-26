@@ -69,6 +69,8 @@ The upstream install lifecycle additionally asserts installation of every non-ca
 
 The native Skill projection lifecycle checks Codex, Claude Code and Gemini CLI paths, explicit Codex/Claude invocation metadata, Gemini activation consent, idempotent installation, shared Codex/Gemini ownership, conflicts, exact digest-based uninstall, workspace scoping and Portable Command migration. `tests/validation/skill_native_projection_contracts.py` validates the CLI/documentation contracts. These deterministic checks do not claim live Host discovery or invocation acceptance.
 
+Scenario 269 adds `aips intelligence gc [--yes]` (dry run by default) to the public help without changing existing command contracts.
+
 ## Scenario 234 — Local Character Artwork Provenance and Composition
 
 Scenario 240 adds worktree-bound publication prepare/diagnose regression; safe failure codes and live PR reuse are exercised by tests/test_publication_planning.py. Synthetic GitHub metadata does not establish real-host permission or REST acceptance.
@@ -1145,6 +1147,8 @@ The canonical Skill registry contains 49 AIPS Skills; the pinned 38-item upstrea
 
 Release history update for the pure dependency update documentation exemption (Scenario 221) reviewed this section: Skill integration, Explorer and reuse behavior are unchanged.
 
+Scenario 269 changes no Skill catalog or installation behavior; it adds task-scoped Turn Context preparation and the `aips intelligence gc` lifecycle.
+
 ## Scenario 260 — Publication diagnostics and Doctor
 
 Scenario 263 is separate from publication Doctor and cannot satisfy PR merge checks or approval.
@@ -1219,3 +1223,5 @@ Scenario 266 also binds `pii.email.v2`: only the exact ASCII `git` userinfo of a
 Pure dependency update documentation exemption (Scenario 221): `pure_dependency_update` in `scripts/dependency_impact.py` returns `PURE_DEPENDENCY_UPDATE` only when every changed file is an allowlisted dependency manifest (`.github/workflows/*.yml`, root `requirements*.txt`, `constraints/*.txt`) modified in place and every changed line pair is either a full-SHA pinned `uses:` reference for the same action with a non-decreasing version comment, or an exact `name==version` pin with a strictly higher version. Documentation Impact, Documentation Placement and Documentation Sync then suppress documentation requirements only and report each dependency's classification, risk and `human_review_required`; any other line or file, downgrade, unpinned reference, planned path, size-limit overflow or predicate failure keeps the full rules. Secret scanning, content safety, the Core Change Test Matrix, the Integration Gate, required checks and Human merge approval are unchanged, and `automatic_merge_authorized` stays false.
 
 Dependabot commits: the GitHub App bot noreply author and Dependabot's exact final `Signed-off-by` trailer are Git identity metadata decided by `config/git-publication.yaml`, not PII exceptions; `pii.email.v2` and every other address stay blocking, and the bot identity grants no authority.
+
+Scenario 269 refreshes only the CLI help golden vectors for `aips intelligence gc`; content-safety detection, sink policy and commit scanning are unchanged.

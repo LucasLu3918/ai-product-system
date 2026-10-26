@@ -203,6 +203,8 @@ flowchart LR
 
 Plan42 extends this same content-safety flow to bounded TTF/OTF/WOFF/WOFF2 metadata; staged blob sizes are checked before reads, and metadata scanning does not grant commit or publication authority.
 
+Turn Context preparation is task-scoped: READY+STALE Project Intelligence asks for a targeted refresh only when task-relevant topics are affected, and the Retrieval index is requested only when the task needs retrieval. Change Impact and the existing fail-closed reasons are unchanged.
+
 ## Parallel run observation flow
 
 ~~~mermaid

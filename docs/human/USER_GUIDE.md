@@ -182,6 +182,8 @@ Brand System 可涵蓋 Brand Intent、Audience / Positioning、Purpose / Mission
 
 Plan36 publication diagnostics preserve this topic's existing authority boundaries.
 
+Creative 寫入在 Git 工作區仍維持既有的 Project Intelligence 防護；Scenario 269 只調整一般回合的 refresh 與索引提示，不放寬創作輸出。
+
 ## 需求釐清與 Planning
 
 Scenario 266 binds injection review to added candidate lines while Secret/PII scanning still covers the full candidate diff.
@@ -297,6 +299,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 
 詳細請看 [Global Harness 與 MCP](HARNESS.md)。
 
+Turn Context 只列出這一回合真正需要的準備步驟：READY+STALE 的 Intelligence 在任務相關主題未受影響時只是提示，不要求 refresh；唯讀或未選到主題的回合不會要求建立 Retrieval 索引。修改既有專案時仍須處理 Change Impact。
+
 ## Roles、Skills 與重用
 
 The JSON error result is a CLI contract only; it does not add a Role or Skill permission and cannot authorize a Git operation.
@@ -370,6 +374,8 @@ Reuse existing Skill / Template
 Plan36 publication diagnostics preserve this topic's existing authority boundaries.
 
 Release history 更新（純依賴升級文件豁免，Scenario 221）已審查本區段：Skill 整合、Explorer 與重用行為不變。
+
+`aips intelligence gc` 是新的維護指令，與 Skills CLI 分開：預設為 dry run，列出專案路徑已不存在的外部 Intelligence store；確認後加上 `--yes` 才會刪除，且不會刪除路徑仍存在或無法驗證的 store。
 
 ## Deterministic Automation
 
@@ -966,3 +972,5 @@ The commit guard accepts quoted-delimiter heredoc messages, literal `git add` co
 純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
 
 Dependabot commit 的機器人 noreply author 與最後一行精確的 `Signed-off-by` trailer 屬於 Git 身分 metadata，由 `config/git-publication.yaml` 決定，不是 PII 例外；`pii.email.v2` 與其他位址仍會擋下，機器人身分不授予權限。
+
+Scenario 269 只更新 `aips intelligence gc` 的 CLI help golden vectors；內容安全偵測、sink policy 與 commit 掃描不變。
