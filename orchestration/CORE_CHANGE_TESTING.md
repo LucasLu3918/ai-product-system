@@ -235,6 +235,8 @@ Dependabot commits: the GitHub App bot noreply author and Dependabot's exact fin
 
 ## Publication Root-Cause Recovery (Plan35)
 
+Scenario 261 binds the CLI JSON error fallback, text-mode compatibility, stable safe recovery, and non-authorizing behavior to regression tests.
+
 Plan53's Core matrix covers safe upstream parsing, strict and ordinary Doctor policy states, Hook timeout phase/timing redaction, exact scan-evidence binding and invalidation, no GitHub calls for generic status/diff, and the final full candidate/history scan.
 
 Plan40's matrix binds explicit publication reason codes, redacted error gaps, Prepare/Hook candidate observations, lifecycle-state separation and optional verified Diagnostic ID lookup to the exact candidate. Optional ledger failure is covered as a non-authorizing side effect.

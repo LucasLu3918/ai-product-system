@@ -98,6 +98,8 @@ Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEM
 
 ## Execution
 
+In JSON mode, failed local `prepare` and `diagnose` calls return stable, redacted errors; text output and successful schemas remain compatible.
+
 The Claude Code publication Hook fails closed immediately after retryable remote errors and provides a separate read-only Doctor command; it does not wait for Doctor inside the synchronous Hook. Prepare reports timeouts with stable, redacted diagnostics.
 
 Creative writes in Git workspaces retain their existing Project Intelligence guard; Scenario 267's stale advisory covers ordinary local L2 source writes only.
@@ -341,6 +343,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 Content-safety detector changes are versioned (for example `pii.email.v2`) and bound to Scenario 266 with a fixed corpus; they never add a PII exception path.
 
 ## Quality & Verification
+
+Scenario 261 regression coverage checks JSON and text error paths while preserving exit status and publication authority.
 
 The Creative lifecycle test uses synthetic local providers to verify Base/Distilled profile settings and one-to-eight ordered staged-reference bindings. It does not certify real inference, image quality, independent review or user acceptance.
 
@@ -641,6 +645,8 @@ Plan21 Phase 0 records one exact-main full-validation timing observation and pin
 
 ## Documentation Platform
 
+Publication CLI behavior is documented in the User Guide and linked to its Scenario 261 conformance evidence.
+
 Project lifecycle guidance is placed in the canonical Existing Project, Installation and Architecture topics; Scenario 044 is the lifecycle evidence source.
 
 OpenCode stale-freshness 行為須在 Human Harness、Project Intelligence 指南、adapter 契約與 Scenario 267 中保持一致。
@@ -661,6 +667,8 @@ Official Docs Site 使用 VitePress 1.6.x stable line，提供 sidebar、local s
 
 Documentation Placement 將每個 behavior-bearing source 綁到 canonical Human topic；Technology Guide 的廣域 trigger surface若出現尚未映射的新 source，CI 會 fail closed，要求先更新 placement contract。每條已知 subsystem rule 也明確限制 Technology Guide 可修改的 domain，因此版本新增功能不能再任意 append 到文件尾端。
 ## Runtime Content Safety Boundary
+
+The JSON fallback is non-authorizing and cannot substitute for a successful full candidate and history scan.
 
 The shared publication scanner recognizes only the documented generated-password and parameterized SQL forms as non-literal assignment values. Known provider tokens, private keys and high-entropy literals remain detectable, and oversized text or JSON remains fail-closed under its configured finite bound. The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; there is no extension-wide exemption, and the 2,000,000-byte text limit remains unchanged. The same exact relative paths are excluded in any repository using the shared policy.
 

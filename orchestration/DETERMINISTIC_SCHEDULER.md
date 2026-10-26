@@ -147,6 +147,8 @@ Publication Preflight lifecycle evidence stubs the Python module probe before as
 
 ## Failure behavior
 
+For local `prepare` and `diagnose` failures, JSON callers receive a stable redacted result; recovery remains an observation and never authorizes retry or publication.
+
 A synchronous Claude Hook returns its denial immediately after retryable remote failure and directs a later read-only Doctor observation. A Prepare timeout remains a non-authorizing observation.
 
 Native publication guard 啟動失敗不能被當成允許；Claude Code v2.1.295+ 對 managed publication PreToolUse 使用 `onFailure: block`，舊版/未知版由 adapter 保留相容設定並警示。

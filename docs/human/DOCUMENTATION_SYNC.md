@@ -31,6 +31,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+Publication CLI 的 `prepare`／`diagnose` JSON 錯誤行為以 User Guide 為操作說明、Scenario 261 為回歸證據；診斷不得被解讀為授權。
+
 The character-artwork trigger remains scoped to creative behavior. Publication evidence changes are documented in publication and security topics and do not change artwork or provenance guidance.
 
 Project lifecycle guidance records that `.ai/` is created only by explicit attach and that attach/detach keep AIPS state in repository-local Git excludes without changing `.gitignore`; Scenario 044 covers lifecycle behavior and tracked-file limits.

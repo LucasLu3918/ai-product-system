@@ -297,6 +297,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 
 ## Roles、Skills 與重用
 
+The JSON error result is a CLI contract only; it does not add a Role or Skill permission and cannot authorize a Git operation.
+
 Publication guard 重用既有的 command authority 與 Secret Scan；scan evidence 只是短效候選證據，不會新增 Role、Skill 或 Git 操作權限。
 
 這次 FLUX 3 Klein 修復只調整 Creative executor 與其預檢，不新增或改變 Roles、Skills 或 Skill Explorer 行為。
@@ -920,6 +922,8 @@ Scenario / validation history
 
 Documentation Placement Contract 會檢查 heading hierarchy、version/scenario-style heading 與 changed-line placement。新增功能不得只在 current-behavior 文件尾端追加 `vX.Y` / Scenario 說明；若確實需要新 topic，必須同時把 canonical section 加入 placement contract。
 ## Runtime Content Safety Boundary
+
+A structured publication error is not evidence of a successful content-safety or Secret Scan; incomplete scans continue to block publication.
 
 Publication scan evidence 只代表完整 Secret Scan 曾對精確候選通過，不改變內容安全政策；Prepare 和最終 Integration Gate 仍會執行完整候選與歷史掃描。
 

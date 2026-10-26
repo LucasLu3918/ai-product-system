@@ -58,6 +58,8 @@ AIPS Core
 
 ## Native Runtime Adapters
 
+Claude Code receives a structured, redacted JSON diagnostic when local `prepare` or `diagnose` preflight fails; this does not authorize a retry, and unsupported shell wrappers remain denied.
+
 Native adapter discovery does not create project-local `.ai/`; explicit attach/detach keeps that AIPS state in the target Git worktree's local excludes.
 
 Content-safety controls remain separate from skill discovery, installation, and author trust decisions.
