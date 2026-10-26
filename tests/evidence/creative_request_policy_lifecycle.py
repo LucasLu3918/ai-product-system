@@ -82,6 +82,26 @@ def main() -> int:
     assert admit_prompt("生成一隻貓咪插畫", pending)["reason_code"] == "creative_scope_expansion"
     assert admit_prompt("改畫森林插畫", pending)["reason_code"] == "creative_scope_expansion"
     assert admit_prompt("A", pending)["continued"]
+    # A website/email destination for an image is not a different task (OpenCode admission only).
+    for prompt in ("幫網站做一張封面圖", "幫我的網站生成一張封面圖", "請幫部落格網站設計一張主視覺海報",
+                   "make a hero image for my website", "generate a hero image for my website",
+                   "create an illustration for the email newsletter"):
+        grants = admit_prompt(prompt)["grants"]
+        assert all(grants[action]["allowed"] for action in ("prepare", "configure", "execute", "quality-check")), prompt
+        assert authorize(messages(prompt), "execute")["allowed"], prompt
+        assert authorize(messages(ORIGINAL, prompt), "quality-check")["allowed"], prompt
+    for prompt in ("幫網站做登入功能", "改成做網站", "建立資料庫", "write a python script", "make a website",
+                   "write a python script to generate thumbnail images", "幫網站做一個 React 圖片元件",
+                   "create a hero section for my website", "send an email with a generated image",
+                   "generate a hero image for my website and send an email", "不要幫網站做封面圖",
+                   "don't make a hero image for my website", "規劃網站封面圖", "只討論網站封面圖"):
+        assert not admit_prompt(prompt)["active"], prompt
+        assert not authorize(messages(ORIGINAL, prompt), "execute")["allowed"], prompt
+        assert not authorize(messages(ORIGINAL, prompt, "繼續"), "execute")["allowed"], prompt
+    assert not admit_prompt("改成幫網站寫程式", pending)["active"]
+    # A new image deliverable during a character continuation is a scope expansion, not inherited authority.
+    assert admit_prompt("幫網站做一張封面圖", pending)["reason_code"] == "creative_scope_expansion"
+    assert admit_prompt("make a hero image for my website", pending)["reason_code"] == "creative_scope_expansion"
     print("Creative request policy PASS: prompt-admission grants, user-only authority, unbounded history, revocation, read-only actions and medium classification")
     return 0
 

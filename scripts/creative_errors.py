@@ -24,7 +24,8 @@ RECOVERY = {
     "comfy_model_unavailable": "檢查 ComfyUI 本機模型清單與 Bundle 的模型名稱。",
     "comfy_textgenerate_schema_invalid": "檢查本機 /object_info/TextGenerate 與固定 workflow 輸入；修正 schema 相容性後重跑唯讀 preflight。",
     "comfy_final_payload_invalid": "檢查最終 ComfyUI workflow 是否仍符合 preflight 綁定的節點、欄位與連線。",
-    "comfy_execution_failed": "依節點 ID 與安全摘要檢查本機 ComfyUI workflow；確認 queue/history 後再由使用者明確重試。",
+    "comfy_runtime_budget_exceeded": "預估耗時超過有效逾時；送出前請依 recommended_timeout_seconds 明確調整 timeout_seconds（上限 3600），或由人改選較快的已註冊 profile。",
+    "comfy_execution_failed":"依節點 ID 與安全摘要檢查本機 ComfyUI workflow；確認 queue/history 後再由使用者明確重試。",
     "hardware_backend_dtype_not_smoke_verified": "檢查模型精度；只有實際本機推論成功後才可標記相容。",
     "resource_profile_invalid": "檢查 Resource Authorization Profile 格式與專案路徑。",
     "runtime_capability_unknown": "確認 Host adapter 的實際 enforcement 能力後重新執行。",
@@ -51,6 +52,8 @@ _SAFE_DIAGNOSTIC_KEYS = {
     "backend", "accelerator_backend", "backend_capability", "mps_runtime_probe",
     "model_precision_class", "host", "architecture", "os", "weight_dtypes",
     "node_id", "node_type", "exception_type", "reason_summary", "field",
+    "runtime_budget", "estimated_seconds", "timeout_seconds", "timeout_source",
+    "recommended_timeout_seconds", "steps", "upsampler_max_length", "basis",
 }
 
 

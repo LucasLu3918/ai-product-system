@@ -17,6 +17,26 @@ CREATIVE_TARGET = re.compile(r"角色|人物|立繪|肖像|人像|character|port
 CONFIGURE = re.compile(r"設定|配置|configure|configuration", re.IGNORECASE)
 VISUAL_REVIEW = re.compile(r"比較|compare|檢查|審查|評論|review|inspect|critique|quality", re.IGNORECASE)
 OTHER_TASK = re.compile(r"程式|網站|資料庫|寄信|\b(?:python|javascript|website|database|email)\b", re.IGNORECASE)
+# A website or email may be the destination of a raster deliverable ("a cover image
+# for my website"). Only an explicit image-making request without any code/data/send
+# marker is treated as creative; every other OTHER_TASK prompt stays non-creative.
+IMAGE_REQUEST = re.compile(
+    r"(?:做|製作|生成|產生|產出|畫|繪製|設計)\s*(?:[一兩二三四五六七八九十]|\d{1,2})?\s*(?:張|幅|組|款|個)?[^，,。；;\n]{0,12}?"
+    r"(?:封面圖|主視覺|插畫|圖片|圖像|橫幅|縮圖|海報|背景圖|分享圖|桌布)"
+    r"|\b(?:make|create|generate|render|draw|paint|design)\b[^.;\n]{0,40}?"
+    r"\b(?:images?|illustrations?|artworks?|pictures?|posters?|thumbnails?|wallpapers?|hero (?:images?|banners?|art)|cover (?:images?|art)|banner images?|og images?)\b",
+    re.IGNORECASE,
+)
+NON_IMAGE_TASK = re.compile(
+    r"程式|代碼|原始碼|腳本|函式|元件|組件|資料庫|寄信|寄送|發信|部署|登入|"
+    r"\b(?:python|javascript|typescript|script|code|function|component|react|css|html|sql|database|api|deploy|login|send(?:ing)?\s+(?:an?\s+)?e-?mails?)\b",
+    re.IGNORECASE,
+)
+NEGATED_IMAGE_REQUEST = re.compile(
+    r"(?:不要|不用|不需要|無需|禁止|勿|別)[^，,。；;\n]{0,8}(?:做|製作|生成|產生|產出|畫|繪製|設計)"
+    r"|\b(?:do not|don't|dont|never|no need to)\b[^.;\n]{0,20}\b(?:make|create|generate|render|draw|paint|design)\b",
+    re.IGNORECASE,
+)
 MAX_PROMPT_CHARS = 8000
 MUTATING_ACTIONS = ("prepare", "configure", "execute", "review-assist", "quality-check", "feedback", "repair", "quality-loop", "compare")
 ACTIONS = {*MUTATING_ACTIONS, "preflight", "discover"}
@@ -53,6 +73,15 @@ def explicit_output_budget(prompt: str) -> int | None:
 
 def output_budget(prompt: str) -> int:
     return explicit_output_budget(prompt) or 1
+
+
+def image_deliverable_request(text: str) -> bool:
+    return (bool(IMAGE_REQUEST.search(text)) and not NON_IMAGE_TASK.search(text)
+            and not NEGATED_IMAGE_REQUEST.search(text))
+
+
+def other_task(text: str) -> bool:
+    return bool(OTHER_TASK.search(text)) and not image_deliverable_request(text)
 
 
 class PolicyError(ValueError):
@@ -112,7 +141,9 @@ def _authorize_texts(texts: list[str], action: str) -> dict[str, Any]:
                 generation, active = generation or bool(GENERATE.search(text)), True
             else:
                 anchor, generation, active = text, bool(GENERATE.search(text)), True
-        elif task["intent"] in {"plan", "publish", "delete"} or OTHER_TASK.search(text):
+        elif image_deliverable_request(text) and task["intent"] not in {"plan", "publish", "delete", "read"}:
+            anchor, generation, active = text, True, True
+        elif task["intent"] in {"plan", "publish", "delete"} or other_task(text):
             anchor, generation, active = "", False, False
         elif anchor and CONTINUE.search(text):
             active = True
@@ -122,7 +153,7 @@ def _authorize_texts(texts: list[str], action: str) -> dict[str, Any]:
         else:
             anchor, generation, active = "", False, False
     if action in {"feedback", "compare"}:
-        allowed = bool(latest) and (action == "compare" or not CREATIVE_READ_ONLY.search(latest.strip())) and not STOP.search(latest) and not OTHER_TASK.search(latest) and bool(FEEDBACK.search(latest) or VISUAL_REVIEW.search(latest))
+        allowed = bool(latest) and (action == "compare" or not CREATIVE_READ_ONLY.search(latest.strip())) and not STOP.search(latest) and not other_task(latest) and bool(FEEDBACK.search(latest) or VISUAL_REVIEW.search(latest))
         return {"allowed": allowed, "reason_code": "creative_request_authorized" if allowed else "creative_intent_required", "inherited": False, "basis_prompt": latest if allowed else ""}
     allowed = active and bool(anchor) and (action != "execute" or generation)
     if action == "repair":
@@ -130,16 +161,16 @@ def _authorize_texts(texts: list[str], action: str) -> dict[str, Any]:
     if action == "quality-loop":
         allowed = allowed and generation and bool(AUTO_REPAIR.search(latest)) and not AUTO_REPAIR_NEGATED.search(latest)
     if action == "prepare" and anchor:
-        allowed = allowed and classify_task(anchor)["intent"] == "create"
+        allowed = allowed and (classify_task(anchor)["intent"] == "create" or image_deliverable_request(anchor))
     if action == "review-assist":
         review_task = classify_task(latest)
-        allowed = bool(latest) and review_task["domain"] == "creative" and bool(VISUAL_REVIEW.search(latest)) and not STOP.search(latest) and not OTHER_TASK.search(latest)
+        allowed = bool(latest) and review_task["domain"] == "creative" and bool(VISUAL_REVIEW.search(latest)) and not STOP.search(latest) and not other_task(latest)
         anchor = latest if allowed else ""
         active = allowed
     if action == "quality-check":
         review_task = classify_task(latest)
         allowed = (active and generation) or (review_task["domain"] == "creative" and bool(VISUAL_REVIEW.search(latest)))
-        allowed = allowed and not STOP.search(latest) and not OTHER_TASK.search(latest)
+        allowed = allowed and not STOP.search(latest) and not other_task(latest)
     return {
         "allowed": bool(allowed),
         "reason_code": "creative_request_authorized" if allowed else "creative_intent_required",
@@ -181,7 +212,7 @@ def _continuation_result(text: str, pending: Any) -> dict[str, Any] | None:
             "continuation": None,
             "reason_code": "creative_scope_expansion",
         }
-    if (STOP.search(text) or OTHER_TASK.search(text)
+    if (STOP.search(text) or other_task(text)
             or task["intent"] in {"plan", "publish", "delete"}):
         return None
     requested = explicit_output_budget(text)
@@ -195,7 +226,7 @@ def _continuation_result(text: str, pending: Any) -> dict[str, Any] | None:
             "continuation": None,
             "reason_code": "creative_output_limit_exceeded",
         }
-    if (GENERATE.search(text) and not CREATIVE_TARGET.search(text)
+    if ((GENERATE.search(text) or image_deliverable_request(text)) and not CREATIVE_TARGET.search(text)
             and not re.fullmatch(r"(?:繼續|繼續生成|再生成|請生成|生成|continue|generate)", text.strip(), re.IGNORECASE)):
         return {
             "active": False,

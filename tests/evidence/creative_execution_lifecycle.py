@@ -708,6 +708,7 @@ def comfy_cases(base: Path):
         with patch.object(creative, "COMFY_PROFILE_REGISTRY_PATH", future_registry_path):
             future_ready = creative.preflight(future_project, future_bundle.name)
         require(future_ready["status"] == "READY" and future_ready["model_id"] == "future-klein-base", "data-only model profile could not reuse the audited FLUX 3 topology family")
+        profile_parameter_cases(base / "profile-parameters", flux3_config, flux3_bundle_data)
         FakeComfyHandler.flux3 = False
         FakeComfyHandler.extra_unets = []
         FakeComfyHandler.extra_clips = []
@@ -715,6 +716,169 @@ def comfy_cases(base: Path):
         server.shutdown()
         server.server_close()
         thread.join(timeout=2)
+
+
+def _patched_registry(base: Path, name: str, mutate) -> Path:
+    registry = yaml.safe_load(creative.COMFY_PROFILE_REGISTRY_PATH.read_text(encoding="utf-8"))
+    mutate(registry)
+    path = base / f"{name}.yaml"
+    path.write_text(yaml.safe_dump(registry, sort_keys=False), encoding="utf-8")
+    return path
+
+
+def profile_parameter_cases(base: Path, flux3_config: dict, flux3_bundle: dict) -> None:
+    """Sampler/upsampler values come from profile data bounded by family data; budgets gate submission."""
+    base.mkdir(parents=True)
+    flux3_project = fixture_project(base / "flux3")
+    flux3_workflow(flux3_project, flux3_config["workflow_path"])
+    write_bundle(flux3_project, **{key: value for key, value in flux3_bundle.items() if key != "model"}, model=flux3_bundle["model"])
+    # Equivalence: the registered profiles resolve to the exact values the executor hard-coded before.
+    legacy = {
+        "z-image-turbo": ({"steps": None, "cfg": 1, "sampler_name": "res_multistep", "scheduler": "simple", "denoise": 1}, {}),
+        "flux3-image-klein-base-int8": ({"steps": 50, "cfg": 3.5, "sampler_name": "euler", "scheduler": "simple", "denoise": 1}, {"max_length": 1024}),
+        "flux3-image-klein-distilled-int8": ({"steps": 16, "cfg": 1, "sampler_name": "euler", "scheduler": "simple", "denoise": 1}, {"max_length": 1024}),
+    }
+    for profile_id, (sampler, upsampler) in legacy.items():
+        profile = creative.load_comfy_profile(profile_id)
+        require(profile["sampler"] == sampler and profile["upsampler"] == upsampler and "runtime_budget" not in profile,
+                f"{profile_id} no longer resolves to its pre-parameterization sampler/upsampler values")
+        estimate = creative.comfy_runtime_estimate({"steps": 8}, profile)
+        require(estimate["status"] == "UNESTIMATED" and estimate["timeout_seconds"] == 900 and estimate["timeout_source"] == "default",
+                f"{profile_id} without a runtime budget must keep the 900 second default and stay unestimated")
+        require(creative.effective_timeout_seconds({"timeout_seconds": 10}, profile) == 10, "explicit Bundle timeout must keep precedence")
+    base_ready = creative.preflight(flux3_project, "creative-bundle.yaml")
+    require(base_ready["status"] == "READY" and base_ready["timeout_seconds"] == flux3_bundle["timeout_seconds"]
+            and base_ready["runtime_budget"]["status"] == "UNESTIMATED", "Base preflight changed its timeout or budget status")
+    flux_root = flux3_project.resolve(strict=True)
+    flux_path = flux3_project / flux3_config["workflow_path"]
+    original_flux = flux_path.read_text(encoding="utf-8")
+    short_flux = json.loads(original_flux)
+    short_flux["5"]["inputs"]["max_length"] = 48
+    flux_path.write_text(json.dumps(short_flux), encoding="utf-8")
+    expect_blocked(lambda: creative.load_comfy_workflow(flux_root, flux3_config), "Base profile accepted a workflow upsampler token length other than its registered 1024")
+
+    # A same-family variant needs only profile data: fewer steps and a 48-token upsampler.
+    def add_variant(registry):
+        variant = {**registry["profiles"]["flux3-image-klein-base-int8"]}
+        variant["sampler"] = {**variant["sampler"], "steps": 30}
+        variant["upsampler"] = {"max_length": 48}
+        variant["runtime_budget"] = {"upsampler_token_cap": 64, "timeout_seconds": 1200}
+        registry["profiles"]["flux3-klein-base-fast"] = variant
+    variant_registry = _patched_registry(base, "variant", add_variant)
+    short_flux["9"]["inputs"]["steps"] = 30
+    flux_path.write_text(json.dumps(short_flux), encoding="utf-8")
+    variant_config = {**flux3_config, "model_profile": "flux3-klein-base-fast"}
+    with patch.object(creative, "COMFY_PROFILE_REGISTRY_PATH", variant_registry):
+        _, info = creative.load_comfy_workflow(flux_root, variant_config)
+        require(info["profile"]["upsampler"]["max_length"] == 48 and info["profile"]["sampler"]["steps"] == 30,
+                "data-only FLUX variant did not supply its own sampler steps and upsampler tokens")
+        require(creative.effective_timeout_seconds({}, info["profile"]) == 1200, "profile timeout was not used when the Bundle omits timeout_seconds")
+        short_flux["5"]["inputs"]["max_length"] = 1024
+        flux_path.write_text(json.dumps(short_flux), encoding="utf-8")
+        expect_blocked(lambda: creative.load_comfy_workflow(flux_root, variant_config), "variant accepted a workflow token length that differs from its profile")
+    flux_path.write_text(original_flux, encoding="utf-8")
+
+    # Z-Image family: the validator reads sampler values from the profile instead of fixed literals.
+    zimage_project = fixture_project(base / "zimage")
+    zimage_path = zimage_workflow(zimage_project)
+    zimage_root = zimage_project.resolve(strict=True)
+    zimage_config = {"base_url": "http://127.0.0.1:8188", "workflow_path": zimage_path.name, "model_profile": "z-image-turbo", "model_id": "z-image-turbo",
+                     "unet_name": "z_image_turbo_bf16.safetensors", "clip_name": "qwen_3_4b.safetensors", "vae_name": "ae.safetensors",
+                     "prompt_node_id": "27", "latent_node_id": "13", "sampler_node_id": "3", "save_node_id": "9"}
+    creative.load_comfy_workflow(zimage_root, zimage_config)
+    zimage_variant_flow = json.loads(zimage_path.read_text(encoding="utf-8"))
+    zimage_variant_flow["3"]["inputs"].update({"cfg": 4, "sampler_name": "euler", "steps": 30})
+    zimage_path.write_text(json.dumps(zimage_variant_flow), encoding="utf-8")
+    expect_blocked(lambda: creative.load_comfy_workflow(zimage_root, zimage_config), "Z-Image Turbo accepted sampler values outside its registered profile")
+
+    def add_zimage_variant(registry):
+        variant = {**registry["profiles"]["z-image-turbo"], "model_id": "z-image-variant"}
+        variant["sampler"] = {**variant["sampler"], "steps": 30, "cfg": 4, "sampler_name": "euler"}
+        registry["profiles"]["z-image-variant"] = variant
+    zimage_registry = _patched_registry(base, "zimage-variant", add_zimage_variant)
+    with patch.object(creative, "COMFY_PROFILE_REGISTRY_PATH", zimage_registry):
+        _, zinfo = creative.load_comfy_workflow(zimage_root, {**zimage_config, "model_profile": "z-image-variant", "model_id": "z-image-variant"})
+        require(zinfo["profile"]["sampler"]["cfg"] == 4, "Z-Image family variant was not accepted as profile data")
+        zimage_variant_flow["3"]["inputs"]["steps"] = 12
+        zimage_path.write_text(json.dumps(zimage_variant_flow), encoding="utf-8")
+        expect_blocked(lambda: creative.load_comfy_workflow(zimage_root, {**zimage_config, "model_profile": "z-image-variant", "model_id": "z-image-variant"}),
+                       "Z-Image variant with fixed profile steps accepted different workflow steps")
+
+    # Family and profile values stay inside declared and executor-owned bounds.
+    def profile_edit(profile_id: str, **changes):
+        def mutate(registry):
+            profile = {**registry["profiles"][profile_id]}
+            for key, value in changes.items():
+                profile[key] = {**profile.get(key, {}), **value} if isinstance(value, dict) else value
+            registry["profiles"]["candidate"] = profile
+        return mutate
+
+    invalid_profiles = {
+        "cfg above family range": profile_edit("flux3-image-klein-base-int8", sampler={"cfg": 31}),
+        "sampler outside family enum": profile_edit("flux3-image-klein-base-int8", sampler={"sampler_name": "dpmpp_2m"}),
+        "boolean denoise": profile_edit("flux3-image-klein-base-int8", sampler={"denoise": True}),
+        "null steps on FLUX": profile_edit("flux3-image-klein-base-int8", sampler={"steps": None}),
+        "upsampler tokens above family range": profile_edit("flux3-image-klein-base-int8", upsampler={"max_length": 8192}),
+        "upsampler on Z-Image": profile_edit("z-image-turbo", upsampler={"max_length": 48}),
+        "upsampler token cap below max_length": profile_edit("flux3-image-klein-base-int8", runtime_budget={"upsampler_token_cap": 512}),
+        "upsampler budget on Z-Image": profile_edit("z-image-turbo", runtime_budget={"estimated_upsampler_seconds_per_token": 0.1}),
+        "timeout above ceiling": profile_edit("flux3-image-klein-base-int8", runtime_budget={"timeout_seconds": 3601}),
+        "unknown budget field": profile_edit("flux3-image-klein-base-int8", runtime_budget={"interrupt": True}),
+        "unknown profile field": profile_edit("flux3-image-klein-base-int8", nodes={"99": "CustomNode"}),
+        "input image operation": profile_edit("flux3-image-klein-base-int8", operation="edit"),
+    }
+    invalid_families = {
+        "family widened past executor ceiling": lambda registry: registry["topology_families"]["flux3_klein_t2i"]["sampler"]["steps"].update({"max": 1000}),
+        "family enum with unsafe value": lambda registry: registry["topology_families"]["flux3_klein_t2i"]["sampler"]["sampler_name"].update({"enum": ["euler; rm"]}),
+        "family missing upsampler default": lambda registry: registry["topology_families"]["flux3_klein_t2i"]["upsampler"]["max_length"].pop("default"),
+        "family missing sampler field": lambda registry: registry["topology_families"]["flux3_klein_t2i"]["sampler"].pop("denoise"),
+        "family declared upsampler on Z-Image": lambda registry: registry["topology_families"]["z_image_split_loader"].update({"upsampler": {"max_length": {"type": "integer", "min": 1, "max": 64, "default": 8}}}),
+    }
+    for profile_id in ("flux3-image-klein-base-int8", "z-image-turbo"):
+        with patch.object(creative, "COMFY_PROFILE_REGISTRY_PATH", _patched_registry(base, "control-" + profile_id, profile_edit(profile_id))):
+            require(creative.load_comfy_profile("candidate")["topology"], "unmodified candidate control profile was rejected")
+    for name, mutate in invalid_profiles.items():
+        with patch.object(creative, "COMFY_PROFILE_REGISTRY_PATH", _patched_registry(base, "invalid-" + str(abs(hash(name))), mutate)):
+            expect_blocked(lambda: creative.load_comfy_profile("candidate"), f"invalid profile passed validation: {name}")
+    for name, mutate in invalid_families.items():
+        with patch.object(creative, "COMFY_PROFILE_REGISTRY_PATH", _patched_registry(base, "family-" + str(abs(hash(name))), mutate)):
+            profile_id = "z-image-turbo" if "Z-Image" in name else "flux3-image-klein-base-int8"
+            expect_blocked(lambda profile_id=profile_id: creative.load_comfy_profile(profile_id), f"invalid family passed validation: {name}")
+    unknown = _patched_registry(base, "unknown-family", lambda registry: registry["topology_families"].update({"custom_topology": registry["topology_families"]["flux3_klein_t2i"]})
+                                or registry["profiles"].update({"candidate": {**registry["profiles"]["flux3-image-klein-base-int8"], "topology": "custom_topology"}}))
+    with patch.object(creative, "COMFY_PROFILE_REGISTRY_PATH", unknown):
+        expect_blocked(lambda: creative.load_comfy_profile("candidate"), "registry data registered a topology family the executor has not reviewed")
+
+    # Runtime budget: a profile estimate over the effective timeout blocks before any submission.
+    prompts_before = FakeComfyHandler.prompts
+    budgets = {
+        # 8.5 + 0.1 s/step * 50 steps * (64x64 px / 0.01 MP reference) = 10.548 s > 10 s Bundle timeout.
+        "over": ({"estimated_overhead_seconds": 8.5, "estimated_seconds_per_step": 0.1, "reference_megapixels": 0.01}, "BLOCKED"),
+        "near": ({"estimated_overhead_seconds": 9}, "WARNING"),
+        "within": ({"estimated_overhead_seconds": 1, "estimated_upsampler_seconds_per_token": 0.001}, "WITHIN_BUDGET"),
+    }
+    for name, (budget, expected) in budgets.items():
+        registry_path = _patched_registry(base, "budget-" + name, lambda registry, budget=budget:
+                                          registry["profiles"]["flux3-image-klein-base-int8"].update({"runtime_budget": budget}))
+        with patch.object(creative, "COMFY_PROFILE_REGISTRY_PATH", registry_path):
+            if expected == "BLOCKED":
+                for action in (lambda: creative.preflight(flux3_project, "creative-bundle.yaml"), lambda: creative.execute(flux3_project, "creative-bundle.yaml")):
+                    try:
+                        action()
+                    except creative.Blocked as exc:
+                        payload = exc.to_payload()
+                        require(exc.reason_code == "comfy_runtime_budget_exceeded" and exc.phase == "creative.runtime_budget",
+                                f"over-budget profile did not return a stable pre-submission reason: {exc.reason_code}")
+                        details = payload["diagnostics"]["runtime_budget"]
+                        require(details["estimated_seconds"] == 10.5 and details["timeout_seconds"] == 10
+                                and details["recommended_timeout_seconds"] == 14 and details["steps"] == 50
+                                and "private creative prompt" not in repr(payload), "budget diagnostics were incomplete or leaked the prompt")
+                    else:
+                        raise AssertionError("over-budget profile was accepted")
+            else:
+                ready = creative.preflight(flux3_project, "creative-bundle.yaml")
+                require(ready["status"] == "READY" and ready["runtime_budget"]["status"] == expected, f"runtime budget {name} did not report {expected}")
+    require(FakeComfyHandler.prompts == prompts_before, "runtime budget checks submitted a ComfyUI workflow")
 
 
 def output_magic(path: Path) -> bool:

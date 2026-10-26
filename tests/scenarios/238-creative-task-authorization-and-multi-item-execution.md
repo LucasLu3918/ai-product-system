@@ -14,6 +14,8 @@ Given the original Chinese request asks for two characters and the assistant req
 
 Given a pending creative clarification, when the user cancels, switches to software work, changes Session root, requests more characters or exceeds the output count, then continuation is revoked or denied and no extra output is authorized.
 
+Given a prompt asks for an image whose destination is a website or email (for example `幫網站做一張封面圖` or `make a hero image for my website`), when OpenCode prompt admission evaluates it, then the website/email word alone does not deny the creative grant; prompts that also carry code, data, login, deploy or send-email markers, negation, or no image deliverable remain non-creative, and such a request during an active character continuation is a scope expansion. The plugin's separate Turn Context classification check still applies.
+
 Given local engine probing returns a timeout, nonzero version command, unrecognized version or missing executable, when diagnostics are reported, then command availability, process health and version parsing remain distinct; no diagnostic claims model inference or visual quality.
 
 Evidence: scripts/creative_request_policy.py, scripts/creative_execution.py, harness/adapters/opencode/plugin.ts, tests/evidence/creative_request_policy_lifecycle.py, tests/evidence/creative_generate_set_lifecycle.py, tests/evidence/opencode_native_acceptance.py.

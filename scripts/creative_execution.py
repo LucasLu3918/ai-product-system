@@ -86,15 +86,26 @@ COMFY_PROFILE_COMPONENT_KEYS = {
     "z_image_split_loader": {"unet_name", "clip_name", "vae_name"},
     "flux3_klein_t2i": {"unet_name", "clip_name", "prompt_upsampler_name", "vae_name"},
 }
-COMFY_PROFILE_FAMILY_SETTINGS = {
-    "z_image_split_loader": {"clip_type": "lumina2", "sampler": {
-        "steps": None, "cfg": 1, "sampler_name": "res_multistep", "scheduler": "simple", "denoise": 1,
-    }},
-    "flux3_klein_t2i": {"clip_type": "flux3", "sampler": {
-        "steps": (1, 100), "cfg": (0, 30), "sampler_name": {"euler"},
-        "scheduler": {"simple"}, "denoise": (0, 1),
-    }},
+COMFY_TOPOLOGY_CLIP_TYPES = {"z_image_split_loader": "lumina2", "flux3_klein_t2i": "flux3"}
+COMFY_UPSAMPLER_TOPOLOGIES = {"flux3_klein_t2i"}
+# Executor-owned ceilings. Registry topology families may only narrow them.
+COMFY_SAMPLER_HARD_LIMITS: dict[str, tuple[str, float, float]] = {
+    "steps": ("integer", 1, 100), "cfg": ("number", 0, 30), "denoise": ("number", 0, 1),
+    "sampler_name": ("enum", 0, 0), "scheduler": ("enum", 0, 0),
 }
+COMFY_UPSAMPLER_HARD_LIMITS: dict[str, tuple[str, float, float]] = {"max_length": ("integer", 1, 4096)}
+COMFY_ENUM_VALUE = re.compile(r"^[a-z0-9][a-z0-9_]{0,63}$")
+COMFY_DEFAULT_TIMEOUT_SECONDS = 900
+COMFY_RUNTIME_WARNING_RATIO = 0.8
+COMFY_RUNTIME_BUDGET_FIELDS: dict[str, tuple[str, float, float]] = {
+    "timeout_seconds": ("integer", 1, MAX_TIMEOUT_SECONDS),
+    "estimated_overhead_seconds": ("number", 0, MAX_TIMEOUT_SECONDS),
+    "estimated_seconds_per_step": ("number", 0, 600),
+    "reference_megapixels": ("number", 0.01, 16),
+    "estimated_upsampler_seconds_per_token": ("number", 0, 10),
+    "upsampler_token_cap": ("integer", 1, 4096),
+}
+COMFY_UPSAMPLER_BUDGET_FIELDS = {"estimated_upsampler_seconds_per_token", "upsampler_token_cap"}
 MFLUX_CAPABILITIES: dict[str, dict[str, dict[str, str | None]]] = {
     # Keep executable names and argument shapes fixed. Model IDs never become
     # command fragments, and unsupported model/operation pairs fail closed.
@@ -430,6 +441,113 @@ def local_request(url: str, *, data: bytes | None = None, headers: dict[str, str
                                      source=service) from exc
 
 
+def _bounded_number(value: Any, kind: str, low: float, high: float) -> bool:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return False
+    if kind == "integer" and not isinstance(value, int):
+        return False
+    return low <= value <= high
+
+
+def _comfy_family_specs(raw: Any, limits: dict[str, tuple[str, float, float]]) -> dict[str, dict[str, Any]] | None:
+    """Validate one declared family block against the executor-owned ceilings."""
+    if not isinstance(raw, dict) or set(raw) != set(limits):
+        return None
+    specs: dict[str, dict[str, Any]] = {}
+    for key, spec in raw.items():
+        kind, low, high = limits[key]
+        if not isinstance(spec, dict):
+            return None
+        if kind == "enum":
+            values = spec.get("enum")
+            if (set(spec) != {"enum"} or not isinstance(values, list) or not values or len(values) > 16
+                    or any(not isinstance(item, str) or not COMFY_ENUM_VALUE.fullmatch(item) for item in values)):
+                return None
+        elif (not set(spec) <= {"type", "min", "max", "nullable", "default"} or spec.get("type") != kind
+              or not _bounded_number(spec.get("min"), kind, low, high)
+              or not _bounded_number(spec.get("max"), kind, low, high) or spec["min"] > spec["max"]
+              or not isinstance(spec.get("nullable", False), bool)
+              or ("default" in spec and not _bounded_number(spec["default"], kind, spec["min"], spec["max"]))):
+            return None
+        specs[key] = spec
+    return specs
+
+
+def _comfy_value_allowed(value: Any, spec: dict[str, Any]) -> bool:
+    if "enum" in spec:
+        return isinstance(value, str) and value in spec["enum"]
+    if value is None:
+        return spec.get("nullable", False) is True
+    return _bounded_number(value, spec["type"], spec["min"], spec["max"])
+
+
+def load_comfy_topology_family(registry: Any, topology: Any) -> dict[str, Any] | None:
+    """Return a registry-declared value family only for an executor-reviewed topology."""
+    if topology not in COMFY_PROFILE_COMPONENT_KEYS:
+        return None
+    families = registry.get("topology_families") if isinstance(registry, dict) else None
+    raw = families.get(topology) if isinstance(families, dict) else None
+    has_upsampler = topology in COMFY_UPSAMPLER_TOPOLOGIES
+    if not isinstance(raw, dict) or set(raw) != ({"sampler", "upsampler"} if has_upsampler else {"sampler"}):
+        return None
+    sampler = _comfy_family_specs(raw["sampler"], COMFY_SAMPLER_HARD_LIMITS)
+    upsampler = _comfy_family_specs(raw["upsampler"], COMFY_UPSAMPLER_HARD_LIMITS) if has_upsampler else {}
+    if sampler is None or upsampler is None or (has_upsampler and "default" not in upsampler["max_length"]):
+        return None
+    return {"clip_type": COMFY_TOPOLOGY_CLIP_TYPES[topology], "sampler": sampler, "upsampler": upsampler}
+
+
+def _comfy_runtime_budget_valid(budget: Any, topology: Any, upsampler: dict[str, Any]) -> bool:
+    if budget is None:
+        return True
+    allowed = set(COMFY_RUNTIME_BUDGET_FIELDS)
+    if topology not in COMFY_UPSAMPLER_TOPOLOGIES:
+        allowed -= COMFY_UPSAMPLER_BUDGET_FIELDS
+    if not isinstance(budget, dict) or not budget or not set(budget) <= allowed:
+        return False
+    if any(not _bounded_number(value, *COMFY_RUNTIME_BUDGET_FIELDS[key]) for key, value in budget.items()):
+        return False
+    cap = budget.get("upsampler_token_cap")
+    return cap is None or upsampler.get("max_length", 0) <= cap
+
+
+def effective_timeout_seconds(bundle: dict[str, Any], profile: dict[str, Any] | None = None) -> int:
+    """An explicit Bundle timeout wins; otherwise the profile timeout, otherwise 900 seconds."""
+    if "timeout_seconds" in bundle:
+        return bundle["timeout_seconds"]
+    budget = (profile or {}).get("runtime_budget") or {}
+    return budget.get("timeout_seconds", COMFY_DEFAULT_TIMEOUT_SECONDS)
+
+
+def comfy_runtime_estimate(bundle: dict[str, Any], profile: dict[str, Any]) -> dict[str, Any]:
+    """Return a static, pre-submission runtime estimate for one registered profile run."""
+    budget = profile.get("runtime_budget") or {}
+    timeout = effective_timeout_seconds(bundle, profile)
+    source = "bundle" if "timeout_seconds" in bundle else "profile" if "timeout_seconds" in budget else "default"
+    steps = profile["sampler"].get("steps")
+    if steps is None:
+        steps = bundle.get("steps", 20)
+    max_length = profile.get("upsampler", {}).get("max_length")
+    result: dict[str, Any] = {"timeout_seconds": timeout, "timeout_source": source, "steps": steps,
+                              "upsampler_max_length": max_length, "basis": "profile_static_estimate"}
+    rate_keys = {"estimated_overhead_seconds", "estimated_seconds_per_step", "estimated_upsampler_seconds_per_token"}
+    if not rate_keys & set(budget):
+        return {**result, "status": "UNESTIMATED", "reason_code": "comfy_runtime_budget_unestimated", "estimated_seconds": None}
+    megapixels = bundle.get("width", 1024) * bundle.get("height", 1024) / 1_000_000
+    scale = megapixels / budget.get("reference_megapixels", 1.0)
+    estimate = (budget.get("estimated_overhead_seconds", 0)
+                + budget.get("estimated_seconds_per_step", 0) * steps * scale
+                + budget.get("estimated_upsampler_seconds_per_token", 0) * (max_length or 0))
+    if estimate > timeout:
+        status, reason = "BLOCKED", "comfy_runtime_budget_exceeded"
+    elif estimate > timeout * COMFY_RUNTIME_WARNING_RATIO:
+        status, reason = "WARNING", "comfy_runtime_budget_near_limit"
+    else:
+        status, reason = "WITHIN_BUDGET", "comfy_runtime_budget_ok"
+    return {**result, "status": status, "reason_code": reason, "estimated_seconds": round(estimate, 1),
+            "recommended_timeout_seconds": min(MAX_TIMEOUT_SECONDS, max(timeout, int(estimate * 1.25) + 1))}
+
+
 def load_comfy_profile(profile_id: str) -> dict[str, Any]:
     """Load one data-only model profile from the trusted AIPS registry."""
     if not isinstance(profile_id, str) or not profile_id.strip() or len(profile_id) > 96:
@@ -443,37 +561,32 @@ def load_comfy_profile(profile_id: str) -> dict[str, Any]:
     if not isinstance(profile, dict):
         raise Blocked("comfy_model_profile_invalid", "ComfyUI model profile is not registered.")
     topology = profile.get("topology")
-    family = COMFY_PROFILE_FAMILY_SETTINGS.get(topology)
+    family = load_comfy_topology_family(registry, topology)
     model_id = profile.get("model_id")
     components = profile.get("components")
     sampler = profile.get("sampler")
-    sampler_valid = isinstance(sampler, dict) and set(sampler) == set(family["sampler"]) if family else False
-    if sampler_valid:
-        for key, allowed in family["sampler"].items():
-            value = sampler[key]
-            if allowed is None:
-                valid_value = value is None
-            elif isinstance(allowed, tuple):
-                valid_value = (isinstance(value, (int, float)) and not isinstance(value, bool)
-                               and (key != "steps" or isinstance(value, int))
-                               and allowed[0] <= value <= allowed[1])
-            elif isinstance(allowed, (int, float)) and not isinstance(allowed, bool):
-                valid_value = isinstance(value, (int, float)) and not isinstance(value, bool) and value == allowed
-            else:
-                valid_value = value in allowed if isinstance(value, str) else False
-            if not valid_value:
-                sampler_valid = False
-                break
-    if (family is None or not isinstance(model_id, str) or not model_id.strip() or len(model_id) > 128
+    sampler_valid = family is not None and isinstance(sampler, dict) and set(sampler) == set(family["sampler"]) and all(
+        _comfy_value_allowed(sampler[key], spec) for key, spec in family["sampler"].items())
+    raw_upsampler = profile.get("upsampler", {})
+    upsampler: dict[str, Any] = {}
+    upsampler_valid = family is not None and isinstance(raw_upsampler, dict) and set(raw_upsampler) <= set(family["upsampler"])
+    if upsampler_valid and family is not None:
+        for key, spec in family["upsampler"].items():
+            upsampler[key] = raw_upsampler.get(key, spec["default"])
+            upsampler_valid = upsampler_valid and _comfy_value_allowed(upsampler[key], spec)
+    allowed_keys = {"model_id", "topology", "operation", "components", "clip_type", "sampler", "upsampler", "runtime_budget"}
+    if (family is None or not set(profile) <= allowed_keys
+            or not isinstance(model_id, str) or not model_id.strip() or len(model_id) > 128
             or profile.get("operation") != "generate" or not isinstance(components, dict)
             or set(components) != COMFY_PROFILE_COMPONENT_KEYS[topology]
             or any(not isinstance(value, (str, list)) or not value
                    or any(not isinstance(name, str) or not name.strip() or Path(name).name != name or len(name) > 256
                           for name in (value if isinstance(value, list) else [value]))
                    for value in components.values())
-            or profile.get("clip_type") != family["clip_type"] or not sampler_valid):
+            or profile.get("clip_type") != family["clip_type"] or not sampler_valid or not upsampler_valid
+            or not _comfy_runtime_budget_valid(profile.get("runtime_budget"), topology, upsampler)):
         raise Blocked("comfy_model_profile_invalid", "ComfyUI model profile does not match an audited topology family.")
-    return profile
+    return {**profile, "upsampler": upsampler}
 
 
 def comfy_component_matches(profile: dict[str, Any], key: str, selected: Any) -> bool:
@@ -707,8 +820,8 @@ def load_comfy_workflow(root: Path, config: Any) -> tuple[str, dict[str, Any]]:
         if (unet["unet_name"] != config["unet_name"] or unet["weight_dtype"] != "default"
                 or clip["clip_name"] != config["clip_name"] or clip["type"] != profile["clip_type"] or clip["device"] != "default"
                 or vae["vae_name"] != config["vae_name"] or sampling["shift"] != 3 or latent.get("batch_size") != 1
-                or sampler.get("cfg") != 1 or sampler.get("sampler_name") != "res_multistep"
-                or sampler.get("scheduler") != "simple" or sampler.get("denoise") != 1):
+                or any(sampler.get(key) != value for key, value in profile["sampler"].items() if key != "steps")
+                or (profile["sampler"]["steps"] is not None and sampler.get("steps") != profile["sampler"]["steps"])):
             raise Blocked("comfy_model_profile_invalid", "Z-Image Turbo workflow model files or fixed sampler profile do not match configuration.")
         link = lambda node_id: [node_id, 0]
         links = ((sampling, "model", link(unet_id)), (sampler, "model", link(sampling_id)), (text, "clip", link(clip_id)),
@@ -759,7 +872,8 @@ def load_comfy_workflow(root: Path, config: Any) -> tuple[str, dict[str, Any]]:
                        for _, inputs in by_type["CLIPLoader"])
                 or unet.get("unet_name") != config["unet_name"] or unet.get("weight_dtype") != "default"
                 or vae.get("vae_name") != config["vae_name"] or latent.get("batch_size") != 1
-                or textgen.get("clip") != [upsampler_node[0], 0] or textgen.get("max_length") != 1024
+                or textgen.get("clip") != [upsampler_node[0], 0]
+                or textgen.get("max_length") != profile["upsampler"]["max_length"]
                 or textgen.get("sampling_mode") != "off" or textgen.get("thinking") is not False
                 or textgen.get("use_default_template") is not True or textgen.get("mtp") != "off"
                 or not isinstance(textgen.get("system_prompt"), str) or not textgen["system_prompt"].strip()
@@ -878,6 +992,12 @@ def verify_comfy(root: Path, bundle: dict[str, Any]) -> tuple[str, dict[str, Any
     if profile is not None:
         if bundle["operation"] != profile["operation"] or bundle["model"]["id"] != profile["model_id"]:
             raise Blocked("comfy_model_profile_invalid", "The selected ComfyUI model profile does not match the Bundle model or operation.")
+        # Static estimate only: decide before any ComfyUI request or job submission.
+        info["runtime_budget"] = comfy_runtime_estimate(bundle, profile)
+        if info["runtime_budget"]["status"] == "BLOCKED":
+            raise Blocked("comfy_runtime_budget_exceeded",
+                          "The profile runtime estimate exceeds the effective timeout; raise timeout_seconds or choose a faster registered profile before submission.",
+                          {"runtime_budget": info["runtime_budget"]}, phase="creative.runtime_budget", source="profile")
     elif bundle["model"]["id"] != config["checkpoint_name"]:
         raise Blocked("comfy_checkpoint_invalid", "Bundle model id must match the selected ComfyUI checkpoint.")
     try:
@@ -1101,9 +1221,10 @@ def preflight(project: Path, bundle_path: str) -> dict[str, Any]:
         "operation": bundle["operation"], "output_path": bundle["output_path"],
         "output_scope": bundle["output_scope"], "overwrite": False,
         "max_attempts": bundle.get("max_retries", 0) + 1,
-        "timeout_seconds": bundle.get("timeout_seconds", 900),
+        "timeout_seconds": effective_timeout_seconds(bundle, resolved.get("profile")),
         "model_id": bundle["model"]["id"], "local_only": True,
         "model_recommendation": model_advice,
+        **({"runtime_budget": resolved["runtime_budget"]} if "runtime_budget" in resolved else {}),
     }
 
 
@@ -1887,7 +2008,7 @@ def execute(project: Path, bundle_path: str) -> dict[str, Any]:
                 if provider_name == "mflux_local":
                     mflux_execute(root, provider_bundle, provider, temp_output, remaining_timeout(bundle.get("timeout_seconds", 900)))
                 else:
-                    comfy_execute(provider_bundle, provider, temp_output, remaining_timeout(bundle.get("timeout_seconds", 900)))
+                    comfy_execute(provider_bundle, provider, temp_output, remaining_timeout(effective_timeout_seconds(bundle, provider.get("profile"))))
                 if not output_magic(temp_output):
                     raise Blocked("provider_output_invalid", "Local engine did not produce a supported image within the byte limit.")
                 break
