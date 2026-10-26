@@ -47,6 +47,15 @@ def command_form_detail(source: str) -> str:
         return "MULTI_COMMAND_UNSUPPORTED"
     if len(trees) > 1:
         return "MULTI_COMMAND_UNSUPPORTED"
+    if kinds & {"commandsubstitution", "processsubstitution"}:
+        return "PUBLICATION_ARGUMENT_DYNAMIC"
+    try:
+        _normalized, expansions = _mask_heredocs(inline_literal_heredocs(source))
+    except CommandError:
+        return "UNSUPPORTED_HEREDOC"
+    if expansions:
+        # An unquoted heredoc expands variables and substitutions, so its text cannot be bound.
+        return "PUBLICATION_ARGUMENT_DYNAMIC"
     return "COMMAND_WRAPPER_UNSUPPORTED"
 
 
@@ -283,7 +292,7 @@ def shell_commands(source: str, *, mark_dynamic: bool = False) -> list[list[str]
                 # Dynamic executable/arguments cannot bind an exact publication action.
                 if _unquoted_expansion(raw):
                     argv.append('\0shell-expansion:' + raw)
-                elif getattr(word, "parts", None) or (mark_dynamic and raw.startswith("$'")):
+                elif getattr(word, "parts", None) or (mark_dynamic and raw.startswith(("$'", '$"'))):
                     argv.append('\0' + raw if mark_dynamic else raw)
                 else:
                     try:

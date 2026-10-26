@@ -213,7 +213,7 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
-Claude Code 的 managed publication Hook 在八秒內完成檢查；逾時會以安全 phase 與耗時回報 fail-closed 拒絕，不會自動重試。受保護的 push 前先執行 `aips publish prepare`，讓 Hook 使用五分鐘內、綁定精確候選的私有掃描證據。
+Claude Code 的 managed publication Hook 在八秒內完成檢查；逾時會以安全 phase 與耗時回報 fail-closed 拒絕，不會自動重試。受保護的 push 前先執行 `aips publish prepare`，讓 Hook 使用 30 分鐘內、綁定精確候選的私有掃描證據；Prepare 會為它規劃的 push 或 PR 建立各自綁定的證據。Claude Code 的標準發布寫法見 `harness/adapters/claude-code/CLAUDE.md`。
 
 FLUX 3 Klein 的 `TextGenerate` runtime schema 檢查由既有 Harness executor 執行，並在唯一一次 ComfyUI `/prompt` 請求前驗證最終工作流；預檢不會啟動生成。
 
@@ -767,7 +767,7 @@ Personal Mode 的逐次合併確認和 High-Assurance Mode 的外部 signed gran
 
 TTF、OTF、WOFF 與 WOFF2 字型也可通過有界 metadata 掃描；AIPS 會核對檔案簽章、格式、副檔名及解壓大小，並掃描字型名稱與廠商欄位。缺少解析套件、格式偽裝、損毀、超出上限或 metadata 命中 Secret／PII／Injection 規則時，commit 與發布都會阻擋。字型輸入上限為 8 MiB、宣告解壓上限為 32 MiB。
 
-發布前使用 `aips publish prepare --worktree <candidate-root> --title <title> --body-file <file>`；原生工具必須使用輸出的 `cwd` 與精確 `argv`。成功完成完整候選／歷史 Secret Scan 後，Prepare 會在 private user cache 寫入五分鐘有效的掃描 evidence，精確綁定 repo/worktree、base/head、operation、remote、full target ref、remote OID、diff、scanner 與 policy。Hook 每次仍重驗 Git／遠端／目標；缺少、過期、毀損或不相符 evidence 會拒絕並要求重新 Prepare。此 evidence 不授權推送，完整候選／歷史掃描仍由 Prepare 和 final Integration Gate 執行。`--expected-fingerprint` 可拒絕舊觀察，`--host-denied` 只回報 Host 拒絕，`--auto-merge` 只規劃 GitHub `--auto`，要求非空且全部通過的 required checks，並保留原生 Human 授權。每次續行重新查詢遠端分支與 PR；PLANNED 不是授權，也不是完整 Integration Gate PASS。個人模式接受帶 `-u`／`--set-upstream` 的 push，但仍要求精確 candidate SHA、唯一 origin 與完整同名工程 branch ref。
+發布前使用 `aips publish prepare --worktree <candidate-root> --title <title> --body-file <file>`；原生工具必須使用輸出的 `cwd` 與精確 `argv`。成功完成完整候選／歷史 Secret Scan 後，Prepare 會在 private user cache 寫入 30 分鐘有效的掃描 evidence，精確綁定 repo/worktree、base/head、operation、remote、full target ref、remote OID、diff、scanner 與 policy。Hook 每次仍重驗 Git／遠端／目標；缺少、過期、毀損或不相符 evidence 會拒絕並要求重新 Prepare。此 evidence 不授權推送，完整候選／歷史掃描仍由 Prepare 和 final Integration Gate 執行。`--expected-fingerprint` 可拒絕舊觀察，`--host-denied` 只回報 Host 拒絕，`--auto-merge` 只規劃 GitHub `--auto`，要求非空且全部通過的 required checks，並保留原生 Human 授權。每次續行重新查詢遠端分支與 PR；PLANNED 不是授權，也不是完整 Integration Gate PASS。個人模式接受帶 `-u`／`--set-upstream` 的 push，但仍要求精確 candidate SHA、唯一 origin 與完整同名工程 branch ref。
 
 Prepare 與 `aips publish diagnose` 會並列候選驗證、授權與執行狀態。`PLANNED` 代表只完成規劃；`AWAITING_AUTHORITY` 代表需要 Human grant；Hook 的 `AUTHORIZED` 只代表 AIPS Hook 放行，Host 仍可能拒絕且指令尚未執行；`EXECUTED` 只能由實際執行結果確認。`next_step: PUSH`、掃描通過或觀測指紋都不會授予權限。診斷包含安全的 worktree ID、候選 SHA、完整 target ref、publication mode 與 AIPS 版本／revision，僅供核對環境，不作為授權憑證。未知錯誤會回報 `INTERNAL_DIAGNOSTIC_GAP`；已知分支目標不一致會回報 `PUSH_TARGET_BRANCH_MISMATCH`，並提供繁中排除步驟。
 

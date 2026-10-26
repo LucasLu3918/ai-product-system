@@ -137,13 +137,24 @@ class PlanningTest(unittest.TestCase):
         self.git(self.repo, 'push', 'origin', self.head + ':refs/heads/codex/plan30')
         # _repo is mocked for local bare-Git fixtures; action still verifies the GitHub identity.
         real_action = auth.action
+        scopes = {}
         def action(root, operation, argv, base, **kwargs):
             if operation == 'gh_pr_create':
-                return {}
+                push = real_action(root, 'git_push', ['git', 'push', 'origin', self.head + ':refs/heads/codex/plan30'],
+                                   base, **kwargs)
+                scopes['pr'] = {**push, 'operations': ['gh_pr_create'], 'target_ref': 'refs/heads/main'}
+                return scopes['pr']
             return real_action(root, operation, argv, base, **kwargs)
         with patch.object(auth, 'action', side_effect=action):
             result = self.prepare()
         self.assertEqual(result['next_step'], 'CREATE_PR', result)
+        # The Hook requires evidence bound to the planned PR operation, not only to the earlier push.
+        import publication_scan_evidence
+        from check_secret_leakage import DEFAULT_POLICY, load_policy
+        policy_hash = load_policy(DEFAULT_POLICY)[1]
+        self.assertTrue(publication_scan_evidence.valid(self.repo, scopes['pr'], policy_digest=policy_hash))
+        self.assertFalse(publication_scan_evidence.valid(
+            self.repo, {**scopes['pr'], 'candidate_commit': '0' * 40}, policy_digest=policy_hash))
         argv = result['invocations'][0]['argv']
         for option in ('--repo', '--head', '--base', '--title', '--body-file'):
             self.assertIn(option, argv)
@@ -276,6 +287,8 @@ class PlanningTest(unittest.TestCase):
             ('pwd; git push origin main', 'COMMAND_FORM_UNSUPPORTED', 'MULTI_COMMAND_UNSUPPORTED'),
             ('git push origin main | cat', 'COMMAND_FORM_UNSUPPORTED', 'PIPE_UNSUPPORTED'),
             ('git push "', 'COMMAND_FORM_UNSUPPORTED', 'SHELL_SYNTAX_UNSUPPORTED'),
+            ('gh pr create --title t --body "$(cat <<EOF\n$HOME\nEOF\n)"', 'COMMAND_FORM_UNSUPPORTED', 'PUBLICATION_ARGUMENT_DYNAMIC'),
+            ('gh pr create --title t --body "$BODY"', 'COMMAND_FORM_UNSUPPORTED', 'PUBLICATION_ARGUMENT_DYNAMIC'),
         ]
         for command, code, detail_code in cases:
             with self.subTest(command=command):
@@ -307,7 +320,7 @@ class PlanningTest(unittest.TestCase):
             'status': 'NOT_EXECUTED', 'attempted': False, 'completed': False})
         candidate = result['candidate']
         self.assertEqual(result['observation']['scan_evidence']['status'], 'PASS')
-        self.assertEqual(result['observation']['scan_evidence']['expires_in_seconds'], 300)
+        self.assertEqual(result['observation']['scan_evidence']['expires_in_seconds'], 1800)
         self.assertEqual(candidate['candidate_sha'], self.head)
         self.assertEqual(candidate['worktree_id'], result['observation']['worktree_id'])
         self.assertEqual(candidate['target_ref'], 'refs/heads/codex/plan30')

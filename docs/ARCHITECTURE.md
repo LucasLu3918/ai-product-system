@@ -4,7 +4,7 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ## Runtime flow
 
-Claude Code publication PreToolUse uses a bounded eight-second decision path. Each push still checks the exact candidate, full target ref, remote tip and current authority; a fresh, five-minute private Secret Scan record can avoid only the duplicate Hook scan and never authorizes execution.
+Claude Code publication PreToolUse uses a bounded eight-second decision path. Each push still checks the exact candidate, full target ref, remote tip and current authority; a fresh, 30-minute private Secret Scan record can avoid only the duplicate Hook scan and never authorizes execution.
 
 Project-local AIPS state is opt-in through `aips attach`. In Git worktrees, attach/detach maintain anchored `.ai/` and `.ai.detached-*` entries in repository-local `info/exclude`; non-Git projects need no Git metadata, and project `.gitignore` remains untouched.
 

@@ -35,9 +35,15 @@ class PublicationScanEvidenceTest(unittest.TestCase):
         self.assertTrue(digest.startswith("sha256:"))
         self.assertTrue(evidence.valid(self.root, self.scope,
                                       policy_digest="sha256:" + "5" * 64, now=101))
+        self.assertEqual(evidence.TTL_SECONDS, 1800)
+        self.assertTrue(evidence.valid(self.root, self.scope,
+                                      policy_digest="sha256:" + "5" * 64, now=401))
+        self.assertTrue(evidence.valid(self.root, self.scope,
+                                      policy_digest="sha256:" + "5" * 64, now=100 + 1800))
         self.assertFalse(evidence.valid(self.root, self.scope,
-                                       policy_digest="sha256:" + "5" * 64, now=401))
+                                       policy_digest="sha256:" + "5" * 64, now=100 + 1801))
         for field, value in (("candidate_commit", "6" * 40),
+                             ("operations", ["gh_pr_create"]),
                              ("base_commit", "7" * 40),
                              ("target_ref", "refs/heads/codex/other"),
                              ("expected_remote_oid", "8" * 40),
@@ -50,6 +56,17 @@ class PublicationScanEvidenceTest(unittest.TestCase):
         stored = next((self.cache / "aips-publication-scan-evidence").glob("*.json"))
         payload = json.loads(stored.read_text())
         payload["status"] = "BLOCKED"
+        stored.write_text(json.dumps(payload))
+        self.assertFalse(evidence.valid(self.root, self.scope,
+                                       policy_digest="sha256:" + "5" * 64, now=101))
+
+    def test_evidence_with_a_lifetime_above_the_ttl_is_rejected(self):
+        evidence.store(self.root, self.scope, policy_digest="sha256:" + "5" * 64, now=100)
+        stored = next((self.cache / "aips-publication-scan-evidence").glob("*.json"))
+        payload = json.loads(stored.read_text())
+        payload.pop("integrity")
+        payload["expires_at"] = payload["issued_at"] + evidence.TTL_SECONDS + 1
+        payload["integrity"] = evidence._digest(payload)
         stored.write_text(json.dumps(payload))
         self.assertFalse(evidence.valid(self.root, self.scope,
                                        policy_digest="sha256:" + "5" * 64, now=101))

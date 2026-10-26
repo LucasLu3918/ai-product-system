@@ -20,6 +20,17 @@ Distinguish AIPS Hook denials from Claude Host Auto Mode denials (e.g. Merge Wit
 
 A verified merge command needs a literal PR number, exactly one enabled merge method, and `--match-head-commit <full-sha>`. `--admin` and `--delete-branch` are forbidden on the protected merge path. Re-run read-only doctor/diagnose after candidate or checks change. The `recovery` field is advisory only: it never triggers native mutation, consumes grants, weakens Required Checks or satisfies Human confirmation. UNAVAILABLE protection evidence is not PENDING. Separate branch cleanup from merging.
 
+## Standard Publication Recipe
+
+Run one publication command per Bash call; never chain a push with a PR command.
+
+1. Commit: `git commit -m "$(cat <<'EOF'` … `EOF` `)"` with a quoted delimiter, `git commit -m '<text>'`, or `git commit -F <file>`; literal `git add <paths> &&` may precede it. Unquoted heredocs, `$VAR` and backticks are denied.
+2. Write the PR body to a file outside the worktree, then run `aips publish prepare --worktree <root> --title <title> --body-file <file> --runtime claude-code --format json`.
+3. Run the emitted invocation `argv` exactly: `git push origin <full-candidate-sha>:refs/heads/<branch>` (`-u` allowed). A bare branch name or `HEAD` is denied.
+4. Re-run the same Prepare and run its emitted `gh pr create --repo <owner/repo> --head <branch> --base <default> --title <title> --body-file <file>`. A literal `--body` (including a quoted `<<'EOF'` heredoc) is also accepted; `--repo`, `--head` and `--base` are required.
+
+Prepare scan evidence is bound to the exact candidate, operation, target and policy digest and expires after 30 minutes. A denial names the supported form in `next_step`/`next_step_zh`; follow it instead of trying command variants.
+
 ## Publication Diagnostics and Recovery
 
 Before continuing a blocked publication, run `aips publish doctor --worktree <candidate-root> --worktree-details` and inspect its phase, reason code, source HTTP status, endpoint, and sanitized error summary. A `403` is an access/evidence failure. A `404` from classic branch protection means no classic rule only after the branch itself is verified; active rules still come from the effective-rules observation. If `branch.protected` is true and classic policy is permission-hidden, Required Checks policy is `UNKNOWN_PERMISSION`.

@@ -408,7 +408,7 @@ The catalog contract verifies all 49 canonical Skills, all 38 vendored source pa
 
 `publication_planning.py` 重用 authority、candidate/history scan 與 GitHub PR evidence，提供 read-only `prepare` / `diagnose`。指紋包含 worktree、HEAD/base、remote/PR、policy 與 PR body digest；任何漂移需重新規劃，不能用診斷代碼放行。
 
-Claude Code publication Hook 使用八秒 hard deadline，結構化拒絕會記錄安全 phase 與 elapsed milliseconds。Prepare 完整掃描通過後，最多五分鐘的非授權 scan evidence 存在 private user cache，綁定 repository/worktree、base/head、push target、remote tip、diff、scanner 與 policy digest；Hook 每次重驗 live Git/remote state，並對缺少、過期、毀損或漂移 evidence fail closed。完整 candidate/history scan 仍是 Prepare 與 Integration Gate 必要步驟。
+Claude Code publication Hook 使用八秒 hard deadline，結構化拒絕會記錄安全 phase 與 elapsed milliseconds。Prepare 完整掃描通過後，最多 30 分鐘的非授權 scan evidence 存在 private user cache，綁定 repository/worktree、base/head、push target、remote tip、diff、scanner 與 policy digest；Hook 每次重驗 live Git/remote state，並對缺少、過期、毀損或漂移 evidence fail closed。完整 candidate/history scan 仍是 Prepare 與 Integration Gate 必要步驟。
 
 The OpenCode integration lifecycle exercises candidate tampering, source drift, path and symlink rejection, destination races, cache privacy, and end-to-end CLI dispatch.
 
