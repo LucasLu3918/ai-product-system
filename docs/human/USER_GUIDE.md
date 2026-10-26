@@ -738,6 +738,8 @@ When diagnosing a feature branch, `aips publish doctor` checks policy on the rem
 
 ### Claude Code 合併失敗的真實原因與安全恢復
 
+若 `aips publish prepare` 或 `aips publish diagnose` 在 CLI 邊界遇到本機例外，搭配 `--format json` 會在 stdout 回傳結構化 `BLOCKED` 診斷，列出穩定 `reason_code`、允許的 `error_class`，以及 OS 錯誤的 errno 類別和安全復原步驟；原始例外文字、路徑與命令不會輸出。退出碼仍為 2，`authorized` 與 `executed` 均為 false。文字模式仍將原始錯誤寫到 stderr。
+
 建議先在信任的互動式終端機執行 `aips publish doctor --project-root <repo> --pr <number> --format json`；要檢查格式，使用 `aips publish diagnose --worktree <repo> --command '<literal-gh-pr-merge>' --format json`。這兩個指令均為唯讀，不能當作已完成合併或取得 Host 授權。新版 `prepare`／`diagnose` 會提供 `recovery` 建議，其中 `authorized: false`、`executed: false`；只允許針對明確暫時性狀態重試唯讀觀察。
 
 - `MERGE_HEAD_PIN_REQUIRED`：必須讀取當前 PR HEAD 並加上 `--match-head-commit` 的完整 SHA；`MERGE_HEAD_MISMATCH` 代表提供過期或錯誤的 SHA。

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Return structured, redacted JSON diagnoses with safe recovery steps when publication prepare/diagnose encounters CLI-level errors; preserve text-mode output, exit status, and non-authorizing behavior.
+
 - Add opt-in model-agnostic local ComfyUI API workflows with bounded schema/graph validation, core-node trust checks, explicit input bindings, local model inventory validation, create-only workflow import/output, and no automatic retry after uncertain submission; fixed profiles remain the default and real inference is unverified.
 
 - Exempt verified pure dependency updates (full-SHA pinned `uses:` bumps and exact `name==version` upgrades in allowlisted manifests) from documentation-only requirements in Documentation Impact, Placement and Sync; any other change keeps the full rules, and every non-documentation gate and Human merge approval is unchanged.

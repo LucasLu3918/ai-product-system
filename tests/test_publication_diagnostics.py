@@ -529,6 +529,66 @@ class PublicationDiagnosticsTest(unittest.TestCase):
         self.assertNotIn("not an AIPS repository", result.stderr)
         self.assertIn("REMOTE_OBSERVATION_FAILED", result.stdout)
 
+    def test_prepare_and_diagnose_cli_json_errors_are_structured_and_redacted(self):
+        from contextlib import redirect_stderr, redirect_stdout
+        from io import StringIO
+        import errno
+        import publish_preflight as preflight
+        import publication_planning as planning
+
+        cases = (
+            ("prepare", "prepare", PermissionError(errno.EACCES, "Permission denied", "/private/secret/path"),
+             "LOCAL_PERMISSION_DENIED", "EACCES", "PERMISSION"),
+            ("diagnose", "diagnose", preflight.PreflightError("private endpoint token=super-secret"),
+             "PREFLIGHT_VALIDATION_ERROR", None, "INTERNAL"),
+            ("diagnose", "diagnose", ValueError("private body input"),
+             "INVALID_PUBLICATION_INPUT", None, "INVALID_ARGUMENT"),
+        )
+        for command, target, error, reason_code, error_code, category in cases:
+            with self.subTest(command=command):
+                output, errors = StringIO(), StringIO()
+                argv = ["publish_preflight.py", command, "--worktree", str(self.root)]
+                if command == "prepare":
+                    argv.extend(["--title", "Candidate", "--body-file", str(self.root / "body.md")])
+                else:
+                    argv.extend(["--command", "git push origin candidate"])
+                argv.extend(["--format", "json"])
+                with patch.object(planning, target, side_effect=error), \
+                        patch.object(sys, "argv", argv), \
+                        redirect_stdout(output), redirect_stderr(errors):
+                    exit_code = preflight.main()
+
+                self.assertEqual(exit_code, 2)
+                payload = json.loads(output.getvalue())
+                self.assertEqual(payload["status"], "BLOCKED")
+                self.assertFalse(payload["authorized"])
+                self.assertFalse(payload["executed"])
+                self.assertEqual(payload["diagnostics"][0]["error_class"], type(error).__name__)
+                self.assertEqual(payload["diagnostics"][0]["reason_code"], reason_code)
+                self.assertEqual(payload["diagnostics"][0]["category"], category)
+                if error_code:
+                    self.assertEqual(payload["diagnostics"][0]["error_code"], error_code)
+                self.assertTrue(payload["diagnostics"][0]["redacted"])
+                self.assertNotIn("super-secret", output.getvalue())
+                self.assertNotIn("/private/secret/path", output.getvalue())
+                self.assertEqual(errors.getvalue(), "")
+
+    def test_cli_text_exception_output_remains_compatible(self):
+        from contextlib import redirect_stderr, redirect_stdout
+        from io import StringIO
+        import publish_preflight as preflight
+        import publication_planning as planning
+
+        output, errors = StringIO(), StringIO()
+        argv = ["publish_preflight.py", "diagnose", "--worktree", str(self.root),
+                "--command", "git push origin candidate"]
+        with patch.object(planning, "diagnose", side_effect=preflight.PreflightError("legacy failure")), \
+                patch.object(sys, "argv", argv), redirect_stdout(output), redirect_stderr(errors):
+            exit_code = preflight.main()
+        self.assertEqual(exit_code, 2)
+        self.assertEqual(output.getvalue(), "")
+        self.assertEqual(errors.getvalue(), "PUBLISH PREFLIGHT ERROR: legacy failure\n")
+
 
 if __name__ == "__main__":
     unittest.main()
