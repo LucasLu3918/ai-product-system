@@ -68,6 +68,23 @@ def main() -> int:
     assert calls == {"normalize"}
     assert not any(row["relation"] == "calls" and row["target_name"] in {"Any", "dict", "lookup"} for row in annotated_rows)
     assert any(row["target_name"] == "lookup" and row["relation"] == "references" for row in annotated_rows)
+    sensitive_source = (
+        "def query(db, password=None):\n"
+        "    literal = 'password=fixture-secret'\n"
+        "    db.execute('SELECT 1')\n"
+        "    return normalize(password)\n"
+    )
+    redacted_source = sensitive_source.replace("password=None", "password=[REDACTED]").replace(
+        "password=fixture-secret", "password=[REDACTED]"
+    )
+    sensitive_rows = facade.extract_code_relations(
+        "sensitive.py", redacted_source, call_source=sensitive_source
+    )
+    sensitive_calls = {
+        row["target_name"] for row in sensitive_rows if row["relation"] == "calls"
+    }
+    assert sensitive_calls == {"normalize"}
+    assert "fixture-secret" not in repr(sensitive_rows)
     capped_source = (
         "def capped():\n"
         "    alpha + beta + gamma + delta\n"

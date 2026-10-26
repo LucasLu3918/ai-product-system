@@ -70,6 +70,8 @@ OpenCode V2 的 managed plugin 在 primary model dispatch 前注入精簡 Turn C
 
 ## Project Intelligence 與 Retrieval
 
+Retrieval relations are disposable lexical candidates. Relation-extraction behavior is versioned with the index schema so a schema change triggers full re-extraction, including unchanged files; raw source may be parsed in memory for syntax-sensitive identifiers while persisted index content remains redacted.
+
 ATTACHED 仍須使用者明確執行 `aips attach`。在 Git worktree 中，AIPS 以 repository-local `.git/info/exclude` 排除 `.ai/` 與 `.ai.detached-*`，不修改共用的專案 `.gitignore`；既有追蹤狀態不會被改寫。
 
 Turn Context preserves freshness and targeted refresh guidance. READY+STALE freshness is advisory for a confined local L2 source write; UNKNOWN and non-READY states remain blocking.

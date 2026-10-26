@@ -1709,6 +1709,8 @@ The probe denies only a harmless synthetic local Bash command. Unsupported, malf
 新增技能路由案例維持人工 conformance；只有直接證據才可提高自動化成熟度或改變 quality baseline。
 ## Scenario 179 — Evidence-backed Change Impact Unknown Dispositions
 
+The retrieval lifecycle verifies that a relation-extractor schema upgrade rebuilds unchanged files, removes stale call edges, and uses raw source only for in-memory syntax parsing; indexed output remains redacted. High-risk traversal treats ambiguous lexical targets as candidates, resolves exact canonical nodes when mapped, and retains unmapped architecture seeds as explicit unknowns.
+
 技能與一般方法可重用；專案專屬遊戲規則、遙測與參與者資料留在受治理的專案儲存，不得升格到全域素材。
 
 Ruff 已量測的總基準為 685；Retrieval 模組基準為 4、下一目標為 3。保留 touched-code no-new-findings、既有模組降債規則與 report-only Coverage。
