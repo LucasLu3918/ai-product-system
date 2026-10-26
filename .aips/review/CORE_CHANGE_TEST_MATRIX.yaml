@@ -1,77 +1,61 @@
 version: 1
 change:
-  id: retrieval-relation-schema-refresh
-  summary: Parse Python call identifiers from raw source only in memory, keep indexed
-    data redacted, and force full re-extraction when relation semantics change.
+  id: publication-json-error-recovery
+  summary: Return safe, parseable JSON from prepare/diagnose on allowlisted local exceptions and complete the approved CI documentation closure.
   boundary:
-  - Python relation extraction and privacy boundary
-  - Disposable retrieval-index schema upgrade
-  - Change Impact traversal evidence and documentation
-  - Exact-candidate validation and publication
+    - publication prepare/diagnose JSON error contract
+    - privacy, authorization, and non-execution guarantees
+    - Hook scan evidence and safe recovery lifecycle
+    - canonical documentation impact closure and placement
+    - CI Actions/Python lifecycle compatibility and post-merge validation
 matrix:
-- boundary: Python relation extraction and privacy boundary
-  reason: Redaction can make valid Python syntax unparsable and create false lexical
-    call edges; AST extraction must consume raw source in memory while persisted rows
-    remain redacted.
-  checks: &id001
-    static_lint:
-      applicable: true
-      evidence: 'REQUIRED: exact-candidate lint and touched-code ratchet in the Integration
-        Gate.'
-    unit:
-      applicable: true
-      evidence: 'PASS: tests/evidence/retrieval_relations_extraction_lifecycle.py
-        verifies only call-name identifiers are extracted from raw source and secret
-        literals are absent from relation output.'
-    integration:
-      applicable: true
-      evidence: 'REQUIRED: exact-candidate AIPS Integration Gate before publication
-        and merge.'
-    contract:
-      applicable: true
-      evidence: 'PASS: tests/validation/change_impact_resolution_contracts.py verifies
-        the public traversal/reconciliation contract; documentation placement preview
-        passes.'
-    e2e:
-      applicable: true
-      evidence: 'PASS: tests/evidence/retrieval_intelligence_lifecycle.py upgrades
-        a schema-v6 disposable index and confirms stale attribute-call edges are removed
-        by full rebuild.'
-    security:
-      applicable: true
-      evidence: 'REQUIRED: exact-candidate Secret/PII scan in the Integration Gate;
-        raw source is used only for in-memory AST call-name extraction.'
-    migration_recovery:
-      applicable: true
-      evidence: 'PASS: schema-version change triggers disposable full index rebuild;
-        canonical source and Project Intelligence state are not migrated or overwritten.'
-    cli_harness:
-      applicable: false
-      na_reason: No CLI signature, host adapter, or authorization behavior changes.
-    docs_schema:
-      applicable: true
-      evidence: 'REQUIRED: exact-candidate documentation validation and build in the
-        Integration Gate; canonical docs describe schema bump/rebuild and privacy
-        behavior.'
-- boundary: Disposable retrieval-index schema upgrade
-  reason: Old indexes may retain stale lexical relations even when source content
-    hashes are unchanged; the schema bump invalidates the disposable relation index.
-  checks: *id001
-- boundary: Change Impact traversal evidence and documentation
-  reason: False execute edges are removed; remaining unmapped architecture seeds stay
-    explicit unknowns and do not establish repository-wide completeness.
-  checks: *id001
-- boundary: Exact-candidate validation and publication
-  reason: Bind the reviewed implementation and documentation closure to one candidate;
-    native branch protections and Human merge authority remain in force.
-  checks: *id001
+  - boundary: publication prepare/diagnose JSON error contract
+    reason: JSON consumers must receive a parseable blocked result on local exceptions while successful JSON and text output stay compatible.
+    checks: &all_checks
+      static_lint:
+        applicable: true
+        evidence: "REQUIRED: repository Integration Gate static checks on exact candidate."
+      unit:
+        applicable: true
+        evidence: "PASS: 64 focused publication tests passed on the final implementation source (35.2 seconds)."
+      integration:
+        applicable: true
+        evidence: "REQUIRED: full exact-candidate local Integration Gate / Repository Validation."
+      contract:
+        applicable: true
+        evidence: "PASS: publish preflight contracts and static contracts; Preview reports zero missing documentation additions and placement PASS. Exact-candidate Gate remains required."
+      e2e:
+        applicable: true
+        evidence: "REQUIRED: existing Hook/prepare/diagnose lifecycle fixtures in publication tests and Gate."
+      security:
+        applicable: true
+        evidence: "REQUIRED: final-tree and base..head secret scan plus privacy assertions in focused tests and Gate."
+      migration_recovery:
+        applicable: true
+        evidence: "N/A — no persisted data or migration; retry/recovery semantics are covered by Hook and publication lifecycle checks."
+      cli_harness:
+        applicable: true
+        evidence: "REQUIRED: JSON/text CLI compatibility and Hook lifecycle checks in Gate."
+      docs_schema:
+        applicable: true
+        evidence: "REQUIRED: recursive documentation impact closure and placement checks in Gate."
+  - boundary: privacy, authorization, and non-execution guarantees
+    reason: Failure diagnostics must not disclose unsafe context or grant authority, execute publication, or create API writes.
+    checks: *all_checks
+  - boundary: Hook scan evidence and safe recovery lifecycle
+    reason: A parseable blocked result must lead to safe recovery while the Hook continues to require valid candidate-bound scan evidence.
+    checks: *all_checks
+  - boundary: canonical documentation impact closure and placement
+    reason: Required canonical documents are part of the approved change boundary and must pass recursive impact and placement validators.
+    checks: *all_checks
+  - boundary: CI Actions/Python lifecycle compatibility and post-merge validation
+    reason: CI workflow runner/action behavior, Python lifecycle execution, remote required-check aggregation and main post-merge validation remain part of Core assurance.
+    checks: *all_checks
 candidate:
-  base_sha: 131b270d5b315974d9c7289386703a239c6687ec
-  changed_files_hash: b688fbc8a0781383e5576cec3826b635d185638e76814fed1253ba4f74943c5a
+  base_sha: 776bb0c130d8f4223238f0b07ae013cb2c894cb3
+  changed_files_hash: 87f0ad92386562d277014787ca4f2c09bc1571c76ee8f940e9bd4979881d466c
 review_evidence:
   required: false
-  scope_approvals:
-  - User authorized completion, PR creation, and merge of the follow-up work.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []

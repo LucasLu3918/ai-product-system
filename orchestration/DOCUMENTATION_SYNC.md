@@ -223,6 +223,8 @@ Documentation sync path normalization (Scenario 221): `documentation_sync.evalua
 
 ## Human documentation placement
 
+Keep the publication CLI JSON error contract in the User Guide, its regression evidence in Scenario 261, and preserve the explicit non-authorizing recovery boundary.
+
 The publication-preflight mapping includes the private scan-evidence module, updated Guard/authority/Doctor/planning code, corresponding focused tests and Scenario 261. Its canonical Human documentation stays in the existing publication, security, maintenance and technology topics.
 
 For Z-Image Turbo, synchronize the generate-only MFLUX command and single registered ComfyUI split-loader profile across creative, execution and Runtime docs. ComfyUI checks preinstalled UNET/CLIP/VAE files and strips prompt-bearing PNG text metadata. Separately, Scenario 268 covers opt-in schema-validated core-node API workflows with explicit bindings; do not claim arbitrary custom/API nodes, unsupported Z-Image variants, or verified real inference.

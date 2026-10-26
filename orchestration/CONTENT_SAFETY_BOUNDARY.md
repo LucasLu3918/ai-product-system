@@ -56,6 +56,8 @@ The canonical sink manifest is `config/content-safety.yaml`. Any new persistence
 
 ## Runtime truthfulness
 
+A structured publication CLI error reports a failed local preflight only; it cannot claim a successful scan or authorize a protected sink.
+
 `ENFORCED` applies to AIPS-owned sinks. A verified native hook may report `TOOL_GUARDED`. MCP-only or unsupported host tools remain `ADVISORY`; AIPS must not claim universal interception.
 
 ## Delivery stages

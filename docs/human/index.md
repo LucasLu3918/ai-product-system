@@ -76,6 +76,8 @@ features:
 
 ## 文件如何組織
 
+Git／PR 發佈診斷與安全復原請參閱 [User Guide](USER_GUIDE.md)；CLI 錯誤輸出契約由 Scenario 261 覆蓋。
+
 Publication Hook recovery and Required Checks Doctor semantics live in the User Guide and Security Assurance guide; Scenario 261 records their current safe-recovery and candidate-binding contracts.
 
 本機 Creative 工作流支援明確選用已安裝模型與 schema 驗證的 ComfyUI API graph；固定 profile 維持預設，預檢不會啟動推論。

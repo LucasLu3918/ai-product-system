@@ -415,6 +415,8 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 
 ## Security 與 Governance
 
+When `aips publish prepare` or `diagnose` fails locally in JSON mode, the CLI returns a redacted, stable diagnostic; the response grants no publication authority and text-mode behavior remains compatible.
+
 Distilled sampler declarations and one-to-eight ordered reference bindings do not change Human approval, Resource Authorization or the loopback endpoint allowlist; every staged input is verified locally before workflow submission.
 
 Publication Hooks use an eight-second fail-closed deadline and may consume only a fresh, exact-candidate Secret Scan record from Prepare. The record is non-authorizing; every Hook invocation rechecks live Git and remote state, and the final Integration Gate repeats the full scan.
@@ -703,6 +705,8 @@ Docs build 與 Pages hosting 分開驗證：PR / main 都能證明 VitePress bui
 
 Documentation Placement 對 behavior-bearing source 採 fail-closed mapping：只要 source 落在 Technology Guide 的廣域同步 surface，就必須先命中 subsystem placement rule。這避免新功能以「文件最後補充說明」逃過 topic architecture。
 ## Runtime Content Safety Boundary
+
+This JSON fallback does not imply a successful scan or relax content-safety policy; publication remains fail-closed when candidate or history scanning cannot be completed.
 
 Publication scan evidence is a separate, short-lived cache of a successful full candidate/history scan. It cannot replace the scanner, relax content-safety policy, or authorize a protected operation.
 

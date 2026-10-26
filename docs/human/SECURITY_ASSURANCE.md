@@ -221,6 +221,8 @@ Review actual:
 
 ## Release Security Gate
 
+Local JSON diagnostics from `prepare` or `diagnose` do not satisfy publication validation, scan evidence, or merge requirements; rerun the read-only checks after correcting the reported cause.
+
 Personal publication requires an exact final-tree and candidate-history scan. Only the approved generated-password and parameterized SQL forms are treated as non-literal assignments; provider-token, private-key and high-entropy literal checks remain active.
 
 Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
@@ -466,6 +468,8 @@ SAL 2+ default registration requires an independently retained anchor. SAL 4 req
 
 The retention helper never deletes evidence or grants compaction authority. Expiry only creates a Human-review action and a minimal digest record.
 ## Runtime Content Safety Boundary
+
+The error serializer excludes raw exception text, paths, commands, and credentials; scan-evidence denials remain fail-closed.
 
 Publication Hook 的短效 scan evidence 不會放寬內容安全判斷或 sink policy。它綁定精確候選與掃描器／政策摘要；任何漂移都拒絕使用，Prepare 與最終 Gate 仍完整掃描。
 

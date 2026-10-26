@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import errno
 import json
 import os
 import re
@@ -839,6 +840,95 @@ def emit(value: dict[str, Any], fmt: str) -> None:
     print(json.dumps(value, ensure_ascii=False, indent=2) if fmt == "json" else yaml.safe_dump(value, sort_keys=False, allow_unicode=True).rstrip())
 
 
+def cli_exception_result(exc: Exception) -> dict[str, Any]:
+    """Return a redacted, non-authorizing JSON diagnosis for CLI-boundary failures."""
+    if isinstance(exc, PermissionError):
+        error_class = "PermissionError"
+    elif isinstance(exc, FileNotFoundError):
+        error_class = "FileNotFoundError"
+    elif isinstance(exc, OSError):
+        error_class = "OSError"
+    elif isinstance(exc, ValueError):
+        error_class = "ValueError"
+    else:
+        error_class = "PreflightError"
+    error_code = None
+    if isinstance(exc, OSError):
+        error_code = errno.errorcode.get(exc.errno, "UNKNOWN_OS_ERROR")
+        safe_os_message = os.strerror(exc.errno) if exc.errno is not None else "unknown OS error"
+        if exc.errno in {errno.EACCES, errno.EPERM}:
+            reason_code = "LOCAL_PERMISSION_DENIED"
+            category = "PERMISSION"
+            next_step = "Check access to the selected worktree and body file, then rerun the read-only command."
+            next_step_zh = "檢查工作樹與 body 檔案的存取權限，再重新執行唯讀診斷。"
+        elif exc.errno == errno.ENOENT:
+            reason_code = "LOCAL_FILE_NOT_FOUND"
+            category = "INVALID_ARGUMENT"
+            next_step = "Check that the selected worktree and body file exist, then rerun the read-only command."
+            next_step_zh = "確認工作樹與 body 檔案存在，再重新執行唯讀診斷。"
+        elif exc.errno in {errno.ENOSPC, getattr(errno, "EDQUOT", -1)}:
+            reason_code = "LOCAL_STORAGE_UNAVAILABLE"
+            category = "INTERNAL"
+            next_step = "Free local storage or resolve the quota limit, then rerun the read-only command."
+            next_step_zh = "釋出本機空間或排除配額限制，再重新執行唯讀診斷。"
+        else:
+            reason_code = "LOCAL_OS_ERROR"
+            category = "INTERNAL"
+            next_step = "Check local worktree and file access, then rerun the read-only command."
+            next_step_zh = "檢查工作樹與檔案存取狀態，再重新執行唯讀診斷。"
+        detail = f"Local operation failed: {safe_os_message} ({error_code})."
+        detail_zh = f"本機操作失敗：{error_code}。"
+    elif isinstance(exc, ValueError):
+        reason_code = "INVALID_PUBLICATION_INPUT"
+        category = "INVALID_ARGUMENT"
+        detail = "A publication input or local state value was invalid."
+        detail_zh = "發佈輸入或本機狀態值無效。"
+        next_step = "Review the worktree and supplied title, body file, or literal native command, then retry."
+        next_step_zh = "檢查工作樹、標題、body 檔案或原生指令內容後重試。"
+    else:
+        reason_code = "PREFLIGHT_VALIDATION_ERROR"
+        category = "INTERNAL"
+        detail = "The local publication preflight rejected the request. Raw exception details are withheld."
+        detail_zh = "本機發佈前置驗證拒絕此要求；原始例外內容已遮蔽。"
+        next_step = "Review the worktree and supplied input, then rerun prepare or diagnose without a shell pipeline."
+        next_step_zh = "檢查工作樹與輸入內容，並以獨立指令重新執行 prepare 或 diagnose。"
+    diagnostic: dict[str, Any] = {
+        "version": 1,
+        "reason_code": reason_code,
+        "detail": detail,
+        "phase": "cli_error",
+        "category": category,
+        "source": "AIPS_PUBLICATION",
+        "blocking_rule": "LOCAL_PREFLIGHT",
+        "blocking_rule_id": reason_code,
+        "error_class": error_class,
+        "retryable": False,
+        "redacted": True,
+        "detail_zh": detail_zh,
+        "next_step": next_step,
+        "next_step_zh": next_step_zh,
+    }
+    if error_code:
+        diagnostic["error_code"] = error_code
+    return {
+        "version": 2,
+        "status": "BLOCKED",
+        "authorized": False,
+        "executed": False,
+        "api_write_performed": False,
+        "diagnostics": [diagnostic],
+        "recovery": {
+            "state": "REPAIR_REQUIRED",
+            "next_step": "REVIEW_LOCAL_INPUT",
+            "requires_human": False,
+            "retry_read_only": False,
+            "executed": False,
+            "authorized": False,
+            "instruction": "Resolve the local error and re-run a read-only diagnosis; this report never authorizes publication.",
+        },
+    }
+
+
 def run_candidate(args: argparse.Namespace) -> int:
     environment = environment_status()
     if environment["status"] != "READY":
@@ -1051,7 +1141,10 @@ def main() -> int:
             return 0
         return run_candidate(args)
     except (OSError, ValueError, PreflightError) as exc:
-        print(f"PUBLISH PREFLIGHT ERROR: {exc}", file=sys.stderr)
+        if args.command in {"prepare", "diagnose"} and args.format == "json":
+            emit(cli_exception_result(exc), "json")
+        else:
+            print(f"PUBLISH PREFLIGHT ERROR: {exc}", file=sys.stderr)
         return 2
 
 

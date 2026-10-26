@@ -8,6 +8,8 @@
 
 ## macOS / Linux
 
+The installed CLI returns stable, redacted JSON errors for local `prepare` and `diagnose` failures; this changes output format only and does not grant publication permission.
+
 Publication scan evidence is private user-cache data used only by the Claude Code Git Hook. It is separate from runtime content-safety setup and does not alter scanner policy or installation permissions.
 
 The managed publication preflight uses the built-in exact-candidate secret scanner. It scans JSON files up to 8,000,000 bytes and other text files up to 2,000,000 bytes; files above those bounds block publication. The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; there is no extension-wide exemption, and the 2,000,000-byte text limit remains unchanged. The same exact relative paths are excluded in any repository using the shared policy.

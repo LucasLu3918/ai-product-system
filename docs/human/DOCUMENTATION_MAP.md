@@ -24,6 +24,8 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 ## 文件角色
 
+Publication CLI 的 JSON 錯誤契約與安全復原方式記錄於 [User Guide](USER_GUIDE.md)，並由 Scenario 261 驗證。
+
 Base/Distilled sampler bounds and dynamic edit reference limits are documented in the User Guide and Scenario 236; neither change adds a Skill Explorer entry or changes upstream Skill trust.
 
 Skill catalog and Explorer guidance remain under the Skills documentation map. Publication Hook, scanner and Doctor implementation use the separate publication-preflight mapping and do not create new Skill capabilities.

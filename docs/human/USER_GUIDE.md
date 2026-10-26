@@ -297,6 +297,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 
 ## Roles、Skills 與重用
 
+The JSON error result is a CLI contract only; it does not add a Role or Skill permission and cannot authorize a Git operation.
+
 Publication guard 重用既有的 command authority 與 Secret Scan；scan evidence 只是短效候選證據，不會新增 Role、Skill 或 Git 操作權限。
 
 這次 FLUX 3 Klein 修復只調整 Creative executor 與其預檢，不新增或改變 Roles、Skills 或 Skill Explorer 行為。
@@ -738,6 +740,8 @@ When diagnosing a feature branch, `aips publish doctor` checks policy on the rem
 
 ### Claude Code 合併失敗的真實原因與安全恢復
 
+若 `aips publish prepare` 或 `aips publish diagnose` 在 CLI 邊界遇到本機例外，搭配 `--format json` 會在 stdout 回傳結構化 `BLOCKED` 診斷，列出穩定 `reason_code`、允許的 `error_class`，以及 OS 錯誤的 errno 類別和安全復原步驟；原始例外文字、路徑與命令不會輸出。退出碼仍為 2，`authorized` 與 `executed` 均為 false。文字模式仍將原始錯誤寫到 stderr。
+
 建議先在信任的互動式終端機執行 `aips publish doctor --project-root <repo> --pr <number> --format json`；要檢查格式，使用 `aips publish diagnose --worktree <repo> --command '<literal-gh-pr-merge>' --format json`。這兩個指令均為唯讀，不能當作已完成合併或取得 Host 授權。新版 `prepare`／`diagnose` 會提供 `recovery` 建議，其中 `authorized: false`、`executed: false`；只允許針對明確暫時性狀態重試唯讀觀察。
 
 - `MERGE_HEAD_PIN_REQUIRED`：必須讀取當前 PR HEAD 並加上 `--match-head-commit` 的完整 SHA；`MERGE_HEAD_MISMATCH` 代表提供過期或錯誤的 SHA。
@@ -918,6 +922,8 @@ Scenario / validation history
 
 Documentation Placement Contract 會檢查 heading hierarchy、version/scenario-style heading 與 changed-line placement。新增功能不得只在 current-behavior 文件尾端追加 `vX.Y` / Scenario 說明；若確實需要新 topic，必須同時把 canonical section 加入 placement contract。
 ## Runtime Content Safety Boundary
+
+A structured publication error is not evidence of a successful content-safety or Secret Scan; incomplete scans continue to block publication.
 
 Publication scan evidence 只代表完整 Secret Scan 曾對精確候選通過，不改變內容安全政策；Prepare 和最終 Integration Gate 仍會執行完整候選與歷史掃描。
 
