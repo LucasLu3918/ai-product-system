@@ -628,6 +628,8 @@ When readiness is READY and freshness is STALE, preserve freshness but treat sta
 
 `aips intelligence gc` lists external stores under the user config `projects/` directory whose recorded project root no longer exists. It is a dry run by default; `--yes` removes only those `intelligence` stores, re-checks the path before removal, skips symlinked or unverifiable entries, and preserves other workspace data such as runs.
 
+A worktree without an external store is seeded by `bootstrap` from the READY store of the same repository, copy-on-write: the source store is only read, and a `worktree_identity` change is an observation only when the seeding provenance proves it. A refused or failed seed falls back to normal initialization with an `intelligence_seed_fallback` observation.
+
 
 Security-boundary Change Impact may use a manually reviewed publication caller/consumer scope when the repository-wide Impact Graph is partial; unknown paths remain explicit.
 

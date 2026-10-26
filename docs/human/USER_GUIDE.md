@@ -377,6 +377,8 @@ Release history 更新（純依賴升級文件豁免，Scenario 221）已審查�
 
 `aips intelligence gc` 是新的維護指令，與 Skills CLI 分開：預設為 dry run，列出專案路徑已不存在的外部 Intelligence store；確認後加上 `--yes` 才會刪除，且不會刪除路徑仍存在或無法驗證的 store。
 
+新 worktree 沒有外部 Intelligence store 時，`aips intelligence bootstrap` 會先嘗試從同一 repository 的 READY store 複製一份（copy-on-write，來源只讀）；來源不安全或複製失敗時退回正常初始化，並在 observations 中標示 `intelligence_seed_fallback`。
+
 ## Deterministic Automation
 
 可用固定規則可靠完成的資料處理，優先交給 Shell / Python / existing tooling，例如 changed files、schema validation、大量 log summary、version extraction、duplicate scan、CSV / JSON transform。

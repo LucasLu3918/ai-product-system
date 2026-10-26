@@ -2196,3 +2196,12 @@ scenarios:
       - scripts/turn_context_hook.py
       - tests/evidence/intelligence_context_lifecycle.py
       - tests/test_intelligence_task_freshness.py
+  - id: "270"
+    path: tests/scenarios/270-worktree-shared-intelligence-seed.md
+    coverage: lifecycle
+    evidence:
+      - tests/scenarios/270-worktree-shared-intelligence-seed.md
+      - scripts/project_intelligence.py
+      - scripts/project_intelligence_seed.py
+      - tests/evidence/intelligence_worktree_seed_lifecycle.py
+      - tests/test_intelligence_worktree_seed.py
