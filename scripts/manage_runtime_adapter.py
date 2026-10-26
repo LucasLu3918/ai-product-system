@@ -82,11 +82,14 @@ def save_json(path: Path, data: dict):
 def claude_hook_entry(command: str) -> dict:
     return {"hooks": [{"type": "command", "command": command, "timeout": 10}]}
 
+# The PreToolUse guard also checks file-edit tools so agents cannot write the installed system or profile settings (PR3).
+CLAUDE_GUARD_MATCHER = "Bash|Edit|Write|NotebookEdit|MultiEdit"
+
 def claude_guard_entry(command: str, *, fail_closed: bool = False) -> dict:
     hook = {"type": "command", "command": command, "timeout": 10}
     if fail_closed:
         hook["onFailure"] = "block"
-    return {"matcher": "Bash", "hooks": [hook]}
+    return {"matcher": CLAUDE_GUARD_MATCHER, "hooks": [hook]}
 
 def claude_failure_entry(command: str) -> dict:
     return {"matcher": "Bash", "hooks": [{"type": "command", "command": command, "timeout": 10}]}

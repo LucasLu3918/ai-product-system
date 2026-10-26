@@ -530,7 +530,7 @@ Content-safety PASS is candidate evidence only and does not authorize PR merge o
 
 ComfyUI Resource Authorization remains separate from AVIF container validation and does not grant access to image payloads. Declarative model profiles do not alter loopback-only authorization; executor-reviewed node and topology-family allowlists remain code-owned.
 
-Claude Code v2.1.295+ 的 publication PreToolUse guard 使用 `onFailure: block`；舊版或未知版維持相容設定並警示，不將支援能力推測為已啟用。
+Claude Code v2.1.295+ 的 publication PreToolUse guard 使用 `onFailure: block`；舊版或未知版維持相容設定並警示，不將支援能力推測為已啟用。代理對已安裝 AIPS 系統目錄與 profile 設定的寫入以 `PROTECTED_PATH_WRITE` 拒絕（Edit/Write/NotebookEdit/MultiEdit 與常見 Shell 寫入形式，盡力偵測，不宣稱完整防護）；讀取不受限制。
 The bounded font metadata scanner fails closed on missing dependencies, spoofed or malformed formats, size limits and Secret/PII/Injection findings. It does not grant runtime permission or alter Human approval.
 
 Commit-safety diagnostics are not Runtime Action approvals; they cannot satisfy independent review, Resource Authorization, merge confirmation, or Required Checks.

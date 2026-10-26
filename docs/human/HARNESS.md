@@ -69,7 +69,7 @@ Personal publication Hook denials preserve stable reason/phase metadata without 
 
 Adapter action guards remain separate from staged AVIF content-safety diagnostics.
 
-Claude Code v2.1.295+ 的 managed publication PreToolUse guard 設定 `onFailure: block`；舊版/未知版不寫入不相容欄位並發出警示。AIPS 另以八秒內部 deadline 回傳結構化拒絕；`PostToolUseFailure` 的 timeout 會標示 `TIMEOUT_OBSERVED`，不推測成網路故障。UserPromptSubmit context hook 不套用此 failure policy。
+Claude Code v2.1.295+ 的 managed publication PreToolUse guard 設定 `onFailure: block`；舊版/未知版不寫入不相容欄位並發出警示。AIPS 另以八秒內部 deadline 回傳結構化拒絕；`PostToolUseFailure` 的 timeout 會標示 `TIMEOUT_OBSERVED`，不推測成網路故障。UserPromptSubmit context hook 不套用此 failure policy。同一 guard 另以 `Edit|Write|NotebookEdit|MultiEdit` matcher 攔截代理對已安裝 AIPS 系統目錄與 profile 設定的寫入，並以常見 Shell 寫入形式做盡力偵測（不是完整防護）；拒絕碼為 `PROTECTED_PATH_WRITE`，請改在開發 repo 修改並透過 PR 發布。
 獨立的 `PostToolUseFailure:Bash` observer 只回報已開始執行的原生指令失敗分類與可解析 exit code，不回傳原始錯誤、不重試也不授權。
 Creative asset import remains an explicit CLI operation. OpenCode native file permissions neither authorize nor execute the Git import path; the exact-hash candidate and separate Git publication boundary still apply.
 

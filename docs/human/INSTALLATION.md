@@ -129,7 +129,7 @@ aips update
 aips system preflight /path/to/project
 ~~~
 
-相容入口 `aips preflight` 仍可使用。preflight 會先更新 AIPS system checkout，再檢查專案，不會替專案執行未知修復。
+相容入口 `aips preflight` 仍可使用。preflight 會先更新 AIPS system checkout，再檢查專案，不會替專案執行未知修復。若已安裝的 system checkout 有本機變更，preflight 會略過自動更新、沿用目前版本並顯示版本、commit 與清理步驟；變更不會被丟棄或提交。明確執行 `aips update` 仍會在有變更時拒絕。
 
 ## 解除安裝
 
