@@ -65,7 +65,7 @@ Load `SYSTEM_CORE.md` with minimal Harness rules and critical native/project ins
 
 ## Mutation safety
 
-For confined local L2 source writes, READY Project Intelligence with STALE freshness is advisory and remains visible with targeted refresh guidance. UNKNOWN freshness, non-READY Intelligence, unavailable canonical protocols, authority conflicts, escaping paths, creative writes and external/high-risk effects keep their existing stops.
+For confined local L2 source writes, READY Project Intelligence with STALE freshness is advisory and remains visible. Turn Context sets `refresh_required` and a task-scoped `targeted_refresh` only when task-relevant topics are affected or their irrelevance cannot be proven; `retrieval_index_required` is true only when the current task needs retrieval. Change Impact remains required for mutation. UNKNOWN freshness, non-READY Intelligence, unavailable canonical protocols, authority conflicts, escaping paths, creative writes and external/high-risk effects keep their existing stops.
 
 Staged AVIF metadata denials are produced by the content-safety scanner and do not broaden native runtime action interception.
 

@@ -2,7 +2,7 @@
 
 This extension provides an AIPS BeforeAgent hook. Each user prompt receives compact current Turn Context before planning.
 
-Use Project Intelligence pointers progressively; do not rescan the whole repository each turn. Existing-project mutation requires Intelligence initialization/refresh and Change Impact before editing.
+Use Project Intelligence pointers progressively; do not rescan the whole repository each turn. Existing-project mutation requires initialized READY Intelligence and Change Impact before editing; refresh only when the Context sets `refresh_required=true` (READY+STALE is otherwise advisory).
 
 ## Optional AfterTool observable-event Trial hook
 

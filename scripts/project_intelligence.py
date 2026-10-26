@@ -32,6 +32,7 @@ from content_safety import safe_emit as safe_context_emit
 from git_paths import GitPathsError, run_git_paths
 from observed_stage import observed_stage
 from project_intelligence_context import SOURCE_NAMES, compact_context_manifest
+from project_intelligence_gc import collect as gc_external_stores
 from project_intelligence_promotion import promotion_candidate as _promotion_candidate
 from project_intelligence_promotion import promotion_target as _promotion_target_impl
 from project_intelligence_storage import atomic_text, atomic_yaml, writer_lock
@@ -1032,6 +1033,42 @@ def retrieval_failure_remediation(exc: BaseException) -> str:
     return str(retrieval_index_unavailable(exc).get("remediation"))
 
 
+def retrieval_needed_for_task(prompt: str, mutation: bool, desired_topics: list[str]) -> bool:
+    """Return whether this turn needs Retrieval Intelligence evidence.
+
+    Retrieval is needed only for a non-empty prompt that is a likely mutation
+    or that selected task-relevant Intelligence topics. Chat, planning and
+    general read turns without topic signals report index status only.
+    """
+    return bool(prompt.strip()) and (mutation or bool(desired_topics))
+
+
+def task_refresh_requirement(fr: dict[str, Any], readiness: str, selected: list[str],
+                             task_freshness: dict[str, Any]) -> dict[str, Any]:
+    """Resolve whether this turn must refresh Intelligence topics.
+
+    Non-READY stale Intelligence keeps the store-wide targeted refresh. READY
+    stale Intelligence is advisory: refresh is required only when the
+    task-relevant topics are affected or their irrelevance cannot be proven.
+    """
+    affected = list(fr.get("affected_topics") or [])
+    if fr.get("status") != "STALE":
+        return {"refresh_required": False, "targeted_refresh": [], "advisory": False,
+                "reason": "freshness_not_stale"}
+    if readiness != "READY":
+        return {"refresh_required": True, "targeted_refresh": affected, "advisory": False,
+                "reason": "stale_not_ready"}
+    if not selected:
+        return {"refresh_required": False, "targeted_refresh": [], "advisory": True,
+                "reason": "no_task_relevant_topics"}
+    if task_freshness.get("status") == "CURRENT":
+        return {"refresh_required": False, "targeted_refresh": [], "advisory": True,
+                "reason": "task_topics_not_affected"}
+    touched = list(task_freshness.get("affected_selected_topics") or [])
+    return {"refresh_required": True, "targeted_refresh": touched or affected, "advisory": True,
+            "reason": "task_topics_affected" if touched else "task_relevance_unproven"}
+
+
 def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = False, component: str | None = None,
                      target_path: str | None = None, intent: str = "auto") -> dict[str, Any]:
     store, mode, pid = intelligence_store(root)
@@ -1137,7 +1174,9 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
 
     initialize = fr["status"] == "MISSING"
     readiness = state.get("readiness", "PARTIAL") if not initialize else "PARTIAL"
-    refresh = fr.get("affected_topics", []) if fr["status"] == "STALE" else []
+    refresh_plan_for_task = task_refresh_requirement(fr, readiness, selected, layers.get("task_freshness") or {})
+    refresh = refresh_plan_for_task["targeted_refresh"]
+    retrieval_needed = retrieval_needed_for_task(prompt, mutation, desired_topics)
     task_effect = str(task_classification.get("effect") or "chat_only")
     task_level = "L0" if task_effect == "chat_only" else "L3" if task_effect == "external_action" else "L2"
     if task_effect == "filesystem_write" and task_classification.get("domain") == "creative" and task_classification.get("intent") == "create":
@@ -1221,10 +1260,16 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
         "requirements": {
             "initialize_intelligence": initialize,
             "semantic_enrichment_required": readiness != "READY",
+            "retrieval_needed": retrieval_needed,
+            "retrieval_index_status": str(retrieval_state.get("status") or "MISSING"),
             "retrieval_index_required": bool(
-                (store / "PROJECT_INTELLIGENCE.yaml").exists()
+                retrieval_needed
+                and (store / "PROJECT_INTELLIGENCE.yaml").exists()
                 and retrieval_state.get("status") == "MISSING"
             ),
+            "refresh_required": refresh_plan_for_task["refresh_required"],
+            "refresh_reason": refresh_plan_for_task["reason"],
+            "freshness_advisory": refresh_plan_for_task["advisory"],
             "targeted_refresh": refresh,
             "change_impact_required": mutation,
         },
@@ -2115,6 +2160,10 @@ def main() -> int:
     p.add_argument("--observe-run-id", help="Record this Retrieval operation in an existing AIPS run")
     p.add_argument("--format", choices=["yaml", "json"], default="yaml")
 
+    p = sub.add_parser("gc", help="List (default) or remove external stores whose project path no longer exists")
+    p.add_argument("--yes", action="store_true", help="Remove the listed orphaned stores; default is a dry run")
+    p.add_argument("--format", choices=["yaml", "json"], default="yaml")
+
     p = sub.add_parser("evaluate")
     p.add_argument("--project", default=os.getcwd())
     p.add_argument("--suite", required=True)
@@ -2122,6 +2171,14 @@ def main() -> int:
     p.add_argument("--format", choices=["yaml", "json"], default="yaml")
 
     args = parser.parse_args()
+    if args.command == "gc":
+        try:
+            result = gc_external_stores(config_home() / "projects", apply=args.yes)
+        except OSError as exc:
+            print(f"ERROR: {exc}", file=sys.stderr)
+            return 2
+        output(result, args.format)
+        return 1 if result.get("errors") or result.get("status") == "REFUSED" else 0
     root = project_root(Path(args.project))
     try:
         if args.command == "bootstrap":

@@ -70,6 +70,7 @@ Usage:
   aips intelligence index [--project <path>] [--force]
   aips intelligence retrieve --prompt <text> [--project <path>] [--token-budget <n>] [--limit <n>] [--no-structural]
   aips intelligence evaluate --suite <yaml> [--project <path>] [--output <yaml|json>]
+  aips intelligence gc [--yes]
   aips intelligence reconcile-overrides [--project <path>]
   aips intelligence promotion-plan --topic <name> [--project <path>]
   aips intelligence promotion-apply --topic <name> --target <path> --approval-id <id> [--project <path>]

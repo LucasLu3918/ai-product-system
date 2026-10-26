@@ -169,6 +169,8 @@ Track relevant evidence:
 
 Targeted refresh only affected topics.
 
+`aips intelligence gc` lists external stores under the user config `projects/` directory whose recorded project root no longer exists. It is a dry run by default; `--yes` removes only those `intelligence` stores, re-checks the path before removal, skips symlinked or unverifiable entries, and preserves other workspace data such as runs.
+
 `aips intelligence refresh` is a narrow revision-only operation for an equivalent Git tree after squash/rebase reconciliation. It requires a clean worktree and identical old/current tree objects. A changed tree returns `SEMANTIC_REFRESH_REQUIRED`; it never rewrites semantic topics automatically.
 
 AIPS schema upgrade order:
@@ -370,7 +372,7 @@ aips intelligence index --project /path/to/project
 aips intelligence retrieve --project /path/to/project --prompt "<task>" --token-budget 6000
 ~~~
 
-The Human normally does not need to run these commands. When the Turn Context reports `retrieval_index_required=true`, the Agent should build the index as an engineering preparation step. Missing/unavailable Retrieval Intelligence degrades to existing stable Project Intelligence; it does not silently claim semantic evidence and does not by itself change authority.
+The Human normally does not need to run these commands. When the Turn Context reports `retrieval_index_required=true`, the Agent should build the index as an engineering preparation step. That flag is true only when `retrieval_needed` is true (a non-empty prompt that is a likely mutation or selects Intelligence topics) and the index is missing; other turns report `retrieval_index_status` without an instruction. Missing/unavailable Retrieval Intelligence degrades to existing stable Project Intelligence; it does not silently claim semantic evidence and does not by itself change authority.
 
 Index open and query failures return a stable `INDEX_UNAVAILABLE` diagnostic with a reason code and remediation hint. Context assembly retains canonical source pointers and does not claim retrieval evidence when the cache cannot be read. Redaction is applied before retrieval snippets enter the emitted context.
 
@@ -622,7 +624,7 @@ EPHEMERAL remains the default. Explicit attach/detach in a Git worktree add root
 
 Content-safety findings are advisory retrieval inputs and do not change Project Intelligence authority or graph completeness.
 
-When readiness is READY and freshness is STALE, preserve freshness and targeted refresh guidance but treat staleness as advisory for confined local L2 source writes. Non-READY readiness, UNKNOWN freshness, unavailable canonical protocols, unresolved instruction authority, path escape, creative writes and external/high-risk actions retain their existing stop conditions.
+When readiness is READY and freshness is STALE, preserve freshness but treat staleness as advisory for confined local L2 source writes. `requirements.refresh_required` is true and `targeted_refresh` lists topics only when task-relevant topics are affected or irrelevance cannot be proven (`refresh_reason` explains which); otherwise the Turn Context states that no refresh is needed for the task. Non-READY readiness, UNKNOWN freshness, unavailable canonical protocols, unresolved instruction authority, path escape, creative writes and external/high-risk actions retain their existing stop conditions.
 
 
 Security-boundary Change Impact may use a manually reviewed publication caller/consumer scope when the repository-wide Impact Graph is partial; unknown paths remain explicit.

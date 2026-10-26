@@ -29,6 +29,8 @@ resolve project identity
 
 Heavy work such as initial bootstrap, broad targeted refresh, impact-graph rebuild and HTML regeneration happens outside the synchronous hook path.
 
+Preparation instructions are task-scoped. READY+STALE freshness is advisory: `refresh_required` and `targeted_refresh` name only affected task-relevant topics, and an unrelated or topic-free turn gets no refresh instruction. `retrieval_needed` is true for a non-empty prompt that is a likely mutation or selects Intelligence topics; only then does a missing index set `retrieval_index_required`. Other turns report index status without an instruction. Missing/UNKNOWN/non-READY Intelligence, instruction conflicts, path escapes, Change Impact for mutation, creative and external/high-risk controls are unchanged.
+
 Intent classification uses word boundaries and negation handling; callers can pass `--intent read|write` when the prompt is ambiguous. Instruction pointers are filtered by `--target-path` and runtime before conflict resolution. The default YAML CLI view is compact; machine JSON and `--full` retain the complete manifest. Layer token estimates cover only their named layers, while `full_manifest_characters` measures the serialized full manifest without claiming tokenizer accuracy.
 
 ## Capability states

@@ -9,7 +9,7 @@ The fixed AIPS system layer is `harness/BOOTSTRAP.md` plus `SYSTEM_CORE.md`; fol
 
 For an existing-project mutation:
 1. initialize Project Intelligence when missing;
-2. targeted-refresh it when stale;
+2. targeted-refresh only the topics in `targeted_refresh` when the Context sets `refresh_required=true` (READY+STALE is otherwise advisory); build the Retrieval index only when `retrieval_index_required=true`;
 3. resolve Change Impact before editing;
 4. preserve valid project-native conventions;
 5. verify input/output/data/event/consumer impact after the diff.

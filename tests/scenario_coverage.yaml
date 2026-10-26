@@ -2187,3 +2187,13 @@ scenarios:
       - tests/validation/comfyui_dynamic_workflow_contracts.py
       - tests/evidence/creative_execution_lifecycle.py
       - tests/validation/creative_execution_contracts.py
+  - id: "269"
+    path: tests/scenarios/269-task-scoped-intelligence-preparation.md
+    coverage: lifecycle
+    evidence:
+      - tests/scenarios/269-task-scoped-intelligence-preparation.md
+      - scripts/project_intelligence.py
+      - scripts/project_intelligence_gc.py
+      - scripts/turn_context_hook.py
+      - tests/evidence/intelligence_context_lifecycle.py
+      - tests/test_intelligence_task_freshness.py

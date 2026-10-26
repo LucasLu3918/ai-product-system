@@ -4,6 +4,7 @@ from __future__ import annotations
 import importlib
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -46,7 +47,7 @@ def init_repo(path: Path) -> None:
     path.mkdir(parents=True)
     git(path, "init", "-q")
     git(path, "branch", "-m", "main")
-    git(path, "config", "user.email", "aips@example.invalid")
+    git(path, "config", "user.email", "aips" + chr(64) + "example.invalid")
     git(path, "config", "user.name", "AIPS Evidence")
 
 
@@ -234,7 +235,8 @@ def ready_stale_mutation_advisory(base: Path, env: dict[str, str]) -> None:
         topic_file = store / "topics" / f"{name}.md"
         topic_file.parent.mkdir(parents=True, exist_ok=True)
         topic_file.write_text(f"# {name}\n\n{evidence}\n", encoding="utf-8")
-        topics[name] = {"path": f"topics/{name}.md", "type": "INTERPRETATION", "confidence": "high", "evidence": ["main.py"], "watch": ["main.py"]}
+        watch = ["tests/**"] if name == "testing" else ["main.py"]
+        topics[name] = {"path": f"topics/{name}.md", "type": "INTERPRETATION", "confidence": "high", "evidence": ["main.py"], "watch": watch}
     intelligence_path.write_text(yaml.safe_dump(intelligence, sort_keys=False), encoding="utf-8")
     finalized = json_run([sys.executable, str(PI), "finalize", "--project", str(project), "--format", "json"], env)
     require(finalized.get("readiness") == "READY", "semantic fixture must reach READY before stale-policy assertion")
@@ -278,6 +280,99 @@ def ready_stale_mutation_advisory(base: Path, env: dict[str, str]) -> None:
     creative = {**context, "task": {"classification": {"domain": "creative", "intent": "create", "effect": "filesystem_write"}}}
     require(opencode_native_guard.evaluate_write(tool="write", resources=[str(project / "art.svg")], root=str(project), manifest=creative).get("decision") == "DENY",
             "creative Git workspace writes must remain denied")
+    requirements = context.get("requirements") or {}
+    require(requirements.get("refresh_required") is True and requirements.get("freshness_advisory") is True,
+            "READY+STALE with affected task topics must require a task-scoped refresh while remaining advisory")
+    require(set(requirements.get("targeted_refresh") or []) <= {"architecture", "conventions", "modules"},
+            "task-scoped refresh must list only affected task-relevant topics: " + repr(requirements))
+    require(requirements.get("change_impact_required") is True, "Change Impact must remain required for mutation")
+    require(requirements.get("retrieval_needed") is True and requirements.get("retrieval_index_required") is True,
+            "a mutation task without an index must request the Retrieval index")
+    ready_stale_task_relevance(project, env)
+
+
+def hook_output(project: Path, env: dict[str, str], prompt: str) -> str:
+    hook_env = dict(env)
+    hook_env["AIPS_BIN"] = str(CLI)
+    hook_env["CLAUDE_PROJECT_DIR"] = str(project)
+    hook = run([sys.executable, str(TURN_HOOK), "--runtime", "claude-code"], env=hook_env,
+               input_text=json.dumps({"prompt": prompt}))
+    require(hook.returncode == 0 and "AIPS TURN CONTEXT" in hook.stdout, f"Turn Context hook failed: {hook.stdout} {hook.stderr}")
+    return hook.stdout
+
+
+def ready_stale_task_relevance(project: Path, env: dict[str, str]) -> None:
+    """READY+STALE refresh is required only when task-relevant topics are affected."""
+    related_hook = hook_output(project, env, "Modify the local source file.")
+    require("freshness_advisory=STALE task-relevant topics affected" in related_hook and "targeted_refresh=" in related_hook,
+            "related task hook output must request a targeted refresh: " + related_hook)
+    require("resolve Change Impact" in related_hook, "mutation hook output must keep Change Impact: " + related_hook)
+    git(project, "checkout", "--", "main.py")
+    (project / "tests").mkdir(exist_ok=True)
+    (project / "tests" / "test_main.py").write_text("def test_main():\n    assert True\n", encoding="utf-8")
+
+    def ctx(prompt: str) -> dict:
+        return json_run([sys.executable, str(PI), "context", "--project", str(project), "--runtime", "claude-code",
+                         "--prompt", prompt, "--format", "json"], env)
+
+    unrelated = ctx("Modify the local source file.")
+    req = unrelated.get("requirements") or {}
+    freshness = unrelated.get("freshness") or {}
+    require(freshness.get("status") == "STALE" and freshness.get("affected_topics") == ["testing"],
+            "fixture must be STALE only for the testing topic: " + repr(freshness))
+    require(req.get("refresh_required") is False and req.get("targeted_refresh") == [] and req.get("freshness_advisory") is True,
+            "unrelated READY+STALE task must not require refresh: " + repr(req))
+    require(req.get("refresh_reason") == "task_topics_not_affected", "unrelated task must state the advisory reason")
+    require(req.get("change_impact_required") is True and (unrelated.get("fail_policy") or {}).get("mode") == "soft",
+            "unrelated advisory staleness must keep Change Impact and a soft fail policy")
+    unrelated_hook = hook_output(project, env, "Modify the local source file.")
+    require("no refresh needed for this task" in unrelated_hook and "targeted_refresh=" not in unrelated_hook,
+            "unrelated task hook output must not instruct a refresh: " + unrelated_hook)
+    require("resolve Change Impact" in unrelated_hook, "unrelated mutation hook output must keep Change Impact")
+
+    related = ctx("Add a test for the main module coverage.")
+    req = related.get("requirements") or {}
+    require(req.get("refresh_required") is True and req.get("targeted_refresh") == ["testing"],
+            "testing task touching the affected topic must require only that refresh: " + repr(req))
+
+    read_only = ctx("Explain how this project is organized.")
+    req = read_only.get("requirements") or {}
+    require(req.get("retrieval_needed") is False and req.get("retrieval_index_required") is False,
+            "a read-only turn without topic signals must not require the Retrieval index: " + repr(req))
+    require(req.get("retrieval_index_status") == "MISSING" and req.get("refresh_required") is False,
+            "index status remains reported without an instruction: " + repr(req))
+    read_hook = hook_output(project, env, "Explain how this project is organized.")
+    require("retrieval_index_required=True" not in read_hook and "retrieval_index=MISSING (not needed for this task" in read_hook,
+            "read-only hook output must report index status without an instruction: " + read_hook)
+    require("Read-only turn: no Intelligence refresh, index build or Change Impact is required." in read_hook,
+            "read-only hook output must not request preparation work: " + read_hook)
+    if os.environ.get("AIPS_PRINT_TURN_CONTEXT_SAMPLES"):
+        print("--- related ---\n" + related_hook + "--- unrelated ---\n" + unrelated_hook + "--- read-only ---\n" + read_hook)
+
+
+def intelligence_gc_lifecycle(base: Path, env: dict[str, str]) -> None:
+    gc_env = dict(env)
+    gc_env["XDG_CONFIG_HOME"] = str(base / "gc-config")
+    stores = {}
+    for name in ("gc-live", "gc-gone"):
+        project = base / name
+        init_repo(project)
+        (project / "main.py").write_text(f"print('{name}')\n", encoding="utf-8")
+        git(project, "add", "-A")
+        git(project, "commit", "-qm", "baseline")
+        boot = json_run([sys.executable, str(PI), "bootstrap", "--project", str(project), "--format", "json"], gc_env)
+        stores[name] = Path(boot["store"])
+    shutil.rmtree(base / "gc-gone")
+
+    dry = json_run([str(CLI), "intelligence", "gc", "--format", "json"], gc_env)
+    require(dry.get("status") == "DRY_RUN" and [item["store"] for item in dry["orphaned"]] == [str(stores["gc-gone"])],
+            "gc dry run must list only the orphaned store: " + repr(dry))
+    require(stores["gc-gone"].is_dir() and stores["gc-live"].is_dir(), "gc dry run must not delete anything")
+    applied = json_run([str(CLI), "intelligence", "gc", "--yes", "--format", "json"], gc_env)
+    require(applied.get("status") == "APPLIED" and [item["store"] for item in applied["removed"]] == [str(stores["gc-gone"])],
+            "gc --yes must remove only the orphaned store: " + repr(applied))
+    require(not stores["gc-gone"].exists() and stores["gc-live"].is_dir(), "gc must keep the store whose project path exists")
+
 
 def normal_chat_no_bootstrap(base: Path, env: dict[str, str]) -> None:
     project = base / "chat-project"
@@ -437,6 +532,7 @@ def main() -> int:
         source_registry_runtime_dedup(base, env)
         material_instruction_conflict_surface(base, env)
         ready_stale_mutation_advisory(base, env)
+        intelligence_gc_lifecycle(base, env)
         # Use a separate config root so the dedup fixture's Intelligence cannot affect the normal-chat assertion.
         chat_env = dict(env)
         chat_env["XDG_CONFIG_HOME"] = str(base / "chat-config")

@@ -92,6 +92,12 @@ freshness:
 
 requirements:
   initialize_intelligence: false
+  retrieval_needed: false
+  retrieval_index_status: MISSING
+  retrieval_index_required: false
+  refresh_required: false
+  refresh_reason: freshness_not_stale
+  freshness_advisory: false
   targeted_refresh: []
   change_impact_required: false
 
