@@ -86,6 +86,8 @@ Repository lineage 與 workspace identity 分離，確保 main、feature worktre
 
 ### Retrieval Intelligence
 
+The local relation index is a disposable candidate graph. Changes to extraction semantics require an index schema bump and full re-extraction; raw source is parsed only in memory for syntax-sensitive call names, while persisted content remains redacted.
+
 Local hybrid retrieval 組合 lexical、symbols、structural relation、tests、Impact Graph 與 Git history。Optional semantic / embedding trial 不會因存在就變成 baseline requirement。
 
 若 Retrieval 回報 `RETRIEVAL_CACHE_WRITE_ACCESS_DENIED`，代表舊索引需要刷新但 Runtime 無法寫入 SQLite cache 或 sidecar；授予 cache 寫入能力，或為該 Runtime 設定可寫的 `XDG_CACHE_HOME` 後重試。舊索引維持 stale，不會以唯讀快照冒充 current。

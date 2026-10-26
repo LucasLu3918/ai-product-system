@@ -30,7 +30,9 @@ from retrieval_storage import metadata_get, metadata_set, open_db, open_read_db
 from temporal_intelligence import load_temporal, temporal_digest
 from temporal_intelligence import validate_document as validate_temporal_document
 
-SCHEMA_VERSION = 6
+# Relation extraction semantics are part of the disposable index schema. Bump
+# this when changing extraction behavior so unchanged files are reindexed too.
+SCHEMA_VERSION = 7
 DEFAULT_TOKEN_BUDGET = 6000
 DEFAULT_RESULT_LIMIT = 12
 MAX_FILE_BYTES = 1_000_000
@@ -206,17 +208,20 @@ def dirty_fingerprint(root: Path) -> str:
     return sha("\n".join(pieces))
 
 
-def read_text_file(path: Path) -> str | None:
+def read_source_text(path: Path) -> str | None:
     try:
         raw = path.read_bytes()
     except OSError:
         return None
     if b"\x00" in raw[:8192]:
         return None
-    try:
-        return redact_text(raw.decode("utf-8", errors="replace"))
-    except Exception:
-        return None
+    return raw.decode("utf-8", errors="replace")
+
+
+def read_text_file(path: Path) -> str | None:
+    """Read source content only in its redacted form for persistent indexing."""
+    source = read_source_text(path)
+    return redact_text(source) if source is not None else None
 
 
 def extract_symbols(rel_path: str, text: str) -> list[tuple[str, str, int]]:
@@ -304,7 +309,10 @@ def replace_file_index(conn: sqlite3.Connection, root: Path, rel_path: str, fts_
         return False
     if size > MAX_FILE_BYTES:
         return False
-    text = read_text_file(path)
+    source_text = read_source_text(path)
+    if source_text is None:
+        return False
+    text = redact_text(source_text)
     if text is None:
         return False
     file_hash = sha(text)
@@ -340,7 +348,7 @@ def replace_file_index(conn: sqlite3.Connection, root: Path, rel_path: str, fts_
             "INSERT INTO symbols(name, kind, path, line, chunk_id) VALUES (?, ?, ?, ?, ?)",
             (name, kind, rel_path, line, chunk_id),
         )
-    for relation in extract_code_relations(rel_path, text):
+    for relation in extract_code_relations(rel_path, text, call_source=source_text):
         conn.execute(
             """INSERT OR REPLACE INTO relations(
                 source_name, source_path, source_definition_line, target_name,
@@ -360,14 +368,24 @@ def code_without_comments_or_strings(text: str) -> str:
     return _mask_relations_source(text)
 
 
-def extract_code_relations(rel_path: str, text: str) -> list[dict[str, Any]]:
+def extract_code_relations(
+    rel_path: str, text: str, *, call_source: str | None = None
+) -> list[dict[str, Any]]:
     """Extract bounded call/reference candidates, never compiler semantics."""
     ext = Path(rel_path).suffix.lower()
     if ext not in SYMBOL_PATTERNS or is_secret_path(rel_path):
         return []
     definitions = extract_symbols(rel_path, text)
     masked = code_without_comments_or_strings(text)
-    call_names = _python_call_names_by_line(text) if ext == ".py" else None
+    call_names = None
+    if ext == ".py":
+        # Parse unredacted Python only to return call-name identifiers. Persistent
+        # chunks and references still use redacted text; no literal value leaves
+        # this function. Redaction can make valid syntax such as password=None
+        # unparsable, which would otherwise fall back to false lexical calls.
+        call_names = _python_call_names_by_line(call_source if call_source is not None else text)
+        if call_source is not None and call_names is None:
+            call_names = {}
     return _build_relation_rows(
         masked,
         definitions,

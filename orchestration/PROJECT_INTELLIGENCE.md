@@ -616,6 +616,8 @@ Do not claim the project has been initialized merely from directory/file-name in
 
 ## Existing-project automatic behavior
 
+Retrieval relation extraction behavior is versioned with the disposable index schema. When changing which source relationships are indexed, increment `SCHEMA_VERSION` so unchanged files are fully re-extracted; incremental content hashes alone cannot remove relations produced by an older extractor. Parse raw source only in memory for syntax-sensitive call-name extraction; persist only redacted chunks and relationship rows.
+
 EPHEMERAL remains the default. Explicit attach/detach in a Git worktree add root-relative `.ai/` and `.ai.detached-*` patterns to repository-local `info/exclude`; this does not modify `.gitignore` or remove already tracked paths.
 
 Content-safety findings are advisory retrieval inputs and do not change Project Intelligence authority or graph completeness.

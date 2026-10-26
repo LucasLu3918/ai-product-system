@@ -9,6 +9,7 @@ The adopted behavior must:
 - keep the lane local, deterministic, provider-neutral and free of external parser/LSP dependencies;
 - discover bridge chunks through the existing lexical index rather than an unbounded full-repository scan;
 - resolve outgoing identifiers through the indexed symbol table with hard bridge/identifier/target/test limits;
+- force a complete disposable-index rebuild when the relation-extraction schema version changes, so unchanged files cannot retain stale caller/consumer edges from an older extractor;
 - expose structural status, default/enabled selection and traversal telemetry in retrieval evidence;
 - preserve token budgets, revision/content provenance, secret filtering and semantic-provider truthfulness;
 - keep Retrieval Quality Evaluation on the adopted default behavior while retaining Scenario 130 as explicit OFF/ON Trial replay evidence;

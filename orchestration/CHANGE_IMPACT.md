@@ -225,6 +225,8 @@ Historical Change Impact MUST NOT use a rule whose `from_revision` is not an anc
 
 ## Risk-adaptive bounded traversal
 
+When a high-risk traversal reports ambiguous lexical targets, resolve them with exact canonical `--graph-seed` node IDs and inspect the source-backed candidate edges. An index schema upgrade must remove stale extracted edges before recording traversal evidence; deeper traversal may resolve a depth bound, but unmapped architecture seeds remain explicit unknowns and do not establish repository-wide completeness.
+
 Use `aips intelligence impact-traverse` to find likely code callers and consumers before implementation. The command combines rebuildable lexical relationships from the local Retrieval Intelligence index with exact relationships in canonical `IMPACT_GRAPH.yaml`; lexical matches are candidates, not compiler-resolved references.
 
 Example: `aips intelligence impact-traverse --project . --seed get_products --seed-path src/api.py --risk-class api_contract --direction callers --direction consumers --max-depth 3 --max-nodes 100 --max-edges 250`. Repeat `--seed` alongside optional same-index `--seed-path`/`--seed-line`, and pass `--graph-seed` to identify an exact canonical Impact Graph node when symbol/path matching is ambiguous. Use `--changed-path` for each path in the implementation diff when recording node status.

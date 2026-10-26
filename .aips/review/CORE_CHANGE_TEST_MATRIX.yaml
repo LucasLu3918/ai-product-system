@@ -1,81 +1,77 @@
 version: 1
 change:
-  id: flux3-klein-distilled-multireference
-  summary: Add validated FLUX 3 Klein Distilled profile support and ordered one-to-eight
-    local ComfyUI edit references.
+  id: retrieval-relation-schema-refresh
+  summary: Parse Python call identifiers from raw source only in memory, keep indexed
+    data redacted, and force full re-extraction when relation semantics change.
   boundary:
-  - FLUX Klein profile and audited topology
-  - Dynamic ComfyUI reference bindings
-  - Compatibility, safety and synthetic execution
-  - Scenario, canonical documentation and exact-candidate delivery
+  - Python relation extraction and privacy boundary
+  - Disposable retrieval-index schema upgrade
+  - Change Impact traversal evidence and documentation
+  - Exact-candidate validation and publication
 matrix:
-- boundary: FLUX Klein profile and audited topology
-  reason: Profile sampler values are data-driven but range-checked; live schema, exact
-    local components and final serialized workflow remain enforced.
+- boundary: Python relation extraction and privacy boundary
+  reason: Redaction can make valid Python syntax unparsable and create false lexical
+    call edges; AST extraction must consume raw source in memory while persisted rows
+    remain redacted.
   checks: &id001
     static_lint:
       applicable: true
-      evidence: 'PASS: focused Ruff checks, touched-code debt ratchet, scheduler-gate
-        mypy and git diff --check passed; final repository validation remains bound
-        to the exact candidate Gate.'
+      evidence: 'REQUIRED: exact-candidate lint and touched-code ratchet in the Integration
+        Gate.'
     unit:
       applicable: true
-      evidence: 'PASS: tests/evidence/creative_execution_lifecycle.py passed with
-        the synthetic provider suite, including ordered 3-reference binding/injection,
-        over-limit rejection, invalid Distilled sampler rejection, and Distilled preflight
-        plus execution at 16 steps / CFG 1.'
+      evidence: 'PASS: tests/evidence/retrieval_relations_extraction_lifecycle.py
+        verifies only call-name identifiers are extracted from raw source and secret
+        literals are absent from relation output.'
     integration:
       applicable: true
-      evidence: 'REQUIRED: run the exact-candidate AIPS Integration Gate after commit
-        and before remote publication or merge.'
+      evidence: 'REQUIRED: exact-candidate AIPS Integration Gate before publication
+        and merge.'
     contract:
       applicable: true
-      evidence: 'PASS: publish preview reports documentation placement PASS and no
-        required additions; tests/validation/creative_execution_contracts.py passes
-        with bounded multi-reference documentation assertions. Exact-candidate repository
-        validation runs in the Gate.'
+      evidence: 'PASS: tests/validation/change_impact_resolution_contracts.py verifies
+        the public traversal/reconciliation contract; documentation placement preview
+        passes.'
     e2e:
       applicable: true
-      evidence: 'PASS: synthetic loopback ComfyUI lifecycle verifies local Distilled
-        execution; no real model inference is claimed.'
+      evidence: 'PASS: tests/evidence/retrieval_intelligence_lifecycle.py upgrades
+        a schema-v6 disposable index and confirms stale attribute-call edges are removed
+        by full rebuild.'
     security:
       applicable: true
-      evidence: 'PASS: bounded ordered local references, safe staged names, per-file
-        and batch caps, SHA-256 source/staged comparison, loopback-only requests,
-        core-node checks and single submission remain enforced. REQUIRED: final exact-candidate
-        secret scan.'
+      evidence: 'REQUIRED: exact-candidate Secret/PII scan in the Integration Gate;
+        raw source is used only for in-memory AST call-name extraction.'
     migration_recovery:
-      applicable: false
-      na_reason: No persisted data, schema migration or recovery format changes.
+      applicable: true
+      evidence: 'PASS: schema-version change triggers disposable full index rebuild;
+        canonical source and Project Intelligence state are not migrated or overwritten.'
     cli_harness:
       applicable: false
-      na_reason: No CLI command signature or Harness authority behavior changes; Harness
-        documentation is synchronized.
+      na_reason: No CLI signature, host adapter, or authorization behavior changes.
     docs_schema:
       applicable: true
-      evidence: 'PASS: all publication-required canonical documentation paths are
-        changed and documentation placement passes. REQUIRED: final docs build in
-        the exact-candidate Gate.'
-- boundary: Dynamic ComfyUI reference bindings
-  reason: Ordered image_1..image_N slots stay within the existing eight-image and
-    byte budgets and verify all staged source hashes.
+      evidence: 'REQUIRED: exact-candidate documentation validation and build in the
+        Integration Gate; canonical docs describe schema bump/rebuild and privacy
+        behavior.'
+- boundary: Disposable retrieval-index schema upgrade
+  reason: Old indexes may retain stale lexical relations even when source content
+    hashes are unchanged; the schema bump invalidates the disposable relation index.
   checks: *id001
-- boundary: Compatibility, safety and synthetic execution
-  reason: Base and Z-Image behavior remain compatible; tests use local synthetic services
-    and do not generate a real image.
+- boundary: Change Impact traversal evidence and documentation
+  reason: False execute edges are removed; remaining unmapped architecture seeds stay
+    explicit unknowns and do not establish repository-wide completeness.
   checks: *id001
-- boundary: Scenario, canonical documentation and exact-candidate delivery
-  reason: Bind source, tests, 23 required documentation paths and final Gate evidence
-    to one exact candidate.
+- boundary: Exact-candidate validation and publication
+  reason: Bind the reviewed implementation and documentation closure to one candidate;
+    native branch protections and Human merge authority remain in force.
   checks: *id001
 candidate:
-  base_sha: 60f55a6a28cbca62c516fb7bddfe313eb4e35428
-  changed_files_hash: 2b316cbd1494cf3becfcdcbb0602aba1d716d274e812d02ab1f469965a21eb7b
+  base_sha: 131b270d5b315974d9c7289386703a239c6687ec
+  changed_files_hash: b688fbc8a0781383e5576cec3826b635d185638e76814fed1253ba4f74943c5a
 review_evidence:
   required: false
   scope_approvals:
-  - Core Change proposal approved by user
-  - 23-document publication closure approved by user
+  - User authorized completion, PR creation, and merge of the follow-up work.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []

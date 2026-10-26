@@ -37,6 +37,80 @@ def git(project: Path, *args: str) -> None:
     subprocess.run(["git", *args], cwd=project, check=True, capture_output=True, text=True)
 
 
+def verify_schema_upgrade_rebuilds_call_relations() -> None:
+    """An extractor version change must purge stale attribute-call edges."""
+    with tempfile.TemporaryDirectory(prefix="aips-index-schema-upgrade-") as tmp:
+        base = Path(tmp)
+        project = base / "project"
+        store = base / "intelligence"
+        project.mkdir()
+        store.mkdir()
+        (store / "TEMPORAL_ASSERTIONS.yaml").write_text(
+            "schema:\n  version: 1\nassertions: []\n", encoding="utf-8"
+        )
+        sources = {
+            "src/database_client.py": (
+                "def run_query(db):\n"
+                "    return db.execute('SELECT 1')\n"
+            ),
+            "src/execute_a.py": "def execute():\n    return 'a'\n",
+            "src/execute_b.py": "def execute():\n    return 'b'\n",
+            "src/execute_c.py": "def execute():\n    return 'c'\n",
+        }
+        for relative, contents in sources.items():
+            path = project / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(contents, encoding="utf-8")
+        git(project, "init", "-q", "-b", "main")
+        git(project, "config", "user.email", "aips@" + "example.invalid")
+        git(project, "config", "user.name", "AIPS Evidence")
+        git(project, "add", "-A")
+        git(project, "commit", "-qm", "index attribute call fixture")
+
+        cache = base / "cache"
+        cache.mkdir()
+        with patch.dict(os.environ, {"XDG_CACHE_HOME": str(cache)}):
+            initial = RI.index_repository(project, store, force=True)
+            require(initial.get("status") == "READY", "fixture index must be created")
+            db_path = RI.index_path(project)
+            conn, _ = RI.open_db(db_path)
+            try:
+                row = conn.execute(
+                    "SELECT relation FROM relations "
+                    "WHERE source_path = ? AND target_name = ?",
+                    ("src/database_client.py", "execute"),
+                ).fetchone()
+                require(row is not None and row["relation"] == "references",
+                        "external attribute calls must not be indexed as local calls")
+                # Simulate a schema-v6 cache that retained the old false call edge.
+                conn.execute(
+                    "UPDATE relations SET relation = 'calls' "
+                    "WHERE source_path = ? AND target_name = ?",
+                    ("src/database_client.py", "execute"),
+                )
+                RI.metadata_set(conn, "schema_version", "6")
+                conn.commit()
+            finally:
+                conn.close()
+
+            upgraded = RI.index_repository(project, store)
+            require(upgraded.get("full_rebuild") is True,
+                    "schema version changes must force a complete relation re-extraction")
+            conn, _, snapshot = RI.open_read_db(db_path)
+            try:
+                stale_call = conn.execute(
+                    "SELECT 1 FROM relations WHERE source_path = ? "
+                    "AND target_name = ? AND relation = 'calls'",
+                    ("src/database_client.py", "execute"),
+                ).fetchone()
+                require(stale_call is None,
+                        "schema upgrade must remove ambiguous stale execute edges")
+            finally:
+                conn.close()
+                if snapshot is not None:
+                    snapshot.cleanup()
+
+
 def main() -> int:
     with tempfile.TemporaryDirectory() as tmp:
         base = Path(tmp)
@@ -309,6 +383,7 @@ def main() -> int:
                 "cache access errors must identify the read permission boundary")
 
 
+    verify_schema_upgrade_rebuilds_call_relations()
     print("retrieval_intelligence_lifecycle evidence: PASS")
     return 0
 
