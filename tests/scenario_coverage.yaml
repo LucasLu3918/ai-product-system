@@ -2205,3 +2205,14 @@ scenarios:
       - scripts/project_intelligence_seed.py
       - tests/evidence/intelligence_worktree_seed_lifecycle.py
       - tests/test_intelligence_worktree_seed.py
+  - id: "271"
+    path: tests/scenarios/271-audited-topology-templates-and-local-profiles.md
+    coverage: lifecycle
+    evidence:
+      - scripts/creative_execution.py
+      - scripts/comfyui_topology.py
+      - scripts/creative_profiles.py
+      - templates/creative/COMFYUI_TOPOLOGY_TEMPLATES.yaml
+      - tests/fixtures/creative_topology/golden_before_refactor.json
+      - tests/test_creative_topology_templates.py
+      - tests/validation/creative_execution_contracts.py

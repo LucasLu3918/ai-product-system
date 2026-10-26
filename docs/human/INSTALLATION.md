@@ -1,6 +1,6 @@
 # 安裝、更新與解除
 
-本機 ComfyUI profile 是 AIPS 內建 registry 資料；安裝與 discovery 不會下載權重，也不代表推論相容性已驗證。新增 profile 必須符合 executor 已審核的拓樸家族與本機已安裝元件清單。
+本機 ComfyUI profile 是 AIPS 內建 registry 資料；安裝與 discovery 不會下載權重，也不代表推論相容性已驗證。新增 profile 必須符合 executor 已審核的拓樸家族與本機已安裝元件清單。 使用者本機 profile 位於 `$XDG_CONFIG_HOME/aips/creative/profiles/`（預設 `~/.config/aips/`），草擬不下載權重，核准需互動式終端機。
 
 本指南整理 AIPS 的安裝生命週期（Install / Update / Uninstall）。支援 macOS、Linux 與 Windows + WSL；目前不宣稱 Windows 原生 PowerShell／CMD runtime 已支援。AIPS 需要 Python 3.12 以上。
 

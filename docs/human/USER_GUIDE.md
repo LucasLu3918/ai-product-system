@@ -129,7 +129,7 @@ Project Diagnostics 只報告既有狀態，不會建立 Creative Bundle、啟�
 
 已安裝 Z-Image Turbo 權重時，可使用 MFLUX 專用 generate 命令。建議 8 步；此配對不支援 edit、ControlNet 或其他 Z-Image 變體。
 
-ComfyUI 也可用 `model_profile: z-image-turbo` 執行同一模型：設定需明列 UNET、Qwen CLIP、VAE 權重檔名，並使用 AIPS 隨附的固定 API 工作流。Preflight 會向 loopback ComfyUI 核對三項本機模型清單；此配對僅支援 generate。模型可透過 `templates/creative/COMFYUI_MODEL_PROFILES.yaml` 擴充，但只能沿用已審核的拓樸家族；FLUX 3 Klein Base 為另一個固定 workflow profile。
+ComfyUI 也可用 `model_profile: z-image-turbo` 執行同一模型：設定需明列 UNET、Qwen CLIP、VAE 權重檔名，並使用 AIPS 隨附的固定 API 工作流。Preflight 會向 loopback ComfyUI 核對三項本機模型清單；此配對僅支援 generate。模型可透過 `templates/creative/COMFYUI_MODEL_PROFILES.yaml` 擴充，但只能沿用已審核的拓樸家族；FLUX 3 Klein Base 為另一個固定 workflow profile。 需要未列入系統 profile 的已安裝模型時，可用 `aips creative profile draft --model-id <id> --base-profile <系統 profile>` 產生未核准草稿，再於互動式終端機執行 `aips creative profile approve <local-profile-id>`；草擬不會下載權重（Scenario 271）。
 
 FLUX 3 Klein Base 與 Distilled 共用已審核 workflow；Base 使用 50 steps / CFG 3.5，Distilled 使用 16 steps / CFG 1。預檢會讀取本機 `/object_info/TextGenerate`，檢查工作流欄位、型別、範圍及 `sampling_mode` Dynamic Combo 選項 schema。送往 ComfyUI API 的值是 schema 中選取的選項鍵（例如 `"off"`）；ComfyUI 會在執行層重建節點所需的巢狀值。AIPS 在唯一一次 `/prompt` 前也會核對最終序列化工作流的節點、欄位與連線。ComfyUI 執行錯誤只回報安全摘要，不回傳原始訊息、提示、路徑或 traceback，也不會自動重送失敗工作。
 

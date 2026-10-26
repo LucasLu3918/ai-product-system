@@ -15,7 +15,7 @@ Scenario 266 records content-safety verification while preserving existing maint
 
 The publication workflow may use safe Prepare and Diagnostic ID observations during planning; they do not satisfy Human Authority, native Host confirmation, a required check, or the observed-execution condition.
 
-For an explicit creative asset transfer, review the hash-bound import candidate and invoke the exact-hash CLI import only after the destination check passes.
+For an explicit creative asset transfer, review the hash-bound import candidate and invoke the exact-hash CLI import only after the destination check passes. Local ComfyUI profile approval is not an orchestrator action; it requires a person at an interactive terminal (Scenario 271).
 
 
 For existing-project changes, the Agent may use `impact-candidates` as bounded discovery evidence; unresolved relations and global coverage limitations remain explicit through review and verification.

@@ -65,11 +65,11 @@ case "${1:-help}" in
       scan|next-version|import-candidate|import)
         "$(python_bin)" "$SYSTEM_DIR/scripts/creative_workspace_profile.py" "$sub" "$@"
         ;;
-      preflight|execute|generate-set|review|review-assist|trace|recover)
+      preflight|execute|generate-set|review|review-assist|trace|recover|profile)
         "$(python_bin)" "$SYSTEM_DIR/scripts/creative_execution.py" "$sub" "$@"
         ;;
       help|-h|--help)
-        say "Usage: aips creative <prepare|configure|discover|workflows|scan|next-version|import-candidate|import|preflight|execute|generate-set|review|review-assist|trace|recover> [options]"
+        say "Usage: aips creative <prepare|configure|discover|workflows|scan|next-version|import-candidate|import|preflight|execute|generate-set|review|review-assist|trace|recover|profile <draft|approve>> [options]"
         ;;
       *) die "Unknown creative command: $sub" ;;
     esac

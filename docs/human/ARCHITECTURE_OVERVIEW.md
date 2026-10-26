@@ -155,7 +155,7 @@ Creative execution is unaffected by the Claude Code publication recipe; committi
 
 Git publication scan evidence is independent of Creative review, asset import and image-generation provenance; it cannot authorize any Creative action.
 
-Creative profile registry 支援同一審核拓樸家族中的資料型模型擴充，並依家族規則驗證 sampler 欄位與數值；FLUX 3 Klein Base 和 Distilled 共用已審核 workflow topology，分別使用 50 steps / CFG 3.5 與 16 steps / CFG 1。新節點與新家族仍須程式審核。
+Creative profile registry 支援同一審核拓樸家族中的資料型模型擴充，並依家族規則驗證 sampler 欄位與數值；FLUX 3 Klein Base 和 Distilled 共用已審核 workflow topology，分別使用 50 steps / CFG 3.5 與 16 steps / CFG 1。新節點與新家族仍須程式審核。 已審核拓撲範本（`templates/creative/COMFYUI_TOPOLOGY_TEMPLATES.yaml`）以資料描述 Z-Image 與 FLUX 3 Klein 節點圖；使用者本機 profile 只能引用其中一種範本，不能新增節點、輸入或端點（Scenario 271）。
 
 FLUX 3 的 `TextGenerate` preflight 會依本機 `/object_info` 驗證輸入型別、範圍及 Dynamic Combo 選項 schema，並確認送往 API 的值是已核准選項鍵；ComfyUI 執行層會重建節點所需的巢狀值。送出前再驗證最終序列化工作流保留核准的節點與連線。這是介面相容性檢查，不代表模型已完成推論。
 
