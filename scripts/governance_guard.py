@@ -30,6 +30,18 @@ try:
     from content_safety import safe_emit
 except ModuleNotFoundError:  # imported as a repository module
     from scripts.content_safety import safe_emit
+try:
+    from protected_paths import REASON_CODE as PROTECTED_PATH_REASON
+    from protected_paths import (
+        bash_command_writes_protected,
+        file_tool_write_is_protected,
+    )
+except ModuleNotFoundError:  # imported as a repository module
+    from scripts.protected_paths import REASON_CODE as PROTECTED_PATH_REASON
+    from scripts.protected_paths import (
+        bash_command_writes_protected,
+        file_tool_write_is_protected,
+    )
 
 PROTECTED = ("git_push", "git_tag", "gh_pr_create", "gh_pr_merge", "gh_release_create")
 CONTENT_SENSITIVE = ("git_commit", *PROTECTED)
@@ -861,6 +873,28 @@ def _hook_binding(cwd: Path, command: str, mode: str) -> dict[str, str] | None:
         return None
 
 
+def _protected_path_diagnostic(reason: str) -> dict[str, Any]:
+    """Static, input-free diagnostic: never echoes the protected path or the command."""
+    unavailable = reason == "PROTECTED_PATH_GUARD_UNAVAILABLE"
+    return {
+        "version": 2, "diagnostic_id": str(uuid.uuid4()), "reason_code": reason,
+        "detail": ("AIPS could not verify this write against the protected install or profile paths."
+                   if unavailable else
+                   "AIPS blocked an agent write to the installed AIPS system or profile settings."),
+        "detail_zh": ("AIPS 無法驗證此寫入是否指向受保護的安裝目錄或 profile 設定。" if unavailable else
+                      "AIPS 已阻擋代理寫入已安裝的 AIPS 系統目錄或 profile 設定。"),
+        "next_step": ("Retry only after the local check can run; do not work around the guard. "
+                      "請在本機檢查可執行後再重試，不要繞過 guard。" if unavailable else
+                      "Make system and profile changes in the development repository, publish them through a PR, "
+                      "and leave the installed copy untouched. 請在開發 repo 修改系統與 profile 內容並透過 PR 發布，不要直接修改已安裝副本。"),
+        "next_step_zh": ("本機檢查可執行後再重試；不要繞過 guard。" if unavailable else
+                         "在開發 repo 修改，透過 PR 發布；不要改動已安裝副本或 profile 設定。"),
+        "phase": "protected_path_guard", "category": "POLICY", "source": "AIPS_GUARD",
+        "blocking_rule": "protected_path", "blocking_rule_id": reason, "retryable": unavailable,
+        "recovery_mode": "HUMAN_OR_HOST_REQUIRED", "redacted": True,
+    }
+
+
 def deny_hook_input(runtime: str, reason: str, diagnostic: dict[str, Any] | None = None) -> int:
     """Return the runtime's normal deny envelope without echoing input data."""
     reason_messages = {
@@ -899,6 +933,8 @@ def deny_hook_input(runtime: str, reason: str, diagnostic: dict[str, Any] | None
         "M4A_TOO_LARGE": "AIPS cannot publish M4A files above 8 MiB; use Git LFS or external asset storage and keep the repository pointer/documentation here.",
         "M4A_INVALID": "AIPS could not verify this .m4a as a valid M4A audio file; use a correctly encoded file with matching extension.",
         "CONTENT_INSPECTION_UNAVAILABLE": "AIPS content inspection could not complete; check the local scanner and Git state.",
+        "PROTECTED_PATH_WRITE": "AIPS blocked an agent write to the installed AIPS system or profile settings.",
+        "PROTECTED_PATH_GUARD_UNAVAILABLE": "AIPS could not verify this write against the protected paths; the write was not allowed.",
     }
     detail = reason_messages.get(reason, "AIPS blocked this command during a required safety check.")
     if diagnostic is None:
@@ -1039,6 +1075,21 @@ def _hook_impl(runtime: str) -> int:
         else:
             print(json.dumps({"decision": "deny", "reason": reason}))
         return 0
+    # Protected install/profile writes are denied before publication classification (PR3, best-effort).
+    _HOOK_PHASE = "protected_path_guard"
+    try:
+        guard_cwd = Path(str(payload.get("cwd") or os.getcwd())).resolve()
+        protected_write = (
+            (runtime == "claude-code" and file_tool_write_is_protected(
+                str(payload.get("tool_name") or ""), tool_input or {}, guard_cwd))
+            or bash_command_writes_protected(command, guard_cwd)
+        )
+    except Exception as exc:  # noqa: BLE001 - an unverifiable path check must fail closed.
+        logger.warning("Protected path guard failed closed: %s", type(exc).__name__)
+        return deny_hook_input(runtime, "PROTECTED_PATH_GUARD_UNAVAILABLE",
+                               _protected_path_diagnostic("PROTECTED_PATH_GUARD_UNAVAILABLE"))
+    if protected_write:
+        return deny_hook_input(runtime, PROTECTED_PATH_REASON, _protected_path_diagnostic(PROTECTED_PATH_REASON))
     try:
         _HOOK_PHASE = "command_classification"
         operations = operations_for(command, Path(str(payload.get("cwd") or os.getcwd())).resolve())
