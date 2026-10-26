@@ -60,6 +60,47 @@ def multi_reference_binding_cases() -> None:
     require(injected["encoder"]["inputs"]["images"] == {
         "image_1": ["3", 0], "image_2": ["1", 0], "image_3": ["2", 0]
     }, "three ordered local references were not injected")
+    edit_plus_workflow = {
+        "1": {"class_type": "LoadImage", "inputs": {"image": "placeholder-a.png"}},
+        "2": {"class_type": "LoadImage", "inputs": {"image": "placeholder-b.png"}},
+        "encoder": {"class_type": "TextEncodeQwenImageEditPlus", "inputs": {"image1": None, "image2": None, "image3": None}},
+        "save": {"class_type": "SaveImage", "inputs": {"images": ["encoder", 0], "filename_prefix": "fixture"}},
+    }
+    edit_plus_bindings = {
+        "references": [
+            {"node_id": "1", "input": "image", "slot": "image_1"},
+            {"node_id": "2", "input": "image", "slot": "image_2"},
+        ],
+        "reference_encoder": {"node_id": "encoder", "input": "image1"},
+    }
+    edit_plus_validated = creative.comfyui_workflow.validate_bindings(edit_plus_bindings, edit_plus_workflow, analysis)
+    edit_plus_injected = creative.comfyui_workflow.inject_bindings(
+        edit_plus_workflow, edit_plus_validated, {"references": ["identity.png", "product.png"]}, "edit-plus"
+    )
+    require(edit_plus_injected["encoder"]["inputs"]["image1"] == ["1", 0]
+            and edit_plus_injected["encoder"]["inputs"]["image2"] == ["2", 0]
+            and edit_plus_injected["encoder"]["inputs"]["image3"] is None,
+            "Qwen Edit Plus did not preserve the two ordered identity/product reference slots")
+    require(edit_plus_injected["1"]["inputs"]["image"] == "identity.png"
+            and edit_plus_injected["2"]["inputs"]["image"] == "product.png",
+            "Qwen Edit Plus references were not staged into their distinct LoadImage nodes")
+    expect_blocked(lambda: creative.comfyui_workflow.validate_bindings(
+        {**edit_plus_bindings, "reference_encoder": {"node_id": "encoder", "input": "images"}}, edit_plus_workflow, analysis
+    ), "Qwen Edit Plus accepted the Qwen 2.1 object-map input")
+    expect_blocked(lambda: creative.comfyui_workflow.validate_bindings(
+        {**edit_plus_bindings, "references": edit_plus_bindings["references"] + [
+            {"node_id": "3", "input": "image", "slot": "image_3"},
+            {"node_id": "4", "input": "image", "slot": "image_4"},
+        ]},
+        {**edit_plus_workflow,
+         "3": {"class_type": "LoadImage", "inputs": {"image": "placeholder-c.png"}},
+         "4": {"class_type": "LoadImage", "inputs": {"image": "placeholder-d.png"}}}, analysis
+    ), "Qwen Edit Plus exceeded its three-image encoder limit")
+    expect_blocked(lambda: creative.comfyui_workflow.validate_bindings(
+        {**edit_plus_bindings, "references": [
+            edit_plus_bindings["references"][0], {"node_id": "2", "input": "image", "slot": "image_3"}
+        ]}, edit_plus_workflow, analysis
+    ), "Qwen Edit Plus accepted a non-contiguous reference slot")
     too_many = {**bindings, "references": [
         {"node_id": str(index), "input": "image", "slot": f"image_{index}"}
         for index in range(1, creative.MAX_REFERENCE_IMAGES + 2)

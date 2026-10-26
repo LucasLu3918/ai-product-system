@@ -1784,7 +1784,7 @@ The lifecycle uses synthetic SVG/PNG fixtures to verify confined paths, active-c
 
 ## Scenario 235 — OpenCode Native Context and Action Guard
 
-Dynamic ComfyUI workflow validation does not bypass native prompt admission or the explicit Creative execution guard.
+Dynamic ComfyUI workflow validation does not bypass native prompt admission or the explicit Creative execution guard. Qwen Image Edit Plus dual-reference coverage binds identity and product images to separate contiguous ports, limits the encoder to three images, and preserves the Qwen Image 2.1 object-map contract.
 
 Scenario 267 adds a READY+STALE local-write case and retains denial evidence for UNKNOWN freshness, non-READY Intelligence, authority conflicts, path escapes, creative Git writes and external actions.
 

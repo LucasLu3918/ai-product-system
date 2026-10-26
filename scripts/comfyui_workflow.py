@@ -12,6 +12,7 @@ from creative_errors import Blocked
 
 MAX_WORKFLOW_BYTES = 4 * 1024 * 1024
 MAX_REFERENCE_BINDINGS = 8
+MAX_EDIT_PLUS_REFERENCE_BINDINGS = 3
 MAX_WORKFLOW_NODES = 256
 MAX_INPUTS_PER_NODE = 128
 MAX_WORKFLOW_NODE_BYTES = 256 * 1024
@@ -194,9 +195,22 @@ def validate_bindings(bindings: Any, workflow: dict[str, Any], analysis: dict[st
             raise Blocked("WORKFLOW_BINDING_INVALID", "Multi-reference binding requires a Qwen image encoder binding.", phase="creative.workflow_bindings", source="comfyui")
         encoder_node_id, encoder_input = str(encoder["node_id"]), encoder["input"]
         encoder_node = workflow.get(encoder_node_id)
-        if (not isinstance(encoder_node, dict) or encoder_node["class_type"] != "TextEncodeQwenImage21"
-                or encoder_input != "images" or encoder_input not in encoder_node["inputs"]):
-            raise Blocked("WORKFLOW_BINDING_INVALID", "Reference encoder must target the Qwen Image 2.1 images input.", phase="creative.workflow_bindings", source="comfyui")
+        if not isinstance(encoder_node, dict):
+            raise Blocked("WORKFLOW_BINDING_INVALID", "Reference encoder must identify a supported Qwen image encoder.", phase="creative.workflow_bindings", source="comfyui")
+        encoder_class = encoder_node.get("class_type")
+        if encoder_class == "TextEncodeQwenImage21":
+            if encoder_input != "images" or encoder_input not in encoder_node["inputs"]:
+                raise Blocked("WORKFLOW_BINDING_INVALID", "Qwen Image 2.1 references must target its images input.", phase="creative.workflow_bindings", source="comfyui")
+        elif encoder_class == "TextEncodeQwenImageEditPlus":
+            if encoder_input != "image1" or encoder_input not in encoder_node["inputs"]:
+                raise Blocked("WORKFLOW_BINDING_INVALID", "Qwen Image Edit Plus references must target its image1 input.", phase="creative.workflow_bindings", source="comfyui")
+            if len(references) > MAX_EDIT_PLUS_REFERENCE_BINDINGS:
+                raise Blocked("WORKFLOW_BINDING_INVALID", "Qwen Image Edit Plus supports at most three ordered references.", phase="creative.workflow_bindings", source="comfyui")
+            expected_inputs = {f"image{index}" for index in range(1, len(references) + 1)}
+            if not expected_inputs.issubset(encoder_node["inputs"]):
+                raise Blocked("WORKFLOW_BINDING_INVALID", "Qwen Image Edit Plus workflow omits an ordered image input.", phase="creative.workflow_bindings", source="comfyui")
+        else:
+            raise Blocked("WORKFLOW_BINDING_INVALID", "Reference encoder must be a supported Qwen image encoder.", phase="creative.workflow_bindings", source="comfyui")
         if slots != {f"image_{index}" for index in range(1, len(references) + 1)}:
             raise Blocked("WORKFLOW_BINDING_INVALID", "Reference slots must be contiguous and ordered from image_1.", phase="creative.workflow_bindings", source="comfyui")
         validated["references"] = validated_references
@@ -222,9 +236,15 @@ def inject_bindings(workflow: dict[str, Any], bindings: dict[str, Any], values: 
         if len(references) != len(reference_names):
             raise Blocked("WORKFLOW_BINDING_INVALID", "The number of staged references does not match the workflow bindings.", phase="creative.workflow_bindings", source="comfyui")
         encoder = bindings["reference_encoder"]
-        image_map = {}
-        for binding, image_name in zip(references, reference_names, strict=True):
-            result[binding["node_id"]]["inputs"][binding["input"]] = image_name
-            image_map[binding["slot"]] = [binding["node_id"], 0]
-        result[encoder["node_id"]]["inputs"][encoder["input"]] = image_map
+        encoder_node = result[encoder["node_id"]]
+        if encoder_node["class_type"] == "TextEncodeQwenImageEditPlus":
+            for index, (binding, image_name) in enumerate(zip(references, reference_names, strict=True), start=1):
+                result[binding["node_id"]]["inputs"][binding["input"]] = image_name
+                encoder_node["inputs"][f"image{index}"] = [binding["node_id"], 0]
+        else:
+            image_map = {}
+            for binding, image_name in zip(references, reference_names, strict=True):
+                result[binding["node_id"]]["inputs"][binding["input"]] = image_name
+                image_map[binding["slot"]] = [binding["node_id"], 0]
+            encoder_node["inputs"][encoder["input"]] = image_map
     return result

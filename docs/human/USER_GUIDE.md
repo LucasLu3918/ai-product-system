@@ -131,7 +131,7 @@ ComfyUI 也可用 `model_profile: z-image-turbo` 執行同一模型：設定需�
 
 FLUX 3 Klein Base 與 Distilled 共用已審核 workflow；Base 使用 50 steps / CFG 3.5，Distilled 使用 16 steps / CFG 1。預檢會讀取本機 `/object_info/TextGenerate`，檢查工作流欄位、型別、範圍及 `sampling_mode` Dynamic Combo 選項 schema。送往 ComfyUI API 的值是 schema 中選取的選項鍵（例如 `"off"`）；ComfyUI 會在執行層重建節點所需的巢狀值。AIPS 在唯一一次 `/prompt` 前也會核對最終序列化工作流的節點、欄位與連線。ComfyUI 執行錯誤只回報安全摘要，不回傳原始訊息、提示、路徑或 traceback，也不會自動重送失敗工作。
 
-明確選擇 `dynamic_local` 的 edit workflow 可設定一到八組依序排列的 `image_1` 至 `image_8` 參考綁定，並提供相同順序的本機 staged 檔名。每張上限 12 MiB、合計上限 25 MiB；預檢逐張比對來源與 staged bytes。模型 profile 不會啟用編輯能力或改變此參考圖邊界。
+明確選擇 `dynamic_local` 的 edit workflow 可設定有序參考圖並提供相同順序的本機 staged 檔名。Qwen Image 2.1 以 `image_1` 至 `image_8` map 支援最多八張；Qwen Image Edit Plus 以連續的 `image1` 至 `image3` 端口支援最多三張。每張上限 12 MiB、合計上限 25 MiB；預檢逐張比對來源與 staged bytes。模型 profile 不會啟用編輯能力或改變此參考圖邊界。
 
 需要使用其他已安裝模型時，可在 Bundle 明確選擇 `workflow.mode: dynamic_local` 並提供專案內 API workflow JSON。`aips creative workflows scan` 只讀取本機 loopback `/object_info` 與工作流，`inspect` 回傳 privacy-bounded 狀態摘要，`import` 以 create-only 方式將來源複製到專案內；這三個工作流 CLI 子命令只輸出固定狀態，不回顯節點名稱、模型檔名、Runtime 版本、提示內容或工作流細節。一般 `creative discover` 保留有限且核准 loader 的模型目錄，但不列出節點清單。`preflight` 會核對節點 schema、圖連線、明確輸入綁定及本機 loader 模型。只允許 runtime 標示的 ComfyUI core nodes；API、custom、未知節點及隱含模型／參考圖選擇都會拒絕。動態模式不會自動替換固定 profile，也不下載權重；執行仍須明確要求，timeout 後不自動重送。合成驗證不代表實際推論或品質已驗證。
 

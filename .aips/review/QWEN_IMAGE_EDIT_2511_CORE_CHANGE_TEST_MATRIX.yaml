@@ -1,0 +1,41 @@
+version: 1
+change_id: qwen-image-edit-2511-dual-reference-20261026
+change_class: core
+status: DRAFT
+base: 5ab2246
+target_paths:
+  - scripts/comfyui_workflow.py
+  - tests/evidence/creative_execution_lifecycle.py
+  - tests/validation/comfyui_dynamic_workflow_contracts.py
+  - tests/scenarios/236-local-creative-execution.md
+  - docs/ARCHITECTURE.md
+  - docs/human/TECHNOLOGY_GUIDE.md
+  - docs/human/USER_GUIDE.md
+  - docs/human/CONFORMANCE.md
+  - .aips/review/QWEN_IMAGE_EDIT_2511_CORE_CHANGE_PROPOSAL.md
+  - .aips/review/QWEN_IMAGE_EDIT_2511_CORE_CHANGE_TEST_MATRIX.yaml
+requirements:
+  - id: QI2511-POS-1
+    evidence: The Edit Plus encoder receives two independent references in ordered image1/image2 ports; staged LoadImage inputs preserve filenames.
+  - id: QI2511-POS-2
+    evidence: Existing Qwen Image 2.1 object-map injection remains byte-shape compatible.
+  - id: QI2511-NEG-1
+    evidence: Reject wrong Edit Plus encoder port, unsupported encoder class, non-contiguous slots, and more than three Edit Plus references.
+  - id: QI2511-SEC-1
+    evidence: Existing loopback-only request boundary, core-node allow policy, staged source hash verification, one SaveImage, and bounded input count remain unchanged.
+  - id: QI2511-LIVE-1
+    evidence: Live AIPS preflight accepts the project workflow only when local ComfyUI schemas and all model weights are present; preflight does not submit inference.
+  - id: QI2511-GEN-1
+    evidence: Each requested output is a distinct image generation artifact; no collage, grid, insets, or combined colorway output.
+checks:
+  - python tests/evidence/creative_execution_lifecycle.py
+  - python -m tests.validation.comfyui_dynamic_workflow_contracts
+  - aips system preflight /Users/lucas/.local/share/aips/system
+  - aips creative preflight --project /Users/lucas/Coding/main/kohami --bundle <project-bundle>
+  - visually inspect every generated standalone image before website manifest updates
+security_negative_paths:
+  - external or redirected ComfyUI URL remains denied
+  - unsupported custom node remains denied
+  - reference file hash mismatch remains denied
+  - wrong Edit Plus mapping and >3 references are denied
+publication_authorized: false
