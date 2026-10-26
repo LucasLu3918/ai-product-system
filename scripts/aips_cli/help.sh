@@ -39,6 +39,7 @@ Usage:
   aips creative compare --project <path> --manifest <before-json> --after <after-json>
   aips creative quality-loop --project <path> --bundle <yaml> --model <installed-local-vision-model> --max-repairs <0..2> --time-budget-seconds <1..3600>
   aips creative trace [--limit 1..100]
+  aips creative recover [--base-url http://127.0.0.1:8188] (interrupts/deletes only timed-out AIPS-owned ComfyUI jobs; never resubmits)
 
   aips mcp serve
   aips mcp inspect

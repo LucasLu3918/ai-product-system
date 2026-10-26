@@ -25,6 +25,7 @@ from typing import Any
 
 import comfyui_capabilities
 import comfyui_workflow
+import creative_errors
 import creative_trace as _creative_trace
 import yaml
 from comfyui_workflow_policy import classify_node, validate_node_id
@@ -381,7 +382,10 @@ def validate_local_request(url: str, method: str, service: str) -> None:
         allowed = ((method == "GET" and (path in read_paths or dynamic_object_info) and not parsed.query)
                    or (method == "GET" and re.fullmatch(r"/history/[A-Za-z0-9_-]{1,128}", path) and not parsed.query)
                    or (method == "GET" and path == "/view" and _valid_comfy_view_query(parsed.query))
-                   or (method == "POST" and path in {"/prompt", "/queue"} and not parsed.query))
+                   # GET /queue reads running/pending ids for owned-job recovery; POST /interrupt is
+                   # only issued for an AIPS-owned prompt_id that the queue reports as running.
+                   or (method == "GET" and path == "/queue" and not parsed.query)
+                   or (method == "POST" and path in {"/prompt", "/queue", "/interrupt"} and not parsed.query))
     else:
         allowed = ((method == "GET" and path == "/api/tags" and not parsed.query)
                    or (method == "POST" and path == "/api/chat" and not parsed.query))
@@ -1821,14 +1825,244 @@ def mflux_execute(root: Path, bundle: dict[str, Any], provider: dict[str, Any], 
         raise Blocked("mflux_execution_failed", f"Local MFLUX exited with status {result.returncode}; provider output was suppressed.")
 
 
-def _cleanup_queued_comfy_job(base: str, prompt_id: str) -> None:
-    """Delete only this accepted queued job; never interrupt another running job."""
+COMFY_PROMPT_ID_PATTERN = re.compile(r"^[A-Za-z0-9_-]{1,128}$")
+COMFY_PROFILE_ID_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,95}$")
+COMFY_JOB_LEDGER_VERSION = 1
+COMFY_JOB_LEDGER_LIMIT = 64
+COMFY_JOB_LEDGER_MAX_BYTES = 64 * 1024
+COMFY_JOB_LEDGER_FIELDS = {"prompt_id", "submitted_at", "profile_id", "timeout_seconds", "binding_sha256"}
+COMFY_QUEUE_MAX_BYTES = MAX_IMAGE_BYTES
+COMFY_RECHECK_ATTEMPTS = 10
+COMFY_RECHECK_INTERVAL_SECONDS = 0.5
+
+
+def comfy_job_ledger_path() -> Path:
+    """Private per-user ledger of outstanding AIPS-submitted ComfyUI prompt ids."""
+    return trace_path().parent / "comfy-jobs.json"
+
+
+def _comfy_endpoint_key(base: str) -> str:
+    parsed = urllib.parse.urlsplit(base)
+    return f"{(parsed.hostname or '').lower()}:{parsed.port}"
+
+
+def _comfy_job_binding(base: str, prompt_id: str, submitted_at: int, profile_id: str | None, timeout_seconds: int) -> str:
+    # The endpoint is bound but not stored, so an entry only proves ownership on the instance that accepted it.
+    material = json.dumps({"endpoint": _comfy_endpoint_key(base), "profile_id": profile_id, "prompt_id": prompt_id,
+                           "submitted_at": submitted_at, "timeout_seconds": timeout_seconds, "version": COMFY_JOB_LEDGER_VERSION},
+                          sort_keys=True, separators=(",", ":"))
+    return "sha256:" + hashlib.sha256(material.encode()).hexdigest()
+
+
+def _valid_ledger_entry(item: Any) -> bool:
+    return (isinstance(item, dict) and set(item) == COMFY_JOB_LEDGER_FIELDS
+            and isinstance(item["prompt_id"], str) and bool(COMFY_PROMPT_ID_PATTERN.fullmatch(item["prompt_id"]))
+            and isinstance(item["submitted_at"], int) and not isinstance(item["submitted_at"], bool) and item["submitted_at"] >= 0
+            and (item["profile_id"] is None or (isinstance(item["profile_id"], str) and bool(COMFY_PROFILE_ID_PATTERN.fullmatch(item["profile_id"]))))
+            and isinstance(item["timeout_seconds"], int) and not isinstance(item["timeout_seconds"], bool)
+            and 0 <= item["timeout_seconds"] <= MAX_TIMEOUT_SECONDS
+            and isinstance(item["binding_sha256"], str) and bool(re.fullmatch(r"sha256:[0-9a-f]{64}", item["binding_sha256"])))
+
+
+def _update_comfy_job_ledger(mutate) -> bool:
+    """Apply ``mutate(entries) -> entries`` under an exclusive lock; private 0700/0600 storage."""
+    path = comfy_job_ledger_path()
     try:
-        local_request(base + "/queue", data=json.dumps({"delete": [prompt_id]}).encode(),
-                      headers={"Content-Type": "application/json"}, timeout=5, max_bytes=256 * 1024)
+        path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+        os.chmod(path.parent, 0o700)
+        lock_fd = os.open(path.parent / "comfy-jobs.lock", os.O_RDWR | os.O_CREAT, 0o600)
+    except OSError:
+        return False
+    try:
+        lock_prepare_scope(lock_fd)
+        entries = _read_comfy_job_ledger_unlocked(path)
+        entries = mutate(entries)[-COMFY_JOB_LEDGER_LIMIT:]
+        fd, temporary = tempfile.mkstemp(prefix=".comfy-jobs-", dir=path.parent)
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as stream:
+                json.dump({"version": COMFY_JOB_LEDGER_VERSION, "jobs": entries}, stream, sort_keys=True, separators=(",", ":"))
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.chmod(temporary, 0o600)
+            os.replace(temporary, path)
+        finally:
+            Path(temporary).unlink(missing_ok=True)
+        return True
+    except OSError:
+        return False
+    finally:
+        try:
+            unlock_prepare_scope(lock_fd)
+        finally:
+            os.close(lock_fd)
+
+
+def _read_comfy_job_ledger_unlocked(path: Path) -> list[dict[str, Any]]:
+    try:
+        if path.is_symlink() or not path.is_file() or path.stat().st_size > COMFY_JOB_LEDGER_MAX_BYTES:
+            return []
+        document = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return []
+    jobs = document.get("jobs") if isinstance(document, dict) and document.get("version") == COMFY_JOB_LEDGER_VERSION else None
+    return [item for item in jobs[:COMFY_JOB_LEDGER_LIMIT] if _valid_ledger_entry(item)] if isinstance(jobs, list) else []
+
+
+def record_owned_comfy_job(base: str, prompt_id: str, profile_id: Any, timeout_seconds: float) -> bool:
+    """Record an accepted AIPS submission; no prompt text, workflow, path or endpoint is stored."""
+    if not COMFY_PROMPT_ID_PATTERN.fullmatch(prompt_id):
+        return False
+    profile = profile_id if isinstance(profile_id, str) and COMFY_PROFILE_ID_PATTERN.fullmatch(profile_id) else None
+    submitted_at = int(time.time())
+    budget = max(0, min(MAX_TIMEOUT_SECONDS, int(-(-timeout_seconds // 1))))  # round up: never expire early
+    entry = {"prompt_id": prompt_id, "submitted_at": submitted_at, "profile_id": profile, "timeout_seconds": budget,
+             "binding_sha256": _comfy_job_binding(base, prompt_id, submitted_at, profile, budget)}
+    return _update_comfy_job_ledger(lambda entries: [item for item in entries if item["prompt_id"] != prompt_id] + [entry])
+
+
+def release_owned_comfy_jobs(prompt_ids: set[str]) -> bool:
+    return _update_comfy_job_ledger(lambda entries: [item for item in entries if item["prompt_id"] not in prompt_ids])
+
+
+def owned_comfy_jobs(base: str) -> list[dict[str, Any]]:
+    """Ledger entries whose digest binding verifies for this loopback endpoint."""
+    return [item for item in _read_comfy_job_ledger_unlocked(comfy_job_ledger_path())
+            if item["binding_sha256"] == _comfy_job_binding(base, item["prompt_id"], item["submitted_at"],
+                                                              item["profile_id"], item["timeout_seconds"])]
+
+
+def _queue_prompt_ids(items: Any) -> list[str] | None:
+    # ComfyUI queue items are [number, prompt_id, prompt, extra_data, outputs]; only index 1 is read.
+    if not isinstance(items, list):
+        return None
+    ids = []
+    for item in items[:1000]:
+        if not isinstance(item, list) or len(item) < 2 or not isinstance(item[1], str) or not COMFY_PROMPT_ID_PATTERN.fullmatch(item[1]):
+            return None
+        ids.append(item[1])
+    return ids
+
+
+def _read_comfy_queue(base: str) -> tuple[list[str], list[str]] | None:
+    try:
+        document = json.loads(local_request(base + "/queue", timeout=5, max_bytes=COMFY_QUEUE_MAX_BYTES))
+    except (Blocked, TransientProviderError, json.JSONDecodeError, UnicodeDecodeError):
+        return None
+    if not isinstance(document, dict):
+        return None
+    running, pending = _queue_prompt_ids(document.get("queue_running")), _queue_prompt_ids(document.get("queue_pending"))
+    return None if running is None or pending is None else (running, pending)
+
+
+def _post_comfy(base: str, path: str, body: dict[str, Any]) -> bool:
+    try:
+        local_request(base + path, data=json.dumps(body).encode(), headers={"Content-Type": "application/json"},
+                      timeout=5, max_bytes=256 * 1024)
+        return True
     except (Blocked, TransientProviderError):
-        # Cleanup is best effort; lack of confirmation never permits resubmission.
-        pass
+        return False
+
+
+def reconcile_owned_comfy_jobs(base: str, owned: set[str]) -> dict[str, Any]:
+    """Interrupt or delete only AIPS-owned ComfyUI jobs, then re-check; never resubmit.
+
+    A running job is interrupted only when ``GET /queue`` reports an owned prompt_id as running, and the
+    ``/interrupt`` body names that prompt_id. ComfyUI 0.42.x re-checks the running id server-side before
+    interrupting; older servers ignore the body, which leaves the check-then-interrupt race window
+    documented in the PR5 Core Change Proposal. Queued owned jobs are deleted by exact id.
+    """
+    owned = {prompt_id for prompt_id in owned if COMFY_PROMPT_ID_PATTERN.fullmatch(prompt_id)}
+    result: dict[str, Any] = {"job_state": "UNKNOWN", "interrupt_requested": False, "queued_delete_requested": False,
+                              "other_jobs_running": None, "automatic_resubmission": False, "jobs": {}}
+    queue = _read_comfy_queue(base)
+    if queue is None:
+        # Exact-id deletion cannot affect another job, so it stays safe without queue evidence. No interrupt.
+        if owned:
+            result["queued_delete_requested"] = _post_comfy(base, "/queue", {"delete": sorted(owned)})
+        result["jobs"] = dict.fromkeys(sorted(owned), "UNKNOWN")
+        return result
+    running, pending = queue
+    result["other_jobs_running"] = sum(prompt_id not in owned for prompt_id in running)
+    owned_pending = sorted(prompt_id for prompt_id in owned if prompt_id in pending)
+    owned_running = sorted(prompt_id for prompt_id in owned if prompt_id in running)
+    if not owned_pending and not owned_running:
+        result["job_state"] = "NOT_PRESENT"
+        result["jobs"] = dict.fromkeys(sorted(owned), "NOT_PRESENT")
+        return result
+    if owned_pending:
+        result["queued_delete_requested"] = _post_comfy(base, "/queue", {"delete": owned_pending})
+    for prompt_id in owned_running:
+        result["interrupt_requested"] = _post_comfy(base, "/interrupt", {"prompt_id": prompt_id}) or result["interrupt_requested"]
+    final = None
+    for _ in range(COMFY_RECHECK_ATTEMPTS):
+        final = _read_comfy_queue(base)
+        if final is not None and not any(prompt_id in final[0] or prompt_id in final[1] for prompt_id in owned):
+            break
+        time.sleep(COMFY_RECHECK_INTERVAL_SECONDS)
+    jobs: dict[str, str] = {}
+    for prompt_id in sorted(owned):
+        if final is None:
+            jobs[prompt_id] = "UNKNOWN"
+        elif prompt_id in final[0]:
+            jobs[prompt_id] = "STILL_RUNNING"
+        elif prompt_id in final[1]:
+            jobs[prompt_id] = "STILL_QUEUED"
+        elif prompt_id in owned_running or prompt_id in owned_pending:
+            jobs[prompt_id] = "CLEARED"
+        else:
+            jobs[prompt_id] = "NOT_PRESENT"
+    states = set(jobs.values())
+    result["jobs"] = jobs
+    result["job_state"] = next((state for state in ("UNKNOWN", "STILL_RUNNING", "STILL_QUEUED", "CLEARED") if state in states), "NOT_PRESENT")
+    return result
+
+
+def _settled_comfy_jobs(reconciled: dict[str, Any]) -> set[str]:
+    return {prompt_id for prompt_id, state in reconciled["jobs"].items() if state in {"CLEARED", "NOT_PRESENT"}}
+
+
+def _comfy_recovery_blocked(base: str, prompt_id: str, message: str) -> Blocked:
+    reconciled = reconcile_owned_comfy_jobs(base, {prompt_id})
+    settled = _settled_comfy_jobs(reconciled)
+    if settled:
+        release_owned_comfy_jobs(settled)
+    action = "INSPECT_COMFYUI_QUEUE_AND_HISTORY" if reconciled["job_state"] in {"CLEARED", "NOT_PRESENT"} else "RUN_AIPS_CREATIVE_RECOVER"
+    return Blocked("comfy_job_recovery_required", message,
+                   {"retryable": False, "job_state": reconciled["job_state"], "ownership": "AIPS_OWNED",
+                    "interrupt_requested": reconciled["interrupt_requested"],
+                    "queued_delete_requested": reconciled["queued_delete_requested"],
+                    "other_jobs_running": reconciled["other_jobs_running"],
+                    "recovery": {"action": action, "automatic_resubmission": False}},
+                   phase="creative.comfy_execute", source="comfyui")
+
+
+def recover_comfy_jobs(base_url: str = DEFAULT_COMFYUI_BASE_URL) -> dict[str, Any]:
+    """Explicit recovery: interrupt/delete only ledger-owned jobs whose own timeout has elapsed."""
+    base = loopback_base(base_url)
+    now = int(time.time())
+    entries = owned_comfy_jobs(base)
+    expired = {item["prompt_id"] for item in entries if now >= item["submitted_at"] + item["timeout_seconds"]}
+    active = len(entries) - len(expired)
+    if not expired:
+        return {"status": "NOTHING_TO_RECOVER", "reason_code": "comfy_no_owned_jobs", "owned_jobs": len(entries),
+                "active_within_timeout": active, "jobs": [], "automatic_resubmission": False}
+    reconciled = reconcile_owned_comfy_jobs(base, expired)
+    settled = _settled_comfy_jobs(reconciled)
+    ledger_updated = release_owned_comfy_jobs(settled) if settled else True
+    profiles = {item["prompt_id"]: item["profile_id"] for item in entries}
+    state = reconciled["job_state"]
+    return {
+        "status": "RECOVERED" if state in {"CLEARED", "NOT_PRESENT"} else "RECOVERY_INCOMPLETE",
+        "reason_code": "comfy_owned_jobs_recovered" if state in {"CLEARED", "NOT_PRESENT"} else "comfy_job_recovery_required",
+        "job_state": state, "owned_jobs": len(entries), "active_within_timeout": active,
+        "interrupt_requested": reconciled["interrupt_requested"], "queued_delete_requested": reconciled["queued_delete_requested"],
+        "other_jobs_running": reconciled["other_jobs_running"], "ledger_updated": ledger_updated,
+        "jobs": [{"prompt_id": prompt_id, "profile_id": profiles.get(prompt_id), "state": job_state}
+                 for prompt_id, job_state in reconciled["jobs"].items()],
+        "automatic_resubmission": False,
+        "recovery": {"action": creative_errors.RECOVERY["comfy_job_recovery_required"] if state not in {"CLEARED", "NOT_PRESENT"}
+                     else "已只處理 AIPS 自己送出的逾時工作；需要時請由使用者明確重新執行。"},
+    }
 
 
 def _comfy_execution_failure_details(status: Any) -> dict[str, Any]:
@@ -1904,12 +2138,15 @@ def comfy_execute(bundle: dict[str, Any], provider: dict[str, Any], temp_output:
         prompt_id = json.loads(response).get("prompt_id")
         if not isinstance(prompt_id, str) or not prompt_id:
             raise Blocked("comfy_job_invalid", "Local ComfyUI did not return an execution id.")
+        # Ownership evidence must survive an AIPS restart; a ledger write failure never blocks this run.
+        record_owned_comfy_job(provider["base_url"], prompt_id, (provider.get("config") or {}).get("model_profile"), timeout)
         while time.monotonic() - started < timeout:
             history_body = local_request(provider["base_url"] + "/history/" + urllib.parse.quote(prompt_id, safe=""), timeout=5, max_bytes=1024 * 1024)
             history = json.loads(history_body).get(prompt_id)
             if history:
                 status = history.get("status") or {}
                 if status.get("status_str") == "error" or status.get("completed") is False and status.get("messages"):
+                    release_owned_comfy_jobs({prompt_id})
                     message_text = json.dumps(status.get("messages") or [], ensure_ascii=True).casefold()
                     failure_details = _comfy_execution_failure_details(status)
                     if ("mps" in message_text or "metal" in message_text) and ("dtype" in message_text or "type" in message_text):
@@ -1928,19 +2165,18 @@ def comfy_execute(bundle: dict[str, Any], provider: dict[str, Any], temp_output:
                     query = urllib.parse.urlencode({"filename": str(image.get("filename", "")), "subfolder": str(image.get("subfolder", "")), "type": "output"})
                     image_bytes = local_request(provider["base_url"] + "/view?" + query, timeout=30, max_bytes=MAX_IMAGE_BYTES)
                     temp_output.write_bytes(strip_png_text_metadata(image_bytes))
+                    release_owned_comfy_jobs({prompt_id})
                     return
             time.sleep(0.25)
     except TransientProviderError as exc:
         if prompt_id:
-            _cleanup_queued_comfy_job(provider["base_url"], prompt_id)
-            raise Blocked("comfy_job_recovery_required", "Accepted ComfyUI job needs recovery; queued deletion was requested without interrupting running jobs. Automatic resubmission is blocked.") from exc
+            raise _comfy_recovery_blocked(provider["base_url"], prompt_id, "Accepted ComfyUI job needs recovery; only this AIPS-owned job was interrupted or deleted after an ownership check. Automatic resubmission is blocked.") from exc
         raise Blocked("comfy_job_recovery_required", "ComfyUI submission outcome is unknown after the single POST attempt. Inspect the queue/history before any explicit retry.",
                       {"prompt_id": None, "retryable": False, "recovery": {"action": "INSPECT_COMFYUI_QUEUE_AND_HISTORY", "automatic_resubmission": False}},
                       phase="creative.comfy_execute", source="comfyui") from exc
     except (json.JSONDecodeError, KeyError, TypeError, OSError) as exc:
         raise Blocked("comfy_response_invalid", "Local ComfyUI returned an invalid response.") from exc
-    _cleanup_queued_comfy_job(provider["base_url"], prompt_id)
-    raise Blocked("comfy_job_recovery_required", "Accepted ComfyUI job timed out; queued deletion was requested without interrupting running jobs. Inspect provider state before explicitly retrying.")
+    raise _comfy_recovery_blocked(provider["base_url"], prompt_id, "Accepted ComfyUI job timed out; only this AIPS-owned job was interrupted or deleted after an ownership check. Inspect provider state before explicitly retrying.")
 
 
 
@@ -2477,6 +2713,8 @@ def main() -> int:
     loop_parser.add_argument("--time-budget-seconds", type=int, required=True)
     trace_parser = sub.add_parser("trace")
     trace_parser.add_argument("--limit", type=int, default=20)
+    recover_parser = sub.add_parser("recover", help="Interrupt or delete only timed-out ComfyUI jobs recorded as AIPS-owned; never resubmits.")
+    recover_parser.add_argument("--base-url", default=DEFAULT_COMFYUI_BASE_URL)
     args = parser.parse_args()
     try:
         if args.action == "prepare":
@@ -2518,6 +2756,8 @@ def main() -> int:
             result = compare(args.project, args.manifest, args.after)
         elif args.action == "quality-loop":
             result = quality_loop(args.project, args.bundle, args.model, args.max_repairs, args.time_budget_seconds)
+        elif args.action == "recover":
+            result = recover_comfy_jobs(args.base_url)
         else:
             result = read_trace(args.limit)
         # Keep workflow command output bounded; preserve other Creative CLI contracts.
