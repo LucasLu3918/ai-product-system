@@ -109,6 +109,7 @@ Allowed coverage:
 - uncovered
 
 Automated coverage is deterministic + lifecycle + agent_eval.
+
 ## Admission rules
 
 
