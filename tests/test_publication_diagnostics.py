@@ -530,11 +530,12 @@ class PublicationDiagnosticsTest(unittest.TestCase):
         self.assertIn("REMOTE_OBSERVATION_FAILED", result.stdout)
 
     def test_prepare_and_diagnose_cli_json_errors_are_structured_and_redacted(self):
+        import errno
         from contextlib import redirect_stderr, redirect_stdout
         from io import StringIO
-        import errno
-        import publish_preflight as preflight
+
         import publication_planning as planning
+        import publish_preflight as preflight
 
         cases = (
             ("prepare", "prepare", PermissionError(errno.EACCES, "Permission denied", "/private/secret/path"),
@@ -576,8 +577,9 @@ class PublicationDiagnosticsTest(unittest.TestCase):
     def test_cli_text_exception_output_remains_compatible(self):
         from contextlib import redirect_stderr, redirect_stdout
         from io import StringIO
-        import publish_preflight as preflight
+
         import publication_planning as planning
+        import publish_preflight as preflight
 
         output, errors = StringIO(), StringIO()
         argv = ["publish_preflight.py", "diagnose", "--worktree", str(self.root),
