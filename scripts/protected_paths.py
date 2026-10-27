@@ -3,6 +3,7 @@
 Protected write targets:
 - the installed AIPS system checkout (default XDG/HOME data path and AIPS_INSTALL_DIR);
 - AIPS user profile settings under the config home (profile*.yaml/yml and profiles/).
+- `aips profile set` invocations, which only a person may run in an interactive terminal (PR10).
 
 Reads are never classified. This is best-effort, not complete enforcement: interpreters
 (python -c, node -e), dynamically built paths and unparsed syntax are not classified.
@@ -207,6 +208,9 @@ def _segment_writes_protected(words: list[str], state: dict, depth: int) -> bool
     if verb == "git":
         git_targets = _git_write_targets(rest, env, base)
         return bool(git_targets) and any(protected_category(target) is not None for target in git_targets)
+    if verb == "aips" and rest[:2] == ["profile", "set"]:
+        # Profile switches are changed only by a person in an interactive terminal (D8, PR10).
+        return True
     targets: list[str] = []
     if verb in ALL_ARG_WRITE_COMMANDS:
         targets = _positional(rest)

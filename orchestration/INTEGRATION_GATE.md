@@ -40,6 +40,8 @@ Read-only publication prepare/diagnose results do not replace this exact-candida
 
 `aips publish prepare --auto-merge` emits `gh pr merge --auto` only for the exact open candidate PR after a non-empty set of required checks passes. Native Human authorization remains separate from Gate evidence.
 
+`aips publish doctor` reports the active profile as a `profile` block of names, status and reason code only; it does not add Gate evidence or publication authority.
+
 Plan29 #6 binds the import implementation, direct lifecycle evidence, and Core Change Test Matrix to the same candidate head and changed-file set.
 
 

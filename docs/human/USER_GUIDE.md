@@ -464,6 +464,8 @@ RWD / accessibility / interaction state 應納入適用的 quality evidence。
 
 ## Security
 
+Profile 開關預設為嚴格（`~/.config/aips/profile.yaml` 不存在時全部使用預設值）；只能由人在互動式終端機執行 `aips profile show` 查看、`aips profile set <key> <true|false>` 切換並輸入確認片語，代理無法寫入該檔或執行 `aips profile set`。
+
 AIPS 使用 Security Assurance Level（SAL）0–4。金流、點數、退款、authorization、可兌換優惠等高價值邏輯會提升 security assurance，檢查：
 
 - replay / idempotency；

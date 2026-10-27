@@ -218,6 +218,10 @@ case "${1:-help}" in
     shift
     publish_preflight_cmd "$@"
     ;;
+  profile)
+    shift
+    "$(python_bin)" "$SYSTEM_DIR/scripts/aips_profile.py" "$@"
+    ;;
   safety)
     sub="${2:-help}"
     case "$sub" in

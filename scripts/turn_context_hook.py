@@ -8,6 +8,21 @@ import os
 import subprocess
 import sys
 
+try:
+    from aips_profile import turn_context_line
+except Exception:  # noqa: BLE001 - a profile import problem must never block the turn context
+    turn_context_line = None
+
+
+def profile_line() -> str:
+    """Strict defaults are shown when the profile module is unavailable (fail closed)."""
+    if turn_context_line is None:
+        return "aips_profile=strict aips_profile_status=UNAVAILABLE"
+    try:
+        return turn_context_line()
+    except Exception:  # noqa: BLE001
+        return "aips_profile=strict aips_profile_status=UNAVAILABLE"
+
 
 def resolve(runtime: str, prompt: str, project: str) -> dict:
     aips = os.environ.get("AIPS_BIN", "aips")
@@ -110,6 +125,7 @@ def compact_context(data: dict) -> str:
         f"context_tokens_estimated={telemetry.get('total_estimated_tokens')} hard_budget={telemetry.get('hard_budget_tokens')}",
         f"project_core_derived={core.get('canonical') is False} source_digest={core.get('source_digest')}",
         f"fail_policy={fail.get('mode')}",
+        profile_line(),
     ]
     if core.get("summary"):
         lines.append("project_core_summary=" + str(core["summary"])[:6400])

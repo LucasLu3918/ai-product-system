@@ -2216,3 +2216,14 @@ scenarios:
       - tests/fixtures/creative_topology/golden_before_refactor.json
       - tests/test_creative_topology_templates.py
       - tests/validation/creative_execution_contracts.py
+  - id: "272"
+    path: tests/scenarios/272-profile-switch-mechanism.md
+    coverage: lifecycle
+    evidence:
+      - tests/scenarios/272-profile-switch-mechanism.md
+      - scripts/aips_profile.py
+      - scripts/protected_paths.py
+      - scripts/turn_context_hook.py
+      - scripts/publication_diagnostics.py
+      - tests/test_profile_switch.py
+      - tests/test_protected_path_guard.py

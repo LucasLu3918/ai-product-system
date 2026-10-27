@@ -76,6 +76,8 @@ ATTACHED 仍須使用者明確執行 `aips attach`。在 Git worktree 中，AIPS
 
 Turn Context preserves freshness and emits task-scoped targeted refresh guidance only when task-relevant topics are affected. READY+STALE freshness is advisory for a confined local L2 source write; UNKNOWN and non-READY states remain blocking.
 
+Turn Context also reports one `aips_profile=` line; profile switches are changed only by a person through `aips profile set` and do not alter freshness or Change Impact decisions.
+
 Scenario 266 provides local deterministic safety evidence; it does not substitute for independent review or grant approval.
 
 
