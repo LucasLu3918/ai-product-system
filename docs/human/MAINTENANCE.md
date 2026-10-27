@@ -131,6 +131,8 @@ Scenario 269 documentation closure covers the Harness, Project Intelligence, CLI
 
 Scenario 272 covers the profile switch mechanism: strict defaults, fail-closed loading, TTY and typed-phrase confirmation for `aips profile set`, and the agent guard for profile writes.
 
+Scenario 274 covers the two profile switches `claude_coauthor_trailer` and `post_merge_refresh`; both default to off and are changed only by a person through `aips profile set`.
+
 ## Architecture Diagram Impact Check
 
 本次更新 Project Intelligence 局部圖；頂層 runtime、Harness、Product Delivery 與安裝生命週期圖評估為 N/A，因沒有改變其流程或邊界。

@@ -464,7 +464,7 @@ RWD / accessibility / interaction state 應納入適用的 quality evidence。
 
 ## Security
 
-Profile 開關預設為嚴格（`~/.config/aips/profile.yaml` 不存在時全部使用預設值）；只能由人在互動式終端機執行 `aips profile show` 查看、`aips profile set <key> <true|false>` 切換並輸入確認片語，代理無法寫入該檔或執行 `aips profile set`。
+Profile 開關預設為嚴格（`~/.config/aips/profile.yaml` 不存在時全部使用預設值）；只能由人在互動式終端機執行 `aips profile show` 查看、`aips profile set <key> <true|false>` 切換並輸入確認片語，代理無法寫入該檔或執行 `aips profile set`。目前可切換的開關為 `claude_coauthor_trailer`（發布閘門 PII 掃描放行最後 trailer 區塊中確切的 Claude 共同作者行，其他電子郵件仍攔截）與 `post_merge_refresh`（READY 但 STALE 且任務相關主題受影響時，每個 store 每個 HEAD 最多背景執行一次 `aips intelligence refresh`），兩者預設皆為關閉，啟用後會列在 Turn Context 的 `aips_profile_non_default=`。
 
 AIPS 使用 Security Assurance Level（SAL）0–4。金流、點數、退款、authorization、可兌換優惠等高價值邏輯會提升 security assurance，檢查：
 

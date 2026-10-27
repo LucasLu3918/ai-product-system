@@ -164,9 +164,10 @@ class DefaultsAndLoadingTests(ProfileTestCase):
         payload = json.loads(out.getvalue())
         self.assertEqual(list(payload), sorted(payload))
         self.assertEqual(payload['profile_file'], '~/.config/aips/profile.yaml')
-        self.assertEqual(payload['switches'], {})
+        self.assertEqual(sorted(payload['switches']), sorted(ap.SWITCHES))
+        self.assertTrue(all(item['value'] is False and item['source'] == 'default' for item in payload['switches'].values()))
         self.assertNotIn(str(self.base), out.getvalue())
-        with patch('sys.stdout', new_callable=io.StringIO) as out:
+        with patch.dict(ap.SWITCHES, clear=True), patch('sys.stdout', new_callable=io.StringIO) as out:
             ap.main(['show'])
         self.assertIn('switches: none in this version', out.getvalue())
 
@@ -222,8 +223,7 @@ class SetConfirmationTests(ProfileTestCase):
         self.assertFalse(self.path.exists())
 
     def test_empty_allow_list_refuses_every_key(self):
-        self.assertEqual(ap.SWITCHES, {})
-        with self.assertRaises(ap.ProfileError) as ctx:
+        with patch.dict(ap.SWITCHES, clear=True), self.assertRaises(ap.ProfileError) as ctx:
             ap.set_switch('test_relax', 'true', interactive=True, read_line=lambda p: '', path=self.path)
         self.assertEqual(ctx.exception.reason_code, 'PROFILE_KEY_NOT_ALLOWED')
 

@@ -1227,3 +1227,5 @@ Dependabot commits: the GitHub App bot noreply author and Dependabot's exact fin
 Scenario 269 refreshes only the CLI help golden vectors for `aips intelligence gc`; content-safety detection, sink policy and commit scanning are unchanged.
 
 Scenario 272 covers the profile switch mechanism with default-strict loading, fail-closed diagnostics, a TTY and typed-phrase gate for `aips profile set`, and agent-write denial; relaxations stay off until a later scenario adds them.
+
+Scenario 274 covers the profile-gated relaxations `claude_coauthor_trailer` (exact Claude co-author trailer in the final trailer block of the publication gate PII scan) and `post_merge_refresh` (one detached `aips intelligence refresh` per store per HEAD); both default to off and no other address, secret rule or authority changes.
