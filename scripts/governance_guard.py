@@ -43,7 +43,7 @@ except ModuleNotFoundError:  # imported as a repository module
         file_tool_write_is_protected,
     )
 
-PROTECTED = ("git_push", "git_tag", "gh_pr_create", "gh_pr_merge", "gh_release_create")
+PROTECTED = ("git_push", "git_tag", "gh_pr_create", "gh_pr_merge", "gh_release_create", "publish_ship")
 CONTENT_SENSITIVE = ("git_commit", *PROTECTED)
 logger = logging.getLogger(__name__)
 HOOK_DEADLINE_SECONDS = 8.0
@@ -266,6 +266,10 @@ def _direct_operations(tokens: list[str], cwd: Path | None = None, depth: int = 
     tokens = _unwrap(tokens)
     if not tokens:
         return []
+    from publication_commands import publish_ship_arguments
+    if publish_ship_arguments(tokens) is not None:
+        # One Bash command = one protected operation; the CLI's child git/gh calls are not agent Bash calls.
+        return ["publish_ship"]
     exe = Path(tokens[0]).name
 
     if exe in {"bash", "sh", "zsh"}:
@@ -1119,6 +1123,7 @@ def _hook_impl(runtime: str) -> int:
                 "gh_pr_create": "github_pr",
                 "gh_pr_merge": "github_pr",
                 "gh_release_create": "release_notes",
+                "publish_ship": "github_pr",
             }[operation]
             try:
                 safety = commit_safety(cwd, command) if operation == 'git_commit' else safe_emit(sink=sink, payload={"command": command})
@@ -1138,6 +1143,7 @@ def _hook_impl(runtime: str) -> int:
     hook_diagnostic = None
     reason = "no active AIPS Approval Record"
     merge_confirmation = None
+    ship_binding = None
     approval_operations = [operation for operation in operations if operation in PROTECTED]
     if not approval_operations:
         ok = True
@@ -1163,9 +1169,22 @@ def _hook_impl(runtime: str) -> int:
                     raise PublicationError('one standalone publication operation required', reason_code='COMMAND_FORM_UNSUPPORTED',
                                            detail_code=command_form_detail(command))
                 _HOOK_PHASE = "publication_candidate_remote_and_evidence_validation"
-                publication = validate_personal_action(
-                    cwd, approval_operations[0], parsed[0], require_scan_evidence=True, literal_marked=True)
-                if approval_operations[0] == 'gh_pr_merge':
+                if approval_operations[0] == 'publish_ship':
+                    from publication_commands import publish_ship_arguments
+                    from publication_ship import validate_for_hook
+                    ship_args = publish_ship_arguments(parsed[0])
+                    if ship_args is None:
+                        raise PublicationError('use the single supported ship command', 'COMMAND_FORM_UNSUPPORTED',
+                                               detail_code='SHIP_FORM_UNSUPPORTED')
+                    ship = validate_for_hook(cwd, ship_args)
+                    ship_binding = ship['binding']
+                    publication = {}
+                else:
+                    publication = validate_personal_action(
+                        cwd, approval_operations[0], parsed[0], require_scan_evidence=True, literal_marked=True)
+                if approval_operations[0] == 'publish_ship':
+                    reason = 'personal publish ship checks passed; scan ' + ship['scan']
+                elif approval_operations[0] == 'gh_pr_merge':
                     merge_confirmation = publication.get('merge_confirmation')
                     if not merge_confirmation:
                         raise PublicationError('merge confirmation binding unavailable', reason_code='AUTHORITY_VALIDATION_MISSING')
@@ -1184,6 +1203,9 @@ def _hook_impl(runtime: str) -> int:
                     reason = 'personal publication checks passed'
                 ok = True
             else:
+                if approval_operations[0] == 'publish_ship':
+                    raise PublicationError('publish ship is available only in personal publication mode',
+                                           'ASSURANCE_MODE_BLOCKED', phase='authority_validation')
                 path = approval_path(cwd)
                 if path and not path.exists():
                     reason = "selected approval pointer does not exist; no fallback to a different scope"
@@ -1225,7 +1247,7 @@ def _hook_impl(runtime: str) -> int:
             0, int((time.monotonic() - (_HOOK_STARTED_AT or time.monotonic())) * 1000))
         _HOOK_PHASE = "diagnostic_recording"
         hook_diagnostic['trace_status'] = _record_publication_diagnostic(hook_diagnostic, runtime)
-    success_binding = _hook_binding(cwd, command, mode) if ok and approval_operations else None
+    success_binding = ship_binding or (_hook_binding(cwd, command, mode) if ok and approval_operations else None)
     if runtime == "claude-code":
         claude_auto_merge = bool(merge_confirmation and merge_confirmation.get('auto_merge'))
         print(json.dumps({"hookSpecificOutput": {

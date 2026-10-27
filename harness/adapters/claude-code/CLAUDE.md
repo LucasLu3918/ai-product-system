@@ -24,6 +24,8 @@ A verified merge command needs a literal PR number, exactly one enabled merge me
 
 Run one publication command per Bash call; never chain a push with a PR command.
 
+Preferred in personal mode: `aips publish ship --title <title> --body-file <file> --base <default> [--head <branch>]` from the candidate worktree. It scans the exact candidate once, pushes `<full-candidate-sha>:refs/heads/<branch>`, then runs `gh pr create` with explicit `--repo/--head/--base`; the Hook validates this one invocation, and its child git/gh calls are not separate Bash calls. Steps 2-4 below remain the review path for the emitted plan.
+
 1. Commit: `git commit -m "$(cat <<'EOF'` … `EOF` `)"` with a quoted delimiter, `git commit -m '<text>'`, or `git commit -F <file>`; literal `git add <paths> &&` may precede it. Unquoted heredocs, `$VAR` and backticks are denied.
 2. Write the PR body to a file outside the worktree, then run `aips publish prepare --worktree <root> --title <title> --body-file <file> --runtime claude-code --format json`.
 3. Run the emitted invocation `argv` exactly: `git push origin <full-candidate-sha>:refs/heads/<branch>` (`-u` allowed). A bare branch name or `HEAD` is denied.

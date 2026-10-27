@@ -232,7 +232,9 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
                         '--' + method, '--match-head-commit', head]
                 if auto_merge:
                     argv.append('--auto')
-                authority.action(root, 'gh_pr_merge', argv, base, personal=mode == 'personal')
+                merge_scope = authority.action(root, 'gh_pr_merge', argv, base, personal=mode == 'personal')
+                # The Hook requires evidence bound to the merge operation; the PR head is pinned by --match-head-commit.
+                store_scan_evidence(root, merge_scope, policy_digest=policy_hash)
                 result['invocations'] = [_invocation(root, 'gh_pr_merge', argv)]
                 result['phase'] = 'merge'
                 result['next_step'] = 'NATIVE_MERGE_CONFIRMATION' if runtime in {'claude-code', 'gemini-cli'} else 'TASK_AUTHORIZED_MERGE'

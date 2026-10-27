@@ -168,6 +168,19 @@ scenarios:
       - tests/validation/publish_preflight_contracts.py
       - tests/validation/runtime_contracts.py
       - harness/adapters/claude-code/CLAUDE.md
+  - id: "273"
+    path: tests/scenarios/273-publish-ship-single-command.md
+    coverage: deterministic
+    evidence:
+      - scripts/publication_ship.py
+      - scripts/governance_guard.py
+      - scripts/publication_planning.py
+      - scripts/publication_commands.py
+      - scripts/publication_authority.py
+      - scripts/publish_preflight.py
+      - tests/test_publication_ship.py
+      - tests/test_publication_planning.py
+      - tests/evidence/governance_command_guard.py
   - id: "240"
     path: tests/scenarios/240-personal-publication-default.md
     coverage: deterministic
