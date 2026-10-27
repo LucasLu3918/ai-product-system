@@ -91,7 +91,7 @@ aips update
 
 一般安裝追蹤經驗證的穩定版。若尚無可用的穩定版標籤，請依安裝器明確指定 `--channel main`；Windows WSL 安裝器對應使用 `-Channel main`。
 
-更新只會管理 AIPS 自己的安裝與 Runtime 整合。髒工作樹、遠端不一致或無法驗證的版本會停止並顯示原因。
+更新只會管理 AIPS 自己的安裝與 Runtime 整合。髒工作樹、遠端不一致或無法驗證的版本會停止並顯示原因。`aips system preflight` 遇到 system checkout 有本機變更時，會略過自動更新、沿用目前版本並顯示清理步驟；明確執行 `aips update` 仍會拒絕。
 
 ## 解除安裝
 

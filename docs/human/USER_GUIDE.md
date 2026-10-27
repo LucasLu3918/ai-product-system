@@ -464,8 +464,6 @@ RWD / accessibility / interaction state 應納入適用的 quality evidence。
 
 ## Security
 
-Profile 開關預設為嚴格（`~/.config/aips/profile.yaml` 不存在時全部使用預設值）；只能由人在互動式終端機執行 `aips profile show` 查看、`aips profile set <key> <true|false>` 切換並輸入確認片語，代理無法寫入該檔或執行 `aips profile set`。目前可切換的開關為 `claude_coauthor_trailer`（發布閘門 PII 掃描放行最後 trailer 區塊中確切的 Claude 共同作者行，其他電子郵件仍攔截）與 `post_merge_refresh`（READY 但 STALE 且任務相關主題受影響時，每個 store 每個 HEAD 最多背景執行一次 `aips intelligence refresh`），兩者預設皆為關閉，啟用後會列在 Turn Context 的 `aips_profile_non_default=`。
-
 AIPS 使用 Security Assurance Level（SAL）0–4。金流、點數、退款、authorization、可兌換優惠等高價值邏輯會提升 security assurance，檢查：
 
 - replay / idempotency；
@@ -638,6 +636,8 @@ Observation reports help people judge evidence quality; `NOT_READY` means the co
 Plan36 publication diagnostics preserve this topic's existing authority boundaries.
 
 Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
+
+ComfyUI 工作恢復的 lifecycle fixture 只驗證 queue 讀取、確切 ID 刪除與不中斷非 AIPS 工作，屬於恢復安全證據，不代表 Agent 任務成果或品質。
 
 ## Logging、Observability 與 Operations
 
@@ -895,6 +895,8 @@ The Claude/Gemini publication guard denies only command forms that could commit 
 純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
 
 發布 preflight 的 `git_identity` 只在候選 commit 的 author 欄位接受 GitHub App 機器人 noreply 格式（`<數字 ID>+<slug>[bot]`，`identity.allowed_bot_author_patterns`）；committer 與本機 `user.email` 仍只接受一般 noreply。`commit_messages` PII 掃描前，`identity.trailer_identities` 的精確 trailer 身分（目前只有 Dependabot 的 `Signed-off-by: dependabot[bot]` 與 GitHub support 位址）只在同一機器人撰寫之 commit 的最後 trailer 區塊以 `git-identity-metadata` 取代；`pii.email.v2` 不變，其他位址仍會擋下，政策格式錯誤時 fail closed，機器人身分不授予任何權限。
+
+Profile 開關預設為嚴格（`~/.config/aips/profile.yaml` 不存在時全部使用預設值）；只能由人在互動式終端機執行 `aips profile show` 查看、`aips profile set <key> <true|false>` 切換並輸入確認片語，代理無法寫入該檔或執行 `aips profile set`。目前可切換的開關為 `claude_coauthor_trailer`（發布閘門 PII 掃描放行最後 trailer 區塊中確切的 Claude 共同作者行，其他電子郵件仍攔截）與 `post_merge_refresh`（READY 但 STALE 且任務相關主題受影響時，每個 store 每個 HEAD 最多背景執行一次 `aips intelligence refresh`），兩者預設皆為關閉，啟用後會列在 Turn Context 的 `aips_profile_non_default=`。
 
 發布守門測試的合成掃描 fixture（`tests/test_publication_authority.py::scanner_fixture_assignment`）每次執行都把 16 個十六進位數字各放兩次後隨機排列，Shannon 熵固定為 4.0、高於 `generic-secret-assignment` 的 3.25 門檻，因此偵測結果不再隨機；原本直接使用 uuid4 hex 約有 0.7% 機率低於門檻而造成偶發失敗。掃描器規則與門檻不變。
 
