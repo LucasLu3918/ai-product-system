@@ -69,6 +69,8 @@ aips mcp inspect
 
 維護者要驗證完整 repository 時使用 `aips validate`。一般安裝不會在使用者電腦執行完整 CI，也不會連線修改 GitHub repository 設定。
 
+`aips system preflight` 在已安裝的 system checkout 有本機變更時，會略過自動更新、沿用目前版本並顯示版本、commit 與清理步驟；變更不會被丟棄或提交。明確執行 `aips update` 仍會在有變更時拒絕。
+
 ## Runtime integration
 
 Installing the Claude Code adapter adds the standard publication recipe to the managed `CLAUDE.md` block; it grants no publication permission.
@@ -129,7 +131,7 @@ aips update
 aips system preflight /path/to/project
 ~~~
 
-相容入口 `aips preflight` 仍可使用。preflight 會先更新 AIPS system checkout，再檢查專案，不會替專案執行未知修復。若已安裝的 system checkout 有本機變更，preflight 會略過自動更新、沿用目前版本並顯示版本、commit 與清理步驟；變更不會被丟棄或提交。明確執行 `aips update` 仍會在有變更時拒絕。
+相容入口 `aips preflight` 仍可使用。preflight 會先更新 AIPS system checkout，再檢查專案，不會替專案執行未知修復。
 
 ## 解除安裝
 

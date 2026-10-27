@@ -198,6 +198,8 @@ When the publication guard changes, keep every newly allowed command form paired
 
 The 0.83.0 candidate records shared Required Checks policy evidence and bounded Claude Code publication diagnostics.
 
+The dev-friction integration adds `aips publish ship`, the protected-path guard, person-only `aips profile` switches, worktree Intelligence seeding and AIPS-owned ComfyUI job interrupt; each is covered by its own Core Change evidence in `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml` and none grants publication or write authority.
+
 Plan29 #6 is validated as an exact Core Change candidate with its own matrix and required repository check.
 
 

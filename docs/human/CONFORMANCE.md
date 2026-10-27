@@ -1724,6 +1724,8 @@ Per-module findings and direct coverage are measured without increasing a reposi
 
 ## Scenario 229 — Agent Eval Freshness Selection
 
+ComfyUI job-recovery lifecycle fixture（Plan27 lifecycle evidence）現在驗證 queue 讀取、確切 ID 刪除，以及不中斷非 AIPS 擁有的工作；這是恢復安全證據，不是 Agent 任務成果或品質量測。
+
 OpenCode host acceptance does not measure Agent outcome or quality; retain its separate exact-host integration evidence.
 
 Validation Shadow graduation evidence is separate from Agent Eval: report validator-level precision, recall, false-negative rate and confusion counts, keep zero-denominator rates null, and do not treat the report as a task outcome or activation authority.

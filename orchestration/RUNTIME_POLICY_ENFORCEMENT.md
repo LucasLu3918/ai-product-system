@@ -30,8 +30,6 @@ The Claude PostToolUseFailure event reports bounded evidence after a Bash comman
 
 The Claude/Gemini publication guard denies only command forms that could commit or publish: read-only commands with a dynamic directory or repository option, a dynamic path to a literal non-Git executable, `gh api` GET requests, local `git lfs` subcommands and repository-defined read-only Git aliases pass, while dynamic git/gh/shell executables, dynamic `-c`/`--config-env`/`--exec-path` values, API writes, publishing LFS subcommands and aliases that expand to commit or publication still fail closed (Scenario 099). Aliases are resolved only for plain `git <alias>`, because any global option can change which configuration defines them; shell aliases are classified by their body. Every command-classification denial carries the same stable reason code in its text and diagnostic.
 
-In personal mode the guard parses publication words with NUL-marked expansions: quoted-heredoc or single-quoted `gh pr create` text, including literal `$` and backticks, is data for content safety, while `$VAR`, backticks, `$"..."`, command substitution and unquoted heredocs deny with `PUBLICATION_ARGUMENT_DYNAMIC`. Denials carry a static recipe in `next_step`/`next_step_zh`; multiple protected operations deny as `MULTI_COMMAND_UNSUPPORTED`.
-
 Task write authorization is not a substitute for the Runtime Action PEP. `aips run owner` records the task's write set and truthful enforcement capability; `ADVISORY` must never be promoted to `TOOL_GUARDED` based on the presence of a lease alone.
 
 ## Runtime Action Envelope
@@ -68,6 +66,8 @@ Decisions:
 - `BLOCKED` — required evidence, policy, SAL, enforcement, sandbox or valid configuration is unavailable or stale.
 
 The active Approval Record must bind operation `external_data_egress`, action digest, policy digest, exact destination, data classes, protected assets and Change Boundary. It must be APPROVED and unexpired. A missing record yields `REQUIRE_APPROVAL`; a present stale/invalid record yields `BLOCKED`.
+
+In personal mode the publication guard parses command words with NUL-marked expansions: quoted-heredoc or single-quoted `gh pr create` text, including literal `$` and backticks, is data for content safety, while `$VAR`, backticks, `$"..."`, command substitution and unquoted heredocs deny with `PUBLICATION_ARGUMENT_DYNAMIC`. Denials carry a static recipe in `next_step`/`next_step_zh`; multiple protected operations deny as `MULTI_COMMAND_UNSUPPORTED`.
 
 ## Audit and semantic providers
 

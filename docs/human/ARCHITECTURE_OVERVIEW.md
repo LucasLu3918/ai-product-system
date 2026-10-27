@@ -68,6 +68,8 @@ Skill 跨 Host 載入可透過 MCP Resource `aips://catalog/skills` 查目錄並
 
 OpenCode V2 的 managed plugin 在 primary model dispatch 前注入精簡 Turn Context，並在 permission evaluation 階段檢查支援的直接檔案操作。L1 僅允許非 Git workspace 中受限路徑的新創意資產；L2 需要 Project Intelligence READY、無待解權威衝突與專案內目標。READY Intelligence 的 STALE freshness 僅顯示警示，不單獨阻擋一般本地 L2 原始碼寫入；UNKNOWN 或非 READY 仍 fail closed。L3 外部效果沿用既有 Human approval gate。Shell 僅保留有限唯讀命令，並額外提供固定參數的 AIPS 診斷。`creative_execution` 是唯一有界自訂工具：它綁定當前 EPHEMERAL Session，可建立不覆寫的角色／風格 Profile 與未設定引擎的 Creative Bundle，也可對既有 Bundle 執行唯讀預檢及明確要求的本機生成。其他 MCP/custom tools 和繞過 OpenCode 的寫入仍不在 guard 範圍。Plugin 安裝與 hook discovery 不足以證明執行防護；完成 runtime permission acceptance 前，治理保持 ADVISORY。
 
+Runtime hook 另有 best-effort 的 protected-path guard：代理不得寫入已安裝的 AIPS system checkout、使用者 profile 設定，也不得執行 `aips profile set`，後者只能由人在互動式終端機操作。personal publication mode 的 `aips publish ship` 把精確候選掃描、push 與 PR 建立收斂為單一受保護操作，每個子步驟執行前都重新驗證同一候選；它不授予發布權限。
+
 ## Project Intelligence 與 Retrieval
 
 Retrieval relations are disposable lexical candidates. Relation-extraction behavior is versioned with the index schema so a schema change triggers full re-extraction, including unchanged files; raw source may be parsed in memory for syntax-sensitive identifiers while persisted index content remains redacted.

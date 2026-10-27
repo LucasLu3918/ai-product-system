@@ -307,8 +307,6 @@ The OpenCode V2 plugin resolves compact Turn Context on primary dispatch and key
 
 The Turn Context Manifest keeps `SYSTEM_CORE.md` in the fixed layer and returns task-specific canonical protocol routes as bounded pointers. Compact output and runtime hooks expose route IDs, paths and resolution status without storing the prompt; required missing routes fail closed for mutation.
 
-Compact output and runtime hooks also expose one `aips_profile=` line that reports switch names and reason codes only; profile switches are person-only (`aips profile set`) and are not an Intelligence input.
-
 Every turn resolves the Intelligence index, but does not reload every topic.
 
 ~~~text
@@ -666,6 +664,8 @@ Turn Context says Intelligence MISSING/PARTIAL
 For implementation planning, Project Intelligence also records implementation-relevant evidence without creating a parallel scanner: repository/runtime/framework identity; explicit project instructions; build/format/lint/test/generation commands; architecture and dependency direction; API contracts and their authority evidence; generated ownership; test conventions; cross-cutting error/auth/configuration patterns; and nearest local examples. Evidence is scoped (`local`, `module`, `repository`, or `explicit_project_rule`) and includes its source. A local sample is not automatically a repository-wide convention. Prefer project-defined commands over reconstructed commands.
 
 Architecture and DDD classifications require behavioral/dependency evidence, not directory or type names alone. Keep `not_detected`, `unresolved`, and `conflicting` distinct from confirmed absence. Unknown code ownership is protected. Record enough provenance for an Implementation Profile to show why each implementation rule was selected.
+
+Compact output and runtime hooks also expose one `aips_profile=` line that reports switch names and reason codes only; profile switches are person-only (`aips profile set`) and are not an Intelligence input.
 
 The CLI commands are deterministic building blocks used by the Agent/Harness and remain available for debugging.
 

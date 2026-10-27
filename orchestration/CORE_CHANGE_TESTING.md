@@ -51,8 +51,6 @@ When Phase 3 enforcement changes, derive separate boundaries for ownership and g
 
 For Turn Context, run-event, retrieval, Agent Eval freshness, observed-stage telemetry and review-attestation changes, bind separate boundaries to executable lifecycle evidence. A trusted review matrix stays disabled until its external issuer is configured; tests with fixture keys do not establish a production trust root.
 
-Profile switch changes bind to Scenario 272, `tests/test_profile_switch.py` and the agent-denial cases in `tests/test_protected_path_guard.py`.
-
 For fixed-system-context or protocol-routing changes, verify every supported task route, compact and hook manifest compatibility, missing-source fail-closed behavior, the fixed-core byte ceiling, and the measured reduction against the base fixed layer. Keep `SYSTEM.md` compatibility pointers and canonical protocol ownership in the same candidate.
 
 Before implementation, start from `templates/review/CORE_CHANGE_TEST_MATRIX.yaml` and maintain the active candidate at `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`.
@@ -143,6 +141,10 @@ For security/credential changes, include secret leakage/redaction and relevant n
 Every Remote Git publication candidate also requires a credential-free strict scan of its final tree and complete `base..head` history; Core Change evidence must bind the exact scanner and policy inputs.
 
 Internal module extraction uses `tests/evidence/module_extraction_lifecycle.py` to assert facade re-exports and keeps the existing focused lifecycle plus full repository Gate as the behavior evidence.
+
+Profile switch changes bind to Scenario 272, `tests/test_profile_switch.py` and the agent-denial cases in `tests/test_protected_path_guard.py`.
+
+Scenario 261 binds quoted-heredoc PR text, dynamic-argument denials, PR-bound scan evidence and the 30-minute TTL to regression tests.
 
 ## Review
 
@@ -238,8 +240,6 @@ Dependabot commits: the GitHub App bot noreply author and Dependabot's exact fin
 ## Publication Root-Cause Recovery (Plan35)
 
 Scenario 261 binds the CLI JSON error fallback, text-mode compatibility, stable safe recovery, and non-authorizing behavior to regression tests.
-
-Scenario 261 binds quoted-heredoc PR text, dynamic-argument denials, PR-bound scan evidence and the 30-minute TTL to regression tests.
 
 Plan53's Core matrix covers safe upstream parsing, strict and ordinary Doctor policy states, Hook timeout phase/timing redaction, exact scan-evidence binding and invalidation, no GitHub calls for generic status/diff, and the final full candidate/history scan.
 

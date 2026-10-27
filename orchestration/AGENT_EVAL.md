@@ -61,6 +61,8 @@ Do not encode hidden reasoning expectations in the rubric.
 
 ## Result
 
+ComfyUI job-recovery lifecycle fixtures (Plan27 lifecycle evidence) assert queue read, exact-ID delete and no interrupt of foreign jobs; they are recovery-safety evidence, not an Agent task-outcome or quality measure.
+
 Validation Shadow graduation metrics remain separate operational evidence: validator-level precision and recall use observed full-run failures, and rates with empty denominators remain null. These metrics do not become Agent Eval outcomes or authorize selective execution.
 
 OpenCode native acceptance is runtime integration evidence, not an Agent task-outcome or production-model quality measure. Preserve its exact-host binding and report arbitrary Shell, MCP/custom-tool and out-of-process effects as unsupported.
