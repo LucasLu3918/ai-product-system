@@ -47,7 +47,7 @@ def init_repo(path: Path) -> None:
     path.mkdir(parents=True)
     git(path, "init", "-q")
     git(path, "branch", "-m", "main")
-    git(path, "config", "user.email", "aips" + chr(64) + "example.invalid")
+    git(path, "config", "user.email", "aips@example.invalid")
     git(path, "config", "user.name", "AIPS Evidence")
 
 

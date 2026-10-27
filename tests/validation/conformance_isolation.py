@@ -195,7 +195,7 @@ if isolation_helper.exists():
         project.mkdir()
         (project / "README.md").write_text("test\n", encoding="utf-8")
         subprocess.run(["git", "init", "-q"], cwd=project, check=True)
-        subprocess.run(["git", "config", "user.email", "aips-fixture"], cwd=project, check=True)
+        subprocess.run(["git", "config", "user.email", "aips@example.invalid"], cwd=project, check=True)
         subprocess.run(["git", "config", "user.name", "AIPS Test"], cwd=project, check=True)
         subprocess.run(["git", "add", "README.md"], cwd=project, check=True)
         subprocess.run(["git", "commit", "-qm", "initial"], cwd=project, check=True)

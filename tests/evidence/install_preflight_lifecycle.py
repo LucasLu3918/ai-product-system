@@ -26,7 +26,7 @@ def git(root: Path, *args: str, check: bool = True) -> subprocess.CompletedProce
 
 
 def configure_git(root: Path) -> None:
-    git(root, "config", "user.email", "aips-fixture")
+    git(root, "config", "user.email", "aips@example.invalid")
     git(root, "config", "user.name", "AIPS Evidence")
 
 
