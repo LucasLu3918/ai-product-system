@@ -48,7 +48,7 @@ cli:
   stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
 - argv: [publish, --help]
   exit_code: 0
-  stdout_sha256: 34f6f2b3fd9c42d3d79697af1d1765f20a535a0c44acbe5c53ffcd66e0db86bf
+  stdout_sha256: 329618512d7c55330d3d24fd9ccee4f984b20b39e78622272775bf21ac995539
   stderr_sha256: ignored-dynamic-startup-diagnostics
 - argv: [version]
   exit_code: 0

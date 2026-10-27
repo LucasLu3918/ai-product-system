@@ -1053,6 +1053,12 @@ def main() -> int:
     checks.add_argument("--head")
     checks.add_argument("--required-check", action="append")
     checks.add_argument("--format", choices=("yaml", "json"), default="yaml")
+    ship = subs.add_parser("ship", allow_abbrev=False, help="Personal publication: one scan, exact push, then PR create")
+    ship.add_argument("--title", required=True)
+    ship.add_argument("--body-file", required=True, type=Path)
+    ship.add_argument("--base", required=True, help="Remote default branch the PR targets")
+    ship.add_argument("--head", help="Current candidate branch; defaults to the checked-out branch")
+    ship.add_argument("--format", choices=("yaml", "json"), default="yaml")
     args = parser.parse_args()
     try:
         if args.command == "doctor":
@@ -1086,6 +1092,12 @@ def main() -> int:
             result["recovery"] = publication_planning.recovery_guidance(result)
             emit(result, args.format)
             return 1 if result["status"] == "BLOCKED" else 0
+        if args.command == "ship":
+            import publication_ship
+            result = publication_ship.run(Path.cwd(), {"title": args.title, "body_file": str(args.body_file),
+                                                       "base": args.base, "head": args.head})
+            emit(result, args.format)
+            return 0 if result["status"] == "COMPLETE" else 1
         if args.command == "docs-impact":
             for planned in args.planned_path:
                 if Path(planned).is_absolute() or ".." in Path(planned).parts or not planned or "\0" in planned:

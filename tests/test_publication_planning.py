@@ -189,7 +189,10 @@ class PlanningTest(unittest.TestCase):
         def observe_action(root, operation, argv, base, **kwargs):
             if operation == 'gh_pr_merge':
                 calls.append(argv)
-                return {}
+                # Prepare stores merge-bound evidence from the real scope; mock only the PR observation.
+                push = real_action(root, 'git_push', ['git', 'push', 'origin', self.head + ':refs/heads/codex/plan30'],
+                                   base, **kwargs)
+                return {**push, 'operations': ['gh_pr_merge'], 'target_ref': 'refs/heads/main'}
             return real_action(root, operation, argv, base, **kwargs)
 
         with patch('publication_planning.authority.run', side_effect=observed_run), \
@@ -493,7 +496,11 @@ class PlanningTest(unittest.TestCase):
         self.rows = [self.row()]
         real_action = auth.action
         def action(root, operation, argv, base, **kwargs):
-            return {} if operation == 'gh_pr_merge' else real_action(root, operation, argv, base, **kwargs)
+            if operation != 'gh_pr_merge':
+                return real_action(root, operation, argv, base, **kwargs)
+            push = real_action(root, 'git_push', ['git', 'push', 'origin', self.head + ':refs/heads/codex/plan30'],
+                               base, **kwargs)
+            return {**push, 'operations': ['gh_pr_merge'], 'target_ref': 'refs/heads/main'}
         original = auth.run
         with patch.object(auth, 'run', wraps=auth.run) as run, patch.object(auth, 'action', side_effect=action):
             # Only repository-metadata REST is mocked; Git observations remain real.
