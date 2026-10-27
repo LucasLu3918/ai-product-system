@@ -140,6 +140,8 @@ An explicit read-only task may omit a writer boundary only when it has no `write
 
 ## Resource-scoped authorization
 
+Qwen Image Edit Plus reference injection uses the existing project-local staging and loopback ComfyUI boundary; this mapping does not grant access to external endpoints or additional runtime resources.
+
 Publication scan evidence is not an Execution Profile grant or runtime resource authorization. It can only attest that a full scan passed for one exact candidate and never permits push, PR creation or merge.
 
 Git publication 是獨立授權邊界；Hook 授權流程內部發生非預期例外時拒絕操作，且不得把診斷資訊轉成執行權限。

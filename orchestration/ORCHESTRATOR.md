@@ -244,6 +244,8 @@ When this repository itself changes, the final review must include the Documenta
 
 ## System Self-Improvement
 
+Creative workflow contract changes must preserve the approved Change Boundary, update Scenario 236 and its human/agent documentation closure, and bind the final candidate to the active Core Change Test Matrix.
+
 When this repository/system is the change target, load `orchestration/SYSTEM_SELF_IMPROVEMENT.md`.
 
 Do not blindly implement a user suggestion. First evaluate appropriateness, duplication, simpler alternatives, context/maintenance cost, backward compatibility, security/reliability impact and Constitution semantics.

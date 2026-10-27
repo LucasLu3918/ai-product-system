@@ -521,6 +521,8 @@ Scenario 269 refreshes only the CLI help golden vectors for `aips intelligence g
 
 ## Runtime Policy Enforcement
 
+Dynamic ComfyUI reference injection remains limited to trusted built-in encoder nodes, project-staged files with matching source hashes, loopback-only requests, and one explicit submission. Edit Plus adds only bounded ordered input mapping.
+
 FLUX 3 Klein profile sampler bounds and dynamic reference counts do not create runtime actions or Resource Authorization grants. Loopback-only access, core-node schema, file-size limits, ordered slots and source-to-staged hash checks remain enforced before submission.
 
 Remote publication timeouts remain fail-closed and non-authorizing. Claude Hook never invokes a synchronous Doctor subprocess; its denial gives a manual read-only recovery command. Prepare exposes only stable timeout diagnostics and omits raw command and exception text (Scenarios 260/261).

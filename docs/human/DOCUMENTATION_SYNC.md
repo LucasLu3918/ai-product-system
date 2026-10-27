@@ -31,6 +31,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+For Qwen Image Edit Plus reference mapping, keep the user and technology guides, Scenario 236, Creative Direction, and the candidate Core Change matrix aligned; preserve the Qwen Image 2.1 object-map contract and local execution boundary.
+
 OpenCode Harness／adapter 超限行為同步於 Harness guide、OpenCode Compatibility、Turn-Aware Global Harness、Agent adapter instructions 與 Scenario 235。超限仍 fail closed；只公開安全 byte counts／固定 section 名稱與 read-only recovery，不新增權限或 Host enforcement claim。
 
 Publication CLI 的 `prepare`／`diagnose` JSON 錯誤行為以 User Guide 為操作說明、Scenario 261 為回歸證據；診斷不得被解讀為授權。

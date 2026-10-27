@@ -24,6 +24,8 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 ## 文件角色
 
+Skill Explorer behavior remains independent from local creative workflow updates; see Scenario 259 for Skills and Scenario 236 for Qwen ComfyUI reference contracts.
+
 OpenCode Context 超限診斷屬於 Runtime adapter 行為，不會新增 Role、Skill 或 Skill Explorer 路由；使用者復原步驟位於 User Guide 的 Global Harness 主題。
 
 Publication CLI 的 JSON 錯誤契約與安全復原方式記錄於 [User Guide](USER_GUIDE.md)，並由 Scenario 261 驗證。
@@ -152,6 +154,8 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 `docs/human/PROJECT_INTELLIGENCE.md` 說明 READY+STALE 何時只是提示、何時需要 targeted refresh，以及 `aips intelligence gc` 的用法。
 
 ## Agent / machine canonical 文件
+
+Local ComfyUI reference-binding behavior is specified in `orchestration/CREATIVE_DIRECTION.md` and verified by Scenario 236 in `docs/human/CONFORMANCE.md`; the user and technology guides summarize its supported model contracts.
 
 OpenCode Context 的 12,000-byte 上限、超限安全診斷及 native file deny 邊界，由 OpenCode adapter、Harness protocol 與 Scenario 235 維護；診斷不代表任意 Shell、MCP 或程式外寫入已受保護。
 
