@@ -24,6 +24,8 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 ## 文件角色
 
+OpenCode Context 超限診斷屬於 Runtime adapter 行為，不會新增 Role、Skill 或 Skill Explorer 路由；使用者復原步驟位於 User Guide 的 Global Harness 主題。
+
 Publication CLI 的 JSON 錯誤契約與安全復原方式記錄於 [User Guide](USER_GUIDE.md)，並由 Scenario 261 驗證。
 
 Claude Code 的標準發布寫法記錄於 `harness/adapters/claude-code/CLAUDE.md`，並由 Scenario 261 驗證。

@@ -157,6 +157,8 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 ## Creative Workflow
 
+本機 Creative 工作沿用 OpenCode Turn Context 的 12,000-byte 上限；精簡投影仍超限時，支援的原生檔案寫入在權限判斷前拒絕。
+
 Creative execution is unaffected by the Claude Code publication recipe; committing generated assets still uses the same commit content-safety scan, and Prepare scan evidence (30 minutes, PR-bound) never authorizes creative output.
 
 Git publication scan evidence is independent of Creative review, asset import and image-generation provenance; it cannot authorize any Creative action.

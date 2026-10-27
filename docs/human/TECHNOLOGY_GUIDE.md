@@ -102,6 +102,8 @@ Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEM
 
 ## Execution
 
+OpenCode 原生檔案寫入先確認精簡 Context 在 12,000 bytes 內；若無法壓縮至上限，Context 保持不可用，原生寫入在 manifest policy 前拒絕。
+
 In JSON mode, failed local `prepare` and `diagnose` calls return stable, redacted errors; text output and successful schemas remain compatible.
 
 Personal publication parses Shell words with NUL-marked expansions, so quoted literal `$` and backticks remain data while real expansions deny.
@@ -351,6 +353,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 Content-safety detector changes are versioned (for example `pii.email.v2`) and bound to Scenario 266 with a fixed corpus; they never add a PII exception path.
 
 ## Quality & Verification
+
+Scenario 235 驗證 OpenCode 超限診斷、受限 trace 欄位與 fail-closed 原生寫入；不得把它解讀成一般 Shell/MCP 或程式外寫入的保護證據。
 
 Scenario 261 regression coverage checks JSON and text error paths while preserving exit status and publication authority.
 

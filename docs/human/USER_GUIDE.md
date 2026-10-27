@@ -71,6 +71,8 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+OpenCode 的 Context 上限也適用於本機 Creative 工作；超限時維持 fail-closed，不投遞 Context 或支援的原生檔案寫入，修復後再重試。
+
 Claude Code 發布寫法調整不影響 Creative 流程；提交產出素材仍經相同 commit 內容安全掃描，Prepare 掃描證據（30 分鐘、綁定 PR）不授權任何創作輸出。
 
 Publication scan evidence applies only to a Git candidate Secret Scan. It does not cache creative review, authorize asset import, or change image-generation provenance.
@@ -304,6 +306,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 Turn Context 只列出這一回合真正需要的準備步驟：READY+STALE 的 Intelligence 在任務相關主題未受影響時只是提示，不要求 refresh；唯讀或未選到主題的回合不會要求建立 Retrieval 索引。修改既有專案時仍須處理 Change Impact。
 
 ## Roles、Skills 與重用
+
+透過 OpenCode 使用 Role 或 Skill 時，Turn Context 必須先通過 12,000-byte 投影檢查；超限診斷不改變 Skill 目錄、安裝或授權。
 
 The JSON error result is a CLI contract only; it does not add a Role or Skill permission and cannot authorize a Git operation.
 

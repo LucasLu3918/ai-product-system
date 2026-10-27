@@ -1748,6 +1748,8 @@ Diagnostic recommendations remain read-only and conditional.
 
 ## Scenario 233 — Public CLI Help and Error Contracts
 
+OpenCode Context 超限會回傳穩定的 `context_compaction_over_budget` reason code 與唯讀復原指令，不改變既有 CLI 命令表面。
+
 Scenario 268 adds explicit `creative workflows` routes while preserving the existing Skills CLI contract.
 
 Scenario 266 covers versioned injection classification, added-line checks, full-blob secret/PII scanning, and safe recovery diagnostics.
@@ -1820,6 +1822,8 @@ Scenario 269 makes Turn Context refresh and Retrieval index instructions task-sc
 
 ## Scenario 238 — Creative Task Authorization and Multi-item Execution
 
+OpenCode 原生檔案寫入也會在 Context 投影超限時 fail-closed；此拒絕不建立 Creative grant。
+
 Creative task grants authorize only their bounded workflow; Git PR merge confirmation is a separate publication action covered by Scenario 240.
 
 Native OpenCode V2 prompt admission issues a fresh in-memory grant bound to the active session, workspace, actions and bounded output count. A short style selection can derive a new grant only from root-bound, expiring structured continuation state; cancellation, unrelated work, scope expansion and output-cap exhaustion revoke it. Raw prior prompts and transcript context cannot restore authority. Read-only discovery and preflight remain available without a grant.
@@ -1855,6 +1859,8 @@ The existing OpenCode integration lifecycle also verifies hash-bound asset impor
 The cross-profile quality evidence extension is covered by Scenario 258; this creative execution scenario continues to distinguish generated artifacts, image checks, Human review and user acceptance.
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
+
+OpenCode Context guard runs before Skill execution and leaves the catalog, installation and routing behavior unchanged.
 
 Publication CLI error serialization remains a separate contract and grants Skills no new Git or publication authority; see Scenario 261.
 

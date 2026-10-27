@@ -12,6 +12,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+OpenCode adapter、Harness 或 Scenario 235 變更須依 placement contract 將新增內容放在各 canonical H2；只確認檔案清單完整不足以通過 base/head 預檢。
+
 A Claude Code adapter change (for example the standard publication recipe) also touches the OpenCode compatibility notes, so the harness and character-artwork documentation rules apply together.
 
 Publication Hook, Doctor and evidence-cache changes must close the canonical placement preview for the affected guard, authority, scan-evidence, tests and Scenario 261 paths before the candidate is finalized. This review records the unchanged content-safety, Skill, independent-review and Creative boundaries when shared Guard or documentation-map triggers select those topics.
@@ -302,9 +304,6 @@ When product-delivery behavior changes, review together:
 
 ### Harness / Runtime adapters
 
-OpenCode Context overflow is a fail-closed adapter condition: preserve the 12,000-byte cap, bounded private trace fields, targeted recovery guidance and native file denial until projection succeeds. Scenario 235 and the credential-free version-bound acceptance remain separate evidence.
-
-
 When Harness behavior changes, review together:
 
 - harness/BOOTSTRAP + HARNESS_PROTOCOL + ADAPTER_CONTRACT;
@@ -577,6 +576,8 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
 ## Validation architecture consistency
+
+Scenario 235 keeps bounded Context diagnostics separate from Skill catalog evidence; native file denial is verified only for the supported OpenCode permission hook.
 
 Publication diagnostics regression tests cover structured JSON failures, compatible text output, safe recovery, and unchanged publication authority.
 
