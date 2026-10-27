@@ -1,51 +1,45 @@
 version: 1
 change:
-  id: qwen-image-edit-2511-dual-reference-20261026
-  summary: Add a bounded mapping from ordered local reference images to Qwen Image Edit Plus image1-image3 inputs while preserving the Qwen Image 2.1 object map and existing ComfyUI trust boundaries.
+  id: setup-node-7.1.0-workflow-pin-20261028
+  summary: Update the repository validation workflow to the verified immutable actions/setup-node v7.1.0 commit while retaining Node 24 and npm cache settings.
   boundary:
-    - Dynamic ComfyUI binding validation and injection for TextEncodeQwenImageEditPlus
-    - Creative lifecycle and static workflow-contract coverage
-    - Canonical human guidance and Scenario 236 evidence
-
+    - GitHub Actions setup-node provenance and validation-workflow contract
 review_evidence:
   required: false
-
 candidate:
-  base_sha: a68a281ad87739b305f0ed921f7e16f3231a47b3
-  changed_files_hash: 09b2bca5e394b8a8eccd7de75b8a7ec43382b6a9693a54c048cf2dccbdc1d647
-
+  base_sha: e1a84015d3227b07c6e34ba676642e11f129ab6b
+  changed_files_hash: 2cf0f5f5a943d8adb90e7d473b94ed6505e6bfeaeb4c67c1970e35de51b180f5
 matrix:
-  - boundary: Edit Plus ordered reference mapping
-    reason: Identity and product conditioning use distinct contiguous ports; the encoder supports at most three references. Existing Qwen 2.1 behavior remains unchanged.
+  - boundary: GitHub Actions setup-node provenance and validation-workflow contract
+    reason: The workflow dependency pin changes, but application runtime behavior and project source APIs do not.
     checks:
       static_lint:
         applicable: true
-        evidence: Exact-candidate Integration Gate and repository CI are mandatory before merge; the local lifecycle and contract commands pass.
+        evidence: Exact-candidate Integration Gate and repository CI validate the workflow syntax and immutable action pin.
       unit:
-        applicable: true
-        evidence: tests/evidence/creative_execution_lifecycle.py exercises two distinct references, preserves the third unbound port, and rejects wrong encoder input, gaps, and more than three references.
+        applicable: false
+        na_reason: No application logic or unit-level behavior changes.
       integration:
         applicable: true
-        evidence: The creative lifecycle fixture exercises the local ComfyUI loopback and ordered staged-reference injection; exact-candidate Integration Gate remains required.
+        evidence: Exact-candidate GitHub Actions repository check executes the updated workflow on the candidate.
       contract:
         applicable: true
-        evidence: tests/validation/comfyui_dynamic_workflow_contracts.py asserts the Edit Plus per-port mapping, three-image bound, and retained Qwen 2.1 object-map path.
+        evidence: The workflow retains Node 24, npm caching and package-lock cache path; setup-node resolves to the verified v7.1.0 upstream commit.
       e2e:
         applicable: false
-        na_reason: The PR adds workflow support and does not claim real model inference; the deterministic fake ComfyUI lifecycle verifies the request boundary.
+        na_reason: No product runtime behavior changes; workflow execution is covered by the candidate CI run.
       security:
         applicable: true
-        evidence: Exact-candidate mandatory secret scan is required before merge. Existing loopback-only URL, core-node policy, staged-byte hash verification, and bounded input-count assertions remain unchanged.
+        evidence: Mandatory exact-candidate secret scan plus immutable SHA pin and upstream commit provenance verification.
       migration_recovery:
         applicable: false
-        na_reason: No persisted schema, cache, or user-data format changes.
+        na_reason: No persisted data, schema or user configuration changes.
       cli_harness:
         applicable: false
         na_reason: No CLI or Harness behavior changes.
       docs_schema:
         applicable: true
-        evidence: Changed canonical guides and Scenario 236 are reconciled against the actual candidate diff; documentation impact Gate must pass.
-
+        evidence: AIPS docs-impact reports the exact-candidate documentation closure and placement complete across all 13 changed paths.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []

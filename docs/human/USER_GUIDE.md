@@ -747,6 +747,8 @@ The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths lis
 
 Publication preflight scans the exact candidate tree and commit history. The scanner fails closed on oversized or unreadable content and keeps provider-token, private-key and high-entropy literal detection enabled.
 
+For workflow dependency PRs, keep action references on verified immutable SHAs and preserve the validation toolchain contract; merge only the exact candidate after the required `repository` check passes.
+
 ### Claude Code 發布 Hook 遠端逾時
 
 Hook 遇到可重試的遠端觀測失敗時會立即拒絕並提供安全診斷，不會在同步 Hook 中等待 Doctor。請在同一候選工作樹執行唯讀命令 `aips publish doctor --worktree . --format json`；完成排除後重新執行 Prepare。逾時表示尚未完成遠端驗證，不代表授權或已執行。

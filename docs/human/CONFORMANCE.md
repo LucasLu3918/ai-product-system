@@ -1322,6 +1322,8 @@ Scenario 165 的 lifecycle evidence 也驗證 post-merge reconciliation 由 `pub
 
 Scenario 165 驗證本機與 GitHub Actions 共用同一個 exact-candidate resolver，統一解析 base/head、PR label change class、canonical Core Change Test Matrix 與文件 diff base。快速 diff／文件檢查會先執行；localhost 或 browser 能力不足會明確標為 `ENVIRONMENT_BLOCKED`。
 
+The setup-node v7.1.0 workflow update uses the verified immutable commit `949feb2413d6458794dcd2491c4babbbce0c15c1`; the candidate Gate confirms the retained Node 24 and npm-cache contract.
+
 Environment readiness follows the candidate's optional toolchain plan: an unselected browser capability is `NOT_REQUIRED` and contributes no blocker; a selected browser capability still requires a successful localhost and browser probe.
 
 
@@ -1649,6 +1651,8 @@ The monthly evaluator deterministically samples up to 20 signal fingerprints and
 ## Scenario 220 — Parallel advisory fast feedback
 
 Validation Observation 新增相同候選的完整耗時量測與依 Change Class 分組的 P50／P95。重跑不當作新的 PR；歷史紀錄不完整時不授予 selective execution，完整驗證與 required repository check 維持。
+
+Workflow dependency PRs keep advisory feedback separate from the exact-candidate Gate; only a passing `repository` aggregate satisfies the required CI evidence.
 
 Scenario 239 extends Project Intelligence evidence with bounded, read-only relation candidates while preserving partial/unknown graph coverage.
 
@@ -2010,6 +2014,8 @@ Current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md)
 ## Scenario 260 — Publication diagnostics and Doctor
 
 Scenario 261 covers structured JSON errors from failed `prepare` and `diagnose` calls, with safe recovery guidance and no implied retry or publication authority.
+
+A validated workflow action pin remains bound to the PR head; diagnostics and individual advisory jobs do not replace the required `repository` result for merge readiness.
 
 Scenario 261 also covers quoted-heredoc PR text, dynamic-argument denials with `PUBLICATION_ARGUMENT_DYNAMIC`, PR-bound scan evidence and the 30-minute evidence lifetime.
 

@@ -55,6 +55,8 @@ For fixed-system-context or protocol-routing changes, verify every supported tas
 
 Before implementation, start from `templates/review/CORE_CHANGE_TEST_MATRIX.yaml` and maintain the active candidate at `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`.
 
+For validation-workflow action pins, the matrix records upstream commit provenance, the unchanged runtime/cache contract, exact-candidate workflow CI and the mandatory secret scan.
+
 Publication guard changes cover staged-content inspection failure codes, allowlisted branch prefixes, exact-head `--auto` parsing, empty/pending/failing required-check rejection, and unchanged native Human authorization.
 
 Guard relaxations pair each newly allowed form with a still-denied publication-capable counterpart, and commit-form changes prove that not-yet-staged content is scanned.

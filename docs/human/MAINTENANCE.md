@@ -484,6 +484,8 @@ High-risk external runtime actions also require an exact, unexpired Approval Rec
 
 Publication preflight source and scenario changes must be represented in the canonical trigger maps; preview closure must include the Hook, authority, Doctor, exact scan evidence, tests and Scenario 261.
 
+Validation workflow action updates retain immutable upstream commit pins and the Node/cache contract in the canonical candidate matrix. The pure-dependency documentation exemption applies only when the complete diff remains an allowlisted dependency-only change.
+
 Content-safety `pii.email.v2` only exempts the exact ASCII `git` service account in scp-style `git@<host>:path` and `ssh://` Git remotes; every other email is still blocked. `scripts/publication_transfer.py` and its lifecycle test use the literal `git@github.com:` remote string instead of splicing it together to avoid the scanner.
 
 Scenario 263 covers font parser bounds, staged blob size-before-read, scanner parity across commit/publication/history, and redacted diagnostics; exact-candidate validation remains required before publication.
@@ -580,6 +582,8 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 ## Validation architecture consistency
 
 Qwen Image Edit Plus changes use a candidate-bound Core Change matrix covering ordered-port behavior, rejection cases, retained Qwen 2.1 compatibility, loopback integration, secret scanning, and documentation closure.
+
+Validation-workflow action updates bind the verified immutable SHA, Node 24/cache contract, and complete changed-file set to the same matrix and exact-candidate Gate.
 
 Scenario 235 keeps bounded Context diagnostics separate from Skill catalog evidence; native file denial is verified only for the supported OpenCode permission hook.
 

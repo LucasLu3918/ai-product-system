@@ -561,6 +561,8 @@ Publication recovery is an explicit read-only observation step. Scenario 260/261
 
 Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
 
+The GitHub validation workflow pins third-party actions to verified immutable commits; setup-node v7.1.0 keeps the Node 24 and npm-cache contract and remains evidence-bound to its exact candidate Gate.
+
 
 Publication diagnosis keeps its existing read-only recovery flow while adding safe details for unsupported command forms.
 

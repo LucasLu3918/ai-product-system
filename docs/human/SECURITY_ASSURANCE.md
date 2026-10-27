@@ -223,6 +223,8 @@ Review actual:
 
 Local JSON diagnostics from `prepare` or `diagnose` do not satisfy publication validation, scan evidence, or merge requirements; rerun the read-only checks after correcting the reported cause.
 
+GitHub Actions dependencies stay pinned to verified immutable commits. The setup-node v7.1.0 change preserves Node 24 and npm caching; candidate secret scanning and the required repository check remain independent release evidence.
+
 A recipe in a publication denial is guidance only; it neither authorizes the command nor satisfies scan evidence or merge requirements.
 
 Personal publication requires an exact final-tree and candidate-history scan. Only the approved generated-password and parameterized SQL forms are treated as non-literal assignments; provider-token, private-key and high-entropy literal checks remain active.
