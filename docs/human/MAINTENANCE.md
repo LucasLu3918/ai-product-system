@@ -12,6 +12,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+Changes to local creative workflow contracts must update Scenario 236 and the user, technology, architecture, security, and orchestration references selected by the documentation-impact rules.
+
 OpenCode adapter、Harness 或 Scenario 235 變更須依 placement contract 將新增內容放在各 canonical H2；只確認檔案清單完整不足以通過 base/head 預檢。
 
 A Claude Code adapter change (for example the standard publication recipe) also touches the OpenCode compatibility notes, so the harness and character-artwork documentation rules apply together.
@@ -576,6 +578,8 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
 ## Validation architecture consistency
+
+Qwen Image Edit Plus changes use a candidate-bound Core Change matrix covering ordered-port behavior, rejection cases, retained Qwen 2.1 compatibility, loopback integration, secret scanning, and documentation closure.
 
 Scenario 235 keeps bounded Context diagnostics separate from Skill catalog evidence; native file denial is verified only for the supported OpenCode permission hook.
 

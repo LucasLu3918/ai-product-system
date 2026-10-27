@@ -73,6 +73,8 @@ aips mcp inspect
 
 ## Runtime integration
 
+Qwen Image Edit 2511 workflow support uses an already configured local ComfyUI runtime and locally installed model weights; AIPS installation does not download models or enable cloud execution.
+
 OpenCode managed V2 plugin 的 Context 上限為 12,000 bytes。若投影無法符合上限，先按 Harness 診斷檢視 Context 與 refresh plan；修復前支援的 native file writes 會被拒絕。重新安裝或 Host discovery 不會自行驗證 Context delivery。
 
 Installing the Claude Code adapter adds the standard publication recipe to the managed `CLAUDE.md` block; it grants no publication permission.

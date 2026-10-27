@@ -147,6 +147,8 @@ Publication Preflight lifecycle evidence stubs the Python module probe before as
 
 ## Failure behavior
 
+ComfyUI node selection and Qwen Image Edit Plus reference mapping remain outside Scheduler state transitions; Scenario 236 tests the workflow binding independently from task scheduling and resume state.
+
 For local `prepare` and `diagnose` failures, JSON callers receive a stable redacted result; recovery remains an observation and never authorizes retry or publication.
 
 A Prepare scan-evidence record lasts 30 minutes and is bound to one planned push or PR creation; a denial recipe is static guidance and never schedules or retries a publication.

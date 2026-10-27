@@ -157,6 +157,8 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 ## Creative Workflow
 
+Qwen Image Edit 2511 maps ordered project-local references to the built-in encoder ports `image1`–`image3`; Qwen Image 2.1 keeps its existing object-map input. Both use the same loopback-only ComfyUI request boundary. See Scenario 236 and `orchestration/CREATIVE_DIRECTION.md`.
+
 本機 Creative 工作沿用 OpenCode Turn Context 的 12,000-byte 上限；精簡投影仍超限時，支援的原生檔案寫入在權限判斷前拒絕。
 
 Creative execution is unaffected by the Claude Code publication recipe; committing generated assets still uses the same commit content-safety scan, and Prepare scan evidence (30 minutes, PR-bound) never authorizes creative output.
@@ -426,6 +428,8 @@ Dependabot commit 的機器人 noreply author 與最後一行精確的 `Signed-o
 Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
 ## Security 與 Governance
+
+The Qwen Edit Plus mapping does not add node classes, endpoints, or authority: it remains within the reviewed core-node policy and verifies staged reference bytes before the single ComfyUI submission.
 
 When `aips publish prepare` or `diagnose` fails locally in JSON mode, the CLI returns a redacted, stable diagnostic; the response grants no publication authority and text-mode behavior remains compatible.
 

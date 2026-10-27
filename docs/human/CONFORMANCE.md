@@ -39,6 +39,8 @@ v0.14 新增 Scenario 111–115，全部都有直接 executable evidence：2 個
 
 ## Execution Isolation Conformance
 
+Synthetic Qwen Edit Plus reference tests remain separate from independent review and real model quality; local ComfyUI still uses the existing loopback and staged-byte verification boundaries.
+
 Evolution Radar quarterly scheduling is covered by Scenario 155: the workflow waits until day 3 after monthly reports, and missing monthly evidence stays `INCOMPLETE_INPUT` rather than becoming a zero-yield claim.
 
 Publication lifecycle 驗證設定隔離保留 gh 設定位置、異常 venv 被拒絕、help 無驗證副作用，以及安裝版 CLI 對不同 checkout 的 docs impact 路由。獨立產品 fixture 不含 AIPS scripts，仍能驗證本地 OpenAPI 契約，並保持遠端 reference 阻擋；fixture 通過不代表真實產品 API 驗收完成。
@@ -1794,7 +1796,7 @@ Scenario 269 keeps the creative Git write denial unchanged; only ordinary Turn C
 
 When the compact projection exceeds 12,000 bytes, Scenario 235 also requires stable `context_compaction_over_budget` diagnostics, bounded section-size trace metadata, read-only recovery guidance, and denial of supported native file writes before manifest policy evaluation. Section values, prompts, paths, and raw CLI output stay excluded.
 
-Dynamic ComfyUI workflow validation does not bypass native prompt admission or the explicit Creative execution guard.
+Dynamic ComfyUI workflow validation does not bypass native prompt admission or the explicit Creative execution guard. Qwen Image Edit Plus dual-reference coverage binds identity and product images to separate contiguous ports, limits the encoder to three images, and preserves the Qwen Image 2.1 object-map contract.
 
 Scenario 267 adds a READY+STALE local-write case and retains denial evidence for UNKNOWN freshness, non-READY Intelligence, authority conflicts, path escapes, creative Git writes and external actions.
 
@@ -1843,6 +1845,8 @@ Plan36 publication diagnostics preserve this topic's existing behavior and autho
 
 ## Scenario 236 — Local Creative Bundle Execution
 
+Qwen Image Edit Plus maps ordered identity/product references to separate `image1` and `image2` ports (up to `image3`), rejects gaps, wrong encoder input, and excess images, and preserves the Qwen Image 2.1 object-map contract. This is synthetic workflow evidence, not real model inference.
+
 FLUX 3 Klein lifecycle adds live `TextGenerate` Dynamic Combo schema and final payload checks before submission; unsupported options fail without posting, and the evidence does not establish Apple Silicon MPS inference.
 
 Scenario 268 extends this lifecycle with opt-in schema-validated local ComfyUI API workflows; it preserves the existing explicit execution and human visual-review boundaries.
@@ -1859,6 +1863,8 @@ The existing OpenCode integration lifecycle also verifies hash-bound asset impor
 The cross-profile quality evidence extension is covered by Scenario 258; this creative execution scenario continues to distinguish generated artifacts, image checks, Human review and user acceptance.
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
+
+Creative ComfyUI workflow support does not add a Skill or change Skill catalog, installation, or routing behavior.
 
 OpenCode Context guard runs before Skill execution and leaves the catalog, installation and routing behavior unchanged.
 
@@ -2055,6 +2061,8 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 
 ## Scenario 262 — ComfyUI Resource Authorization and Diagnostics
 
+Scenario 236 adds the Qwen Image Edit Plus per-port mapping under the same fixed loopback destination and existing resource authorization boundary.
+
 Scenario 236 now exercises Base and Distilled on the same reviewed Klein topology and ordered one-to-eight local reference bindings. Resource grants, fixed loopback destinations and diagnostics remain unchanged; staged references are hash-checked before submission.
 
 固定 FLUX 3 Klein workflow 在提交前核對 live `TextGenerate` schema 與最終序列化 payload；錯誤摘要有界且遮蔽敏感欄位，這不構成模型推論或 MPS 成功證據。
@@ -2072,6 +2080,8 @@ Publication Diagnostic IDs remain separate from ComfyUI discovery, Resource Auth
 Scenario 262 covers fail-closed Resource Authorization Profile/grant matching, Hook binding to observed URLs, fixed loopback ComfyUI model discovery and safe HTTP recovery, shared creative presets, and static-only MPS compatibility evidence.
 
 ## Scenario 268 — Model-agnostic ComfyUI Workflows
+
+Qwen Image Edit Plus is an additional built-in encoder mapping only; it adds no node class, topology family, endpoint, or automatic submission.
 
 Scenario 268 verifies opt-in local API workflow import, scan and inspection; bounded graph/schema validation; runtime core-node allowlisting; installed loader model checks; explicit prompt/seed/dimension/output/reference bindings; create-only generation output; and no automatic resubmission after an uncertain POST. Synthetic loopback evidence does not verify real model inference, hardware compatibility or image quality. Scenario 271 extends this topology work with audited template data, a generic validator, pre-refactor equivalence for every registered profile, and the user-local profile draft and approve gate.
 

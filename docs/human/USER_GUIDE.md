@@ -135,7 +135,7 @@ ComfyUI 也可用 `model_profile: z-image-turbo` 執行同一模型：設定需�
 
 FLUX 3 Klein Base 與 Distilled 共用已審核 workflow；Base 使用 50 steps / CFG 3.5，Distilled 使用 16 steps / CFG 1。預檢會讀取本機 `/object_info/TextGenerate`，檢查工作流欄位、型別、範圍及 `sampling_mode` Dynamic Combo 選項 schema。送往 ComfyUI API 的值是 schema 中選取的選項鍵（例如 `"off"`）；ComfyUI 會在執行層重建節點所需的巢狀值。AIPS 在唯一一次 `/prompt` 前也會核對最終序列化工作流的節點、欄位與連線。ComfyUI 執行錯誤只回報安全摘要，不回傳原始訊息、提示、路徑或 traceback，也不會自動重送失敗工作。
 
-明確選擇 `dynamic_local` 的 edit workflow 可設定一到八組依序排列的 `image_1` 至 `image_8` 參考綁定，並提供相同順序的本機 staged 檔名。每張上限 12 MiB、合計上限 25 MiB；預檢逐張比對來源與 staged bytes。模型 profile 不會啟用編輯能力或改變此參考圖邊界。
+明確選擇 `dynamic_local` 的 edit workflow 可設定有序參考圖並提供相同順序的本機 staged 檔名。Qwen Image 2.1 以 `image_1` 至 `image_8` map 支援最多八張；Qwen Image Edit Plus 以連續的 `image1` 至 `image3` 端口支援最多三張。每張上限 12 MiB、合計上限 25 MiB；預檢逐張比對來源與 staged bytes。模型 profile 不會啟用編輯能力或改變此參考圖邊界。
 
 需要使用其他已安裝模型時，可在 Bundle 明確選擇 `workflow.mode: dynamic_local` 並提供專案內 API workflow JSON。`aips creative workflows scan` 只讀取本機 loopback `/object_info` 與工作流，`inspect` 回傳 privacy-bounded 狀態摘要，`import` 以 create-only 方式將來源複製到專案內；這三個工作流 CLI 子命令只輸出固定狀態，不回顯節點名稱、模型檔名、Runtime 版本、提示內容或工作流細節。一般 `creative discover` 保留有限且核准 loader 的模型目錄，但不列出節點清單。`preflight` 會核對節點 schema、圖連線、明確輸入綁定及本機 loader 模型。只允許 runtime 標示的 ComfyUI core nodes；API、custom、未知節點及隱含模型／參考圖選擇都會拒絕。動態模式不會自動替換固定 profile，也不下載權重；執行仍須明確要求，timeout 後不自動重送。合成驗證不代表實際推論或品質已驗證。
 
@@ -218,6 +218,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 新專案若尚未選擇技術，AIPS 會先檢查硬性限制，再依團隊、產品、既有系統、交付與維護需求提出少量候選和取捨；語言與框架分開選擇。架構建議同時看複雜度訊號與反向訊號，並分開說明 Clean Architecture、DDD 與部署方式。重要選擇由使用者確認後，才會整理到 Implementation Profile。
 
 ## Global Harness 與 MCP
+
+Creative ComfyUI workflows use the separate AIPS Creative execution contract; Qwen reference binding does not expand Host adapter permissions.
 
 OpenCode 顯示 `context_compaction_over_budget` 時，先以 `aips intelligence context --runtime opencode --project "$PWD" --prompt "<task>" --full --explain --format json` 檢視，再執行 `aips intelligence refresh-plan --project "$PWD"`。僅更新受影響的 Intelligence 主題後重試；修復前支援的 native file writes 維持拒絕。診斷不包含 prompt 或 section 內容，且不涵蓋一般 Shell/MCP 寫入。
 
@@ -306,6 +308,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 Turn Context 只列出這一回合真正需要的準備步驟：READY+STALE 的 Intelligence 在任務相關主題未受影響時只是提示，不要求 refresh；唯讀或未選到主題的回合不會要求建立 Retrieval 索引。修改既有專案時仍須處理 Change Impact。
 
 ## Roles、Skills 與重用
+
+Qwen Image Edit Plus support extends the existing workflow contract and does not add a Role, Skill, or Skill Explorer permission.
 
 透過 OpenCode 使用 Role 或 Skill 時，Turn Context 必須先通過 12,000-byte 投影檢查；超限診斷不改變 Skill 目錄、安裝或授權。
 
@@ -400,6 +404,8 @@ Architecture trade-off、Threat Model、視覺方向等主觀專業判斷不應�
 
 ## Deterministic Scheduler
 
+The Scheduler does not choose ComfyUI node mappings; Scenario 236 verifies Qwen reference binding separately from task ordering and resume state.
+
 Creative 執行仍由既有 executor 明確呼叫；FLUX 3 Klein 的 schema 預檢只驗證最終 payload，不會建立排程工作或重送失敗工作。
 
 ComfyUI workflow 與 sampler 設定由固定 profile 決定；registry 擴充只能填入該 topology family 核准的值。
@@ -425,6 +431,8 @@ PR 驗證會把 Gate 與 Repository Health 報告放在 CI runner 的暫存位�
 Installation entrypoint workflow 保留既有 pull request 路徑與平台檢查，並以近期 job P95 加安全倍數設定明確逾時；逾時會作為該 job 的失敗呈現，不改變 required check 或 Human 核准權限。
 
 ## Execution Isolation 與 Runtime Resource
+
+Qwen Edit Plus references remain project-staged, hash-verified, and submitted only through the existing local loopback ComfyUI boundary.
 
 FLUX 3 Klein 仍使用固定本機 ComfyUI workflow；`TextGenerate` 的 live schema 與最終序列化欄位會在 loopback `/prompt` 前核對，MPS 推論狀態獨立保留為未驗證。
 
@@ -485,6 +493,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 詳見 [Security Assurance](SECURITY_ASSURANCE.md)。
 
 ## Quality 與 Review
+
+Qwen Edit Plus local fixtures verify workflow contracts only; visual quality, Human review, and user acceptance remain independent evidence.
 
 最終工作流驗證與節點執行結果分開回報；synthetic lifecycle 通過不代表 FLUX 3 Klein 已在 Apple Silicon MPS 完成推論或 VAE 解碼。
 

@@ -1098,6 +1098,8 @@ The branch lifecycle report classifies remote branches using current exact-SHA P
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+Creative ComfyUI workflow changes do not add Skills, Skill Explorer routes, or installation permissions.
+
 OpenCode Context readiness is checked before Skill content is projected; the guard preserves the pinned inventory and does not add installation or routing behavior.
 
 Publication CLI diagnostics do not change Skill Explorer admission or grant a Skill publication authority; see Scenario 261 for the separate CLI contract.
@@ -1161,6 +1163,8 @@ Scenario 260 verifies the read-only `aips publish doctor`, Required Checks class
 
 ## Scenario 262 — ComfyUI Resource Authorization and Diagnostics
 
+Scenario 236 adds bounded Qwen Image Edit Plus per-port reference mapping while retaining the Scenario 262 fixed loopback and Resource Authorization boundary.
+
 FLUX 3 Klein lifecycle coverage checks live `TextGenerate` Dynamic Combo schema and final serialized payload preservation, blocks unsupported options before submission, and verifies bounded redacted node failure diagnostics. It does not establish MPS model execution.
 
 Scenario 236 profile entries may reuse executor-reviewed topology families only; graph operations and local resource authorization remain code-defined.
@@ -1174,6 +1178,8 @@ Git publication diagnostics do not alter ComfyUI discovery, Resource Authorizati
 Scenario 262 locks stage-specific default-deny Profile diagnostics, kind/selector/operation/destination/constraint matching, observed Hook URL binding, and structured redacted Runtime/Creative recovery. It verifies fixed loopback ComfyUI read-only model discovery, HTTP/method/path/redirect denials, shared static asset presets and evidence-only MPS reporting; no inference or external download is performed. Scenario 236 adds the already-approved FLUX Klein profile settings and ordered local reference bindings without expanding Resource Authorization.
 
 ## Scenario 268 — Model-agnostic ComfyUI Workflows
+
+The Qwen Image Edit Plus extension maps up to three ordered references to built-in `image1`–`image3` inputs, preserves the Qwen Image 2.1 object map, and introduces no topology family or endpoint.
 
 Scenario 268 covers opt-in model-agnostic local ComfyUI API workflows: bounded schema and graph parsing, runtime core-node trust classification, installed loader model validation, explicit bindings, safe create-only output, project-confined no-overwrite import and uncertain-submit no-retry recovery. The loopback lifecycle is synthetic; real model inference and visual quality remain UNVERIFIED. Scenario 271 extends this topology work with audited template data, a generic validator, pre-refactor equivalence for every registered profile, and the user-local profile draft and approve gate.
 

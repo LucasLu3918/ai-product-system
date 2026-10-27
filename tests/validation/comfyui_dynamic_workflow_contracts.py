@@ -32,6 +32,8 @@ if all(path.is_file() for path in required):
         ("MAX_OBJECT_INFO_BYTES" in capabilities and "MAX_OBJECT_INFO_NODES" in capabilities, "object_info must be byte- and node-bounded"),
         ("record_private_snapshot" in capabilities and "private_fingerprints_only" in capabilities, "cache must be private and contain fingerprints only"),
         ("MAX_WORKFLOW_BYTES" in workflow and "MAX_WORKFLOW_NODES" in workflow and "WORKFLOW_LINK_INVALID" in workflow, "workflow parsing must be bounded and validate graph links"),
+        ("TextEncodeQwenImageEditPlus" in workflow and "MAX_EDIT_PLUS_REFERENCE_BINDINGS = 3" in workflow and 'encoder_node["inputs"][f"image{index}"]' in workflow, "Qwen Image Edit Plus must map at most three ordered local references to individual image ports"),
+        ("TextEncodeQwenImage21" in workflow and 'image_map[binding["slot"]]' in workflow, "Qwen Image 2.1 object-map reference injection must remain supported"),
         ("WORKFLOW_BINDING_AMBIGUOUS" in executor and "preserve_workflow_defaults" in executor, "bindings must be explicit and preserve unbound defaults"),
         ("comfy_api_nodes" in policy and "CUSTOM_NODE_TRUST_REQUIRED" in policy and "TRUSTED_CORE" in policy, "API/custom node trust must stay separate from model IDs"),
         ('"/object_info"' in executor and '"/prompt"' in executor, "capability discovery and execution must use separate local routes"),

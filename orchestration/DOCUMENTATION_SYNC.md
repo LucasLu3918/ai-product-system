@@ -223,6 +223,8 @@ Documentation sync path normalization (Scenario 221): `documentation_sync.evalua
 
 ## Human documentation placement
 
+The Qwen Image Edit Plus mapping is cross-linked through Scenario 236, Creative Direction, and the user, technology, architecture, and security guides; updates must preserve the same bounded local-workflow contract.
+
 OpenCode Context overflow diagnostics stay aligned across the Human Harness, Installation, User and Technology guides, this Agent-facing map, the Harness protocol, the OpenCode adapter instructions/compatibility report, and Scenario 235. Keep the 12,000-byte cap, fail-closed native file behavior, privacy-bounded section sizes and unsupported Shell/MCP effects consistent.
 
 Keep the publication CLI JSON error contract in the User Guide, its regression evidence in Scenario 261, and preserve the explicit non-authorizing recovery boundary.

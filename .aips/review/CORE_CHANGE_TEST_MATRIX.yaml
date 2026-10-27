@@ -1,80 +1,51 @@
 version: 1
-
 change:
-  id: opencode-context-overflow-diagnostics
-  summary: Add safe, bounded diagnosis and recovery guidance when OpenCode's existing compact Turn Context projection still exceeds 12,000 bytes; preserve fail-closed delivery and write decisions.
+  id: qwen-image-edit-2511-dual-reference-20261026
+  summary: Add a bounded mapping from ordered local reference images to Qwen Image Edit Plus image1-image3 inputs while preserving the Qwen Image 2.1 object map and existing ComfyUI trust boundaries.
   boundary:
-    - OpenCode compaction helper and Context hook overflow path
-    - privacy-filtered trace schema and validation
-    - Scenario 235 lifecycle, contract, docs and coverage mapping
+    - Dynamic ComfyUI binding validation and injection for TextEncodeQwenImageEditPlus
+    - Creative lifecycle and static workflow-contract coverage
+    - Canonical human guidance and Scenario 236 evidence
 
-matrix:
-  - boundary: OpenCode compaction helper and Context hook overflow path
-    reason: The 12,000-byte limit and existing compact content remain unchanged. Compacted success still delivers; irreducible overflow reports a stable reason and safe remediation while Context stays unavailable and supported native project file writes are denied before manifest policy evaluation.
-    checks:
-      static_lint:
-        applicable: true
-        evidence: "PASS: exact-candidate full repository Gate passed; focused adapter contract also asserts diagnostic wiring."
-      unit:
-        applicable: true
-        evidence: "PASS: `tests/evidence/opencode_integration_lifecycle.py` exercises fitting compaction, irreducible overflow, sizes, section ranking and privacy-safe remediation."
-      integration:
-        applicable: true
-        evidence: "PASS: owning OpenCode lifecycle and exact-candidate full repository Gate passed."
-      contract:
-        applicable: true
-        evidence: "PASS: `python -m tests.validation.opencode_integration_contracts` passes static hook and diagnostic markers plus lifecycle ownership."
-      e2e:
-        applicable: true
-        evidence: "PASS: `tests/evidence/opencode_native_acceptance.py --binary /opt/homebrew/bin/opencode` verified v2.0.24 on macOS for Context delivery and native permission ALLOW/DENY; source-bound report is `.aips/review/OPENCODE_CONTEXT_DIAGNOSTICS_NATIVE_ACCEPTANCE.json`. The exact-candidate full repository Gate also passed. Instruction delivery, L3, session cancellation, arbitrary Shell/MCP and out-of-process writes remain UNVERIFIED/UNSUPPORTED."
-      security:
-        applicable: true
-        evidence: "PASS: fixture proves no raw freshness values enter user diagnostics; trace schema accepts only capped integers/fixed section names and rejects private extras. REQUIRED: exact-candidate secret scan."
-      migration_recovery:
-        applicable: true
-        evidence: "N/A: no persisted schema/cache migration. Recovery is read-only Context inspection/refresh planning followed by retry; overflow continues to deny Context."
-      cli_harness:
-        applicable: true
-        evidence: "PASS: OpenCode install/doctor/uninstall and projection lifecycle remains covered by the owning integration lifecycle."
-      docs_schema:
-        applicable: true
-        evidence: "PASS: Scenario 235, scenario coverage, OpenCode Compatibility, Harness guide, changelog and recursive documentation impact/placement/sync checks closed; exact-candidate full repository Gate passed."
-  - boundary: privacy-filtered trace schema and validation
-    reason: Trace remains an allowlisted bounded local record; only reason code, capped byte counts and up to three fixed section identifiers/sizes are exposed. Prompts, paths, values and raw output remain excluded.
-    checks:
-      static_lint:
-        applicable: true
-        evidence: "PASS: exact-candidate full repository Gate passed."
-      unit:
-        applicable: true
-        evidence: "PASS: exact-candidate OpenCode lifecycle accepts bounded safe trace data and rejects extra private fields."
-      integration:
-        applicable: true
-        evidence: "PASS: exact-candidate full repository Gate passed, including trace read/query lifecycle."
-      contract:
-        applicable: true
-        evidence: "PASS: OpenCode integration contract covers diagnostic reason, size fields and formatter wiring."
-      e2e:
-        applicable: false
-        na_reason: "The existing OpenCode loopback acceptance covers model Context delivery and native actions; trace schema is deterministically covered by the local lifecycle and does not need a model/host effect."
-      security:
-        applicable: true
-        evidence: "PASS: lifecycle rejects a trace event containing an extra private section value. REQUIRED: final-tree and base..head mandatory candidate secret scan."
-      migration_recovery:
-        applicable: false
-        na_reason: "Trace is an append-only bounded local JSONL with additive allowlisted fields; no persistent format migration or destructive repair is added."
-      cli_harness:
-        applicable: true
-        evidence: "PASS: `aips harness trace` command contract and bounded event reader passed exact-candidate CLI validation."
-      docs_schema:
-        applicable: true
-        evidence: "PASS: documented safe trace fields and bounded recovery path passed exact-candidate documentation/schema checks."
-
-candidate:
-  base_sha: 571b54fb775bd45136a4fbcef4aa22007b6fdc72
-  changed_files_hash: 28c31680da1b170731a8d73261973eae79dd1e26d9060c30a43179c44940a55f
 review_evidence:
   required: false
+
+candidate:
+  base_sha: a68a281ad87739b305f0ed921f7e16f3231a47b3
+  changed_files_hash: 09b2bca5e394b8a8eccd7de75b8a7ec43382b6a9693a54c048cf2dccbdc1d647
+
+matrix:
+  - boundary: Edit Plus ordered reference mapping
+    reason: Identity and product conditioning use distinct contiguous ports; the encoder supports at most three references. Existing Qwen 2.1 behavior remains unchanged.
+    checks:
+      static_lint:
+        applicable: true
+        evidence: Exact-candidate Integration Gate and repository CI are mandatory before merge; the local lifecycle and contract commands pass.
+      unit:
+        applicable: true
+        evidence: tests/evidence/creative_execution_lifecycle.py exercises two distinct references, preserves the third unbound port, and rejects wrong encoder input, gaps, and more than three references.
+      integration:
+        applicable: true
+        evidence: The creative lifecycle fixture exercises the local ComfyUI loopback and ordered staged-reference injection; exact-candidate Integration Gate remains required.
+      contract:
+        applicable: true
+        evidence: tests/validation/comfyui_dynamic_workflow_contracts.py asserts the Edit Plus per-port mapping, three-image bound, and retained Qwen 2.1 object-map path.
+      e2e:
+        applicable: false
+        na_reason: The PR adds workflow support and does not claim real model inference; the deterministic fake ComfyUI lifecycle verifies the request boundary.
+      security:
+        applicable: true
+        evidence: Exact-candidate mandatory secret scan is required before merge. Existing loopback-only URL, core-node policy, staged-byte hash verification, and bounded input-count assertions remain unchanged.
+      migration_recovery:
+        applicable: false
+        na_reason: No persisted schema, cache, or user-data format changes.
+      cli_harness:
+        applicable: false
+        na_reason: No CLI or Harness behavior changes.
+      docs_schema:
+        applicable: true
+        evidence: Changed canonical guides and Scenario 236 are reconciled against the actual candidate diff; documentation impact Gate must pass.
+
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []

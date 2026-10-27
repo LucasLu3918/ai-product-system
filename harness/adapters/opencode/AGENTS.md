@@ -1,5 +1,7 @@
 # AIPS Global Turn Harness
 
+Creative ComfyUI execution follows the separate AIPS Creative authorization and workflow contracts in Scenario 236; do not infer new OpenCode-native permissions from model workflow support.
+
 Direct local L2 source writes may use READY Project Intelligence with STALE freshness as advisory context; keep the stale state visible and preserve every independent guard denial.
 
 Refresh only the topics in `targeted_refresh` when the Context sets `refresh_required=true`, and build the Retrieval index only when `retrieval_index_required=true`.

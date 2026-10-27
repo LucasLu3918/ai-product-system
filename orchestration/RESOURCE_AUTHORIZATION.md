@@ -14,6 +14,8 @@ It does not infer intent, discover permissions from prose, or grant protected pu
 
 ## Contract
 
+ComfyUI creative reference bindings remain constrained by the existing local-project resource scope. Qwen Image Edit Plus maps no more than three contiguous staged references and does not widen the authorization grant.
+
 Publication scan evidence is not a Resource Authorization grant: it describes one successful scanner result and cannot authorize a Git operation or expand a declared resource scope.
 
 A recipe in a publication denial and PR-bound scan evidence are not Resource Authorization grants; they never authorize a Git operation.

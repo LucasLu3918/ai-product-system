@@ -180,7 +180,7 @@ MFLUX 固定命令表新增 Z-Image Turbo generate：`mflux-generate-z-image-tur
 
 本機創作支援 discover/prepare/configure/preflight/execute：設定採 allowlist 與 create-only Bundle，native Context envelope 經正規化再作使用者授權。PNG 容器檢查涵蓋 CRC、終止與 bounded decompression；JPEG/WEBP 僅作 bounded container checks，不能代替實際看圖或完整解碼。
 
-Local creative execution supports MFLUX through fixed argv and ComfyUI through a loopback-only allowlisted workflow. It is explicit, create-only, and never downloads weights. ComfyUI model declarations live in `templates/creative/COMFYUI_MODEL_PROFILES.yaml` and may reuse only executor-reviewed topology families; profiles on the audited FLUX 3 Klein topology declare bounded sampler settings, with Base at 50 steps / CFG 3.5 and Distilled at 16 steps / CFG 1. Dynamic edit workflows can bind one to eight ordered local references, subject to per-file and aggregate size caps and per-file hash checks.
+Local creative execution supports MFLUX through fixed argv and ComfyUI through a loopback-only allowlisted workflow. It is explicit, create-only, and never downloads weights. ComfyUI model declarations live in `templates/creative/COMFYUI_MODEL_PROFILES.yaml` and may reuse only executor-reviewed topology families; profiles on the audited FLUX 3 Klein topology declare bounded sampler settings, with Base at 50 steps / CFG 3.5 and Distilled at 16 steps / CFG 1. Dynamic edit workflows bind ordered local references subject to per-file and aggregate size caps and per-file hash checks. Qwen Image 2.1 uses its `images` map for up to eight references; Qwen Image Edit Plus accepts up to three references through contiguous `image1`–`image3` ports.
 
 The fixed FLUX 3 Klein preflight validates `TextGenerate` fields and values against the live `/object_info/TextGenerate` schema, including the `COMFY_DYNAMICCOMBO_V3` option schema and selected API option key. The API payload sends the key (for example, `"off"`); ComfyUI reconstructs the nested value used by the node implementation. AIPS binds this check to the final serialized workflow and verifies fixed nodes and links before the single `/prompt` request. Execution failures retain bounded node ID/type, exception class and safe missing/unexpected-argument summaries; raw provider text remains suppressed. These checks do not establish successful MPS inference. Audited topology templates (`templates/creative/COMFYUI_TOPOLOGY_TEMPLATES.yaml`) describe the Z-Image and FLUX 3 Klein node graphs as data; a user-local profile may reference only one of them and can never add a node, input or endpoint (Scenario 271).
 
@@ -353,6 +353,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 Content-safety detector changes are versioned (for example `pii.email.v2`) and bound to Scenario 266 with a fixed corpus; they never add a PII exception path.
 
 ## Quality & Verification
+
+The lifecycle fixture covers Qwen Image Edit Plus ordered ports, the three-image limit, invalid-slot rejection, and unchanged Qwen Image 2.1 object-map injection; it does not claim real inference.
 
 Scenario 235 驗證 OpenCode 超限診斷、受限 trace 欄位與 fail-closed 原生寫入；不得把它解讀成一般 Shell/MCP 或程式外寫入的保護證據。
 
