@@ -33,6 +33,8 @@ OpenCode V2 registers a bounded creative tool that requires explicit intent. Its
 
 ### Turn-Aware Global Harness
 
+OpenCode V2 keeps a 12,000-byte UTF-8 Context cap. Irreducible compact-projection overflow returns a stable reason, byte counts and at most three fixed section-size entries; supported native file writes deny before ordinary manifest policy evaluation. Prompts, section values and paths are excluded, and Shell/MCP effects remain outside the verified guard.
+
 The OpenCode V2 adapter derives Context from the active Session root, caps the compact manifest at 12,000 bytes, and reports bounded hook timings without persisting prompts or file contents.
 
 AIPS 將 Runtime/User instructions、Project rules、Project Intelligence 與 AIPS protocol 組合成 bounded context。不同 Runtime 使用各自可驗證的 integration strategy。
@@ -99,6 +101,8 @@ Local hybrid retrieval 組合 lexical、symbols、structural relation、tests、
 Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEMENTATION_APPROVED` 進入核准範圍；實作後對帳 actual diff 與 declared impact，只有完整記錄 reconciliation evidence 才能標記 `READY`。
 
 ## Execution
+
+OpenCode 原生檔案寫入先確認精簡 Context 在 12,000 bytes 內；若無法壓縮至上限，Context 保持不可用，原生寫入在 manifest policy 前拒絕。
 
 In JSON mode, failed local `prepare` and `diagnose` calls return stable, redacted errors; text output and successful schemas remain compatible.
 
@@ -349,6 +353,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 Content-safety detector changes are versioned (for example `pii.email.v2`) and bound to Scenario 266 with a fixed corpus; they never add a PII exception path.
 
 ## Quality & Verification
+
+Scenario 235 驗證 OpenCode 超限診斷、受限 trace 欄位與 fail-closed 原生寫入；不得把它解讀成一般 Shell/MCP 或程式外寫入的保護證據。
 
 Scenario 261 regression coverage checks JSON and text error paths while preserving exit status and publication authority.
 

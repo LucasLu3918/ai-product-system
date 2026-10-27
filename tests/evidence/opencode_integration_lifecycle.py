@@ -400,12 +400,67 @@ def trace_cases(base):
     assert opencode_trace.read_events(path)["events"][0]["provider"] == "mflux_local"
     path.write_text(json.dumps({"runtime": "opencode", "event": "creative_execution", "decision": "ALLOW", "provider": "mflux_local", "operation": "generate", "prompt": "private"}) + "\n")
     assert opencode_trace.read_events(path)["events"] == [], "creative trace accepted prompt content"
+    path.write_text(json.dumps({
+        "runtime": "opencode", "event": "context", "status": "unavailable",
+        "reason_code": "context_compaction_over_budget", "context_original_bytes": 50000,
+        "context_projection_bytes": 14000,
+        "context_largest_sections": [{"section": "freshness", "bytes": 13000}],
+    }) + "\n")
+    diagnostic = opencode_trace.read_events(path)["events"][0]
+    assert diagnostic["reason_code"] == "context_compaction_over_budget"
+    assert diagnostic["context_largest_sections"] == [{"section": "freshness", "bytes": 13000}]
+    path.write_text(json.dumps({
+        "runtime": "opencode", "event": "context", "status": "unavailable",
+        "reason_code": "context_compaction_over_budget", "context_largest_sections": [
+            {"section": "freshness", "bytes": 100, "value": "private"},
+        ],
+    }) + "\n")
+    assert opencode_trace.read_events(path)["events"] == [], "trace accepted unbounded section metadata"
     try:
         opencode_trace.read_events(path, 101)
     except ValueError:
         pass
     else:
         raise AssertionError("trace query limit was not enforced")
+
+
+def context_budget_cases():
+    module_url = (ROOT / "harness/adapters/opencode/context_diagnostics.mjs").as_uri()
+    script = f'''import assert from "node:assert/strict";
+const {{compactManifest, formatContextFailure, MAX_CONTEXT_BYTES}} = await import({json.dumps(module_url)});
+const base = {{
+  version: 1,
+  runtime: "opencode",
+  project: {{mode: "ATTACHED"}},
+  task: {{classification: {{domain: "software", intent: "modify"}}, readiness: "L2"}},
+  context: {{system_protocol_routes: {{category: "general_mutation", protocols: [{{id: "change_impact"}}]}}, intelligence_topics: [], retrieval: {{status: "READY"}}}},
+  intelligence: {{readiness: "READY", review: "UNREVIEWED"}},
+  freshness: {{status: "CURRENT", reasons: []}},
+  fail_policy: {{mode: "closed", reasons: []}},
+}};
+const compacted = compactManifest({{...base, unrelated: "x".repeat(MAX_CONTEXT_BYTES + 100)}});
+assert.equal(compacted.truncated, true);
+assert.ok(Buffer.byteLength(compacted.body) <= MAX_CONTEXT_BYTES);
+assert.equal(compacted.reasonCode, undefined);
+const overflow = compactManifest({{
+  ...base,
+  unrelated: "x".repeat(MAX_CONTEXT_BYTES * 2),
+  freshness: {{status: "STALE", reasons: Array.from({{length: 600}}, (_, index) => `source_changed:item-${{index}}-` + "y".repeat(80))}},
+}});
+assert.equal(overflow.body, "", "irreducible overflow must remain fail-closed");
+assert.equal(overflow.reasonCode, "context_compaction_over_budget");
+assert.ok(overflow.originalBytes > MAX_CONTEXT_BYTES);
+assert.ok(overflow.compactBytes > MAX_CONTEXT_BYTES);
+assert.equal(overflow.largestSections[0].section, "freshness");
+const message = formatContextFailure(overflow);
+assert.match(message, /context_compaction_over_budget/);
+assert.match(message, new RegExp(String(overflow.compactBytes)));
+assert.match(message, /aips intelligence refresh-plan/);
+assert.match(message, /writes remain denied/i);
+assert.doesNotMatch(message, /source_changed:item-/);
+'''
+    result = subprocess.run(["node", "--input-type=module", "-e", script], cwd=ROOT, text=True, capture_output=True, timeout=30, check=False)
+    assert result.returncode == 0, (result.stdout, result.stderr)
 
 
 def classification_cases():
@@ -443,6 +498,7 @@ def main():
         native_guard_cases(base / "guard")
         creative_profile_cases(base / "creative")
         trace_cases(base / "trace")
+        context_budget_cases()
         classification_cases()
     print("OpenCode lifecycle PASS: native projections, V2 plugin ownership, conflicts, drift, interrupted writes, path confinement, L0-L3 direct-action guard, bounded Shell policy, CLI install/doctor/uninstall, MCP JSONC preservation")
 

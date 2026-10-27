@@ -1,0 +1,22 @@
+{
+  "acceptance_sha256": "29ce7968feb6735dbbea8aa5ac407db22a7e39a380375379831bdafb130c839",
+  "checks": {
+    "admission_revocation": "VERIFIED_NATIVE_HOST",
+    "context_delivery": "VERIFIED",
+    "creative_prepare": "VERIFIED_NATIVE_HOST",
+    "instruction_model_delivery": "UNVERIFIED",
+    "l3_external_actions": "UNVERIFIED",
+    "permission_hook_execution": "VERIFIED",
+    "session_cancel": "UNVERIFIED"
+  },
+  "platform": "darwin",
+  "plugin_sha256": "58f3490cea24840392f2a68f992ba9484f32378e7afb9e16a663fe0650f1ea9e",
+  "runtime_source_sha256": "c34d5e8abdb6e364d686e8404584e754c023829c929371d8b8f7d2f404258d4c",
+  "schema_version": 1,
+  "unsupported_effects": {
+    "arbitrary_shell_process_effects": "UNSUPPORTED",
+    "mcp_custom_tool_effects": "UNSUPPORTED",
+    "out_of_process_writes": "UNSUPPORTED"
+  },
+  "version": "2.0.24"
+}

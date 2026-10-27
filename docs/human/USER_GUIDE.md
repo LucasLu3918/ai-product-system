@@ -71,6 +71,8 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+OpenCode 的 Context 上限也適用於本機 Creative 工作；超限時維持 fail-closed，不投遞 Context 或支援的原生檔案寫入，修復後再重試。
+
 Claude Code 發布寫法調整不影響 Creative 流程；提交產出素材仍經相同 commit 內容安全掃描，Prepare 掃描證據（30 分鐘、綁定 PR）不授權任何創作輸出。
 
 Publication scan evidence applies only to a Git candidate Secret Scan. It does not cache creative review, authorize asset import, or change image-generation provenance.
@@ -217,6 +219,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
+OpenCode 顯示 `context_compaction_over_budget` 時，先以 `aips intelligence context --runtime opencode --project "$PWD" --prompt "<task>" --full --explain --format json` 檢視，再執行 `aips intelligence refresh-plan --project "$PWD"`。僅更新受影響的 Intelligence 主題後重試；修復前支援的 native file writes 維持拒絕。診斷不包含 prompt 或 section 內容，且不涵蓋一般 Shell/MCP 寫入。
+
 Claude Code 的 managed publication Hook 在八秒內完成檢查；逾時會以安全 phase 與耗時回報 fail-closed 拒絕，不會自動重試。受保護的 push 前先執行 `aips publish prepare`，讓 Hook 使用 30 分鐘內、綁定精確候選的私有掃描證據；Prepare 會為它規劃的 push 或 PR 建立各自綁定的證據。Claude Code 的標準發布寫法見 `harness/adapters/claude-code/CLAUDE.md`。
 
 FLUX 3 Klein 的 `TextGenerate` runtime schema 檢查由既有 Harness executor 執行，並在唯一一次 ComfyUI `/prompt` 請求前驗證最終工作流；預檢不會啟動生成。
@@ -302,6 +306,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 Turn Context 只列出這一回合真正需要的準備步驟：READY+STALE 的 Intelligence 在任務相關主題未受影響時只是提示，不要求 refresh；唯讀或未選到主題的回合不會要求建立 Retrieval 索引。修改既有專案時仍須處理 Change Impact。
 
 ## Roles、Skills 與重用
+
+透過 OpenCode 使用 Role 或 Skill 時，Turn Context 必須先通過 12,000-byte 投影檢查；超限診斷不改變 Skill 目錄、安裝或授權。
 
 The JSON error result is a CLI contract only; it does not add a Role or Skill permission and cannot authorize a Git operation.
 

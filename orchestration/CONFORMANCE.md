@@ -1098,6 +1098,8 @@ The branch lifecycle report classifies remote branches using current exact-SHA P
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+OpenCode Context readiness is checked before Skill content is projected; the guard preserves the pinned inventory and does not add installation or routing behavior.
+
 Publication CLI diagnostics do not change Skill Explorer admission or grant a Skill publication authority; see Scenario 261 for the separate CLI contract.
 
 Publication recipe diagnostics do not change Skill Explorer admission or grant a Skill publication authority; see Scenario 261.

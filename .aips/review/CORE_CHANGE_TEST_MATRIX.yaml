@@ -1,91 +1,78 @@
 version: 1
+
 change:
-  id: dev-friction-optimization
-  summary: Reduce AIPS development friction without weakening fail-closed boundaries - Claude Code publication command compatibility with a 30-minute Prepare scan-evidence TTL and `aips publish ship` with merge-bound evidence, task-scoped Intelligence preparation and `aips intelligence gc`, parameterized ComfyUI sampler/runtime budget, AIPS-owned job interrupt, protected-path guard with preflight degradation, worktree Intelligence seeding, declarative topology templates with local profiles, a person-only profile switch mechanism and its first profile-gated relaxations. D5 (unverified-workflow import) was NOT implemented; the existing opt-in `dynamic_local` ComfyUI mode already ships.
+  id: opencode-context-overflow-diagnostics
+  summary: Add safe, bounded diagnosis and recovery guidance when OpenCode's existing compact Turn Context projection still exceeds 12,000 bytes; preserve fail-closed delivery and write decisions.
   boundary:
-    - publication command compatibility and scan-evidence TTL
-    - task-scoped Intelligence preparation and gc
-    - ComfyUI parameterization and runtime budget
-    - owned-job interrupt
-    - protected-path guard and preflight degradation
-    - worktree Intelligence seeding
-    - declarative topology templates and local profiles
-    - publish ship and merge-bound evidence
-    - profile switch mechanism
-    - profile-gated relaxations
+    - OpenCode compaction helper and Context hook overflow path
+    - privacy-filtered trace schema and validation
+    - Scenario 235 lifecycle, contract, docs and coverage mapping
+
 matrix:
-  - boundary: publication command compatibility and scan-evidence TTL
-    reason: Fully explicit and quoted-heredoc publication forms must stay data for content safety while dynamic forms and multiple protected operations stay denied; Prepare evidence still binds exact candidate, operation, target and policy within the 30-minute TTL.
-    checks: &all_checks
+  - boundary: OpenCode compaction helper and Context hook overflow path
+    reason: The 12,000-byte limit and existing compact content remain unchanged. Compacted success still delivers; irreducible overflow reports a stable reason and safe remediation while Context stays unavailable and supported native project file writes are denied before manifest policy evaluation.
+    checks:
       static_lint:
         applicable: true
-        evidence: "REQUIRED: repository Integration Gate static checks on the exact candidate."
+        evidence: "PASS: exact-candidate full repository Gate passed; focused adapter contract also asserts diagnostic wiring."
       unit:
         applicable: true
-        evidence: "PASS: PR1 focused publication authority, planning and scan-evidence tests. Full pytest after the last merge (PR11 tree): 341 passed, 332 subtests passed."
+        evidence: "PASS: `tests/evidence/opencode_integration_lifecycle.py` exercises fitting compaction, irreducible overflow, sizes, section ranking and privacy-safe remediation."
       integration:
         applicable: true
-        evidence: "PASS: `python tests/validate_repository.py` on the integration tip - VALIDATION PASSED (scenarios=273 before PR11, 274 after). REQUIRED: full exact-candidate local Integration Gate."
+        evidence: "PASS: owning OpenCode lifecycle and exact-candidate full repository Gate passed."
       contract:
         applicable: true
-        evidence: "PASS: capability registry valid (45 capabilities, 10 surfaces). REQUIRED: documentation sync and placement closure on the exact candidate."
+        evidence: "PASS: `python -m tests.validation.opencode_integration_contracts` passes static hook and diagnostic markers plus lifecycle ownership."
       e2e:
         applicable: true
-        evidence: "REQUIRED: Hook/prepare lifecycle fixtures in the exact-candidate Gate. UNVERIFIED: real GitHub push, PR and merge through the Claude Code Hook."
+        evidence: "PASS: `tests/evidence/opencode_native_acceptance.py --binary /opt/homebrew/bin/opencode` verified v2.0.24 on macOS for Context delivery and native permission ALLOW/DENY; source-bound report is `.aips/review/OPENCODE_CONTEXT_DIAGNOSTICS_NATIVE_ACCEPTANCE.json`. The exact-candidate full repository Gate also passed. Instruction delivery, L3, session cancellation, arbitrary Shell/MCP and out-of-process writes remain UNVERIFIED/UNSUPPORTED."
       security:
         applicable: true
-        evidence: "REQUIRED: final-tree and base..head secret scan on the exact candidate; privacy and redaction assertions in focused tests and the Gate."
+        evidence: "PASS: fixture proves no raw freshness values enter user diagnostics; trace schema accepts only capped integers/fixed section names and rejects private extras. REQUIRED: exact-candidate secret scan."
       migration_recovery:
         applicable: true
-        evidence: "N/A - no persisted data migration; denial recipes and recovery semantics are covered by Hook and publication lifecycle checks."
+        evidence: "N/A: no persisted schema/cache migration. Recovery is read-only Context inspection/refresh planning followed by retry; overflow continues to deny Context."
       cli_harness:
         applicable: true
-        evidence: "REQUIRED: CLI help golden vectors, JSON/text compatibility and Hook lifecycle checks in the exact-candidate Gate."
+        evidence: "PASS: OpenCode install/doctor/uninstall and projection lifecycle remains covered by the owning integration lifecycle."
       docs_schema:
         applicable: true
-        evidence: "REQUIRED: recursive documentation impact closure and placement checks on the exact candidate (closed in the integration documentation closure change)."
-  - boundary: task-scoped Intelligence preparation and gc
-    reason: Turn Context reports refresh and retrieval-index steps only when the task needs them, keeps fail-closed reasons and Change Impact unchanged, and `aips intelligence gc` stays dry-run by default and never deletes a store whose project path still exists.
-    checks: *all_checks
-  - boundary: ComfyUI parameterization and runtime budget
-    reason: Registry data selects only reviewed topology families and validated bounded sampler values and a bounded runtime budget; it creates no Runtime action, resource grant or new mutation authority.
-    checks: *all_checks
-  - boundary: owned-job interrupt
-    reason: AIPS interrupts only an accepted ComfyUI job it submitted and the queue reports running, with a private ownership ledger surviving restart; foreign jobs, unreadable queues and automatic resubmission remain forbidden.
+        evidence: "PASS: Scenario 235, scenario coverage, OpenCode Compatibility, Harness guide, changelog and recursive documentation impact/placement/sync checks closed; exact-candidate full repository Gate passed."
+  - boundary: privacy-filtered trace schema and validation
+    reason: Trace remains an allowlisted bounded local record; only reason code, capped byte counts and up to three fixed section identifiers/sizes are exposed. Prompts, paths, values and raw output remain excluded.
     checks:
-      <<: *all_checks
-      e2e:
+      static_lint:
         applicable: true
-        evidence: "PASS: stateful synthetic loopback queue fixtures (creative execution, plan27 and dynamic workflow lifecycle). UNVERIFIED: real ComfyUI queue, weights and inference were not run."
-  - boundary: protected-path guard and preflight degradation
-    reason: Agent writes to the installed AIPS system checkout and user profile settings are denied best-effort with a bounded reason code, and system preflight degrades without discarding or committing local checkout changes while explicit update still refuses.
-    checks: *all_checks
-  - boundary: worktree Intelligence seeding
-    reason: A new worktree copies a READY store of the same repository (copy-on-write, source read-only) and falls back to normal initialization with an observation on any refusal; wrong source selection or a false freshness proof must not occur.
-    checks: *all_checks
-  - boundary: declarative topology templates and local profiles
-    reason: Audited topology templates are checked by the generic validator, user-local profiles are drafted without downloading weights and approved only from an interactive terminal, and static smoke never runs ComfyUI or inference.
-    checks:
-      <<: *all_checks
-      e2e:
+        evidence: "PASS: exact-candidate full repository Gate passed."
+      unit:
         applicable: true
-        evidence: "PASS: PR6 recorded pytest 227 passed / 252 subtests and VALIDATION PASSED (270 scenarios) on its own tree. UNVERIFIED: model quality and backend compatibility, no real ComfyUI job or inference."
-  - boundary: publish ship and merge-bound evidence
-    reason: "`aips publish ship` is one protected operation that re-validates the same exact candidate, scan evidence and body digest before each push and PR child, and a merge needs merge-bound Prepare evidence; it grants no publication permission."
-    checks:
-      <<: *all_checks
-      e2e:
+        evidence: "PASS: exact-candidate OpenCode lifecycle accepts bounded safe trace data and rejects extra private fields."
+      integration:
         applicable: true
-        evidence: "REQUIRED: exact-candidate Gate lifecycle. UNVERIFIED: real GitHub push, PR creation and merge through `aips publish ship`; Scenario 273 and `tests/test_publication_ship.py` use fixtures."
-  - boundary: profile switch mechanism
-    reason: Profile switches default to strict, can be changed only by a person in an interactive terminal with a confirmation phrase, cannot be written or set by an agent, and appear in Turn Context as non-default only.
-    checks: *all_checks
-  - boundary: profile-gated relaxations
-    reason: The default-off `claude_coauthor_trailer` and `post_merge_refresh` switches relax exactly one trailer line shape in one PII scanner and one bounded background refresh; secret scanning, other PII rules, other trailers and publication authority stay unchanged. D5 unverified-workflow import was NOT implemented (existing opt-in `dynamic_local` already ships, Scenario 268).
-    checks: *all_checks
+        evidence: "PASS: exact-candidate full repository Gate passed, including trace read/query lifecycle."
+      contract:
+        applicable: true
+        evidence: "PASS: OpenCode integration contract covers diagnostic reason, size fields and formatter wiring."
+      e2e:
+        applicable: false
+        na_reason: "The existing OpenCode loopback acceptance covers model Context delivery and native actions; trace schema is deterministically covered by the local lifecycle and does not need a model/host effect."
+      security:
+        applicable: true
+        evidence: "PASS: lifecycle rejects a trace event containing an extra private section value. REQUIRED: final-tree and base..head mandatory candidate secret scan."
+      migration_recovery:
+        applicable: false
+        na_reason: "Trace is an append-only bounded local JSONL with additive allowlisted fields; no persistent format migration or destructive repair is added."
+      cli_harness:
+        applicable: true
+        evidence: "PASS: `aips harness trace` command contract and bounded event reader passed exact-candidate CLI validation."
+      docs_schema:
+        applicable: true
+        evidence: "PASS: documented safe trace fields and bounded recovery path passed exact-candidate documentation/schema checks."
+
 candidate:
-  base_sha: 5ab2246a74e5a3320de6d937c17aa86af103f3d7
-  changed_files_hash: 0209c895a5fa831c7cd74247d3dd57e394ed59e9f2a5fc5276b5aec02e4c8cbd
+  base_sha: 571b54fb775bd45136a4fbcef4aa22007b6fdc72
+  changed_files_hash: 28c31680da1b170731a8d73261973eae79dd1e26d9060c30a43179c44940a55f
 review_evidence:
   required: false
 scope_recomputed_after_expansion: true

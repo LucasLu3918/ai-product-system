@@ -1748,6 +1748,8 @@ Diagnostic recommendations remain read-only and conditional.
 
 ## Scenario 233 — Public CLI Help and Error Contracts
 
+OpenCode Context 超限會回傳穩定的 `context_compaction_over_budget` reason code 與唯讀復原指令，不改變既有 CLI 命令表面。
+
 Scenario 268 adds explicit `creative workflows` routes while preserving the existing Skills CLI contract.
 
 Scenario 266 covers versioned injection classification, added-line checks, full-blob secret/PII scanning, and safe recovery diagnostics.
@@ -1790,6 +1792,8 @@ Scenario 269 keeps the creative Git write denial unchanged; only ordinary Turn C
 
 ## Scenario 235 — OpenCode Native Context and Action Guard
 
+When the compact projection exceeds 12,000 bytes, Scenario 235 also requires stable `context_compaction_over_budget` diagnostics, bounded section-size trace metadata, read-only recovery guidance, and denial of supported native file writes before manifest policy evaluation. Section values, prompts, paths, and raw CLI output stay excluded.
+
 Dynamic ComfyUI workflow validation does not bypass native prompt admission or the explicit Creative execution guard.
 
 Scenario 267 adds a READY+STALE local-write case and retains denial evidence for UNKNOWN freshness, non-READY Intelligence, authority conflicts, path escapes, creative Git writes and external actions.
@@ -1817,6 +1821,8 @@ The lifecycle covers separate prompt dimensions, Chinese creative-asset routing,
 Scenario 269 makes Turn Context refresh and Retrieval index instructions task-scoped; the READY+STALE allow case and the OpenCode guard denials from Scenario 267 are unchanged.
 
 ## Scenario 238 — Creative Task Authorization and Multi-item Execution
+
+OpenCode 原生檔案寫入也會在 Context 投影超限時 fail-closed；此拒絕不建立 Creative grant。
 
 Creative task grants authorize only their bounded workflow; Git PR merge confirmation is a separate publication action covered by Scenario 240.
 
@@ -1853,6 +1859,8 @@ The existing OpenCode integration lifecycle also verifies hash-bound asset impor
 The cross-profile quality evidence extension is covered by Scenario 258; this creative execution scenario continues to distinguish generated artifacts, image checks, Human review and user acceptance.
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
+
+OpenCode Context guard runs before Skill execution and leaves the catalog, installation and routing behavior unchanged.
 
 Publication CLI error serialization remains a separate contract and grants Skills no new Git or publication authority; see Scenario 261.
 

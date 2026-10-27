@@ -3,9 +3,9 @@ import { appendFile, chmod, mkdir, realpath, stat, writeFile } from "node:fs/pro
 import { homedir } from "node:os"
 import { dirname, join, resolve, sep } from "node:path"
 import { spawn } from "node:child_process"
+import { pathToFileURL } from "node:url"
 
 const SYSTEM_ROOT = __AIPS_SYSTEM_ROOT__
-const MAX_CONTEXT_BYTES = 12000
 const MAX_TRACE_BYTES = 512 * 1024
 
 type ContextEntry = { key: string; at: number; root: string; prompt: string; manifest: Record<string, any> | null; reason?: string; durationMs: number }
@@ -118,37 +118,6 @@ function creativeRecovery(reason: string, admission?: { maxOutputs?: number }, d
   }
 }
 
-function compactManifest(manifest: Record<string, any>): { body: string; truncated: boolean } {
-  const full = JSON.stringify(manifest)
-  if (Buffer.byteLength(full) <= MAX_CONTEXT_BYTES) return { body: full, truncated: false }
-  const task = manifest.task
-  const summary: Record<string, any> = {
-    version: manifest.version,
-    runtime: manifest.runtime,
-    project_mode: manifest.project?.mode,
-    task: task && { classification: task.classification, readiness: task.readiness },
-    selected_protocols: manifest.context?.system_protocol_routes,
-    intelligence_topics: manifest.context?.intelligence_topics,
-    retrieval: manifest.context?.retrieval,
-    creative_workspace: manifest.aips_creative_workspace,
-    intelligence: manifest.intelligence && { readiness: manifest.intelligence.readiness, review: manifest.intelligence.review },
-    freshness: manifest.freshness,
-    instruction_resolution: manifest.instruction_resolution && {
-      status: manifest.instruction_resolution.status,
-      requires_resolution: manifest.instruction_resolution.requires_resolution,
-    },
-    fail_policy: manifest.fail_policy,
-    aips_context_budget: { truncated: true, original_bytes: Buffer.byteLength(full), max_bytes: MAX_CONTEXT_BYTES },
-  }
-  let body = JSON.stringify(summary)
-  if (Buffer.byteLength(body) > MAX_CONTEXT_BYTES) {
-    summary.intelligence_topics = Array.isArray(summary.intelligence_topics) ? summary.intelligence_topics.slice(0, 8) : summary.intelligence_topics
-    summary.fail_policy = summary.fail_policy && { mode: summary.fail_policy.mode, reasons: Array.isArray(summary.fail_policy.reasons) ? summary.fail_policy.reasons.slice(0, 8) : [] }
-    body = JSON.stringify(summary)
-  }
-  return Buffer.byteLength(body) <= MAX_CONTEXT_BYTES ? { body, truncated: true } : { body: "", truncated: true }
-}
-
 function tracePath(): string {
   return join(process.env.XDG_STATE_HOME || join(homedir(), ".local/state"), "aips/opencode/events.jsonl")
 }
@@ -202,6 +171,8 @@ export default {
     const aips = process.env.AIPS_CLI || join(SYSTEM_ROOT, "bin/aips")
     const python = process.env.AIPS_GUARD_PYTHON || "python3"
     const guard = join(SYSTEM_ROOT, "scripts/opencode_native_guard.py")
+    const contextDiagnostics = await import(pathToFileURL(join(SYSTEM_ROOT, "harness/adapters/opencode/context_diagnostics.mjs")).href)
+    const { compactManifest, formatContextFailure, MAX_CONTEXT_BYTES } = contextDiagnostics
     const cache = new Map<string, ContextEntry>()
     const contextFlights = new Map<string, Promise<ContextEntry>>()
     const creativeAdmissions = new Map<string, {
@@ -361,10 +332,14 @@ export default {
           entry.manifest.aips_creative_workspace = { status: "UNAVAILABLE", reason_code: "read_only_scan_failed", output_policy: "Create a new versioned path; never overwrite existing assets." }
         }
       }
-      const encoded = entry.manifest ? compactManifest(entry.manifest) : { body: "", truncated: false }
+      const encoded = entry.manifest
+        ? compactManifest(entry.manifest)
+        : { body: "", truncated: false, originalBytes: 0, compactBytes: 0, largestSections: [] }
       const text = encoded.body
         ? `AIPS Turn Context (automatically loaded; transient):\n${encoded.body}`
-        : `AIPS Turn Context unavailable: ${entry.reason || "the compact manifest exceeds its fixed size budget"}. Do not perform project writes until the required AIPS context is restored. Shell and MCP/custom-tool effects are not fully covered by the native file guard.`
+        : encoded.reasonCode
+          ? formatContextFailure(encoded)
+          : `AIPS Turn Context unavailable: ${entry.reason || "the compact manifest exceeds its fixed size budget"}. Do not perform project writes until the required AIPS context is restored. Shell and MCP/custom-tool effects are not fully covered by the native file guard.`
       event.system.push({ type: "text", text })
       const task = entry.manifest?.task?.classification ?? {}
       await trace({
@@ -375,6 +350,11 @@ export default {
         session_root_source: resolvedSession.source,
         duration_ms: Math.round(performance.now() - hookStarted), context_command_ms: entry.durationMs,
         context_bytes: encoded.body ? Buffer.byteLength(encoded.body) : 0, truncated: encoded.truncated,
+        context_max_bytes: MAX_CONTEXT_BYTES,
+        reason_code: encoded.reasonCode,
+        context_original_bytes: encoded.originalBytes,
+        context_projection_bytes: encoded.compactBytes,
+        context_largest_sections: encoded.largestSections,
         creative_asset_count: entry.manifest?.aips_creative_workspace?.asset_count ?? 0,
       })
     })
@@ -393,13 +373,16 @@ export default {
       const recent = cache.get(event.sessionID)
       const prompt = recent?.root === root ? recent.prompt : undefined
       const entry = await contextFor(event.sessionID, messages as any[], root, event.resources[0] ?? root, true, prompt, event.signal)
-      const decision = await invokeGuard(python, guard, "write", { action: event.action, resources: [...event.resources], manifest: entry.manifest ?? {}, root }, root, event.signal)
+      const contextBudget = entry.manifest ? compactManifest(entry.manifest) : null
+      const decision = contextBudget?.reasonCode
+        ? { decision: "DENY", level: "L2", reason_code: contextBudget.reasonCode, reason: formatContextFailure(contextBudget) }
+        : await invokeGuard(python, guard, "write", { action: event.action, resources: [...event.resources], manifest: entry.manifest ?? {}, root }, root, event.signal)
       if (decision.decision !== "ALLOW") {
         event.effect = "deny"
         event.message = `AIPS ${decision.level ?? "L2"} native write guard: ${decision.reason ?? "context unavailable"}`
       }
       const task = entry.manifest?.task?.classification ?? {}
-      await trace({ event: "permission", decision: decision.decision, level: decision.level ?? "L0", session: hash(event.sessionID), project: hash(root), action: event.action, domain: task.domain ?? "unknown", intent: task.intent ?? "unknown", readiness: entry.manifest?.intelligence?.readiness ?? "unknown", project_mode: entry.manifest?.project?.mode ?? "UNKNOWN", session_root_source: resolvedSession.source, reason_code: policyReasonCode(decision), duration_ms: Math.round(performance.now() - hookStarted) })
+      await trace({ event: "permission", decision: decision.decision, level: decision.level ?? "L0", session: hash(event.sessionID), project: hash(root), action: event.action, domain: task.domain ?? "unknown", intent: task.intent ?? "unknown", readiness: entry.manifest?.intelligence?.readiness ?? "unknown", project_mode: entry.manifest?.project?.mode ?? "UNKNOWN", session_root_source: resolvedSession.source, reason_code: policyReasonCode(decision), context_original_bytes: contextBudget?.originalBytes, context_projection_bytes: contextBudget?.compactBytes, context_max_bytes: MAX_CONTEXT_BYTES, context_largest_sections: contextBudget?.largestSections, duration_ms: Math.round(performance.now() - hookStarted) })
     })
 
     await ctx.shell.hook("create.before", async (event) => {

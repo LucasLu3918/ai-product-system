@@ -61,6 +61,8 @@ The optional ComfyUI `dynamic_local` workflow path reads bounded local `/object_
 
 OpenCode V2 applies a 12,000-byte UTF-8 cap to its transient AIPS Context and uses a session/prompt/target cache; the bounded trace records duration and size without prompt text.
 
+If compaction still exceeds that cap, return `context_compaction_over_budget`, original/projection sizes and at most three fixed section names with serialized sizes. Keep Context unavailable and deny supported native file writes before manifest evaluation; give read-only Context inspection and refresh-plan commands. Never emit section values, prompts, raw paths or raw CLI output. Shell/MCP/custom effects remain outside this guard.
+
 Load `SYSTEM_CORE.md` with minimal Harness rules and critical native/project instructions. Turn Context selects canonical task protocols by pointer; load only those protocols, then task-relevant Intelligence and optional evidence on demand. `SYSTEM.md` remains a compatibility router and is not part of the fixed system layer.
 
 ## Mutation safety
