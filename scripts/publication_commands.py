@@ -1,9 +1,28 @@
 """Bounded shell AST extraction; unsupported syntax is a denial, never a bypass."""
 from __future__ import annotations
 
+import os
 import re
 import shlex
 from typing import Any
+
+
+def publish_ship_arguments(argv: list[str]) -> list[str] | None:
+    """Return the words after `ship` for `aips publish ship`, or None for any other command.
+
+    `scripts/publish_preflight.py ship` is classified the same way, so the CLI cannot be reached
+    under a different spelling. A dynamic word in the AIPS publish subcommand position denies.
+    """
+    if not argv:
+        return None
+    if os.path.basename(argv[0]) == 'aips':
+        if any('\0' in word or '$' in word or '`' in word for word in argv[1:3]):
+            raise CommandError('dynamic AIPS publish command cannot be classified', 'DYNAMIC_SUBCOMMAND')
+        return argv[3:] if argv[1:3] == ['publish', 'ship'] else None
+    for index in range(1, min(len(argv), 4)):
+        if os.path.basename(argv[index]) == 'publish_preflight.py' and argv[index + 1:index + 2] == ['ship']:
+            return argv[index + 2:]
+    return None
 
 
 class CommandError(ValueError):
@@ -47,6 +66,15 @@ def command_form_detail(source: str) -> str:
         return "MULTI_COMMAND_UNSUPPORTED"
     if len(trees) > 1:
         return "MULTI_COMMAND_UNSUPPORTED"
+    if kinds & {"commandsubstitution", "processsubstitution"}:
+        return "PUBLICATION_ARGUMENT_DYNAMIC"
+    try:
+        _normalized, expansions = _mask_heredocs(inline_literal_heredocs(source))
+    except CommandError:
+        return "UNSUPPORTED_HEREDOC"
+    if expansions:
+        # An unquoted heredoc expands variables and substitutions, so its text cannot be bound.
+        return "PUBLICATION_ARGUMENT_DYNAMIC"
     return "COMMAND_WRAPPER_UNSUPPORTED"
 
 
@@ -283,7 +311,7 @@ def shell_commands(source: str, *, mark_dynamic: bool = False) -> list[list[str]
                 # Dynamic executable/arguments cannot bind an exact publication action.
                 if _unquoted_expansion(raw):
                     argv.append('\0shell-expansion:' + raw)
-                elif getattr(word, "parts", None) or (mark_dynamic and raw.startswith("$'")):
+                elif getattr(word, "parts", None) or (mark_dynamic and raw.startswith(("$'", '$"'))):
                     argv.append('\0' + raw if mark_dynamic else raw)
                 else:
                     try:

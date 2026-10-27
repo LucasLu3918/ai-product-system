@@ -225,11 +225,13 @@ Documentation sync path normalization (Scenario 221): `documentation_sync.evalua
 
 Keep the publication CLI JSON error contract in the User Guide, its regression evidence in Scenario 261, and preserve the explicit non-authorizing recovery boundary.
 
+Keep the Claude Code publication recipe in the Claude Code adapter, its regression evidence in Scenario 261, and denial recipes non-authorizing.
+
 The publication-preflight mapping includes the private scan-evidence module, updated Guard/authority/Doctor/planning code, corresponding focused tests and Scenario 261. Its canonical Human documentation stays in the existing publication, security, maintenance and technology topics.
 
 For Z-Image Turbo, synchronize the generate-only MFLUX command and single registered ComfyUI split-loader profile across creative, execution and Runtime docs. ComfyUI checks preinstalled UNET/CLIP/VAE files and strips prompt-bearing PNG text metadata. Separately, Scenario 268 covers opt-in schema-validated core-node API workflows with explicit bindings; do not claim arbitrary custom/API nodes, unsupported Z-Image variants, or verified real inference.
 
-ComfyUI registry and fixed workflow additions map to Creative Direction, Technology Guide, Scenario 236 and this placement contract; data-only profiles may reuse an audited topology with bounded profile settings and automatic live-schema/component validation, but cannot introduce topology families. Dynamic ComfyUI edit documentation describes one-to-eight ordered local references with per-file staged-byte verification.
+ComfyUI registry and fixed workflow additions map to Creative Direction, Technology Guide, Scenario 236 and this placement contract; data-only profiles may reuse an audited topology with bounded profile settings and automatic live-schema/component validation, but cannot introduce topology families. Dynamic ComfyUI edit documentation describes one-to-eight ordered local references with per-file staged-byte verification. Topology template changes map to Creative Direction, Technology Guide, Scenario 271 and the Core Change test matrix.
 
 
 Project attach/detach behavior is synchronized across Existing Project guidance, Architecture/Technology and Scenario 044: `.ai/` remains opt-in, local `info/exclude` protects untracked workspace and archive paths, and `.gitignore` remains unchanged.
@@ -343,6 +345,8 @@ The new `scripts/retrieval_storage.py` helper belongs to the existing Project In
 Scenario 260 publication diagnostics synchronize with the Human Git Publication/Security Assurance sections, Architecture Overview, Claude Code adapter, CLI help, and the source-controlled diagnostic contracts.
 
 Pure dependency update documentation exemption (Scenario 221): `pure_dependency_update` in `scripts/dependency_impact.py` returns `PURE_DEPENDENCY_UPDATE` only when every changed file is an allowlisted dependency manifest (`.github/workflows/*.yml`, root `requirements*.txt`, `constraints/*.txt`) modified in place and every changed line pair is either a full-SHA pinned `uses:` reference for the same action with a non-decreasing version comment, or an exact `name==version` pin with a strictly higher version. Documentation Impact, Documentation Placement and Documentation Sync then suppress documentation requirements only and report each dependency's classification, risk and `human_review_required`; any other line or file, downgrade, unpinned reference, planned path, size-limit overflow or predicate failure keeps the full rules. Secret scanning, content safety, the Core Change Test Matrix, the Integration Gate, required checks and Human merge approval are unchanged, and `automatic_merge_authorized` stays false.
+
+Scenario 269 documentation closure places task-scoped Turn Context preparation and `aips intelligence gc` in existing canonical sections only.
 
 ## Scenario 220 — Parallel advisory fast feedback
 

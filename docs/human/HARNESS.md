@@ -65,11 +65,11 @@ Native adapter discovery does not create project-local `.ai/`; explicit attach/d
 Content-safety controls remain separate from skill discovery, installation, and author trust decisions.
 
 
-Personal publication Hook denials preserve stable reason/phase metadata without raw exception text or candidate paths. The Hook has an eight-second hard deadline and returns elapsed milliseconds plus the last safe phase on timeout. Before a protected push it still revalidates the exact candidate, full ref and current remote tip, then requires a fresh five-minute Secret Scan evidence record from `aips publish prepare`; missing or mismatched evidence denies without retry. Unsupported literal command forms are denied before scanner work; the Hook does not authorize retry or execution.
+Personal publication Hook denials preserve stable reason/phase metadata without raw exception text or candidate paths. The Hook has an eight-second hard deadline and returns elapsed milliseconds plus the last safe phase on timeout. Before a protected push it still revalidates the exact candidate, full ref and current remote tip, then requires a fresh 30-minute Secret Scan evidence record from `aips publish prepare`; missing or mismatched evidence denies without retry. Unsupported literal command forms are denied before scanner work; the Hook does not authorize retry or execution.
 
 Adapter action guards remain separate from staged AVIF content-safety diagnostics.
 
-Claude Code v2.1.295+ 的 managed publication PreToolUse guard 設定 `onFailure: block`；舊版/未知版不寫入不相容欄位並發出警示。AIPS 另以八秒內部 deadline 回傳結構化拒絕；`PostToolUseFailure` 的 timeout 會標示 `TIMEOUT_OBSERVED`，不推測成網路故障。UserPromptSubmit context hook 不套用此 failure policy。
+Claude Code v2.1.295+ 的 managed publication PreToolUse guard 設定 `onFailure: block`；舊版/未知版不寫入不相容欄位並發出警示。AIPS 另以八秒內部 deadline 回傳結構化拒絕；`PostToolUseFailure` 的 timeout 會標示 `TIMEOUT_OBSERVED`，不推測成網路故障。UserPromptSubmit context hook 不套用此 failure policy。同一 guard 另以 `Edit|Write|NotebookEdit|MultiEdit` matcher 攔截代理對已安裝 AIPS 系統目錄與 profile 設定的寫入，並以常見 Shell 寫入形式做盡力偵測（不是完整防護）；拒絕碼為 `PROTECTED_PATH_WRITE`，請改在開發 repo 修改並透過 PR 發布。
 獨立的 `PostToolUseFailure:Bash` observer 只回報已開始執行的原生指令失敗分類與可解析 exit code，不回傳原始錯誤、不重試也不授權。
 Creative asset import remains an explicit CLI operation. OpenCode native file permissions neither authorize nor execute the Git import path; the exact-hash candidate and separate Git publication boundary still apply.
 
@@ -100,7 +100,7 @@ OpenCode V2 derives Creative mutation authority from the current native prompt-a
 
 Runtime denial details now carry a bounded reason code, trace identifier and recovery action through the native Hook response; Profile paths, provider bodies and credentials remain excluded.
 
-OpenCode creative_execution 使用共享 executor 的 ComfyUI model profile registry；新增模型僅能沿用已審核拓樸家族並通過 sampler、live schema 與本機元件檢查，不擴大 Session authority、工具權限或任意命令。FLUX 3 Klein Base/Distilled 共用已審核 topology，分別設定 50 steps / CFG 3.5 與 16 steps / CFG 1。動態 ComfyUI edit 可綁定一至八張有序本機參考圖並逐張比對 staged bytes 雜湊。這些預檢不代表 MPS 推論已驗證。
+OpenCode creative_execution 使用共享 executor 的 ComfyUI model profile registry；新增模型僅能沿用已審核拓樸家族並通過 sampler、live schema 與本機元件檢查，不擴大 Session authority、工具權限或任意命令。FLUX 3 Klein Base/Distilled 共用已審核 topology，分別設定 50 steps / CFG 3.5 與 16 steps / CFG 1。動態 ComfyUI edit 可綁定一至八張有序本機參考圖並逐張比對 staged bytes 雜湊。這些預檢不代表 MPS 推論已驗證。 本次變更不新增 OpenCode 核准動作；使用者本機 profile 只由 `aips creative profile approve` 在互動式終端機核准。
 
 ComfyUI 的 `z-image-turbo` profile 使用 `templates/creative/COMFYUI_Z_IMAGE_TURBO_API.json` 固定 API 工作流；只有指定的 UNET、Qwen `lumina2` CLIP 與 VAE 權重會依 loopback `/object_info` 核對，不接受自訂節點或圖片編輯。
 
@@ -168,6 +168,8 @@ Runtime Policy 可由 PreToolUse 對 hook 收到且可正規化的動作執行 d
 BeforeTool 可執行相同的受支援 Runtime Policy 檢查；Codex 與不支援的 generic runtime 不宣稱強制執行。
 
 純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
+
+Claude Code、Codex 與 OpenCode adapter 的 Global Harness 說明改為：只有 Turn Context 設定 `refresh_required=true` 才做 targeted refresh，`retrieval_index_required=true` 才建立索引；Change Impact 不變。
 
 ## MCP Interoperability
 
@@ -239,7 +241,7 @@ Turn Context 固定載入精簡的 `SYSTEM_CORE.md`，再依任務選擇 canonic
 
 Workflow and Runtime adapters keep validation observation collection behind the existing repository Gate; their read-only artifact reports do not enable host actions, skip checks, or add Git publication authority.
 
-Repository mutation workflows resolve AIPS Turn Context before analysis, then use targeted intelligence refresh and Change Impact evidence before editing; commit-time publication gates additionally enforce public-repository identity and content-safety policy.
+Repository mutation workflows resolve AIPS Turn Context before analysis, then use Change Impact evidence before editing and refresh only the task-relevant Intelligence topics that Turn Context marks with `refresh_required`; commit-time publication gates additionally enforce public-repository identity and content-safety policy.
 
 同步路徑只解析 identity、freshness、indexes 與 relevant pointers；重型 Project bootstrap、site build、semantic enrichment 不放進 hot path。
 

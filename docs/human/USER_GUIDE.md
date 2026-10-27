@@ -71,6 +71,8 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+Claude Code 發布寫法調整不影響 Creative 流程；提交產出素材仍經相同 commit 內容安全掃描，Prepare 掃描證據（30 分鐘、綁定 PR）不授權任何創作輸出。
+
 Publication scan evidence applies only to a Git candidate Secret Scan. It does not cache creative review, authorize asset import, or change image-generation provenance.
 
 Creative outputs in Git workspaces retain their existing guard, even while ordinary confined local L2 source writes may proceed with READY but STALE Project Intelligence.
@@ -111,7 +113,7 @@ Creative task grants remain separate from Git authority; the personal PR merge c
 
 Creative grant 僅涵蓋已核准創作範圍；成品若要 commit／push／PR，需另依 Git Publication 與 Release 流程取得 signed external grant。
 
-ComfyUI 已接受工作後若逾時或輪詢失敗，AIPS 只請求移除該 queued job，阻擋自動重送，不中斷其他正在執行的工作。先檢查 Provider 狀態，再明確重試。
+ComfyUI 已接受工作後若逾時或輪詢失敗，AIPS 會讀取本機 queue：自己送出且仍在排隊的工作以確切 ID 移除；自己送出且正在執行的工作以指定 `prompt_id` 中斷；其他工作一律不碰，也不自動重送，並回報重新檢查後的 `job_state`。AIPS 重啟後可執行 `aips creative recover`，只處理本機 ledger 記錄為 AIPS 擁有且已超過自身逾時的工作。先檢查 Provider 狀態，再明確重試。
 
 使用 `templates/creative/QUALITY_BENCHMARK.json` 與 `templates/creative/CREATIVE_QUALITY_DATASET.yaml` 記錄本地 trial。資料集提供三種角色 archetype、六類案例，共 18 個 profile-case 覆蓋格；每筆 v2 evidence 指定 `profile_id`、`case_id` 與 `COMPLETE`／`FAILED`。失敗另分 model、check、compiler 階段與受限 reason code。以 `python scripts/creative_quality_benchmark.py --project <workspace> --evidence <report.json>` 核對輸出及雜湊。角色、服裝、構圖、參考圖編輯與恢復由人工分別評分；user acceptance 獨立記錄。缺漏維持 UNKNOWN，v1 舊 evidence 可讀但 coverage 為 UNVERIFIED。資料集是覆蓋矩陣，不是生成結果或品質標籤。
 
@@ -127,7 +129,7 @@ Project Diagnostics 只報告既有狀態，不會建立 Creative Bundle、啟�
 
 已安裝 Z-Image Turbo 權重時，可使用 MFLUX 專用 generate 命令。建議 8 步；此配對不支援 edit、ControlNet 或其他 Z-Image 變體。
 
-ComfyUI 也可用 `model_profile: z-image-turbo` 執行同一模型：設定需明列 UNET、Qwen CLIP、VAE 權重檔名，並使用 AIPS 隨附的固定 API 工作流。Preflight 會向 loopback ComfyUI 核對三項本機模型清單；此配對僅支援 generate。模型可透過 `templates/creative/COMFYUI_MODEL_PROFILES.yaml` 擴充，但只能沿用已審核的拓樸家族；FLUX 3 Klein Base 為另一個固定 workflow profile。
+ComfyUI 也可用 `model_profile: z-image-turbo` 執行同一模型：設定需明列 UNET、Qwen CLIP、VAE 權重檔名，並使用 AIPS 隨附的固定 API 工作流。Preflight 會向 loopback ComfyUI 核對三項本機模型清單；此配對僅支援 generate。模型可透過 `templates/creative/COMFYUI_MODEL_PROFILES.yaml` 擴充，但只能沿用已審核的拓樸家族；FLUX 3 Klein Base 為另一個固定 workflow profile。 需要未列入系統 profile 的已安裝模型時，可用 `aips creative profile draft --model-id <id> --base-profile <系統 profile>` 產生未核准草稿，再於互動式終端機執行 `aips creative profile approve <local-profile-id>`；草擬不會下載權重（Scenario 271）。
 
 FLUX 3 Klein Base 與 Distilled 共用已審核 workflow；Base 使用 50 steps / CFG 3.5，Distilled 使用 16 steps / CFG 1。預檢會讀取本機 `/object_info/TextGenerate`，檢查工作流欄位、型別、範圍及 `sampling_mode` Dynamic Combo 選項 schema。送往 ComfyUI API 的值是 schema 中選取的選項鍵（例如 `"off"`）；ComfyUI 會在執行層重建節點所需的巢狀值。AIPS 在唯一一次 `/prompt` 前也會核對最終序列化工作流的節點、欄位與連線。ComfyUI 執行錯誤只回報安全摘要，不回傳原始訊息、提示、路徑或 traceback，也不會自動重送失敗工作。
 
@@ -180,6 +182,8 @@ Brand System 可涵蓋 Brand Intent、Audience / Positioning、Purpose / Mission
 
 Plan36 publication diagnostics preserve this topic's existing authority boundaries.
 
+Creative 寫入在 Git 工作區仍維持既有的 Project Intelligence 防護；Scenario 269 只調整一般回合的 refresh 與索引提示，不放寬創作輸出。
+
 ## 需求釐清與 Planning
 
 Scenario 266 binds injection review to added candidate lines while Secret/PII scanning still covers the full candidate diff.
@@ -213,7 +217,7 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
-Claude Code 的 managed publication Hook 在八秒內完成檢查；逾時會以安全 phase 與耗時回報 fail-closed 拒絕，不會自動重試。受保護的 push 前先執行 `aips publish prepare`，讓 Hook 使用五分鐘內、綁定精確候選的私有掃描證據。
+Claude Code 的 managed publication Hook 在八秒內完成檢查；逾時會以安全 phase 與耗時回報 fail-closed 拒絕，不會自動重試。受保護的 push 前先執行 `aips publish prepare`，讓 Hook 使用 30 分鐘內、綁定精確候選的私有掃描證據；Prepare 會為它規劃的 push 或 PR 建立各自綁定的證據。Claude Code 的標準發布寫法見 `harness/adapters/claude-code/CLAUDE.md`。
 
 FLUX 3 Klein 的 `TextGenerate` runtime schema 檢查由既有 Harness executor 執行，並在唯一一次 ComfyUI `/prompt` 請求前驗證最終工作流；預檢不會啟動生成。
 
@@ -295,9 +299,13 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 
 詳細請看 [Global Harness 與 MCP](HARNESS.md)。
 
+Turn Context 只列出這一回合真正需要的準備步驟：READY+STALE 的 Intelligence 在任務相關主題未受影響時只是提示，不要求 refresh；唯讀或未選到主題的回合不會要求建立 Retrieval 索引。修改既有專案時仍須處理 Change Impact。
+
 ## Roles、Skills 與重用
 
 The JSON error result is a CLI contract only; it does not add a Role or Skill permission and cannot authorize a Git operation.
+
+Publication denial recipes are CLI guidance only; they add no Role or Skill permission and cannot authorize a Git operation.
 
 Publication guard 重用既有的 command authority 與 Secret Scan；scan evidence 只是短效候選證據，不會新增 Role、Skill 或 Git 操作權限。
 
@@ -366,6 +374,10 @@ Reuse existing Skill / Template
 Plan36 publication diagnostics preserve this topic's existing authority boundaries.
 
 Release history 更新（純依賴升級文件豁免，Scenario 221）已審查本區段：Skill 整合、Explorer 與重用行為不變。
+
+`aips intelligence gc` 是新的維護指令，與 Skills CLI 分開：預設為 dry run，列出專案路徑已不存在的外部 Intelligence store；確認後加上 `--yes` 才會刪除，且不會刪除路徑仍存在或無法驗證的 store。
+
+新 worktree 沒有外部 Intelligence store 時，`aips intelligence bootstrap` 會先嘗試從同一 repository 的 READY store 複製一份（copy-on-write，來源只讀）；來源不安全或複製失敗時退回正常初始化，並在 observations 中標示 `intelligence_seed_fallback`。
 
 ## Deterministic Automation
 
@@ -625,6 +637,8 @@ Plan36 publication diagnostics preserve this topic's existing authority boundari
 
 Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
+ComfyUI 工作恢復的 lifecycle fixture 只驗證 queue 讀取、確切 ID 刪除與不中斷非 AIPS 工作，屬於恢復安全證據，不代表 Agent 任務成果或品質。
+
 ## Logging、Observability 與 Operations
 
 創作可靠性 Core candidate 保留完整 Gate、媒材拒絕及取消授權回歸。損壞 PNG fixture 必須失敗；合成測試不能替代真實模型與人工品質驗收。
@@ -767,7 +781,7 @@ Personal Mode 的逐次合併確認和 High-Assurance Mode 的外部 signed gran
 
 TTF、OTF、WOFF 與 WOFF2 字型也可通過有界 metadata 掃描；AIPS 會核對檔案簽章、格式、副檔名及解壓大小，並掃描字型名稱與廠商欄位。缺少解析套件、格式偽裝、損毀、超出上限或 metadata 命中 Secret／PII／Injection 規則時，commit 與發布都會阻擋。字型輸入上限為 8 MiB、宣告解壓上限為 32 MiB。
 
-發布前使用 `aips publish prepare --worktree <candidate-root> --title <title> --body-file <file>`；原生工具必須使用輸出的 `cwd` 與精確 `argv`。成功完成完整候選／歷史 Secret Scan 後，Prepare 會在 private user cache 寫入五分鐘有效的掃描 evidence，精確綁定 repo/worktree、base/head、operation、remote、full target ref、remote OID、diff、scanner 與 policy。Hook 每次仍重驗 Git／遠端／目標；缺少、過期、毀損或不相符 evidence 會拒絕並要求重新 Prepare。此 evidence 不授權推送，完整候選／歷史掃描仍由 Prepare 和 final Integration Gate 執行。`--expected-fingerprint` 可拒絕舊觀察，`--host-denied` 只回報 Host 拒絕，`--auto-merge` 只規劃 GitHub `--auto`，要求非空且全部通過的 required checks，並保留原生 Human 授權。每次續行重新查詢遠端分支與 PR；PLANNED 不是授權，也不是完整 Integration Gate PASS。個人模式接受帶 `-u`／`--set-upstream` 的 push，但仍要求精確 candidate SHA、唯一 origin 與完整同名工程 branch ref。
+發布前使用 `aips publish prepare --worktree <candidate-root> --title <title> --body-file <file>`；原生工具必須使用輸出的 `cwd` 與精確 `argv`。成功完成完整候選／歷史 Secret Scan 後，Prepare 會在 private user cache 寫入 30 分鐘有效的掃描 evidence，精確綁定 repo/worktree、base/head、operation、remote、full target ref、remote OID、diff、scanner 與 policy。Hook 每次仍重驗 Git／遠端／目標；缺少、過期、毀損或不相符 evidence 會拒絕並要求重新 Prepare。此 evidence 不授權推送，完整候選／歷史掃描仍由 Prepare 和 final Integration Gate 執行。`--expected-fingerprint` 可拒絕舊觀察，`--host-denied` 只回報 Host 拒絕，`--auto-merge` 只規劃 GitHub `--auto`，要求非空且全部通過的 required checks，並保留原生 Human 授權。每次續行重新查詢遠端分支與 PR；PLANNED 不是授權，也不是完整 Integration Gate PASS。個人模式接受帶 `-u`／`--set-upstream` 的 push，但仍要求精確 candidate SHA、唯一 origin 與完整同名工程 branch ref。
 
 Prepare 與 `aips publish diagnose` 會並列候選驗證、授權與執行狀態。`PLANNED` 代表只完成規劃；`AWAITING_AUTHORITY` 代表需要 Human grant；Hook 的 `AUTHORIZED` 只代表 AIPS Hook 放行，Host 仍可能拒絕且指令尚未執行；`EXECUTED` 只能由實際執行結果確認。`next_step: PUSH`、掃描通過或觀測指紋都不會授予權限。診斷包含安全的 worktree ID、候選 SHA、完整 target ref、publication mode 與 AIPS 版本／revision，僅供核對環境，不作為授權憑證。未知錯誤會回報 `INTERNAL_DIAGNOSTIC_GAP`；已知分支目標不一致會回報 `PUSH_TARGET_BRANCH_MISMATCH`，並提供繁中排除步驟。
 
@@ -882,6 +896,8 @@ The Claude/Gemini publication guard denies only command forms that could commit 
 
 發布 preflight 的 `git_identity` 只在候選 commit 的 author 欄位接受 GitHub App 機器人 noreply 格式（`<數字 ID>+<slug>[bot]`，`identity.allowed_bot_author_patterns`）；committer 與本機 `user.email` 仍只接受一般 noreply。`commit_messages` PII 掃描前，`identity.trailer_identities` 的精確 trailer 身分（目前只有 Dependabot 的 `Signed-off-by: dependabot[bot]` 與 GitHub support 位址）只在同一機器人撰寫之 commit 的最後 trailer 區塊以 `git-identity-metadata` 取代；`pii.email.v2` 不變，其他位址仍會擋下，政策格式錯誤時 fail closed，機器人身分不授予任何權限。
 
+Profile 開關預設為嚴格（`~/.config/aips/profile.yaml` 不存在時全部使用預設值）；只能由人在互動式終端機執行 `aips profile show` 查看、`aips profile set <key> <true|false>` 切換並輸入確認片語，代理無法寫入該檔或執行 `aips profile set`。目前可切換的開關為 `claude_coauthor_trailer`（發布閘門 PII 掃描放行最後 trailer 區塊中確切的 Claude 共同作者行，其他電子郵件仍攔截）與 `post_merge_refresh`（READY 但 STALE 且任務相關主題受影響時，每個 store 每個 HEAD 最多背景執行一次 `aips intelligence refresh`），兩者預設皆為關閉，啟用後會列在 Turn Context 的 `aips_profile_non_default=`。
+
 發布守門測試的合成掃描 fixture（`tests/test_publication_authority.py::scanner_fixture_assignment`）每次執行都把 16 個十六進位數字各放兩次後隨機排列，Shannon 熵固定為 4.0、高於 `generic-secret-assignment` 的 3.25 門檻，因此偵測結果不再隨機；原本直接使用 uuid4 hex 約有 0.7% 機率低於門檻而造成偶發失敗。掃描器規則與門檻不變。
 
 ## Evolution Radar
@@ -925,6 +941,8 @@ Documentation Placement Contract 會檢查 heading hierarchy、version/scenario-
 
 A structured publication error is not evidence of a successful content-safety or Secret Scan; incomplete scans continue to block publication.
 
+Quoted-heredoc PR text is still scanned by content safety; a secret or PII finding in it blocks the command.
+
 Publication scan evidence 只代表完整 Secret Scan 曾對精確候選通過，不改變內容安全政策；Prepare 和最終 Integration Gate 仍會執行完整候選與歷史掃描。
 
 The generic secret-assignment check ignores only the documented generated-password and parameterized SQL expression shapes. JSON evidence is scanned up to 8,000,000 bytes, other text up to 2,000,000 bytes, and larger inputs block publication. The only WebM exceptions are the three exact repository-relative Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; near-matches and all other WebM files retain strict scanning. These exact strings apply in any repository using the shared policy.
@@ -960,3 +978,5 @@ The commit guard accepts quoted-delimiter heredoc messages, literal `git add` co
 純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
 
 Dependabot commit 的機器人 noreply author 與最後一行精確的 `Signed-off-by` trailer 屬於 Git 身分 metadata，由 `config/git-publication.yaml` 決定，不是 PII 例外；`pii.email.v2` 與其他位址仍會擋下，機器人身分不授予權限。
+
+Scenario 269 只更新 `aips intelligence gc` 的 CLI help golden vectors；內容安全偵測、sink policy 與 commit 掃描不變。

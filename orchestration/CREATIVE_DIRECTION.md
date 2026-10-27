@@ -55,9 +55,13 @@ Material visual artifacts use `visual-quality-review`. Review against the approv
 
 ## Local character artwork
 
+Creative execution is unaffected by the Claude Code publication recipe; committing generated assets still uses the same commit content-safety scan, and Prepare scan evidence (30 minutes, PR-bound) never authorizes creative output.
+
 Publication Hook scan evidence is limited to Git candidate/history Secret Scanning. It does not cache Creative review, authorize asset import, or change any image-generation or artwork provenance decision.
 
 ### Local ComfyUI model profiles
+
+User-local profiles are drafted with `aips creative profile draft` from installed weight names and approved only in an interactive terminal with `aips creative profile approve`; drafting makes no network request and downloads nothing (Scenario 271).
 
 For the shared audited FLUX 3 Klein topology, Base and Distilled profiles supply bounded sampler settings (50 steps / CFG 3.5 and 16 steps / CFG 1). Preflight validates `TextGenerate` input types, numeric ranges, combo choices and the live `COMFY_DYNAMICCOMBO_V3` format from `/object_info/TextGenerate`. Preserve the runtime-provided Dynamic Combo API object shape; validate the final serialized workflow and its fixed links before the single `/prompt` POST. Dynamic edits may bind `image_1` through `image_8` in order; every local file must pass the count/size bounds and staged-byte hash check. Provider failures may expose only allowlisted node ID/type, exception class and narrow safe argument summaries. Synthetic lifecycle evidence does not establish MPS inference.
 
@@ -95,7 +99,7 @@ Creative grants cannot authorize Git publication or PR merges; per-call Claude/G
 
 Creative task grants authorize only their creative boundary; they cannot issue or satisfy an external signed Git publication grant. Artifact publication remains separately bound to its exact validated commit and target.
 
-After ComfyUI accepts a job, timeout or transient polling failure requests deletion of only that queued job and blocks automatic resubmission. Never interrupt all running jobs to recover one request; provider completion remains unverified until inspected.
+After ComfyUI accepts a job, AIPS records its `prompt_id` in a private local ledger (`$XDG_STATE_HOME/aips/creative-execution/comfy-jobs.json`, 0600 in a 0700 directory; only prompt_id, submission time, profile id, timeout and an endpoint-bound digest). On timeout or transient polling failure AIPS reads loopback `GET /queue`: a queued owned job is deleted by exact id, and a running job is interrupted with a targeted `POST /interrupt {"prompt_id": ...}` only when that id is AIPS-owned. Jobs not owned by AIPS are never interrupted or deleted, an unreadable queue never permits an interrupt, the queue is re-checked and the final `job_state` is reported, and automatic resubmission stays blocked. `aips creative recover` applies the same rule to ledger-owned jobs whose own timeout has elapsed, including after an AIPS restart. Provider completion remains unverified until inspected.
 
 Use the existing Character/Style profiles and versioned local execution. Optional quality trials use the prompt-free dataset `aips-creative-quality-v1` (three profile archetypes by six cases) and bind local raster digests. Benchmark v2 reports profile-case coverage and model, check and compiler failures separately. Record Human character identity, outfit, composition, reference-edit and recovery assessments independently; record user acceptance separately and never infer acceptance from a PNG or fixture. Version-1 evidence remains readable with dataset coverage UNVERIFIED.
 
@@ -140,3 +144,5 @@ For OpenCode V2, mutation authority comes from the native prompt-admission hook 
 Creative generation and Git publication remain separate authority boundaries. Publication Doctor is a read-only repository readiness observation; it does not authorize publishing generated assets or alter any Creative Bundle.
 
 Plan36 changes only Git publication diagnostics. It does not change creative task authorization, asset import, generation, or review behavior.
+
+Scenario 269 task-scoped Intelligence guidance does not relax the creative Git workspace write guard.

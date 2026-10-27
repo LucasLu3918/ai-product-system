@@ -6,6 +6,7 @@ does not execute model weights or claim hardware inference compatibility.
 from __future__ import annotations
 
 import json
+import os
 import sys
 import tempfile
 import threading
@@ -143,6 +144,8 @@ def expect_blocked(callback, reason: str):
 def main() -> int:
     with tempfile.TemporaryDirectory(prefix="aips-comfy-dynamic-") as temporary:
         root = Path(temporary).resolve()
+        # Keep the owned-job ledger and trace out of the real user state directory.
+        os.environ["XDG_STATE_HOME"] = str(root / "state")
         instance, thread = server()
         base = f"http://127.0.0.1:{instance.server_port}"
         try:

@@ -26,6 +26,8 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 Publication CLI 的 JSON 錯誤契約與安全復原方式記錄於 [User Guide](USER_GUIDE.md)，並由 Scenario 261 驗證。
 
+Claude Code 的標準發布寫法記錄於 `harness/adapters/claude-code/CLAUDE.md`，並由 Scenario 261 驗證。
+
 Base/Distilled sampler bounds and dynamic edit reference limits are documented in the User Guide and Scenario 236; neither change adds a Skill Explorer entry or changes upstream Skill trust.
 
 Skill catalog and Explorer guidance remain under the Skills documentation map. Publication Hook, scanner and Doctor implementation use the separate publication-preflight mapping and do not create new Skill capabilities.
@@ -34,7 +36,7 @@ Creative workflow 的新增 FLUX 3 Klein schema／payload 相容性證據位於 
 
 Model-agnostic ComfyUI workflow usage belongs in the User Guide, implementation and security limits in Technology Guide and Security Assurance, with Scenario 268 as the synthetic evidence anchor. Fixed FLUX 3 Klein `TextGenerate` runtime-schema and final-payload checks are documented in those same topics and Scenario 236; they prove interface compatibility, not MPS inference.
 
-ComfyUI model profile registry 的 canonical 行為來源為 `scripts/creative_execution.py` 與 `templates/creative/COMFYUI_MODEL_PROFILES.yaml`。
+ComfyUI model profile registry 的 canonical 行為來源為 `scripts/creative_execution.py` 與 `templates/creative/COMFYUI_MODEL_PROFILES.yaml`。 拓撲範本資料的 canonical 來源為 `templates/creative/COMFYUI_TOPOLOGY_TEMPLATES.yaml` 與 `scripts/comfyui_topology.py`；使用者本機 profile 的草擬與核准由 `scripts/creative_profiles.py` 負責。
 
 Scenario 267 changes no Skill discovery, installation or upstream trust behavior; it is a separate runtime guard contract.
 
@@ -145,7 +147,11 @@ Release history 更新（純依賴升級文件豁免，Scenario 221）已審查�
 
 Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
+`docs/human/PROJECT_INTELLIGENCE.md` 說明 READY+STALE 何時只是提示、何時需要 targeted refresh，以及 `aips intelligence gc` 的用法。
+
 ## Agent / machine canonical 文件
+
+Claude Code 標準發布寫法的代理端正本是 `harness/adapters/claude-code/CLAUDE.md`。
 
 `publication_scan_evidence.py` is mapped by `config/documentation-placement.yaml` to the publication-preflight Human topic; Scenario 261 remains the verification contract for the Hook and Doctor lifecycle.
 
@@ -292,6 +298,8 @@ Retrieval SQLite storage helpers are implemented in `scripts/retrieval_storage.p
 Publication diagnostics use `scripts/publication_authority.py`, `scripts/publication_planning.py`, and `scripts/repository_governance_snapshot.py` as machine sources; current behavior is explained in Git Publication, Security Assurance, Architecture Overview, and the Claude Code adapter.
 
 Runtime Content Safety 的字型格式、上限、失敗原因與 Authority 邊界以 `orchestration/CONTENT_SAFETY_BOUNDARY.md` 為 canonical；Hook/CLI/候選掃描 evidence 記錄於 Scenario 263。
+
+Task-scoped Turn Context 準備步驟（Scenario 269）的 canonical 規則位於 `harness/HARNESS_PROTOCOL.md` 與 `orchestration/PROJECT_INTELLIGENCE.md`。
 
 ## Shared canonical 文件
 

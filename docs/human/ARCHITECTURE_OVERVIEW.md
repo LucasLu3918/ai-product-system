@@ -68,13 +68,17 @@ Skill 跨 Host 載入可透過 MCP Resource `aips://catalog/skills` 查目錄並
 
 OpenCode V2 的 managed plugin 在 primary model dispatch 前注入精簡 Turn Context，並在 permission evaluation 階段檢查支援的直接檔案操作。L1 僅允許非 Git workspace 中受限路徑的新創意資產；L2 需要 Project Intelligence READY、無待解權威衝突與專案內目標。READY Intelligence 的 STALE freshness 僅顯示警示，不單獨阻擋一般本地 L2 原始碼寫入；UNKNOWN 或非 READY 仍 fail closed。L3 外部效果沿用既有 Human approval gate。Shell 僅保留有限唯讀命令，並額外提供固定參數的 AIPS 診斷。`creative_execution` 是唯一有界自訂工具：它綁定當前 EPHEMERAL Session，可建立不覆寫的角色／風格 Profile 與未設定引擎的 Creative Bundle，也可對既有 Bundle 執行唯讀預檢及明確要求的本機生成。其他 MCP/custom tools 和繞過 OpenCode 的寫入仍不在 guard 範圍。Plugin 安裝與 hook discovery 不足以證明執行防護；完成 runtime permission acceptance 前，治理保持 ADVISORY。
 
+Runtime hook 另有 best-effort 的 protected-path guard：代理不得寫入已安裝的 AIPS system checkout、使用者 profile 設定，也不得執行 `aips profile set`，後者只能由人在互動式終端機操作。personal publication mode 的 `aips publish ship` 把精確候選掃描、push 與 PR 建立收斂為單一受保護操作，每個子步驟執行前都重新驗證同一候選；它不授予發布權限。
+
 ## Project Intelligence 與 Retrieval
 
 Retrieval relations are disposable lexical candidates. Relation-extraction behavior is versioned with the index schema so a schema change triggers full re-extraction, including unchanged files; raw source may be parsed in memory for syntax-sensitive identifiers while persisted index content remains redacted.
 
 ATTACHED 仍須使用者明確執行 `aips attach`。在 Git worktree 中，AIPS 以 repository-local `.git/info/exclude` 排除 `.ai/` 與 `.ai.detached-*`，不修改共用的專案 `.gitignore`；既有追蹤狀態不會被改寫。
 
-Turn Context preserves freshness and targeted refresh guidance. READY+STALE freshness is advisory for a confined local L2 source write; UNKNOWN and non-READY states remain blocking.
+Turn Context preserves freshness and emits task-scoped targeted refresh guidance only when task-relevant topics are affected. READY+STALE freshness is advisory for a confined local L2 source write; UNKNOWN and non-READY states remain blocking.
+
+Turn Context also reports one `aips_profile=` line; profile switches are changed only by a person through `aips profile set` and do not alter freshness or Change Impact decisions.
 
 Scenario 266 provides local deterministic safety evidence; it does not substitute for independent review or grant approval.
 
@@ -151,9 +155,11 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 ## Creative Workflow
 
+Creative execution is unaffected by the Claude Code publication recipe; committing generated assets still uses the same commit content-safety scan, and Prepare scan evidence (30 minutes, PR-bound) never authorizes creative output.
+
 Git publication scan evidence is independent of Creative review, asset import and image-generation provenance; it cannot authorize any Creative action.
 
-Creative profile registry 支援同一審核拓樸家族中的資料型模型擴充，並依家族規則驗證 sampler 欄位與數值；FLUX 3 Klein Base 和 Distilled 共用已審核 workflow topology，分別使用 50 steps / CFG 3.5 與 16 steps / CFG 1。新節點與新家族仍須程式審核。
+Creative profile registry 支援同一審核拓樸家族中的資料型模型擴充，並依家族規則驗證 sampler 欄位與數值；FLUX 3 Klein Base 和 Distilled 共用已審核 workflow topology，分別使用 50 steps / CFG 3.5 與 16 steps / CFG 1。新節點與新家族仍須程式審核。 已審核拓撲範本（`templates/creative/COMFYUI_TOPOLOGY_TEMPLATES.yaml`）以資料描述 Z-Image 與 FLUX 3 Klein 節點圖；使用者本機 profile 只能引用其中一種範本，不能新增節點、輸入或端點（Scenario 271）。
 
 FLUX 3 的 `TextGenerate` preflight 會依本機 `/object_info` 驗證輸入型別、範圍及 Dynamic Combo 選項 schema，並確認送往 API 的值是已核准選項鍵；ComfyUI 執行層會重建節點所需的巢狀值。送出前再驗證最終序列化工作流保留核准的節點與連線。這是介面相容性檢查，不代表模型已完成推論。
 
@@ -225,6 +231,8 @@ OpenCode V2 prompt admission issues a fresh transient grant for each user respon
 
 
 Plan36 publication diagnostics preserve this topic's existing behavior and authority boundaries.
+
+Creative writes in Git workspaces keep their existing guard; task-scoped Intelligence refresh and Retrieval index guidance (Scenario 269) does not relax them.
 
 ## Planning 與 Product Delivery
 
@@ -416,6 +424,8 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 ## Security 與 Governance
 
 When `aips publish prepare` or `diagnose` fails locally in JSON mode, the CLI returns a redacted, stable diagnostic; the response grants no publication authority and text-mode behavior remains compatible.
+
+Claude Code publication denials carry a static English and Traditional Chinese recipe; Prepare scan evidence lasts 30 minutes and is bound separately to the planned push or PR creation.
 
 Distilled sampler declarations and one-to-eight ordered reference bindings do not change Human approval, Resource Authorization or the loopback endpoint allowlist; every staged input is verified locally before workflow submission.
 
@@ -708,6 +718,8 @@ Documentation Placement 對 behavior-bearing source 採 fail-closed mapping：�
 
 This JSON fallback does not imply a successful scan or relax content-safety policy; publication remains fail-closed when candidate or history scanning cannot be completed.
 
+Claude Code quoted-heredoc (`<<'EOF'`) or single-quoted publication text is literal data that content safety still scans; real Shell expansion stays denied, and each denial names the supported recipe (Scenario 261).
+
 Publication scan evidence is a separate, short-lived cache of a successful full candidate/history scan. It cannot replace the scanner, relax content-safety policy, or authorize a protected operation.
 
 The publication scanner examines the exact candidate tree and commit history. Its generic assignment detector recognizes only the documented generated-password and parameterized SQL forms as non-literal values; provider-token, private-key and high-entropy literal checks remain active. JSON scanning is bounded at 8,000,000 bytes and larger inputs fail closed. The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; there is no extension-wide exemption, and the 2,000,000-byte text limit remains unchanged. The same exact relative paths are excluded in any repository using the shared policy.
@@ -735,3 +747,5 @@ The commit guard accepts quoted-delimiter heredoc messages, literal `git add` co
 Email rule `pii.email.v2` treats the `git` service user of an scp-like or `ssh://` Git remote as a host address, not an email; detection and redaction share that predicate and every other address still blocks.
 
 純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
+
+Scenario 269 refreshes only the CLI help golden vectors for `aips intelligence gc`; content-safety detection, sink policy and commit scanning are unchanged.

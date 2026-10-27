@@ -39,6 +39,11 @@ Usage:
   aips creative compare --project <path> --manifest <before-json> --after <after-json>
   aips creative quality-loop --project <path> --bundle <yaml> --model <installed-local-vision-model> --max-repairs <0..2> --time-budget-seconds <1..3600>
   aips creative trace [--limit 1..100]
+  aips creative recover [--base-url http://127.0.0.1:8188] (interrupts/deletes only timed-out AIPS-owned ComfyUI jobs; never resubmits)
+  aips creative profile draft --model-id <id> --base-profile <system-profile-id> [--profile-id local-<slug>] [--models-dir <dir>] [--component KEY=FILE] (UNAPPROVED draft from installed weights; no download)
+  aips creative profile approve <local-profile-id> [--models-dir <dir>] (interactive terminal only; typed confirmation phrase)
+  aips profile show [--format text|json] (active switches and their sources; strict defaults when no profile.yaml)
+  aips profile set <key> <true|false> (interactive terminal only; typed confirmation phrase; agents cannot change profile switches)
 
   aips mcp serve
   aips mcp inspect
@@ -70,6 +75,7 @@ Usage:
   aips intelligence index [--project <path>] [--force]
   aips intelligence retrieve --prompt <text> [--project <path>] [--token-budget <n>] [--limit <n>] [--no-structural]
   aips intelligence evaluate --suite <yaml> [--project <path>] [--output <yaml|json>]
+  aips intelligence gc [--yes]
   aips intelligence reconcile-overrides [--project <path>]
   aips intelligence promotion-plan --topic <name> [--project <path>]
   aips intelligence promotion-apply --topic <name> --target <path> --approval-id <id> [--project <path>]

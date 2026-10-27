@@ -81,7 +81,9 @@ aips project check /path/to/project
 aips system preflight /path/to/project
 ~~~
 
-`aips project check` 是唯讀狀態檢查；`aips system preflight` 會更新並驗證 AIPS system checkout。既有 `aips preflight` 命令仍作為相容 alias 支援。
+`aips project check` 是唯讀狀態檢查；`aips system preflight` 會更新並驗證 AIPS system checkout。既有 `aips preflight` 命令仍作為相容 alias 支援。若 system checkout 有本機變更，preflight 會略過自動更新並顯示清理步驟，不會丟棄變更。
+
+在 personal publication mode，`aips publish ship` 以單一受保護操作完成一次精確候選掃描、push 與 PR 建立；它不授予發布權限，Hook 與 Required Checks 仍照常適用。
 
 ## Uninstall
 

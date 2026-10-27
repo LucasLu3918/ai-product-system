@@ -1,4 +1,34 @@
 version: 1
+# Topology families declare the bounded sampler/upsampler values a profile may
+# select. The executor still owns node classes, structure, connections and
+# fixed fields for each family, and it caps every range declared here; this
+# data cannot add a topology family, node, operation, input image or endpoint.
+topology_families:
+  z_image_split_loader:
+    sampler:
+      steps: {type: integer, min: 1, max: 100, nullable: true} # null uses the Bundle steps.
+      cfg: {type: number, min: 0, max: 10}
+      sampler_name: {enum: [res_multistep, euler]}
+      scheduler: {enum: [simple]}
+      denoise: {type: number, min: 1, max: 1}
+  flux3_klein_t2i:
+    sampler:
+      steps: {type: integer, min: 1, max: 100}
+      cfg: {type: number, min: 0, max: 30}
+      sampler_name: {enum: [euler]}
+      scheduler: {enum: [simple]}
+      denoise: {type: number, min: 0, max: 1}
+    upsampler:
+      max_length: {type: integer, min: 16, max: 4096, default: 1024}
+
+# Optional per-profile runtime_budget (all fields optional):
+#   timeout_seconds: 1-3600; used only when the Bundle omits timeout_seconds (default 900).
+#   estimated_overhead_seconds: 0-3600 fixed load/decode seconds per run.
+#   estimated_seconds_per_step: 0-600 sampler seconds per step at reference_megapixels.
+#   reference_megapixels: 0.01-16 (default 1.0).
+#   estimated_upsampler_seconds_per_token: 0-10 (prompt-upsampler topologies only).
+#   upsampler_token_cap: 1-4096 (prompt-upsampler topologies only); upsampler.max_length must not exceed it.
+# Preflight blocks before submission when the static estimate exceeds the effective timeout.
 profiles:
   z-image-turbo:
     model_id: z-image-turbo
@@ -35,6 +65,8 @@ profiles:
       sampler_name: euler
       scheduler: simple
       denoise: 1
+    upsampler:
+      max_length: 1024
 
   flux3-image-klein-distilled-int8:
     model_id: flux3-image-klein-distilled
@@ -52,3 +84,5 @@ profiles:
       sampler_name: euler
       scheduler: simple
       denoise: 1
+    upsampler:
+      max_length: 1024

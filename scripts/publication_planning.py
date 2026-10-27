@@ -188,6 +188,7 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
         findings, blockers, _, _ = scan_candidate(root, base, head, policy)
         if findings or blockers:
             raise authority.PublicationError('candidate/history scan blocked', 'CONTENT_SCAN_BLOCKED')
+        from publication_scan_evidence import TTL_SECONDS as scan_evidence_ttl
         from publication_scan_evidence import store as store_scan_evidence
         evidence_digest = store_scan_evidence(root, scope, policy_digest=policy_hash)
         observation = {
@@ -201,7 +202,7 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
             'title_digest': authority.digest(title), 'body_digest': authority.digest(body_bytes.hex()),
             'body_file': str(body_file),
             'scan_evidence': {'status': 'PASS', 'binding_digest': evidence_digest,
-                              'expires_in_seconds': 300},
+                              'expires_in_seconds': scan_evidence_ttl},
         }
         fingerprint = authority.digest(observation)
         result.update(observation=observation, fingerprint=fingerprint, scan='PASS')
@@ -231,7 +232,9 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
                         '--' + method, '--match-head-commit', head]
                 if auto_merge:
                     argv.append('--auto')
-                authority.action(root, 'gh_pr_merge', argv, base, personal=mode == 'personal')
+                merge_scope = authority.action(root, 'gh_pr_merge', argv, base, personal=mode == 'personal')
+                # The Hook requires evidence bound to the merge operation; the PR head is pinned by --match-head-commit.
+                store_scan_evidence(root, merge_scope, policy_digest=policy_hash)
                 result['invocations'] = [_invocation(root, 'gh_pr_merge', argv)]
                 result['phase'] = 'merge'
                 result['next_step'] = 'NATIVE_MERGE_CONFIRMATION' if runtime in {'claude-code', 'gemini-cli'} else 'TASK_AUTHORIZED_MERGE'
@@ -240,7 +243,10 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
                 raise authority.PublicationError('closed candidate PR requires review', 'PR_STATE_AMBIGUOUS')
             argv = ['gh', 'pr', 'create', '--repo', repo, '--head', branch, '--base', base_branch,
                     '--title', title, '--body-file', str(body_file)]
-            authority.action(root, 'gh_pr_create', argv, base, personal=mode == 'personal')
+            pr_scope = authority.action(root, 'gh_pr_create', argv, base, personal=mode == 'personal')
+            # The Hook binds evidence to the operation and target, so the planned PR needs its own
+            # record from this same exact-candidate scan; without it the planned command is denied.
+            store_scan_evidence(root, pr_scope, policy_digest=policy_hash)
             result.update(status='PLANNED', phase='pr_create', next_step='CREATE_PR')
             result['invocations'] = [_invocation(root, 'gh_pr_create', argv)]
         if mode == 'high_assurance' and result['status'] != 'COMPLETE':
@@ -280,7 +286,8 @@ def diagnose(worktree: Path, command: str) -> dict[str, Any]:
         root = worktree.expanduser().resolve(strict=True)
         if Path(authority.git(root, 'rev-parse', '--show-toplevel')).resolve() != root:
             raise authority.PublicationError('worktree root mismatch', 'CWD_MISMATCH')
-        parsed = shell_commands(command)
+        # Match the Hook: quoted literal `$`/backticks are data; real expansions keep a NUL marker.
+        parsed = shell_commands(command, mark_dynamic=True)
         if len(parsed) != 1:
             raise authority.PublicationError('standalone command required', 'COMMAND_FORM_UNSUPPORTED',
                                              detail_code=command_form_detail(command))
@@ -296,10 +303,10 @@ def diagnose(worktree: Path, command: str) -> dict[str, Any]:
                 authority.configured_authority()
             except (authority.PublicationError, OSError, ValueError, TypeError, yaml.YAMLError) as exc:
                 raise authority.PublicationError('invalid present trust root', 'AUTHORITY_CONFIG_INVALID') from exc
-        observed = authority.validate_personal_action(root, operation, argv)
+        observed = authority.validate_personal_action(root, operation, argv, literal_marked=True)
         if mode == 'high_assurance':
             # Diagnostics must honor the selected mode's stricter exact lease syntax.
-            authority.action(root, operation, argv, observed['base_commit'], personal=False)
+            authority.action(root, operation, argv, observed['base_commit'], personal=False, literal_marked=True)
         result = {'version': 2, 'status': 'VALIDATED' if mode == 'personal' else 'AWAITING_AUTHORITY',
                   'authorized': False, 'read_only': True, 'executed': False,
                   'grant_consumed': False, 'operation': operation, 'mode': mode,

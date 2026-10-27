@@ -622,7 +622,13 @@ EPHEMERAL remains the default. Explicit attach/detach in a Git worktree add root
 
 Content-safety findings are advisory retrieval inputs and do not change Project Intelligence authority or graph completeness.
 
-When readiness is READY and freshness is STALE, preserve freshness and targeted refresh guidance but treat staleness as advisory for confined local L2 source writes. Non-READY readiness, UNKNOWN freshness, unavailable canonical protocols, unresolved instruction authority, path escape, creative writes and external/high-risk actions retain their existing stop conditions.
+When readiness is READY and freshness is STALE, preserve freshness but treat staleness as advisory for confined local L2 source writes. `requirements.refresh_required` is true and `targeted_refresh` lists topics only when task-relevant topics are affected or irrelevance cannot be proven (`refresh_reason` explains which); otherwise the Turn Context states that no refresh is needed for the task. Non-READY readiness, UNKNOWN freshness, unavailable canonical protocols, unresolved instruction authority, path escape, creative writes and external/high-risk actions retain their existing stop conditions.
+
+`requirements.retrieval_index_required` is true only when `retrieval_needed` is true (a non-empty prompt that is a likely mutation or selects Intelligence topics) and the index is missing; other turns report `retrieval_index_status` without an instruction to build it.
+
+`aips intelligence gc` lists external stores under the user config `projects/` directory whose recorded project root no longer exists. It is a dry run by default; `--yes` removes only those `intelligence` stores, re-checks the path before removal, skips symlinked or unverifiable entries, and preserves other workspace data such as runs.
+
+A worktree without an external store is seeded by `bootstrap` from the READY store of the same repository, copy-on-write: the source store is only read, and a `worktree_identity` change is an observation only when the seeding provenance proves it. A refused or failed seed falls back to normal initialization with an `intelligence_seed_fallback` observation.
 
 
 Security-boundary Change Impact may use a manually reviewed publication caller/consumer scope when the repository-wide Impact Graph is partial; unknown paths remain explicit.
@@ -658,6 +664,8 @@ Turn Context says Intelligence MISSING/PARTIAL
 For implementation planning, Project Intelligence also records implementation-relevant evidence without creating a parallel scanner: repository/runtime/framework identity; explicit project instructions; build/format/lint/test/generation commands; architecture and dependency direction; API contracts and their authority evidence; generated ownership; test conventions; cross-cutting error/auth/configuration patterns; and nearest local examples. Evidence is scoped (`local`, `module`, `repository`, or `explicit_project_rule`) and includes its source. A local sample is not automatically a repository-wide convention. Prefer project-defined commands over reconstructed commands.
 
 Architecture and DDD classifications require behavioral/dependency evidence, not directory or type names alone. Keep `not_detected`, `unresolved`, and `conflicting` distinct from confirmed absence. Unknown code ownership is protected. Record enough provenance for an Implementation Profile to show why each implementation rule was selected.
+
+Compact output and runtime hooks also expose one `aips_profile=` line that reports switch names and reason codes only; profile switches are person-only (`aips profile set`) and are not an Intelligence input.
 
 The CLI commands are deterministic building blocks used by the Agent/Harness and remain available for debugging.
 

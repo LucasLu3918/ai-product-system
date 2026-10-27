@@ -1,5 +1,5 @@
 update_system() {
-  local allow_major="${1:-false}"
+  local allow_major="${1:-false}" dirty_mode="${2:-refuse}"
   require_cmd git
   [ -d "$SYSTEM_DIR/.git" ] || die "System directory is not a Git repository: $SYSTEM_DIR"
 
@@ -21,6 +21,13 @@ update_system() {
   esac
 
   if [ -n "$(git_in_system status --porcelain)" ]; then
+    if [ "$dirty_mode" = "skip" ]; then
+      # Preflight degrades: keep the installed version and never discard the local changes.
+      warn "Installed AIPS system has local changes; skipping the automatic update and continuing with $(current_version) ($(current_commit))."
+      say "Clean up (human action; AIPS does not discard changes): inspect with: git -C \"$SYSTEM_DIR\" status --short"
+      say "Then commit, stash, or revert those changes in the installed system, and run: aips update"
+      return 0
+    fi
     die "System repo has local changes. Commit/stash/revert them before Update Preflight."
   fi
 
@@ -120,7 +127,7 @@ preflight() {
     shift
   done
 
-  update_system "$allow_major"
+  update_system "$allow_major" skip
   exec "$SYSTEM_DIR/bin/aips" _preflight-after-update "$project"
 }
 
@@ -167,7 +174,7 @@ doctor() {
   openapi_dependency_status
 
   if [ -n "$(git_in_system status --porcelain 2>/dev/null || true)" ]; then
-    warn "System repo has local changes; automatic preflight update will stop."
+    warn "System repo has local changes; automatic preflight update is skipped and preflight continues on the installed version."
   else
     say "system worktree: clean"
   fi

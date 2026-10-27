@@ -24,7 +24,10 @@ from pathlib import Path
 from typing import Any
 
 import comfyui_capabilities
+import comfyui_topology
 import comfyui_workflow
+import creative_errors
+import creative_profiles
 import creative_trace as _creative_trace
 import yaml
 from comfyui_workflow_policy import classify_node, validate_node_id
@@ -82,19 +85,30 @@ COMFY_ZIMAGE_NODES = {"UNETLoader", "CLIPLoader", "VAELoader", "CLIPTextEncode",
 COMFY_FLUX3_NODES = {"UNETLoader", "CLIPLoader", "VAELoader", "TextGenerate", "CLIPTextEncode", "ConditioningZeroOut", "EmptyFlux2LatentImage", "KSampler", "VAEDecode", "SaveImage"}
 COMFY_CORE_NODES = COMFY_CHECKPOINT_NODES | COMFY_ZIMAGE_NODES | COMFY_FLUX3_NODES
 COMFY_PROFILE_REGISTRY_PATH = ROOT / "templates/creative/COMFYUI_MODEL_PROFILES.yaml"
-COMFY_PROFILE_COMPONENT_KEYS = {
-    "z_image_split_loader": {"unet_name", "clip_name", "vae_name"},
-    "flux3_klein_t2i": {"unet_name", "clip_name", "prompt_upsampler_name", "vae_name"},
+COMFY_TOPOLOGY_TEMPLATES_PATH = ROOT / "templates/creative/COMFYUI_TOPOLOGY_TEMPLATES.yaml"
+# Executor-reviewed template ids. Template data (COMFYUI_TOPOLOGY_TEMPLATES.yaml) may only describe these.
+COMFY_TOPOLOGY_TEMPLATE_IDS = frozenset({"z_image_split_loader", "flux3_klein_t2i"})
+# Fields a user-local profile may carry; anything else (nodes, links, endpoints, inputs) is rejected.
+COMFY_LOCAL_PROFILE_KEYS = {"version", "profile_id", "status", "model_id", "topology", "operation", "components",
+                            "clip_type", "sampler", "upsampler", "runtime_budget"}
+# Executor-owned ceilings. Registry topology families may only narrow them.
+COMFY_SAMPLER_HARD_LIMITS: dict[str, tuple[str, float, float]] = {
+    "steps": ("integer", 1, 100), "cfg": ("number", 0, 30), "denoise": ("number", 0, 1),
+    "sampler_name": ("enum", 0, 0), "scheduler": ("enum", 0, 0),
 }
-COMFY_PROFILE_FAMILY_SETTINGS = {
-    "z_image_split_loader": {"clip_type": "lumina2", "sampler": {
-        "steps": None, "cfg": 1, "sampler_name": "res_multistep", "scheduler": "simple", "denoise": 1,
-    }},
-    "flux3_klein_t2i": {"clip_type": "flux3", "sampler": {
-        "steps": (1, 100), "cfg": (0, 30), "sampler_name": {"euler"},
-        "scheduler": {"simple"}, "denoise": (0, 1),
-    }},
+COMFY_UPSAMPLER_HARD_LIMITS: dict[str, tuple[str, float, float]] = {"max_length": ("integer", 1, 4096)}
+COMFY_ENUM_VALUE = re.compile(r"^[a-z0-9][a-z0-9_]{0,63}$")
+COMFY_DEFAULT_TIMEOUT_SECONDS = 900
+COMFY_RUNTIME_WARNING_RATIO = 0.8
+COMFY_RUNTIME_BUDGET_FIELDS: dict[str, tuple[str, float, float]] = {
+    "timeout_seconds": ("integer", 1, MAX_TIMEOUT_SECONDS),
+    "estimated_overhead_seconds": ("number", 0, MAX_TIMEOUT_SECONDS),
+    "estimated_seconds_per_step": ("number", 0, 600),
+    "reference_megapixels": ("number", 0.01, 16),
+    "estimated_upsampler_seconds_per_token": ("number", 0, 10),
+    "upsampler_token_cap": ("integer", 1, 4096),
 }
+COMFY_UPSAMPLER_BUDGET_FIELDS = {"estimated_upsampler_seconds_per_token", "upsampler_token_cap"}
 MFLUX_CAPABILITIES: dict[str, dict[str, dict[str, str | None]]] = {
     # Keep executable names and argument shapes fixed. Model IDs never become
     # command fragments, and unsupported model/operation pairs fail closed.
@@ -370,7 +384,10 @@ def validate_local_request(url: str, method: str, service: str) -> None:
         allowed = ((method == "GET" and (path in read_paths or dynamic_object_info) and not parsed.query)
                    or (method == "GET" and re.fullmatch(r"/history/[A-Za-z0-9_-]{1,128}", path) and not parsed.query)
                    or (method == "GET" and path == "/view" and _valid_comfy_view_query(parsed.query))
-                   or (method == "POST" and path in {"/prompt", "/queue"} and not parsed.query))
+                   # GET /queue reads running/pending ids for owned-job recovery; POST /interrupt is
+                   # only issued for an AIPS-owned prompt_id that the queue reports as running.
+                   or (method == "GET" and path == "/queue" and not parsed.query)
+                   or (method == "POST" and path in {"/prompt", "/queue", "/interrupt"} and not parsed.query))
     else:
         allowed = ((method == "GET" and path == "/api/tags" and not parsed.query)
                    or (method == "POST" and path == "/api/chat" and not parsed.query))
@@ -430,50 +447,206 @@ def local_request(url: str, *, data: bytes | None = None, headers: dict[str, str
                                      source=service) from exc
 
 
-def load_comfy_profile(profile_id: str) -> dict[str, Any]:
-    """Load one data-only model profile from the trusted AIPS registry."""
-    if not isinstance(profile_id, str) or not profile_id.strip() or len(profile_id) > 96:
-        raise Blocked("comfy_model_profile_invalid", "ComfyUI model profile id is invalid.")
+def _bounded_number(value: Any, kind: str, low: float, high: float) -> bool:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return False
+    if kind == "integer" and not isinstance(value, int):
+        return False
+    return low <= value <= high
+
+
+def _comfy_family_specs(raw: Any, limits: dict[str, tuple[str, float, float]]) -> dict[str, dict[str, Any]] | None:
+    """Validate one declared family block against the executor-owned ceilings."""
+    if not isinstance(raw, dict) or set(raw) != set(limits):
+        return None
+    specs: dict[str, dict[str, Any]] = {}
+    for key, spec in raw.items():
+        kind, low, high = limits[key]
+        if not isinstance(spec, dict):
+            return None
+        if kind == "enum":
+            values = spec.get("enum")
+            if (set(spec) != {"enum"} or not isinstance(values, list) or not values or len(values) > 16
+                    or any(not isinstance(item, str) or not COMFY_ENUM_VALUE.fullmatch(item) for item in values)):
+                return None
+        elif (not set(spec) <= {"type", "min", "max", "nullable", "default"} or spec.get("type") != kind
+              or not _bounded_number(spec.get("min"), kind, low, high)
+              or not _bounded_number(spec.get("max"), kind, low, high) or spec["min"] > spec["max"]
+              or not isinstance(spec.get("nullable", False), bool)
+              or ("default" in spec and not _bounded_number(spec["default"], kind, spec["min"], spec["max"]))):
+            return None
+        specs[key] = spec
+    return specs
+
+
+def _comfy_value_allowed(value: Any, spec: dict[str, Any]) -> bool:
+    if "enum" in spec:
+        return isinstance(value, str) and value in spec["enum"]
+    if value is None:
+        return spec.get("nullable", False) is True
+    return _bounded_number(value, spec["type"], spec["min"], spec["max"])
+
+
+def load_comfy_topology_templates() -> dict[str, dict[str, Any]]:
+    """Load and validate the audited topology template data; a bad template fails closed."""
     try:
-        registry = yaml.safe_load(COMFY_PROFILE_REGISTRY_PATH.read_text(encoding="utf-8"))
+        document = yaml.safe_load(COMFY_TOPOLOGY_TEMPLATES_PATH.read_text(encoding="utf-8"))
+    except (OSError, yaml.YAMLError) as exc:
+        raise Blocked(comfyui_topology.TEMPLATE_REASON, "The audited ComfyUI topology template data could not be read.") from exc
+    return comfyui_topology.normalize_templates(document, reviewed_ids=set(COMFY_TOPOLOGY_TEMPLATE_IDS), core_classes=COMFY_CORE_NODES)
+
+
+def load_comfy_topology_family(registry: Any, topology: Any) -> dict[str, Any] | None:
+    """Return a registry-declared value family only for an executor-reviewed topology template."""
+    if topology not in COMFY_TOPOLOGY_TEMPLATE_IDS:
+        return None
+    try:
+        template = load_comfy_topology_templates().get(topology)
+    except Blocked:
+        return None
+    families = registry.get("topology_families") if isinstance(registry, dict) else None
+    raw = families.get(topology) if isinstance(families, dict) else None
+    has_upsampler = bool(template and template["upsampler"])
+    if template is None or not isinstance(raw, dict) or set(raw) != ({"sampler", "upsampler"} if has_upsampler else {"sampler"}):
+        return None
+    sampler = _comfy_family_specs(raw["sampler"], COMFY_SAMPLER_HARD_LIMITS)
+    upsampler = _comfy_family_specs(raw["upsampler"], COMFY_UPSAMPLER_HARD_LIMITS) if has_upsampler else {}
+    if sampler is None or upsampler is None or (has_upsampler and "default" not in upsampler["max_length"]):
+        return None
+    return {"clip_type": template["clip_type"], "components": set(template["components"]), "has_upsampler": has_upsampler,
+            "sampler": sampler, "upsampler": upsampler}
+
+
+def _comfy_runtime_budget_valid(budget: Any, has_upsampler: bool, upsampler: dict[str, Any]) -> bool:
+    if budget is None:
+        return True
+    allowed = set(COMFY_RUNTIME_BUDGET_FIELDS)
+    if not has_upsampler:
+        allowed -= COMFY_UPSAMPLER_BUDGET_FIELDS
+    if not isinstance(budget, dict) or not budget or not set(budget) <= allowed:
+        return False
+    if any(not _bounded_number(value, *COMFY_RUNTIME_BUDGET_FIELDS[key]) for key, value in budget.items()):
+        return False
+    cap = budget.get("upsampler_token_cap")
+    return cap is None or upsampler.get("max_length", 0) <= cap
+
+
+def effective_timeout_seconds(bundle: dict[str, Any], profile: dict[str, Any] | None = None) -> int:
+    """An explicit Bundle timeout wins; otherwise the profile timeout, otherwise 900 seconds."""
+    if "timeout_seconds" in bundle:
+        return bundle["timeout_seconds"]
+    budget = (profile or {}).get("runtime_budget") or {}
+    return budget.get("timeout_seconds", COMFY_DEFAULT_TIMEOUT_SECONDS)
+
+
+def comfy_runtime_estimate(bundle: dict[str, Any], profile: dict[str, Any]) -> dict[str, Any]:
+    """Return a static, pre-submission runtime estimate for one registered profile run."""
+    budget = profile.get("runtime_budget") or {}
+    timeout = effective_timeout_seconds(bundle, profile)
+    source = "bundle" if "timeout_seconds" in bundle else "profile" if "timeout_seconds" in budget else "default"
+    steps = profile["sampler"].get("steps")
+    if steps is None:
+        steps = bundle.get("steps", 20)
+    max_length = profile.get("upsampler", {}).get("max_length")
+    result: dict[str, Any] = {"timeout_seconds": timeout, "timeout_source": source, "steps": steps,
+                              "upsampler_max_length": max_length, "basis": "profile_static_estimate"}
+    rate_keys = {"estimated_overhead_seconds", "estimated_seconds_per_step", "estimated_upsampler_seconds_per_token"}
+    if not rate_keys & set(budget):
+        return {**result, "status": "UNESTIMATED", "reason_code": "comfy_runtime_budget_unestimated", "estimated_seconds": None}
+    megapixels = bundle.get("width", 1024) * bundle.get("height", 1024) / 1_000_000
+    scale = megapixels / budget.get("reference_megapixels", 1.0)
+    estimate = (budget.get("estimated_overhead_seconds", 0)
+                + budget.get("estimated_seconds_per_step", 0) * steps * scale
+                + budget.get("estimated_upsampler_seconds_per_token", 0) * (max_length or 0))
+    if estimate > timeout:
+        status, reason = "BLOCKED", "comfy_runtime_budget_exceeded"
+    elif estimate > timeout * COMFY_RUNTIME_WARNING_RATIO:
+        status, reason = "WARNING", "comfy_runtime_budget_near_limit"
+    else:
+        status, reason = "WITHIN_BUDGET", "comfy_runtime_budget_ok"
+    return {**result, "status": status, "reason_code": reason, "estimated_seconds": round(estimate, 1),
+            "recommended_timeout_seconds": min(MAX_TIMEOUT_SECONDS, max(timeout, int(estimate * 1.25) + 1))}
+
+
+def load_comfy_profile(profile_id: str) -> dict[str, Any]:
+    """Load one data-only model profile from the trusted registry or an approved user-local profile."""
+    return load_comfy_profile_with_layer(profile_id)[0]
+
+
+def _load_profile_registry() -> Any:
+    try:
+        return yaml.safe_load(COMFY_PROFILE_REGISTRY_PATH.read_text(encoding="utf-8"))
     except (OSError, yaml.YAMLError) as exc:
         raise Blocked("comfy_model_profile_invalid", "The trusted ComfyUI model profile registry could not be read.") from exc
+
+
+def system_profile_ids() -> set[str]:
+    registry = _load_profile_registry()
+    profiles = registry.get("profiles") if isinstance(registry, dict) and registry.get("version") == 1 else None
+    return set(profiles) if isinstance(profiles, dict) else set()
+
+
+def load_comfy_profile_with_layer(profile_id: str) -> tuple[dict[str, Any], str]:
+    """Return (profile, layer) where layer is "system" (repo registry) or "user_local" (approved local file)."""
+    if not isinstance(profile_id, str) or not profile_id.strip() or len(profile_id) > 96:
+        raise Blocked("comfy_model_profile_invalid", "ComfyUI model profile id is invalid.")
+    registry = _load_profile_registry()
     profiles = registry.get("profiles") if isinstance(registry, dict) and registry.get("version") == 1 else None
     profile = profiles.get(profile_id) if isinstance(profiles, dict) else None
-    if not isinstance(profile, dict):
+    if isinstance(profile, dict):
+        return _validate_comfy_profile_body(profile_id, profile, registry), "system"
+    # System profiles take precedence; a local profile is accepted only when approved and bound to its hash.
+    local = creative_profiles.load_approved_profile(profile_id)
+    if local is None:
         raise Blocked("comfy_model_profile_invalid", "ComfyUI model profile is not registered.")
+    return validate_local_profile_document(profile_id, local), "user_local"
+
+
+def validate_local_profile_document(profile_id: str, document: Any) -> dict[str, Any]:
+    """Check an approved local file's metadata, then validate its body as a local profile."""
+    if (not isinstance(document, dict) or set(document) - COMFY_LOCAL_PROFILE_KEYS
+            or document.get("version") != 1 or document.get("profile_id") != profile_id or document.get("status") != "APPROVED"):
+        raise Blocked("profile_local_restricted", "User-local ComfyUI profile fields are outside the approved local profile schema.")
+    return validate_local_profile_body(profile_id, {key: value for key, value in document.items() if key not in {"version", "profile_id", "status"}})
+
+
+def validate_local_profile_body(profile_id: str, body: Any) -> dict[str, Any]:
+    """User-local profiles may only reference an audited template and set bounded values; nothing else."""
+    if not isinstance(body, dict) or set(body) - (COMFY_LOCAL_PROFILE_KEYS - {"version", "profile_id", "status"}):
+        raise Blocked("profile_local_restricted", "User-local ComfyUI profile fields are outside the local profile schema.")
+    if body.get("topology") not in COMFY_TOPOLOGY_TEMPLATE_IDS:
+        raise Blocked("profile_local_restricted", "User-local ComfyUI profiles may reference only an audited topology template.")
+    return _validate_comfy_profile_body(profile_id, body, _load_profile_registry())
+
+
+def _validate_comfy_profile_body(profile_id: str, profile: dict[str, Any], registry: Any) -> dict[str, Any]:
     topology = profile.get("topology")
-    family = COMFY_PROFILE_FAMILY_SETTINGS.get(topology)
+    family = load_comfy_topology_family(registry, topology)
     model_id = profile.get("model_id")
     components = profile.get("components")
     sampler = profile.get("sampler")
-    sampler_valid = isinstance(sampler, dict) and set(sampler) == set(family["sampler"]) if family else False
-    if sampler_valid:
-        for key, allowed in family["sampler"].items():
-            value = sampler[key]
-            if allowed is None:
-                valid_value = value is None
-            elif isinstance(allowed, tuple):
-                valid_value = (isinstance(value, (int, float)) and not isinstance(value, bool)
-                               and (key != "steps" or isinstance(value, int))
-                               and allowed[0] <= value <= allowed[1])
-            elif isinstance(allowed, (int, float)) and not isinstance(allowed, bool):
-                valid_value = isinstance(value, (int, float)) and not isinstance(value, bool) and value == allowed
-            else:
-                valid_value = value in allowed if isinstance(value, str) else False
-            if not valid_value:
-                sampler_valid = False
-                break
-    if (family is None or not isinstance(model_id, str) or not model_id.strip() or len(model_id) > 128
+    sampler_valid = family is not None and isinstance(sampler, dict) and set(sampler) == set(family["sampler"]) and all(
+        _comfy_value_allowed(sampler[key], spec) for key, spec in family["sampler"].items())
+    raw_upsampler = profile.get("upsampler", {})
+    upsampler: dict[str, Any] = {}
+    upsampler_valid = family is not None and isinstance(raw_upsampler, dict) and set(raw_upsampler) <= set(family["upsampler"])
+    if upsampler_valid and family is not None:
+        for key, spec in family["upsampler"].items():
+            upsampler[key] = raw_upsampler.get(key, spec["default"])
+            upsampler_valid = upsampler_valid and _comfy_value_allowed(upsampler[key], spec)
+    allowed_keys = {"model_id", "topology", "operation", "components", "clip_type", "sampler", "upsampler", "runtime_budget"}
+    if (family is None or not set(profile) <= allowed_keys
+            or not isinstance(model_id, str) or not model_id.strip() or len(model_id) > 128
             or profile.get("operation") != "generate" or not isinstance(components, dict)
-            or set(components) != COMFY_PROFILE_COMPONENT_KEYS[topology]
+            or set(components) != family["components"]
             or any(not isinstance(value, (str, list)) or not value
                    or any(not isinstance(name, str) or not name.strip() or Path(name).name != name or len(name) > 256
                           for name in (value if isinstance(value, list) else [value]))
                    for value in components.values())
-            or profile.get("clip_type") != family["clip_type"] or not sampler_valid):
+            or profile.get("clip_type") != family["clip_type"] or not sampler_valid or not upsampler_valid
+            or not _comfy_runtime_budget_valid(profile.get("runtime_budget"), family["has_upsampler"], upsampler)):
         raise Blocked("comfy_model_profile_invalid", "ComfyUI model profile does not match an audited topology family.")
-    return profile
+    return {**profile, "upsampler": upsampler}
 
 
 def comfy_component_matches(profile: dict[str, Any], key: str, selected: Any) -> bool:
@@ -622,12 +795,13 @@ def validate_final_comfy_workflow(workflow: Any, provider: dict[str, Any]) -> No
                 raise Blocked("comfy_final_payload_invalid", "Final ComfyUI node connection or fixed value changed after preflight.",
                               {"node_id": str(node_id)[:32], "node_type": str(source_node["class_type"])[:64], "field": str(name)[:64]},
                               phase="creative.payload_validation", source="comfyui")
-    if isinstance(profile, dict) and profile.get("topology") == "flux3_klein_t2i":
+    schema_class = provider.get("runtime_schema_class")
+    if isinstance(profile, dict) and schema_class:
         node_id = str(prompt_id)
         schema = provider.get("textgen_schema")
         if not isinstance(schema, dict):
             raise Blocked("comfy_textgenerate_schema_invalid", "TextGenerate runtime schema was not retained through preflight.",
-                          {"node_id": node_id, "node_type": "TextGenerate"}, phase="creative.payload_validation", source="comfyui")
+                          {"node_id": node_id, "node_type": schema_class}, phase="creative.payload_validation", source="comfyui")
         validate_textgenerate_inputs(node_id, workflow[node_id].get("inputs"), schema, workflow)
 
 
@@ -657,11 +831,12 @@ def load_comfy_workflow(root: Path, config: Any) -> tuple[str, dict[str, Any]]:
         if not isinstance(node, dict) or node.get("class_type") not in COMFY_CORE_NODES or not isinstance(node.get("inputs"), dict):
             raise Blocked("comfy_custom_node_blocked", "Only the allowlisted built-in ComfyUI nodes are supported; custom nodes are blocked.")
     model_profile = config.get("model_profile")
-    profile = load_comfy_profile(model_profile) if model_profile is not None else None
+    profile, profile_layer = load_comfy_profile_with_layer(model_profile) if model_profile is not None else (None, None)
     profile_topology = profile.get("topology") if profile else None
+    template = load_comfy_topology_templates()[profile_topology] if profile is not None else None
     prompt_id = str(config.get("prompt_node_id", ""))
     prompt_node = workflow.get(prompt_id)
-    prompt_type = "TextGenerate" if profile_topology == "flux3_klein_t2i" else "CLIPTextEncode"
+    prompt_type = template["nodes"][template["roles"]["prompt"]["node"]]["class_type"] if template is not None else "CLIPTextEncode"
     if not isinstance(prompt_node, dict) or prompt_node.get("class_type") != prompt_type:
         raise Blocked("comfy_prompt_node_invalid", f"prompt_node_id must identify the registered {prompt_type} prompt node.")
     save_nodes = [key for key, node in workflow.items() if node.get("class_type") == "SaveImage"]
@@ -680,100 +855,13 @@ def load_comfy_workflow(root: Path, config: Any) -> tuple[str, dict[str, Any]]:
             raise Blocked("comfy_model_profile_invalid", "Bundle model id must match the registered ComfyUI profile.")
         if any(not comfy_component_matches(profile, key, config.get(key)) for key in profile["components"]):
             raise Blocked("comfy_model_profile_invalid", "Configured model filenames must match the registered local profile.")
-    if profile_topology == "z_image_split_loader":
-        expected_types = {"UNETLoader", "CLIPLoader", "VAELoader", "CLIPTextEncode", "ConditioningZeroOut", "EmptySD3LatentImage", "ModelSamplingAuraFlow", "KSampler", "VAEDecode", "SaveImage"}
-        if len(workflow) != len(expected_types) or {node["class_type"] for node in workflow.values()} != expected_types:
-            raise Blocked("comfy_workflow_topology_invalid", "Z-Image Turbo accepts only its exact built-in split-loader workflow topology.")
-        by_type = {node["class_type"]: (key, node["inputs"]) for key, node in workflow.items()}
-        expected_inputs = {
-            "UNETLoader": {"unet_name", "weight_dtype"}, "CLIPLoader": {"clip_name", "type", "device"},
-            "VAELoader": {"vae_name"}, "CLIPTextEncode": {"text", "clip"}, "ConditioningZeroOut": {"conditioning"},
-            "EmptySD3LatentImage": {"width", "height", "batch_size"}, "ModelSamplingAuraFlow": {"model", "shift"},
-            "KSampler": {"model", "positive", "negative", "latent_image", "seed", "steps", "cfg", "sampler_name", "scheduler", "denoise"},
-            "VAEDecode": {"samples", "vae"}, "SaveImage": {"images", "filename_prefix"},
-        }
-        if any(set(by_type[node_type][1]) != keys for node_type, keys in expected_inputs.items()):
-            raise Blocked("comfy_workflow_topology_invalid", "Z-Image Turbo workflow inputs do not match the registered built-in topology.")
-        unet_id, unet = by_type["UNETLoader"]
-        clip_id, clip = by_type["CLIPLoader"]
-        vae_id, vae = by_type["VAELoader"]
-        text_id, text = by_type["CLIPTextEncode"]
-        zero_id, zero = by_type["ConditioningZeroOut"]
-        latent_node_id, latent = by_type["EmptySD3LatentImage"]
-        sampling_id, sampling = by_type["ModelSamplingAuraFlow"]
-        sampler_node_id, sampler = by_type["KSampler"]
-        decode_id, decode = by_type["VAEDecode"]
-        save_id, save = by_type["SaveImage"]
-        if (unet["unet_name"] != config["unet_name"] or unet["weight_dtype"] != "default"
-                or clip["clip_name"] != config["clip_name"] or clip["type"] != profile["clip_type"] or clip["device"] != "default"
-                or vae["vae_name"] != config["vae_name"] or sampling["shift"] != 3 or latent.get("batch_size") != 1
-                or sampler.get("cfg") != 1 or sampler.get("sampler_name") != "res_multistep"
-                or sampler.get("scheduler") != "simple" or sampler.get("denoise") != 1):
-            raise Blocked("comfy_model_profile_invalid", "Z-Image Turbo workflow model files or fixed sampler profile do not match configuration.")
-        link = lambda node_id: [node_id, 0]
-        links = ((sampling, "model", link(unet_id)), (sampler, "model", link(sampling_id)), (text, "clip", link(clip_id)),
-                 (zero, "conditioning", link(text_id)), (sampler, "positive", link(text_id)), (sampler, "negative", link(zero_id)),
-                 (sampler, "latent_image", link(latent_node_id)), (decode, "samples", link(sampler_node_id)),
-                 (decode, "vae", link(vae_id)), (save, "images", link(decode_id)))
-        if any(inputs.get(name) != value for inputs, name, value in links):
-            raise Blocked("comfy_workflow_topology_invalid", "Z-Image Turbo workflow connections do not match the registered built-in topology.")
-        if prompt_id != text_id or (config.get("save_node_id") and str(config["save_node_id"]) != save_id):
-            raise Blocked("comfy_workflow_topology_invalid", "Configured prompt or save node does not match the Z-Image Turbo topology.")
-        checkpoint_node_id = None
-        save_nodes = [save_id]
-    elif profile_topology == "flux3_klein_t2i":
-        expected_types = ["UNETLoader", "CLIPLoader", "CLIPLoader", "VAELoader", "TextGenerate", "CLIPTextEncode", "ConditioningZeroOut", "EmptyFlux2LatentImage", "KSampler", "VAEDecode", "SaveImage"]
-        if len(workflow) != len(expected_types) or sorted(node["class_type"] for node in workflow.values()) != sorted(expected_types):
-            raise Blocked("comfy_workflow_topology_invalid", "FLUX 3 Klein accepts only its exact built-in prompt-upsample topology.")
-        by_type: dict[str, list[tuple[str, dict[str, Any]]]] = {}
-        for node_id, node in workflow.items():
-            by_type.setdefault(node["class_type"], []).append((node_id, node["inputs"]))
-        required_inputs = {
-            "UNETLoader": {"unet_name", "weight_dtype"}, "CLIPLoader": {"clip_name", "type", "device"},
-            "VAELoader": {"vae_name"},
-            "TextGenerate": {"clip", "prompt", "max_length", "sampling_mode", "thinking", "use_default_template", "mtp", "system_prompt"},
-            "CLIPTextEncode": {"text", "clip"}, "ConditioningZeroOut": {"conditioning"},
-            "EmptyFlux2LatentImage": {"width", "height", "batch_size"},
-            "KSampler": {"model", "positive", "negative", "latent_image", "seed", "steps", "cfg", "sampler_name", "scheduler", "denoise"},
-            "VAEDecode": {"samples", "vae"}, "SaveImage": {"images", "filename_prefix"},
-        }
-        if any(len(by_type.get(node_type, [])) != expected_types.count(node_type)
-               or any(set(inputs) != input_keys for _, inputs in by_type[node_type])
-               for node_type, input_keys in required_inputs.items()):
-            raise Blocked("comfy_workflow_topology_invalid", "FLUX 3 Klein workflow inputs do not match the registered built-in topology.")
-        unet_id, unet = by_type["UNETLoader"][0]
-        vae_id, vae = by_type["VAELoader"][0]
-        textgen_id, textgen = by_type["TextGenerate"][0]
-        text_id, text = by_type["CLIPTextEncode"][0]
-        zero_id, zero = by_type["ConditioningZeroOut"][0]
-        latent_node_id, latent = by_type["EmptyFlux2LatentImage"][0]
-        sampler_node_id, sampler = by_type["KSampler"][0]
-        decode_id, decode = by_type["VAEDecode"][0]
-        save_id, save = by_type["SaveImage"][0]
-        clip_nodes = {inputs.get("clip_name"): (node_id, inputs) for node_id, inputs in by_type["CLIPLoader"]}
-        encoder_node = clip_nodes.get(config["clip_name"])
-        upsampler_node = clip_nodes.get(config["prompt_upsampler_name"])
-        sampler_profile = profile["sampler"]
-        if (encoder_node is None or upsampler_node is None or encoder_node[0] == upsampler_node[0]
-                or any(inputs.get("type") != profile["clip_type"] or inputs.get("device") != "default"
-                       for _, inputs in by_type["CLIPLoader"])
-                or unet.get("unet_name") != config["unet_name"] or unet.get("weight_dtype") != "default"
-                or vae.get("vae_name") != config["vae_name"] or latent.get("batch_size") != 1
-                or textgen.get("clip") != [upsampler_node[0], 0] or textgen.get("max_length") != 1024
-                or textgen.get("sampling_mode") != "off" or textgen.get("thinking") is not False
-                or textgen.get("use_default_template") is not True or textgen.get("mtp") != "off"
-                or not isinstance(textgen.get("system_prompt"), str) or not textgen["system_prompt"].strip()
-                or text.get("text") != [textgen_id, 0] or text.get("clip") != [encoder_node[0], 0]
-                or zero.get("conditioning") != [text_id, 0]
-                or sampler.get("model") != [unet_id, 0] or sampler.get("positive") != [text_id, 0]
-                or sampler.get("negative") != [zero_id, 0] or sampler.get("latent_image") != [latent_node_id, 0]
-                or any(sampler.get(key) != value for key, value in sampler_profile.items() if key != "steps")
-                or sampler.get("steps") != sampler_profile["steps"] or decode.get("samples") != [sampler_node_id, 0]
-                or decode.get("vae") != [vae_id, 0] or save.get("images") != [decode_id, 0]
-                or latent.get("width") != 1024 or latent.get("height") != 1024):
-            raise Blocked("comfy_workflow_topology_invalid", "FLUX 3 Klein workflow model, upsampler, sampler or links do not match the registered topology.")
-        if prompt_id != textgen_id or (config.get("save_node_id") and str(config["save_node_id"]) != save_id):
-            raise Blocked("comfy_workflow_topology_invalid", "Configured prompt or save node does not match the FLUX 3 Klein topology.")
+    if template is not None:
+        ids = comfyui_topology.resolve_topology(workflow, template, config, profile)
+        save_id = ids[template["roles"]["save"]]
+        if prompt_id != ids[template["roles"]["prompt"]["node"]] or (config.get("save_node_id") and str(config["save_node_id"]) != save_id):
+            raise Blocked("comfy_workflow_topology_invalid", "Configured prompt or save node does not match the registered topology.")
+        latent_node_id = ids[template["roles"]["latent"]]
+        sampler_node_id = ids[template["roles"]["sampler"]]
         checkpoint_node_id = None
         save_nodes = [save_id]
     elif model_profile is None:
@@ -806,7 +894,9 @@ def load_comfy_workflow(root: Path, config: Any) -> tuple[str, dict[str, Any]]:
         raise Blocked("comfy_input_node_invalid", "input_image_node_id must match one built-in LoadImage node.")
     if profile is not None and (image_nodes or input_node_id is not None):
         raise Blocked("comfy_workflow_topology_invalid", "Registered ComfyUI model profiles do not accept input-image nodes.")
-    return base, {"path": path, "workflow": workflow, "prompt_id": prompt_id, "prompt_field": "prompt" if profile_topology == "flux3_klein_t2i" else "text", "save_nodes": save_nodes, "checkpoint_node_id": checkpoint_node_id, "latent_node_id": latent_node_id, "sampler_node_id": sampler_node_id, "config": config, "profile": profile}
+    prompt_field = template["roles"]["prompt"]["field"] if template is not None else "text"
+    return base, {"path": path, "workflow": workflow, "prompt_id": prompt_id, "prompt_field": prompt_field, "save_nodes": save_nodes, "checkpoint_node_id": checkpoint_node_id, "latent_node_id": latent_node_id, "sampler_node_id": sampler_node_id, "config": config, "profile": profile,
+            "profile_layer": profile_layer, "runtime_schema_class": template["runtime_schema_class"] if template is not None else None}
 
 
 def verify_comfy(root: Path, bundle: dict[str, Any]) -> tuple[str, dict[str, Any]]:
@@ -878,32 +968,36 @@ def verify_comfy(root: Path, bundle: dict[str, Any]) -> tuple[str, dict[str, Any
     if profile is not None:
         if bundle["operation"] != profile["operation"] or bundle["model"]["id"] != profile["model_id"]:
             raise Blocked("comfy_model_profile_invalid", "The selected ComfyUI model profile does not match the Bundle model or operation.")
+        # Static estimate only: decide before any ComfyUI request or job submission.
+        info["runtime_budget"] = comfy_runtime_estimate(bundle, profile)
+        if info["runtime_budget"]["status"] == "BLOCKED":
+            raise Blocked("comfy_runtime_budget_exceeded",
+                          "The profile runtime estimate exceeds the effective timeout; raise timeout_seconds or choose a faster registered profile before submission.",
+                          {"runtime_budget": info["runtime_budget"]}, phase="creative.runtime_budget", source="profile")
     elif bundle["model"]["id"] != config["checkpoint_name"]:
         raise Blocked("comfy_checkpoint_invalid", "Bundle model id must match the selected ComfyUI checkpoint.")
     try:
         local_request(base + "/system_stats", timeout=2, max_bytes=256 * 1024)
         if profile is not None:
+            topology_template = load_comfy_topology_templates()[profile["topology"]]
             inventories = {}
-            for node_type in ("UNETLoader", "CLIPLoader", "VAELoader"):
+            for node_type in sorted({entry["class_type"] for entry in topology_template["inventory"]}):
                 inventories[node_type] = json.loads(local_request(base + "/object_info/" + node_type, timeout=3, max_bytes=1024 * 1024)).get(node_type, {})
-            if profile["topology"] == "flux3_klein_t2i":
-                textgen_payload = json.loads(local_request(base + "/object_info/TextGenerate", timeout=3, max_bytes=1024 * 1024))
-                textgen_info = textgen_payload.get("TextGenerate", {}) if isinstance(textgen_payload, dict) else {}
+            schema_class = topology_template["runtime_schema_class"]
+            if schema_class is not None:
+                schema_payload = json.loads(local_request(base + "/object_info/" + schema_class, timeout=3, max_bytes=1024 * 1024))
+                textgen_info = schema_payload.get(schema_class, {}) if isinstance(schema_payload, dict) else {}
         else:
             object_info = json.loads(local_request(base + "/object_info/CheckpointLoaderSimple", timeout=3, max_bytes=1024 * 1024))
     except TransientProviderError as exc:
         raise Blocked("comfy_unavailable", "Configured local ComfyUI is unavailable.") from exc
     if profile is not None:
-        fields = [("UNETLoader", "unet_name", config["unet_name"]), ("CLIPLoader", "type", profile["clip_type"]), ("VAELoader", "vae_name", config["vae_name"])]
-        fields.append(("CLIPLoader", "clip_name", config["clip_name"]))
-        if profile["topology"] == "flux3_klein_t2i":
-            fields.append(("CLIPLoader", "clip_name", config["prompt_upsampler_name"]))
-        for node_type, field, selected in fields:
+        for node_type, field, selected in comfyui_topology.inventory_checks(topology_template, config, profile):
             required = ((inventories[node_type].get("input") or {}).get("required") or {})
             choices = required.get(field, [[]])[0]
             if not isinstance(choices, list) or selected not in choices:
                 raise Blocked("comfy_model_unavailable", "A configured ComfyUI profile component is not present in the local model list.")
-        if profile["topology"] == "flux3_klein_t2i":
+        if topology_template["runtime_schema_class"] is not None:
             text_inputs = textgen_info.get("input", {}) if isinstance(textgen_info, dict) else {}
             required = text_inputs.get("required", {}) if isinstance(text_inputs, dict) else {}
             optional = text_inputs.get("optional", {}) if isinstance(text_inputs, dict) else {}
@@ -1101,9 +1195,11 @@ def preflight(project: Path, bundle_path: str) -> dict[str, Any]:
         "operation": bundle["operation"], "output_path": bundle["output_path"],
         "output_scope": bundle["output_scope"], "overwrite": False,
         "max_attempts": bundle.get("max_retries", 0) + 1,
-        "timeout_seconds": bundle.get("timeout_seconds", 900),
+        "timeout_seconds": effective_timeout_seconds(bundle, resolved.get("profile")),
         "model_id": bundle["model"]["id"], "local_only": True,
         "model_recommendation": model_advice,
+        **({"runtime_budget": resolved["runtime_budget"]} if "runtime_budget" in resolved else {}),
+        **({"model_profile_layer": resolved["profile_layer"]} if resolved.get("profile_layer") else {}),
     }
 
 
@@ -1700,14 +1796,244 @@ def mflux_execute(root: Path, bundle: dict[str, Any], provider: dict[str, Any], 
         raise Blocked("mflux_execution_failed", f"Local MFLUX exited with status {result.returncode}; provider output was suppressed.")
 
 
-def _cleanup_queued_comfy_job(base: str, prompt_id: str) -> None:
-    """Delete only this accepted queued job; never interrupt another running job."""
+COMFY_PROMPT_ID_PATTERN = re.compile(r"^[A-Za-z0-9_-]{1,128}$")
+COMFY_PROFILE_ID_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,95}$")
+COMFY_JOB_LEDGER_VERSION = 1
+COMFY_JOB_LEDGER_LIMIT = 64
+COMFY_JOB_LEDGER_MAX_BYTES = 64 * 1024
+COMFY_JOB_LEDGER_FIELDS = {"prompt_id", "submitted_at", "profile_id", "timeout_seconds", "binding_sha256"}
+COMFY_QUEUE_MAX_BYTES = MAX_IMAGE_BYTES
+COMFY_RECHECK_ATTEMPTS = 10
+COMFY_RECHECK_INTERVAL_SECONDS = 0.5
+
+
+def comfy_job_ledger_path() -> Path:
+    """Private per-user ledger of outstanding AIPS-submitted ComfyUI prompt ids."""
+    return trace_path().parent / "comfy-jobs.json"
+
+
+def _comfy_endpoint_key(base: str) -> str:
+    parsed = urllib.parse.urlsplit(base)
+    return f"{(parsed.hostname or '').lower()}:{parsed.port}"
+
+
+def _comfy_job_binding(base: str, prompt_id: str, submitted_at: int, profile_id: str | None, timeout_seconds: int) -> str:
+    # The endpoint is bound but not stored, so an entry only proves ownership on the instance that accepted it.
+    material = json.dumps({"endpoint": _comfy_endpoint_key(base), "profile_id": profile_id, "prompt_id": prompt_id,
+                           "submitted_at": submitted_at, "timeout_seconds": timeout_seconds, "version": COMFY_JOB_LEDGER_VERSION},
+                          sort_keys=True, separators=(",", ":"))
+    return "sha256:" + hashlib.sha256(material.encode()).hexdigest()
+
+
+def _valid_ledger_entry(item: Any) -> bool:
+    return (isinstance(item, dict) and set(item) == COMFY_JOB_LEDGER_FIELDS
+            and isinstance(item["prompt_id"], str) and bool(COMFY_PROMPT_ID_PATTERN.fullmatch(item["prompt_id"]))
+            and isinstance(item["submitted_at"], int) and not isinstance(item["submitted_at"], bool) and item["submitted_at"] >= 0
+            and (item["profile_id"] is None or (isinstance(item["profile_id"], str) and bool(COMFY_PROFILE_ID_PATTERN.fullmatch(item["profile_id"]))))
+            and isinstance(item["timeout_seconds"], int) and not isinstance(item["timeout_seconds"], bool)
+            and 0 <= item["timeout_seconds"] <= MAX_TIMEOUT_SECONDS
+            and isinstance(item["binding_sha256"], str) and bool(re.fullmatch(r"sha256:[0-9a-f]{64}", item["binding_sha256"])))
+
+
+def _update_comfy_job_ledger(mutate) -> bool:
+    """Apply ``mutate(entries) -> entries`` under an exclusive lock; private 0700/0600 storage."""
+    path = comfy_job_ledger_path()
     try:
-        local_request(base + "/queue", data=json.dumps({"delete": [prompt_id]}).encode(),
-                      headers={"Content-Type": "application/json"}, timeout=5, max_bytes=256 * 1024)
+        path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+        os.chmod(path.parent, 0o700)
+        lock_fd = os.open(path.parent / "comfy-jobs.lock", os.O_RDWR | os.O_CREAT, 0o600)
+    except OSError:
+        return False
+    try:
+        lock_prepare_scope(lock_fd)
+        entries = _read_comfy_job_ledger_unlocked(path)
+        entries = mutate(entries)[-COMFY_JOB_LEDGER_LIMIT:]
+        fd, temporary = tempfile.mkstemp(prefix=".comfy-jobs-", dir=path.parent)
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as stream:
+                json.dump({"version": COMFY_JOB_LEDGER_VERSION, "jobs": entries}, stream, sort_keys=True, separators=(",", ":"))
+                stream.flush()
+                os.fsync(stream.fileno())
+            os.chmod(temporary, 0o600)
+            os.replace(temporary, path)
+        finally:
+            Path(temporary).unlink(missing_ok=True)
+        return True
+    except OSError:
+        return False
+    finally:
+        try:
+            unlock_prepare_scope(lock_fd)
+        finally:
+            os.close(lock_fd)
+
+
+def _read_comfy_job_ledger_unlocked(path: Path) -> list[dict[str, Any]]:
+    try:
+        if path.is_symlink() or not path.is_file() or path.stat().st_size > COMFY_JOB_LEDGER_MAX_BYTES:
+            return []
+        document = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return []
+    jobs = document.get("jobs") if isinstance(document, dict) and document.get("version") == COMFY_JOB_LEDGER_VERSION else None
+    return [item for item in jobs[:COMFY_JOB_LEDGER_LIMIT] if _valid_ledger_entry(item)] if isinstance(jobs, list) else []
+
+
+def record_owned_comfy_job(base: str, prompt_id: str, profile_id: Any, timeout_seconds: float) -> bool:
+    """Record an accepted AIPS submission; no prompt text, workflow, path or endpoint is stored."""
+    if not COMFY_PROMPT_ID_PATTERN.fullmatch(prompt_id):
+        return False
+    profile = profile_id if isinstance(profile_id, str) and COMFY_PROFILE_ID_PATTERN.fullmatch(profile_id) else None
+    submitted_at = int(time.time())
+    budget = max(0, min(MAX_TIMEOUT_SECONDS, int(-(-timeout_seconds // 1))))  # round up: never expire early
+    entry = {"prompt_id": prompt_id, "submitted_at": submitted_at, "profile_id": profile, "timeout_seconds": budget,
+             "binding_sha256": _comfy_job_binding(base, prompt_id, submitted_at, profile, budget)}
+    return _update_comfy_job_ledger(lambda entries: [item for item in entries if item["prompt_id"] != prompt_id] + [entry])
+
+
+def release_owned_comfy_jobs(prompt_ids: set[str]) -> bool:
+    return _update_comfy_job_ledger(lambda entries: [item for item in entries if item["prompt_id"] not in prompt_ids])
+
+
+def owned_comfy_jobs(base: str) -> list[dict[str, Any]]:
+    """Ledger entries whose digest binding verifies for this loopback endpoint."""
+    return [item for item in _read_comfy_job_ledger_unlocked(comfy_job_ledger_path())
+            if item["binding_sha256"] == _comfy_job_binding(base, item["prompt_id"], item["submitted_at"],
+                                                              item["profile_id"], item["timeout_seconds"])]
+
+
+def _queue_prompt_ids(items: Any) -> list[str] | None:
+    # ComfyUI queue items are [number, prompt_id, prompt, extra_data, outputs]; only index 1 is read.
+    if not isinstance(items, list):
+        return None
+    ids = []
+    for item in items[:1000]:
+        if not isinstance(item, list) or len(item) < 2 or not isinstance(item[1], str) or not COMFY_PROMPT_ID_PATTERN.fullmatch(item[1]):
+            return None
+        ids.append(item[1])
+    return ids
+
+
+def _read_comfy_queue(base: str) -> tuple[list[str], list[str]] | None:
+    try:
+        document = json.loads(local_request(base + "/queue", timeout=5, max_bytes=COMFY_QUEUE_MAX_BYTES))
+    except (Blocked, TransientProviderError, json.JSONDecodeError, UnicodeDecodeError):
+        return None
+    if not isinstance(document, dict):
+        return None
+    running, pending = _queue_prompt_ids(document.get("queue_running")), _queue_prompt_ids(document.get("queue_pending"))
+    return None if running is None or pending is None else (running, pending)
+
+
+def _post_comfy(base: str, path: str, body: dict[str, Any]) -> bool:
+    try:
+        local_request(base + path, data=json.dumps(body).encode(), headers={"Content-Type": "application/json"},
+                      timeout=5, max_bytes=256 * 1024)
+        return True
     except (Blocked, TransientProviderError):
-        # Cleanup is best effort; lack of confirmation never permits resubmission.
-        pass
+        return False
+
+
+def reconcile_owned_comfy_jobs(base: str, owned: set[str]) -> dict[str, Any]:
+    """Interrupt or delete only AIPS-owned ComfyUI jobs, then re-check; never resubmit.
+
+    A running job is interrupted only when ``GET /queue`` reports an owned prompt_id as running, and the
+    ``/interrupt`` body names that prompt_id. ComfyUI 0.42.x re-checks the running id server-side before
+    interrupting; older servers ignore the body, which leaves the check-then-interrupt race window
+    documented in the PR5 Core Change Proposal. Queued owned jobs are deleted by exact id.
+    """
+    owned = {prompt_id for prompt_id in owned if COMFY_PROMPT_ID_PATTERN.fullmatch(prompt_id)}
+    result: dict[str, Any] = {"job_state": "UNKNOWN", "interrupt_requested": False, "queued_delete_requested": False,
+                              "other_jobs_running": None, "automatic_resubmission": False, "jobs": {}}
+    queue = _read_comfy_queue(base)
+    if queue is None:
+        # Exact-id deletion cannot affect another job, so it stays safe without queue evidence. No interrupt.
+        if owned:
+            result["queued_delete_requested"] = _post_comfy(base, "/queue", {"delete": sorted(owned)})
+        result["jobs"] = dict.fromkeys(sorted(owned), "UNKNOWN")
+        return result
+    running, pending = queue
+    result["other_jobs_running"] = sum(prompt_id not in owned for prompt_id in running)
+    owned_pending = sorted(prompt_id for prompt_id in owned if prompt_id in pending)
+    owned_running = sorted(prompt_id for prompt_id in owned if prompt_id in running)
+    if not owned_pending and not owned_running:
+        result["job_state"] = "NOT_PRESENT"
+        result["jobs"] = dict.fromkeys(sorted(owned), "NOT_PRESENT")
+        return result
+    if owned_pending:
+        result["queued_delete_requested"] = _post_comfy(base, "/queue", {"delete": owned_pending})
+    for prompt_id in owned_running:
+        result["interrupt_requested"] = _post_comfy(base, "/interrupt", {"prompt_id": prompt_id}) or result["interrupt_requested"]
+    final = None
+    for _ in range(COMFY_RECHECK_ATTEMPTS):
+        final = _read_comfy_queue(base)
+        if final is not None and not any(prompt_id in final[0] or prompt_id in final[1] for prompt_id in owned):
+            break
+        time.sleep(COMFY_RECHECK_INTERVAL_SECONDS)
+    jobs: dict[str, str] = {}
+    for prompt_id in sorted(owned):
+        if final is None:
+            jobs[prompt_id] = "UNKNOWN"
+        elif prompt_id in final[0]:
+            jobs[prompt_id] = "STILL_RUNNING"
+        elif prompt_id in final[1]:
+            jobs[prompt_id] = "STILL_QUEUED"
+        elif prompt_id in owned_running or prompt_id in owned_pending:
+            jobs[prompt_id] = "CLEARED"
+        else:
+            jobs[prompt_id] = "NOT_PRESENT"
+    states = set(jobs.values())
+    result["jobs"] = jobs
+    result["job_state"] = next((state for state in ("UNKNOWN", "STILL_RUNNING", "STILL_QUEUED", "CLEARED") if state in states), "NOT_PRESENT")
+    return result
+
+
+def _settled_comfy_jobs(reconciled: dict[str, Any]) -> set[str]:
+    return {prompt_id for prompt_id, state in reconciled["jobs"].items() if state in {"CLEARED", "NOT_PRESENT"}}
+
+
+def _comfy_recovery_blocked(base: str, prompt_id: str, message: str) -> Blocked:
+    reconciled = reconcile_owned_comfy_jobs(base, {prompt_id})
+    settled = _settled_comfy_jobs(reconciled)
+    if settled:
+        release_owned_comfy_jobs(settled)
+    action = "INSPECT_COMFYUI_QUEUE_AND_HISTORY" if reconciled["job_state"] in {"CLEARED", "NOT_PRESENT"} else "RUN_AIPS_CREATIVE_RECOVER"
+    return Blocked("comfy_job_recovery_required", message,
+                   {"retryable": False, "job_state": reconciled["job_state"], "ownership": "AIPS_OWNED",
+                    "interrupt_requested": reconciled["interrupt_requested"],
+                    "queued_delete_requested": reconciled["queued_delete_requested"],
+                    "other_jobs_running": reconciled["other_jobs_running"],
+                    "recovery": {"action": action, "automatic_resubmission": False}},
+                   phase="creative.comfy_execute", source="comfyui")
+
+
+def recover_comfy_jobs(base_url: str = DEFAULT_COMFYUI_BASE_URL) -> dict[str, Any]:
+    """Explicit recovery: interrupt/delete only ledger-owned jobs whose own timeout has elapsed."""
+    base = loopback_base(base_url)
+    now = int(time.time())
+    entries = owned_comfy_jobs(base)
+    expired = {item["prompt_id"] for item in entries if now >= item["submitted_at"] + item["timeout_seconds"]}
+    active = len(entries) - len(expired)
+    if not expired:
+        return {"status": "NOTHING_TO_RECOVER", "reason_code": "comfy_no_owned_jobs", "owned_jobs": len(entries),
+                "active_within_timeout": active, "jobs": [], "automatic_resubmission": False}
+    reconciled = reconcile_owned_comfy_jobs(base, expired)
+    settled = _settled_comfy_jobs(reconciled)
+    ledger_updated = release_owned_comfy_jobs(settled) if settled else True
+    profiles = {item["prompt_id"]: item["profile_id"] for item in entries}
+    state = reconciled["job_state"]
+    return {
+        "status": "RECOVERED" if state in {"CLEARED", "NOT_PRESENT"} else "RECOVERY_INCOMPLETE",
+        "reason_code": "comfy_owned_jobs_recovered" if state in {"CLEARED", "NOT_PRESENT"} else "comfy_job_recovery_required",
+        "job_state": state, "owned_jobs": len(entries), "active_within_timeout": active,
+        "interrupt_requested": reconciled["interrupt_requested"], "queued_delete_requested": reconciled["queued_delete_requested"],
+        "other_jobs_running": reconciled["other_jobs_running"], "ledger_updated": ledger_updated,
+        "jobs": [{"prompt_id": prompt_id, "profile_id": profiles.get(prompt_id), "state": job_state}
+                 for prompt_id, job_state in reconciled["jobs"].items()],
+        "automatic_resubmission": False,
+        "recovery": {"action": creative_errors.RECOVERY["comfy_job_recovery_required"] if state not in {"CLEARED", "NOT_PRESENT"}
+                     else "已只處理 AIPS 自己送出的逾時工作；需要時請由使用者明確重新執行。"},
+    }
 
 
 def _comfy_execution_failure_details(status: Any) -> dict[str, Any]:
@@ -1740,10 +2066,10 @@ def _comfy_execution_failure_details(status: Any) -> dict[str, Any]:
     return {}
 
 
-def comfy_execute(bundle: dict[str, Any], provider: dict[str, Any], temp_output: Path, timeout: float) -> None:
+def build_comfy_workflow(bundle: dict[str, Any], provider: dict[str, Any], prefix: str | None = None) -> dict[str, Any]:
+    """Return the final ComfyUI API prompt for one preflighted Bundle (no I/O)."""
     if provider.get("mode") == "dynamic_local":
         cfg = provider["config"]
-        prefix = "aips_" + uuid.uuid4().hex
         values = {"prompt": bundle.get("prompt"), "seed": bundle.get("seed", 0),
                   "width": bundle.get("width", 1024), "height": bundle.get("height", 1024)}
         values.update(cfg.get("settings", {}))
@@ -1752,26 +2078,30 @@ def comfy_execute(bundle: dict[str, Any], provider: dict[str, Any], temp_output:
                 values["references"] = cfg["input_image_names"]
             else:
                 values["reference"] = cfg["input_image_name"]
-        workflow = comfyui_workflow.inject_bindings(provider["workflow"], provider["bindings"], values, prefix)
+        return comfyui_workflow.inject_bindings(provider["workflow"], provider["bindings"], values, prefix or "aips_" + uuid.uuid4().hex)
+    workflow = json.loads(json.dumps(provider["workflow"]))
+    workflow[provider["prompt_id"]]["inputs"][provider.get("prompt_field", "text")] = bundle["prompt"]
+    workflow[provider["latent_node_id"]]["inputs"].update({"width": bundle.get("width", 1024), "height": bundle.get("height", 1024)})
+    sampler_inputs = {"seed": bundle.get("seed", 0)}
+    profile = provider.get("profile")
+    if profile is None or profile["sampler"].get("steps") is None:
+        sampler_inputs["steps"] = bundle.get("steps", 20)
     else:
-        workflow = json.loads(json.dumps(provider["workflow"]))
-        workflow[provider["prompt_id"]]["inputs"][provider.get("prompt_field", "text")] = bundle["prompt"]
-        workflow[provider["latent_node_id"]]["inputs"].update({"width": bundle.get("width", 1024), "height": bundle.get("height", 1024)})
-        sampler_inputs = {"seed": bundle.get("seed", 0)}
-        profile = provider.get("profile")
-        if profile is None or profile["sampler"].get("steps") is None:
-            sampler_inputs["steps"] = bundle.get("steps", 20)
-        else:
-            sampler_inputs["steps"] = profile["sampler"]["steps"]
-        if profile is not None:
-            sampler_inputs.update({key: value for key, value in profile["sampler"].items() if key != "steps"})
-        workflow[provider["sampler_node_id"]]["inputs"].update(sampler_inputs)
-        if bundle["operation"] == "edit":
-            cfg = provider["config"]
-            workflow[str(cfg["input_image_node_id"])]["inputs"]["image"] = cfg["input_image_name"]
-        for node_id in provider["save_nodes"]:
-            workflow[node_id]["inputs"]["filename_prefix"] = "aips_local"
-        validate_final_comfy_workflow(workflow, provider)
+        sampler_inputs["steps"] = profile["sampler"]["steps"]
+    if profile is not None:
+        sampler_inputs.update({key: value for key, value in profile["sampler"].items() if key != "steps"})
+    workflow[provider["sampler_node_id"]]["inputs"].update(sampler_inputs)
+    if bundle["operation"] == "edit":
+        cfg = provider["config"]
+        workflow[str(cfg["input_image_node_id"])]["inputs"]["image"] = cfg["input_image_name"]
+    for node_id in provider["save_nodes"]:
+        workflow[node_id]["inputs"]["filename_prefix"] = "aips_local"
+    validate_final_comfy_workflow(workflow, provider)
+    return workflow
+
+
+def comfy_execute(bundle: dict[str, Any], provider: dict[str, Any], temp_output: Path, timeout: float) -> None:
+    workflow = build_comfy_workflow(bundle, provider)
     payload = json.dumps({"prompt": workflow, "client_id": str(uuid.uuid4())}, separators=(",", ":")).encode()
     if provider.get("mode") != "dynamic_local":
         serialized_payload = json.loads(payload)
@@ -1783,12 +2113,15 @@ def comfy_execute(bundle: dict[str, Any], provider: dict[str, Any], temp_output:
         prompt_id = json.loads(response).get("prompt_id")
         if not isinstance(prompt_id, str) or not prompt_id:
             raise Blocked("comfy_job_invalid", "Local ComfyUI did not return an execution id.")
+        # Ownership evidence must survive an AIPS restart; a ledger write failure never blocks this run.
+        record_owned_comfy_job(provider["base_url"], prompt_id, (provider.get("config") or {}).get("model_profile"), timeout)
         while time.monotonic() - started < timeout:
             history_body = local_request(provider["base_url"] + "/history/" + urllib.parse.quote(prompt_id, safe=""), timeout=5, max_bytes=1024 * 1024)
             history = json.loads(history_body).get(prompt_id)
             if history:
                 status = history.get("status") or {}
                 if status.get("status_str") == "error" or status.get("completed") is False and status.get("messages"):
+                    release_owned_comfy_jobs({prompt_id})
                     message_text = json.dumps(status.get("messages") or [], ensure_ascii=True).casefold()
                     failure_details = _comfy_execution_failure_details(status)
                     if ("mps" in message_text or "metal" in message_text) and ("dtype" in message_text or "type" in message_text):
@@ -1807,19 +2140,18 @@ def comfy_execute(bundle: dict[str, Any], provider: dict[str, Any], temp_output:
                     query = urllib.parse.urlencode({"filename": str(image.get("filename", "")), "subfolder": str(image.get("subfolder", "")), "type": "output"})
                     image_bytes = local_request(provider["base_url"] + "/view?" + query, timeout=30, max_bytes=MAX_IMAGE_BYTES)
                     temp_output.write_bytes(strip_png_text_metadata(image_bytes))
+                    release_owned_comfy_jobs({prompt_id})
                     return
             time.sleep(0.25)
     except TransientProviderError as exc:
         if prompt_id:
-            _cleanup_queued_comfy_job(provider["base_url"], prompt_id)
-            raise Blocked("comfy_job_recovery_required", "Accepted ComfyUI job needs recovery; queued deletion was requested without interrupting running jobs. Automatic resubmission is blocked.") from exc
+            raise _comfy_recovery_blocked(provider["base_url"], prompt_id, "Accepted ComfyUI job needs recovery; only this AIPS-owned job was interrupted or deleted after an ownership check. Automatic resubmission is blocked.") from exc
         raise Blocked("comfy_job_recovery_required", "ComfyUI submission outcome is unknown after the single POST attempt. Inspect the queue/history before any explicit retry.",
                       {"prompt_id": None, "retryable": False, "recovery": {"action": "INSPECT_COMFYUI_QUEUE_AND_HISTORY", "automatic_resubmission": False}},
                       phase="creative.comfy_execute", source="comfyui") from exc
     except (json.JSONDecodeError, KeyError, TypeError, OSError) as exc:
         raise Blocked("comfy_response_invalid", "Local ComfyUI returned an invalid response.") from exc
-    _cleanup_queued_comfy_job(provider["base_url"], prompt_id)
-    raise Blocked("comfy_job_recovery_required", "Accepted ComfyUI job timed out; queued deletion was requested without interrupting running jobs. Inspect provider state before explicitly retrying.")
+    raise _comfy_recovery_blocked(provider["base_url"], prompt_id, "Accepted ComfyUI job timed out; only this AIPS-owned job was interrupted or deleted after an ownership check. Inspect provider state before explicitly retrying.")
 
 
 
@@ -1887,7 +2219,7 @@ def execute(project: Path, bundle_path: str) -> dict[str, Any]:
                 if provider_name == "mflux_local":
                     mflux_execute(root, provider_bundle, provider, temp_output, remaining_timeout(bundle.get("timeout_seconds", 900)))
                 else:
-                    comfy_execute(provider_bundle, provider, temp_output, remaining_timeout(bundle.get("timeout_seconds", 900)))
+                    comfy_execute(provider_bundle, provider, temp_output, remaining_timeout(effective_timeout_seconds(bundle, provider.get("profile"))))
                 if not output_magic(temp_output):
                     raise Blocked("provider_output_invalid", "Local engine did not produce a supported image within the byte limit.")
                 break
@@ -2286,6 +2618,34 @@ def workflow_cli_response(action: str) -> dict[str, Any]:
             "readiness": {"inference": "INFERENCE_UNVERIFIED"}}
 
 
+def _read_confirmation(prompt: str) -> str:
+    """Prompts go to stderr so stdout stays the single JSON result channel."""
+    sys.stderr.write(prompt)
+    sys.stderr.flush()
+    return sys.stdin.readline()
+
+
+def profile_command(args: argparse.Namespace) -> dict[str, Any]:
+    """Draft or approve a local profile; approval always goes through the interactive confirmation gate."""
+    if args.profile_action == "draft":
+        overrides: dict[str, str] = {}
+        for item in args.component:
+            key, separator, value = item.partition("=")
+            if not separator or not key or not value or key in overrides:
+                raise Blocked("profile_component_argument_invalid", "Component selections must use KEY=FILE once per component.")
+            overrides[key] = value
+        base_profile, layer = load_comfy_profile_with_layer(args.base_profile)
+        if layer != "system":
+            raise Blocked("profile_base_invalid", "A local draft may only be based on a reviewed system profile.")
+        return creative_profiles.draft_profile(
+            model_id=args.model_id, base_profile_id=args.base_profile, base_profile=base_profile, models_dir=args.models_dir,
+            profile_id=args.profile_id, overrides=overrides, reserved_ids=system_profile_ids(), validate=validate_local_profile_body)
+    return creative_profiles.approve_profile(
+        args.profile_id, models_dir=args.models_dir, validate=validate_local_profile_body,
+        interactive=sys.stdin.isatty() and sys.stderr.isatty(),
+        read_line=_read_confirmation)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="action", required=True)
@@ -2354,8 +2714,21 @@ def main() -> int:
     loop_parser.add_argument("--model", required=True)
     loop_parser.add_argument("--max-repairs", type=int, required=True)
     loop_parser.add_argument("--time-budget-seconds", type=int, required=True)
+    profile_parser = sub.add_parser("profile", help="Draft from local weights, then approve a user-local ComfyUI profile.")
+    profile_sub = profile_parser.add_subparsers(dest="profile_action", required=True)
+    profile_draft = profile_sub.add_parser("draft", help="Write an UNAPPROVED local profile draft; never downloads or switches models.")
+    profile_draft.add_argument("--model-id", required=True, help="Explicit model id; never inferred.")
+    profile_draft.add_argument("--base-profile", required=True, help="Reviewed system profile id whose topology and sampler values are reused.")
+    profile_draft.add_argument("--profile-id", help="Optional local- prefixed id; defaults to local-<model id>.")
+    profile_draft.add_argument("--models-dir", help="Local ComfyUI models directory (default: AIPS_COMFYUI_MODELS_DIR or ~/ComfyUI/models).")
+    profile_draft.add_argument("--component", action="append", default=[], metavar="KEY=FILE", help="Select an installed weight file explicitly.")
+    profile_approve = profile_sub.add_parser("approve", help="Approve a draft in an interactive terminal after a typed confirmation phrase.")
+    profile_approve.add_argument("profile_id")
+    profile_approve.add_argument("--models-dir", help="Local ComfyUI models directory used by the static smoke preflight.")
     trace_parser = sub.add_parser("trace")
     trace_parser.add_argument("--limit", type=int, default=20)
+    recover_parser = sub.add_parser("recover", help="Interrupt or delete only timed-out ComfyUI jobs recorded as AIPS-owned; never resubmits.")
+    recover_parser.add_argument("--base-url", default=DEFAULT_COMFYUI_BASE_URL)
     args = parser.parse_args()
     try:
         if args.action == "prepare":
@@ -2397,6 +2770,10 @@ def main() -> int:
             result = compare(args.project, args.manifest, args.after)
         elif args.action == "quality-loop":
             result = quality_loop(args.project, args.bundle, args.model, args.max_repairs, args.time_budget_seconds)
+        elif args.action == "recover":
+            result = recover_comfy_jobs(args.base_url)
+        elif args.action == "profile":
+            result = profile_command(args)
         else:
             result = read_trace(args.limit)
         # Keep workflow command output bounded; preserve other Creative CLI contracts.

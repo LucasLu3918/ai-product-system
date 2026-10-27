@@ -101,7 +101,7 @@ Installation/doctor report file integrity and version probing separately; merely
 
 Official contracts: [V2 Skills](https://opencode.ai/v2/docs/skills/), [V2 Commands](https://opencode.ai/v2/docs/commands/), [V2 Instructions](https://opencode.ai/v2/docs/instructions/), [V2 MCP](https://opencode.ai/v2/docs/mcp/). V1 compatibility follows the explicitly selected [V1 documentation](https://opencode.ai/docs/).
 
-The local creative executor uses a declarative ComfyUI profile registry over executor-reviewed topology families. Z-Image Turbo and FLUX 3 Klein Base/Distilled verify exact local component inventories and remain generate-only. FLUX 3 Klein profiles use validated per-profile sampler settings and validate the live `TextGenerate` input schema and final serialized payload before submitting `/prompt` once; this is adapter evidence, not MPS inference or OpenCode host acceptance. Adding a model within an approved family does not add a permission surface; custom nodes and new topology families remain unsupported without code review.
+The local creative executor uses a declarative ComfyUI profile registry over executor-reviewed topology families. Z-Image Turbo and FLUX 3 Klein Base/Distilled verify exact local component inventories and remain generate-only. FLUX 3 Klein profiles use validated per-profile sampler settings and validate the live `TextGenerate` input schema and final serialized payload before submitting `/prompt` once; this is adapter evidence, not MPS inference or OpenCode host acceptance. Adding a model within an approved family does not add a permission surface; custom nodes and new topology families remain unsupported without code review. Audited topology templates and user-local profile approval add no OpenCode tool action.
 
 The executor also supports an explicitly selected `dynamic_local` ComfyUI API workflow with bounded schema and graph validation. Only runtime-identified core nodes, explicit value bindings and installed loader-model selections pass preflight; the user-controlled workflow body is never emitted into traces or the private fingerprint cache. Import is project-confined and create-only, scanning is loopback-only and read-only, and uncertain POST outcomes are not automatically retried. Synthetic tests establish adapter contracts only, not model inference or OpenCode host acceptance.
 
@@ -118,6 +118,8 @@ Publication Doctor and literal merge diagnosis are read-only observations. They 
 
 The bounded timeout and Prepare evidence lifecycle apply to the managed Claude Code publication Hook. They do not change OpenCode native file permissions, which remain unable to authorize Git push or merge.
 
+The 30-minute Prepare scan evidence, PR-bound evidence and recipe-bearing denials apply to the managed Claude Code publication Hook; they do not change OpenCode enforcement status.
+
 Publication recovery guidance 不改變 OpenCode native 權限。共享 Hook 診斷只回報安全的錯誤類別及診斷 ID；Claude Code v2.1.295+ 的 `onFailure: block` 是其專屬版本能力。
 The additive Plan40 diagnostic fields are observations only: stable reason code, phase, safe candidate/runtime binding, and independent plan/authorization/Host/execution states. A Diagnostic ID is retrievable only from a configured hash-chain-verified ledger; OpenCode does not gain publication or merge authority.
 
@@ -126,3 +128,5 @@ Shared publication diagnostics can expose target-branch identity, safe HTTP/erro
 Plan35 diagnostic response extensions do not upgrade OpenCode Shell interception or permission controls. Host-specific denial observations require evidence from the actual runtime.
 
 Publication diagnostics do not change OpenCode enforcement status. They remain read-only and advisory; direct Shell, MCP/custom-tool, and out-of-process effects keep their existing unsupported/host-controlled status.
+
+Task-scoped Turn Context requirement fields (`refresh_required`, `retrieval_needed`, `retrieval_index_status`) are additive; the OpenCode write guard does not read them and its decisions are unchanged.

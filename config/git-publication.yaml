@@ -13,6 +13,13 @@ identity:
       name: dependabot[bot]
       email_pattern: '^support\x40github\.com$'
       requires_author_slug: dependabot
+  # Profile-gated trailer identities: used only while the named AIPS profile switch is enabled by a
+  # person (aips profile set). Final trailer block only; the name and address must match exactly.
+  profile_trailer_identities:
+    claude_coauthor_trailer:
+      key: Co-Authored-By
+      name_pattern: '^Claude(?: [A-Za-z0-9.]{1,24}){1,4}$'
+      email_pattern: '^noreply\x40anthropic\.com$'
   report_values: false
 merge:
   recommended_method: merge

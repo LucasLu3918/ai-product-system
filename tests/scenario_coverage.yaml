@@ -168,6 +168,19 @@ scenarios:
       - tests/validation/publish_preflight_contracts.py
       - tests/validation/runtime_contracts.py
       - harness/adapters/claude-code/CLAUDE.md
+  - id: "273"
+    path: tests/scenarios/273-publish-ship-single-command.md
+    coverage: deterministic
+    evidence:
+      - scripts/publication_ship.py
+      - scripts/governance_guard.py
+      - scripts/publication_planning.py
+      - scripts/publication_commands.py
+      - scripts/publication_authority.py
+      - scripts/publish_preflight.py
+      - tests/test_publication_ship.py
+      - tests/test_publication_planning.py
+      - tests/evidence/governance_command_guard.py
   - id: "240"
     path: tests/scenarios/240-personal-publication-default.md
     coverage: deterministic
@@ -2187,3 +2200,54 @@ scenarios:
       - tests/validation/comfyui_dynamic_workflow_contracts.py
       - tests/evidence/creative_execution_lifecycle.py
       - tests/validation/creative_execution_contracts.py
+  - id: "269"
+    path: tests/scenarios/269-task-scoped-intelligence-preparation.md
+    coverage: lifecycle
+    evidence:
+      - tests/scenarios/269-task-scoped-intelligence-preparation.md
+      - scripts/project_intelligence.py
+      - scripts/turn_context_hook.py
+      - tests/evidence/intelligence_context_lifecycle.py
+      - tests/test_intelligence_task_freshness.py
+  - id: "270"
+    path: tests/scenarios/270-worktree-shared-intelligence-seed.md
+    coverage: lifecycle
+    evidence:
+      - tests/scenarios/270-worktree-shared-intelligence-seed.md
+      - scripts/project_intelligence.py
+      - scripts/project_intelligence_seed.py
+      - tests/evidence/intelligence_worktree_seed_lifecycle.py
+      - tests/test_intelligence_worktree_seed.py
+  - id: "271"
+    path: tests/scenarios/271-audited-topology-templates-and-local-profiles.md
+    coverage: lifecycle
+    evidence:
+      - scripts/creative_execution.py
+      - scripts/comfyui_topology.py
+      - scripts/creative_profiles.py
+      - templates/creative/COMFYUI_TOPOLOGY_TEMPLATES.yaml
+      - tests/fixtures/creative_topology/golden_before_refactor.json
+      - tests/test_creative_topology_templates.py
+      - tests/validation/creative_execution_contracts.py
+  - id: "272"
+    path: tests/scenarios/272-profile-switch-mechanism.md
+    coverage: lifecycle
+    evidence:
+      - tests/scenarios/272-profile-switch-mechanism.md
+      - scripts/aips_profile.py
+      - scripts/protected_paths.py
+      - scripts/turn_context_hook.py
+      - scripts/publication_diagnostics.py
+      - tests/test_profile_switch.py
+      - tests/test_protected_path_guard.py
+  - id: "274"
+    path: tests/scenarios/274-profile-gated-relaxations.md
+    coverage: lifecycle
+    evidence:
+      - tests/scenarios/274-profile-gated-relaxations.md
+      - scripts/aips_profile.py
+      - scripts/publish_preflight.py
+      - config/git-publication.yaml
+      - scripts/turn_context_hook.py
+      - tests/test_pr11_profile_relaxations.py
+      - tests/test_profile_switch.py

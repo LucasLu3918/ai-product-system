@@ -1,5 +1,7 @@
 # Execution Isolation
 
+Publication recipe diagnostics and PR-bound Prepare scan evidence do not select an isolation level or grant execution authority.
+
 The publication PreToolUse guard does not launch a nested Doctor process after retryable remote failure. It denies immediately and names the read-only recovery command; no remote action is authorized or executed.
 
 Runtime Context 會辨識 source checkout、linked worktree 與 installed system，並回報 offline 能力旗標；它只描述執行環境，不授予新的隔離或資源權限。
@@ -37,7 +39,7 @@ The optional E2B smoke test handles synthetic content only and emits a bounded r
 Guest artifacts must be treated as untrusted: validate relative paths and contents on the host, bind import to the source revision and Change Boundary, and run the existing Integration/Security Gate before Git operations. Sandbox capability grants no Git publication or deployment authority.
 Regardless of workspace isolation mode, every Remote Git publication candidate must also pass the built-in strict secret scan over its final tree and full `base..head` history; a sandbox does not replace this publication check.
 
-The local ComfyUI workflow adapter is a loopback resource boundary, not an OS process sandbox. Dynamic workflow JSON is size-bounded, project-confined and validated against the live local schema; dynamic edit binds one to eight ordered references and verifies every staged file hash. Fixed FLUX 3 Klein Base/Distilled execution also validates the live `TextGenerate` schema and final serialized payload before submission. Node allowlisting and explicit input bindings do not claim isolation of ComfyUI itself or its installed extensions, or prove MPS inference.
+The local ComfyUI workflow adapter is a loopback resource boundary, not an OS process sandbox. Dynamic workflow JSON is size-bounded, project-confined and validated against the live local schema; dynamic edit binds one to eight ordered references and verifies every staged file hash. Fixed FLUX 3 Klein Base/Distilled execution also validates the live `TextGenerate` schema and final serialized payload before submission. Node allowlisting and explicit input bindings do not claim isolation of ComfyUI itself or its installed extensions, or prove MPS inference. Local ComfyUI profile drafts and approvals open no endpoint, download no weights and run no inference; approval requires an interactive terminal (Scenario 271).
 
 ## Worktree ownership
 

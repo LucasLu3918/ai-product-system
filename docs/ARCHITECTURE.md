@@ -4,7 +4,7 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ## Runtime flow
 
-Claude Code publication PreToolUse uses a bounded eight-second decision path. Each push still checks the exact candidate, full target ref, remote tip and current authority; a fresh, five-minute private Secret Scan record can avoid only the duplicate Hook scan and never authorizes execution.
+Claude Code publication PreToolUse uses a bounded eight-second decision path. Each push still checks the exact candidate, full target ref, remote tip and current authority; a fresh, 30-minute private Secret Scan record can avoid only the duplicate Hook scan and never authorizes execution.
 
 Project-local AIPS state is opt-in through `aips attach`. In Git worktrees, attach/detach maintain anchored `.ai/` and `.ai.detached-*` entries in repository-local `info/exclude`; non-Git projects need no Git metadata, and project `.gitignore` remains untouched.
 
@@ -105,7 +105,7 @@ Runtime Hook denial guidance carries the normalized reason and trace fields thro
 
 The shared creative executor registers Z-Image Turbo generation through the fixed `mflux-generate-z-image-turbo` command or the exact built-in ComfyUI split-loader API workflow. Discovery, configuration, preflight and OpenCode share the executor; ComfyUI verifies its UNET, CLIP and VAE inventory and rejects other workflow topology. Editing and other Z-Image variants remain unsupported. Read-only discovery distinguishes command presence, runtime response, capped model inventory, preflight and actual inference; ordinary discovery only probes `127.0.0.1:8188` with fixed GET paths. All local provider requests require a literal loopback IP, explicit port, allowlisted method/path, proxy bypass and redirect refusal. Static Apple Silicon MPS/precision evidence can advise conservatively, while backend compatibility remains unverified until real inference is separately authorized and observed.
 
-ComfyUI model additions use the declarative `templates/creative/COMFYUI_MODEL_PROFILES.yaml` registry. A profile may choose components and bounded sampler settings only within an executor-reviewed topology family; additions in an audited family are data-only, while arbitrary nodes or a new family still require code review. FLUX 3 Klein Base retains 50 steps / CFG 3.5; Distilled uses 16 steps / CFG 1 on the same topology. Runtime schema, installed component and final-payload checks still apply to every profile.
+ComfyUI model additions use the declarative `templates/creative/COMFYUI_MODEL_PROFILES.yaml` registry. A profile may choose components and bounded sampler settings only within an executor-reviewed topology family; additions in an audited family are data-only, while arbitrary nodes or a new family still require code review. FLUX 3 Klein Base retains 50 steps / CFG 3.5; Distilled uses 16 steps / CFG 1 on the same topology. Sampler and prompt-upsampler values are profile data bounded by per-family ranges in the same registry (capped by the executor), and an optional profile `runtime_budget` lets preflight warn or block before submission when the static runtime estimate exceeds the effective timeout. Runtime schema, installed component and final-payload checks still apply to every profile. Audited topology templates (`templates/creative/COMFYUI_TOPOLOGY_TEMPLATES.yaml`) describe the Z-Image and FLUX 3 Klein node graphs as data; a user-local profile may reference only one of them and can never add a node, input or endpoint (Scenario 271).
 
 For FLUX 3 Klein, preflight checks the live `/object_info/TextGenerate` input schema, including Dynamic Combo option shape and selected value. The final serialized workflow is compared with the preflighted topology and links before its single `/prompt` submission; provider errors expose only bounded, allowlisted node and exception details. Dynamic edit workflows bind ordered local image slots from `image_1` through `image_8`; each staged file is size-bounded and hash-matched before submission.
 
@@ -202,6 +202,8 @@ flowchart LR
 ~~~
 
 Plan42 extends this same content-safety flow to bounded TTF/OTF/WOFF/WOFF2 metadata; staged blob sizes are checked before reads, and metadata scanning does not grant commit or publication authority.
+
+Turn Context preparation is task-scoped: READY+STALE Project Intelligence asks for a targeted refresh only when task-relevant topics are affected, and the Retrieval index is requested only when the task needs retrieval. Change Impact and the existing fail-closed reasons are unchanged.
 
 ## Parallel run observation flow
 

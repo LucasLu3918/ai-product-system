@@ -2,6 +2,8 @@
 
 Direct local L2 source writes may use READY Project Intelligence with STALE freshness as advisory context; keep the stale state visible and preserve every independent guard denial.
 
+Refresh only the topics in `targeted_refresh` when the Context sets `refresh_required=true`, and build the Retrieval index only when `retrieval_index_required=true`.
+
 The dedicated aips creative import-candidate / import CLI is separate from OpenCode native file actions. Git destinations remain denied unless the user explicitly selects the hash-bound create-only import flow.
 
 
@@ -37,7 +39,7 @@ The OpenCode Z-Image Turbo configure schema accepts `model_profile`, `unet_name`
 
 On OpenCode V2, the custom creative tool is exposed in the Code Mode catalog as tools.creative_execution; call that exact catalog signature through the native execute tool. Mutation grants bind the native prompt digest, Session root, allowed actions and inferred output count; raw prompt text is not retained in the grant. Grants stay in memory and are replaced on every new prompt. A new response may receive a fresh grant from bounded structured continuation state; synthetic messages do not create grants.
 
-For local generation, use the shared creative_execution registry and its executor-reviewed ComfyUI topology families. Z-Image Turbo uses its fixed workflow; FLUX 3 Klein Base and Distilled profiles use the shared audited topology with per-profile bounded sampler settings and exact local component checks. The FLUX 3 Klein path validates the live `TextGenerate` input schema and final serialized payload before its single `/prompt` submission. New profiles within an audited family are data-only and are still automatically validated; new nodes or families require code review. Dynamic local edits can bind one to eight ordered references after staged-byte hash checks. Strip prompt-bearing PNG text metadata. No model profile enables editing; schema validation does not prove MPS inference.
+For local generation, use the shared creative_execution registry and its executor-reviewed ComfyUI topology families. Z-Image Turbo uses its fixed workflow; FLUX 3 Klein Base and Distilled profiles use the shared audited topology with per-profile bounded sampler settings and exact local component checks. The FLUX 3 Klein path validates the live `TextGenerate` input schema and final serialized payload before its single `/prompt` submission. New profiles within an audited family are data-only and are still automatically validated; new nodes or families require code review. Dynamic local edits can bind one to eight ordered references after staged-byte hash checks. Strip prompt-bearing PNG text metadata. No model profile enables editing; schema validation does not prove MPS inference. Do not approve or edit local ComfyUI profiles from the agent; `aips creative profile approve` requires an interactive terminal.
 
 An explicit Bundle may opt into `workflow.mode: dynamic_local` for a project-local ComfyUI API workflow. The shared executor validates the local schema/graph, accepts runtime-identified core nodes only, enforces explicit prompt/seed/dimension/output/reference bindings and checks installed loader model names. Use `aips creative workflows scan|import|inspect` for the documented bounded workflow operations; import is create-only. This does not authorize arbitrary Shell/custom nodes, model download, external endpoints or automatic retry after uncertain submission.
 
@@ -58,6 +60,8 @@ Ordinary generation grants permit bounded `quality-check` of manifests produced 
 ## Publication Root-Cause Recovery (Plan35)
 
 Plan53 changes are Claude Code publication-adapter behavior. OpenCode permissions and action guards remain separate; no OpenCode operation consumes the publication scan-evidence cache or gains Git authority from it.
+
+The Claude Code standard publication recipe and quoted-heredoc literal handling are Claude Code Hook behavior; OpenCode permissions remain ADVISORY and unchanged.
 
 AVIF metadata inspection is a repository content-safety check, separate from OpenCode's verified runtime permission-hook boundary.
 

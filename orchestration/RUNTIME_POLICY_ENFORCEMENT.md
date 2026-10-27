@@ -34,7 +34,7 @@ Task write authorization is not a substitute for the Runtime Action PEP. `aips r
 
 ## Runtime Action Envelope
 
-ComfyUI model registry data selects only already-reviewed executor topology families and validated bounded sampler values; it does not create a Runtime action, resource grant or new mutation authority. Dynamic edit reference slots are ordered and capped at eight, with local staged-byte verification before the authorized workflow submission.
+ComfyUI model registry data selects only already-reviewed executor topology families and validated bounded sampler values; it does not create a Runtime action, resource grant or new mutation authority. Dynamic edit reference slots are ordered and capped at eight, with local staged-byte verification before the authorized workflow submission. Audited topology templates are checked by the generic validator and create no Runtime action authority.
 
 The commit-time font metadata scanner does not evaluate or broaden Runtime Action Envelope permissions; its ALLOW result remains separate from tool authorization.
 
@@ -66,6 +66,8 @@ Decisions:
 - `BLOCKED` — required evidence, policy, SAL, enforcement, sandbox or valid configuration is unavailable or stale.
 
 The active Approval Record must bind operation `external_data_egress`, action digest, policy digest, exact destination, data classes, protected assets and Change Boundary. It must be APPROVED and unexpired. A missing record yields `REQUIRE_APPROVAL`; a present stale/invalid record yields `BLOCKED`.
+
+In personal mode the publication guard parses command words with NUL-marked expansions: quoted-heredoc or single-quoted `gh pr create` text, including literal `$` and backticks, is data for content safety, while `$VAR`, backticks, `$"..."`, command substitution and unquoted heredocs deny with `PUBLICATION_ARGUMENT_DYNAMIC`. Denials carry a static recipe in `next_step`/`next_step_zh`; multiple protected operations deny as `MULTI_COMMAND_UNSUPPORTED`.
 
 ## Audit and semantic providers
 

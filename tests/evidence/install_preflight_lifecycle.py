@@ -148,7 +148,9 @@ def preflight_and_project_lifecycle() -> None:
         dirty = system / "UNCOMMITTED_FIXTURE"
         dirty.write_text("dirty\n", encoding="utf-8")
         dirty_result = cli(system, ["preflight", str(project)], env)
-        require(dirty_result.returncode != 0 and "local changes" in dirty_result.stderr, "Preflight must stop for dirty system worktree")
+        require(dirty_result.returncode == 0 and "skipping the automatic update" in dirty_result.stderr,
+                "Preflight must skip the update and continue for dirty system worktree")
+        require(dirty.exists() and dirty.read_text(encoding="utf-8") == "dirty\n", "Degraded preflight must keep local changes")
         dirty.unlink()
 
         project_check = cli(system, ["project", "check", str(project)], env)

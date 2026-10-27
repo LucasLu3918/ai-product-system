@@ -78,11 +78,13 @@ features:
 
 Git／PR 發佈診斷與安全復原請參閱 [User Guide](USER_GUIDE.md)；CLI 錯誤輸出契約由 Scenario 261 覆蓋。
 
+Claude Code 的標準 commit／push／PR 寫法請參閱 Claude Code adapter；由 Scenario 261 覆蓋。
+
 Publication Hook recovery and Required Checks Doctor semantics live in the User Guide and Security Assurance guide; Scenario 261 records their current safe-recovery and candidate-binding contracts.
 
 本機 Creative 工作流支援明確選用已安裝模型與 schema 驗證的 ComfyUI API graph；固定 profile 維持預設，預檢不會啟動推論。
 
-ComfyUI creative model profile registry、已審核拓樸家族、FLUX 3 Klein Base/Distilled sampler profiles、dynamic edit 有序多參考圖，以及 `TextGenerate` runtime schema／最終 payload 預檢的文件入口，請參閱 User Guide、Technology Guide、Security Assurance 及 `orchestration/CREATIVE_DIRECTION.md`；Scenario 236 是合成驗證依據，不代表 MPS 推論已驗證。
+ComfyUI creative model profile registry、已審核拓樸家族、FLUX 3 Klein Base/Distilled sampler profiles、dynamic edit 有序多參考圖，以及 `TextGenerate` runtime schema／最終 payload 預檢的文件入口，請參閱 User Guide、Technology Guide、Security Assurance 及 `orchestration/CREATIVE_DIRECTION.md`；Scenario 236 是合成驗證依據，不代表 MPS 推論已驗證。 使用者本機 profile 只能引用已審核拓撲範本，核准需互動式確認（Scenario 271）。
 
 OpenCode 原生寫入行為及 READY+STALE 的有限 advisory 邊界，整理於 Harness 與 Project Intelligence；精確的允許／拒絕契約見 Scenario 267。
 
@@ -98,6 +100,8 @@ OpenCode 原生寫入行為及 READY+STALE 的有限 advisory 邊界，整理於
 | 能力清單與技術實作 | [系統參考](SYSTEM_REFERENCE.md)、[技術指南](TECHNOLOGY_GUIDE.md) |
 | 安全、品質與人工審查 | [安全保證](SECURITY_ASSURANCE.md)、[Conformance 驗證紀錄](CONFORMANCE.md) |
 | 維護、版本與文件治理 | [系統維護](MAINTENANCE.md)、[文件導覽](DOCUMENTATION_MAP.md) |
+
+Project Intelligence 的 refresh 與 Retrieval 索引提示依任務範圍判斷（Scenario 269）；細節見 Project Intelligence 與 Harness 文件。
 
 ## 閱讀方式
 

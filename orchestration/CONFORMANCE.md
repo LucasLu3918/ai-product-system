@@ -69,6 +69,8 @@ The upstream install lifecycle additionally asserts installation of every non-ca
 
 The native Skill projection lifecycle checks Codex, Claude Code and Gemini CLI paths, explicit Codex/Claude invocation metadata, Gemini activation consent, idempotent installation, shared Codex/Gemini ownership, conflicts, exact digest-based uninstall, workspace scoping and Portable Command migration. `tests/validation/skill_native_projection_contracts.py` validates the CLI/documentation contracts. These deterministic checks do not claim live Host discovery or invocation acceptance.
 
+Scenario 269 adds `aips intelligence gc [--yes]` (dry run by default) to the public help without changing existing command contracts.
+
 ## Scenario 234 — Local Character Artwork Provenance and Composition
 
 Scenario 240 adds worktree-bound publication prepare/diagnose regression; safe failure codes and live PR reuse are exercised by tests/test_publication_planning.py. Synthetic GitHub metadata does not establish real-host permission or REST acceptance.
@@ -1098,6 +1100,8 @@ The branch lifecycle report classifies remote branches using current exact-SHA P
 
 Publication CLI diagnostics do not change Skill Explorer admission or grant a Skill publication authority; see Scenario 261 for the separate CLI contract.
 
+Publication recipe diagnostics do not change Skill Explorer admission or grant a Skill publication authority; see Scenario 261.
+
 The publication Hook changes reuse existing authority and scanning code; they do not add a Skill, alter Skill Explorer trust, or grant Git operations.
 
 FLUX 3 Klein `TextGenerate` preflight remains in the Creative executor; its schema and payload checks add no Skill catalog, Skill Explorer, or routing behavior.
@@ -1143,6 +1147,8 @@ The canonical Skill registry contains 49 AIPS Skills; the pinned 38-item upstrea
 
 Release history update for the pure dependency update documentation exemption (Scenario 221) reviewed this section: Skill integration, Explorer and reuse behavior are unchanged.
 
+Scenario 269 changes no Skill catalog or installation behavior; it adds task-scoped Turn Context preparation and the `aips intelligence gc` lifecycle.
+
 ## Scenario 260 — Publication diagnostics and Doctor
 
 Scenario 263 is separate from publication Doctor and cannot satisfy PR merge checks or approval.
@@ -1167,7 +1173,7 @@ Scenario 262 locks stage-specific default-deny Profile diagnostics, kind/selecto
 
 ## Scenario 268 — Model-agnostic ComfyUI Workflows
 
-Scenario 268 covers opt-in model-agnostic local ComfyUI API workflows: bounded schema and graph parsing, runtime core-node trust classification, installed loader model validation, explicit bindings, safe create-only output, project-confined no-overwrite import and uncertain-submit no-retry recovery. The loopback lifecycle is synthetic; real model inference and visual quality remain UNVERIFIED.
+Scenario 268 covers opt-in model-agnostic local ComfyUI API workflows: bounded schema and graph parsing, runtime core-node trust classification, installed loader model validation, explicit bindings, safe create-only output, project-confined no-overwrite import and uncertain-submit no-retry recovery. The loopback lifecycle is synthetic; real model inference and visual quality remain UNVERIFIED. Scenario 271 extends this topology work with audited template data, a generic validator, pre-refactor equivalence for every registered profile, and the user-local profile draft and approve gate.
 
 The creative profile registry supports FLUX Klein Base and Distilled through the shared audited topology with validated profile-specific sampler settings. Dynamic ComfyUI edits accept one to eight ordered, explicitly bound local references and verify every staged file against its source hash. MFLUX FLUX.1 remains single-reference; FLUX.2/Qwen edit uses the bounded `--image-paths` option.
 
@@ -1200,6 +1206,8 @@ tests/evidence/opencode_integration_lifecycle.py verifies the AIPS creative impo
 
 CLI error serialization is not scan evidence; content-safety and complete candidate/history scans remain fail-closed.
 
+Quoted-heredoc publication text remains subject to content safety; recipe-bearing denials are not scan evidence.
+
 The publication evidence cache is independent of injection classification and sink decisions. It stores only an exact-candidate full Secret Scan pass and fails closed on expiry, corruption or policy drift.
 
 Imported ComfyUI workflow JSON remains untrusted project content under the existing injection and Change Boundary rules.
@@ -1215,3 +1223,9 @@ Scenario 266 also binds `pii.email.v2`: only the exact ASCII `git` userinfo of a
 Pure dependency update documentation exemption (Scenario 221): `pure_dependency_update` in `scripts/dependency_impact.py` returns `PURE_DEPENDENCY_UPDATE` only when every changed file is an allowlisted dependency manifest (`.github/workflows/*.yml`, root `requirements*.txt`, `constraints/*.txt`) modified in place and every changed line pair is either a full-SHA pinned `uses:` reference for the same action with a non-decreasing version comment, or an exact `name==version` pin with a strictly higher version. Documentation Impact, Documentation Placement and Documentation Sync then suppress documentation requirements only and report each dependency's classification, risk and `human_review_required`; any other line or file, downgrade, unpinned reference, planned path, size-limit overflow or predicate failure keeps the full rules. Secret scanning, content safety, the Core Change Test Matrix, the Integration Gate, required checks and Human merge approval are unchanged, and `automatic_merge_authorized` stays false.
 
 Dependabot commits: the GitHub App bot noreply author and Dependabot's exact final `Signed-off-by` trailer are Git identity metadata decided by `config/git-publication.yaml`, not PII exceptions; `pii.email.v2` and every other address stay blocking, and the bot identity grants no authority.
+
+Scenario 269 refreshes only the CLI help golden vectors for `aips intelligence gc`; content-safety detection, sink policy and commit scanning are unchanged.
+
+Scenario 272 covers the profile switch mechanism with default-strict loading, fail-closed diagnostics, a TTY and typed-phrase gate for `aips profile set`, and agent-write denial; relaxations stay off until a later scenario adds them.
+
+Scenario 274 covers the profile-gated relaxations `claude_coauthor_trailer` (exact Claude co-author trailer in the final trailer block of the publication gate PII scan) and `post_merge_refresh` (one detached `aips intelligence refresh` per store per HEAD); both default to off and no other address, secret rule or authority changes.

@@ -33,6 +33,8 @@ SYSTEM.md / orchestration / roles / skills
 
 Publication CLI 的 `prepare`／`diagnose` JSON 錯誤行為以 User Guide 為操作說明、Scenario 261 為回歸證據；診斷不得被解讀為授權。
 
+Claude Code 發布寫法以 Claude Code adapter 為代理說明、Scenario 261 為回歸證據；拒絕訊息中的寫法範本不構成授權。
+
 The character-artwork trigger remains scoped to creative behavior. Publication evidence changes are documented in publication and security topics and do not change artwork or provenance guidance.
 
 Project lifecycle guidance records that `.ai/` is created only by explicit attach and that attach/detach keep AIPS state in repository-local Git excludes without changing `.gitignore`; Scenario 044 covers lifecycle behavior and tracked-file limits.
@@ -113,7 +115,7 @@ Creative readiness changes synchronize command/runtime/model/preflight/inference
 
 Project Diagnostics 將 `aips project diagnose` 的唯讀行為、狀態 reason code、恢復建議與 UNVERIFIED Host 邊界放在 Human Project Intelligence、System Reference、Harness 與對應 Scenario；不可將靜態 MCP／設定檢查描述為實機執行證據。
 
-ComfyUI model profile 的模型清單、拓樸家族、元件檔名與 sampler 欄位由 registry template 和 executor 共管；已審核家族內的資料型 profile 仍受欄位範圍、live schema 與本機元件清單驗證，新增節點／家族須程式審核。同步 Z-Image Turbo、FLUX 3 Klein Base/Distilled workflow、dynamic edit 一至八張有序參考綁定與 Scenario 236 證據，不擴大為任意節點或遠端 execution。
+ComfyUI model profile 的模型清單、拓樸家族、元件檔名與 sampler 欄位由 registry template 和 executor 共管；已審核家族內的資料型 profile 仍受欄位範圍、live schema 與本機元件清單驗證，新增節點／家族須程式審核。同步 Z-Image Turbo、FLUX 3 Klein Base/Distilled workflow、dynamic edit 一至八張有序參考綁定與 Scenario 236 證據，不擴大為任意節點或遠端 execution。 拓撲範本節點圖變更須同步 Technology Guide、Scenario 271 與 Core Change Matrix；使用者本機 profile 的核准不得由代理自動執行。
 
 Z-Image Turbo 的 generate-only 能力說明放在 Creative／Execution／Runtime 主題內；ComfyUI 固定 split-loader API 工作流與可由本機 API 核對的三項權重維持原行為。另有明確 opt-in 的 `dynamic_local` 路徑，僅接受經本機 schema 驗證的 core-node graph 與明確綁定，拒絕 custom/API nodes；Scenario 268 不宣稱實際 inference 或 image quality。
 
@@ -223,6 +225,8 @@ Behavior-bearing source changes must first map every new source path in `config/
 
 
 Plan36 publication diagnostics preserve this topic's existing behavior and authority boundaries.
+
+Scenario 269 places task-scoped refresh and Retrieval index policy in existing current-behavior sections without adding a new topic.
 
 ## Official Docs Site
 

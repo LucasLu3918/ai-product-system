@@ -1,6 +1,6 @@
 # 安裝、更新與解除
 
-本機 ComfyUI profile 是 AIPS 內建 registry 資料；安裝與 discovery 不會下載權重，也不代表推論相容性已驗證。新增 profile 必須符合 executor 已審核的拓樸家族與本機已安裝元件清單。
+本機 ComfyUI profile 是 AIPS 內建 registry 資料；安裝與 discovery 不會下載權重，也不代表推論相容性已驗證。新增 profile 必須符合 executor 已審核的拓樸家族與本機已安裝元件清單。 使用者本機 profile 位於 `$XDG_CONFIG_HOME/aips/creative/profiles/`（預設 `~/.config/aips/`），草擬不下載權重，核准需互動式終端機。
 
 本指南整理 AIPS 的安裝生命週期（Install / Update / Uninstall）。支援 macOS、Linux 與 Windows + WSL；目前不宣稱 Windows 原生 PowerShell／CMD runtime 已支援。AIPS 需要 Python 3.12 以上。
 
@@ -9,6 +9,8 @@
 ## macOS / Linux
 
 The installed CLI returns stable, redacted JSON errors for local `prepare` and `diagnose` failures; this changes output format only and does not grant publication permission.
+
+The installed Claude Code adapter includes the standard publication recipe; Prepare scan evidence now lasts 30 minutes and still binds the exact candidate, operation, target and policy.
 
 Publication scan evidence is private user-cache data used only by the Claude Code Git Hook. It is separate from runtime content-safety setup and does not alter scanner policy or installation permissions.
 
@@ -34,6 +36,8 @@ Managed Runtime hooks keep content-safety and publication checks fail-closed. Re
 安裝器會管理 AIPS system checkout、Python virtual environment、CLI 與支援的 Runtime 整合。預設安裝路徑為 `$XDG_DATA_HOME/aips/system`，若未設定 `XDG_DATA_HOME` 則使用 `~/.local/share/aips/system`。可用 `AIPS_INSTALL_DIR` 指定其他 system checkout 路徑。
 
 `--configure-shell` 會在 zsh 或 bash profile 加入有明確 AIPS 標記的 `PATH` 區塊，方便新終端找到 `aips`。若你自行管理 shell 設定，改用 `--no-configure-shell`。
+
+安裝後的 `aips --help` 與 `aips intelligence --help` 會列出 `aips intelligence gc [--yes]`；內容安全與 commit 掃描行為不變。
 
 ## Windows
 
@@ -65,7 +69,11 @@ aips mcp inspect
 
 維護者要驗證完整 repository 時使用 `aips validate`。一般安裝不會在使用者電腦執行完整 CI，也不會連線修改 GitHub repository 設定。
 
+`aips system preflight` 在已安裝的 system checkout 有本機變更時，會略過自動更新、沿用目前版本並顯示版本、commit 與清理步驟；變更不會被丟棄或提交。明確執行 `aips update` 仍會在有變更時拒絕。
+
 ## Runtime integration
+
+Installing the Claude Code adapter adds the standard publication recipe to the managed `CLAUDE.md` block; it grants no publication permission.
 
 The managed Claude Code publication Hook has an eight-second hard deadline. For protected pushes, run `aips publish prepare` first so the full candidate/history scan can create the short-lived private evidence record; the Hook rechecks candidate and remote state on every invocation.
 
@@ -84,6 +92,8 @@ Commit 時的 AVIF 中繼資料掃描採用內建且有界的解析器，不需�
 不同 Agent 的 Context、工具權限與原生 Hook 能力並不相同。安裝狀態或靜態探測只能說明設定狀態；有版本綁定的 Host 驗收才可證明指定環境中的行為。Codex 的部分防護維持 ADVISORY，不能視為作業系統層級的隔離。
 
 MCP 設定可用 `aips mcp config --client <client>` 預覽。該命令不會替你寫入 Cursor、Copilot、Amp、Codex 或其他 Host 設定。
+
+重新安裝 Runtime adapter 時，Global Harness 區塊會寫入更新後的說明：READY+STALE 的 Intelligence 只在 Turn Context 設定 `refresh_required=true` 時才需要 targeted refresh；`retrieval_index_required=true` 時才需要建立索引。`aips intelligence gc` 預設只列出專案路徑已不存在的外部 store，加上 `--yes` 才刪除。
 
 ## 常見問題與排查
 

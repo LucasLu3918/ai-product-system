@@ -107,7 +107,7 @@ Validation Observation collection must distinguish a completed `NOT_READY` cohor
 
 For OpenCode runtime changes, exact-host acceptance is separate from fixtures and static registration. Record the host/platform/source boundary and preserve explicit unsupported-effect states; do not infer production model quality or universal interception.
 
-Accepted ComfyUI job recovery must test exact-ID queue deletion, no global interrupt and no automatic resubmission after timeout or polling failure. Inconclusive cleanup does not grant another submission.
+Accepted ComfyUI job recovery must test exact-ID queue deletion, targeted interrupt only for an AIPS-owned running prompt_id, no interrupt of foreign jobs or without readable queue evidence, ledger-based ownership after restart, privacy-bounded ledger fields and no automatic resubmission after timeout or polling failure. Inconclusive cleanup does not grant another submission.
 
 Plan27 lifecycle binds facade identity, sibling imports, bounded candidate depth, recovery ordering, stale native acceptance, privacy filters and missing-measurement behavior. Native loopback acceptance, real local inference, Human visual review and user acceptance remain separate evidence dimensions.
 
@@ -141,6 +141,10 @@ For security/credential changes, include secret leakage/redaction and relevant n
 Every Remote Git publication candidate also requires a credential-free strict scan of its final tree and complete `base..head` history; Core Change evidence must bind the exact scanner and policy inputs.
 
 Internal module extraction uses `tests/evidence/module_extraction_lifecycle.py` to assert facade re-exports and keeps the existing focused lifecycle plus full repository Gate as the behavior evidence.
+
+Profile switch changes bind to Scenario 272, `tests/test_profile_switch.py` and the agent-denial cases in `tests/test_protected_path_guard.py`.
+
+Scenario 261 binds quoted-heredoc PR text, dynamic-argument denials, PR-bound scan evidence and the 30-minute TTL to regression tests.
 
 ## Review
 

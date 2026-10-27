@@ -34,6 +34,7 @@ from observed_stage import observed_stage
 from project_intelligence_context import SOURCE_NAMES, compact_context_manifest
 from project_intelligence_promotion import promotion_candidate as _promotion_candidate
 from project_intelligence_promotion import promotion_target as _promotion_target_impl
+from project_intelligence_seed import seed_worktree_store, seeded_worktree_change_proven
 from project_intelligence_storage import atomic_text, atomic_yaml, writer_lock
 from project_intelligence_temporal import temporal_query
 from retrieval_evaluation import (
@@ -458,15 +459,57 @@ def initial_intelligence(root: Path, pid: str, ident: dict[str, str], old_knowle
     }
 
 
+def seed_observation(result: dict[str, Any], attempt: dict[str, Any] | None) -> dict[str, Any]:
+    """Attach the fallback diagnostic when a seed was refused or failed; never a path."""
+    if attempt and attempt.get("status") in ("REFUSED", "FAILED"):
+        result["observations"] = [f"intelligence_seed_fallback:{attempt.get('reason_code')}"]
+    return result
+
+
+def seeded_bootstrap(root: Path, attempt: dict[str, Any]) -> dict[str, Any]:
+    store, mode, pid = intelligence_store(root)
+    intel = load_yaml(store / "PROJECT_INTELLIGENCE.yaml", {})
+    freshness_result = freshness(root)
+    review = render_review(root)
+    return {
+        "project_id": pid,
+        "mode": mode,
+        "store": str(store),
+        "status": "SEEDED",
+        "seeded_from": {
+            "project_id": attempt["source_project_id"],
+            "git_head": attempt["source_git_head"],
+            "selection": attempt["selection"],
+        },
+        "copied_artifact_count": attempt["copied_artifact_count"],
+        "excluded_artifact_count": attempt["excluded_artifact_count"],
+        "readiness": (intel.get("state") or {}).get("readiness"),
+        "freshness": freshness_result["status"],
+        "reasons": freshness_result.get("reasons", []),
+        "review_html": str(review),
+        "next": (
+            "Intelligence was seeded and is current for this worktree; no refresh is required."
+            if freshness_result["status"] == "CURRENT"
+            else "Intelligence was seeded; refresh only the affected topics listed in freshness reasons."
+        ),
+    }
+
+
 def bootstrap(root: Path) -> dict[str, Any]:
+    seed_attempt: dict[str, Any] | None = None
+    probe, probe_mode, _probe_pid = intelligence_store(root)
+    if probe_mode == "EPHEMERAL" and not (probe / "PROJECT_INTELLIGENCE.yaml").exists():
+        seed_attempt = seed_worktree_store(root, probe, schema_version=SCHEMA_VERSION)
+        if seed_attempt["status"] == "SEEDED":
+            return seeded_bootstrap(root, seed_attempt)
     store, mode, pid = intelligence_store(root, create=True)
     with writer_lock(store):
         if (store / "PROJECT_INTELLIGENCE.yaml").exists():
-            return {
+            return seed_observation({
                 "project_id": pid, "mode": mode, "store": str(store),
                 "status": "PRESERVED_EXISTING",
                 "next": "Use status and refresh-plan; enrich only affected topics before finalize.",
-            }
+            }, seed_attempt)
         files = safe_walk(root)
         inv = inventory(root, files)
         sources = discover_sources(root, files)
@@ -517,7 +560,7 @@ def bootstrap(root: Path) -> dict[str, Any]:
             "inventory": inv,
         })
     review = render_review(root)
-    return {
+    return seed_observation({
         "project_id": pid,
         "mode": mode,
         "store": str(store),
@@ -525,7 +568,7 @@ def bootstrap(root: Path) -> dict[str, Any]:
         "review": "UNREVIEWED",
         "review_html": str(review),
         "next": "Agent semantic enrichment + aips intelligence finalize",
-    }
+    }, seed_attempt)
 
 
 def git_dirty_paths(root: Path) -> list[str]:
@@ -593,8 +636,11 @@ def freshness(root: Path) -> dict[str, Any]:
     ident = repository_identity(root)
     stored_project = intel.get("project") or {}
     if stored_project.get("worktree_identity") and stored_project.get("worktree_identity") != ident["worktree_id"]:
-        reasons.append("worktree_identity_changed")
-        affected_topics.add("project-identity")
+        if seeded_worktree_change_proven(intel, ident, stored_project["worktree_identity"]):
+            observations.append("worktree_identity_seeded_from_same_repository")
+        else:
+            reasons.append("worktree_identity_changed")
+            affected_topics.add("project-identity")
 
     current_branch = run_git(root, ["branch", "--show-current"])
     old_branch = stored_project.get("branch")
@@ -1032,6 +1078,42 @@ def retrieval_failure_remediation(exc: BaseException) -> str:
     return str(retrieval_index_unavailable(exc).get("remediation"))
 
 
+def retrieval_needed_for_task(prompt: str, mutation: bool, desired_topics: list[str]) -> bool:
+    """Return whether this turn needs Retrieval Intelligence evidence.
+
+    Retrieval is needed only for a non-empty prompt that is a likely mutation
+    or that selected task-relevant Intelligence topics. Chat, planning and
+    general read turns without topic signals report index status only.
+    """
+    return bool(prompt.strip()) and (mutation or bool(desired_topics))
+
+
+def task_refresh_requirement(fr: dict[str, Any], readiness: str, selected: list[str],
+                             task_freshness: dict[str, Any]) -> dict[str, Any]:
+    """Resolve whether this turn must refresh Intelligence topics.
+
+    Non-READY stale Intelligence keeps the store-wide targeted refresh. READY
+    stale Intelligence is advisory: refresh is required only when the
+    task-relevant topics are affected or their irrelevance cannot be proven.
+    """
+    affected = list(fr.get("affected_topics") or [])
+    if fr.get("status") != "STALE":
+        return {"refresh_required": False, "targeted_refresh": [], "advisory": False,
+                "reason": "freshness_not_stale"}
+    if readiness != "READY":
+        return {"refresh_required": True, "targeted_refresh": affected, "advisory": False,
+                "reason": "stale_not_ready"}
+    if not selected:
+        return {"refresh_required": False, "targeted_refresh": [], "advisory": True,
+                "reason": "no_task_relevant_topics"}
+    if task_freshness.get("status") == "CURRENT":
+        return {"refresh_required": False, "targeted_refresh": [], "advisory": True,
+                "reason": "task_topics_not_affected"}
+    touched = list(task_freshness.get("affected_selected_topics") or [])
+    return {"refresh_required": True, "targeted_refresh": touched or affected, "advisory": True,
+            "reason": "task_topics_affected" if touched else "task_relevance_unproven"}
+
+
 def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = False, component: str | None = None,
                      target_path: str | None = None, intent: str = "auto") -> dict[str, Any]:
     store, mode, pid = intelligence_store(root)
@@ -1137,7 +1219,9 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
 
     initialize = fr["status"] == "MISSING"
     readiness = state.get("readiness", "PARTIAL") if not initialize else "PARTIAL"
-    refresh = fr.get("affected_topics", []) if fr["status"] == "STALE" else []
+    refresh_plan_for_task = task_refresh_requirement(fr, readiness, selected, layers.get("task_freshness") or {})
+    refresh = refresh_plan_for_task["targeted_refresh"]
+    retrieval_needed = retrieval_needed_for_task(prompt, mutation, desired_topics)
     task_effect = str(task_classification.get("effect") or "chat_only")
     task_level = "L0" if task_effect == "chat_only" else "L3" if task_effect == "external_action" else "L2"
     if task_effect == "filesystem_write" and task_classification.get("domain") == "creative" and task_classification.get("intent") == "create":
@@ -1221,10 +1305,16 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
         "requirements": {
             "initialize_intelligence": initialize,
             "semantic_enrichment_required": readiness != "READY",
+            "retrieval_needed": retrieval_needed,
+            "retrieval_index_status": str(retrieval_state.get("status") or "MISSING"),
             "retrieval_index_required": bool(
-                (store / "PROJECT_INTELLIGENCE.yaml").exists()
+                retrieval_needed
+                and (store / "PROJECT_INTELLIGENCE.yaml").exists()
                 and retrieval_state.get("status") == "MISSING"
             ),
+            "refresh_required": refresh_plan_for_task["refresh_required"],
+            "refresh_reason": refresh_plan_for_task["reason"],
+            "freshness_advisory": refresh_plan_for_task["advisory"],
             "targeted_refresh": refresh,
             "change_impact_required": mutation,
         },
@@ -2011,6 +2101,125 @@ def status(root: Path) -> dict[str, Any]:
     }
 
 
+# Garbage collection for orphaned external Project Intelligence stores.
+# Only <config_home>/projects/<workspace>/intelligence directories are
+# considered. A store is an orphan only when its recorded project root is an
+# absolute path and nothing exists at that path. Dry-run is the default;
+# removal requires apply=True (aips intelligence gc --yes).
+GC_STORE_NAME = "intelligence"
+GC_MANIFEST_NAME = "PROJECT_INTELLIGENCE.yaml"
+
+
+def _gc_recorded_root(store: Path) -> tuple[str | None, str | None]:
+    manifest = store / GC_MANIFEST_NAME
+    if manifest.is_symlink() or not manifest.is_file():
+        return None, "manifest_missing"
+    try:
+        data = yaml.safe_load(manifest.read_text(encoding="utf-8")) or {}
+    except (OSError, UnicodeDecodeError, yaml.YAMLError):
+        return None, "manifest_unreadable"
+    project = data.get("project") if isinstance(data, dict) else None
+    root = project.get("root") if isinstance(project, dict) else None
+    if not isinstance(root, str) or not root.strip():
+        return None, "project_root_unrecorded"
+    if not os.path.isabs(root):
+        return None, "project_root_not_absolute"
+    return root, None
+
+
+def _gc_path_present(path: str) -> bool | None:
+    """Return True when anything (even a broken symlink) exists, None if unverifiable."""
+    try:
+        os.lstat(path)
+    except FileNotFoundError:
+        return False
+    except NotADirectoryError:
+        return False
+    except OSError:
+        return None
+    return True
+
+
+def _gc_confined(base: Path, entry: Path, store: Path) -> bool:
+    try:
+        resolved_entry = entry.resolve(strict=True)
+        resolved_store = store.resolve(strict=True)
+    except OSError:
+        return False
+    return resolved_entry.parent == base and resolved_store.parent == resolved_entry
+
+
+def gc_external_stores(projects_dir: Path, *, apply: bool = False) -> dict[str, Any]:
+    """Classify external stores and remove orphans only when ``apply`` is True."""
+    result: dict[str, Any] = {
+        "mode": "APPLY" if apply else "DRY_RUN",
+        "projects_dir": str(projects_dir),
+        "orphaned": [],
+        "kept": [],
+        "skipped": [],
+        "removed": [],
+        "errors": [],
+    }
+    if projects_dir.is_symlink():
+        result["status"] = "REFUSED"
+        result["reason"] = "projects_dir_is_symlink"
+        return result
+    if not projects_dir.is_dir():
+        result["status"] = "NO_STORES"
+        return result
+    base = projects_dir.resolve(strict=True)
+    for entry in sorted(base.iterdir(), key=lambda item: item.name):
+        store = entry / GC_STORE_NAME
+        record = {"workspace_id": entry.name, "store": str(store)}
+        if entry.is_symlink():
+            result["skipped"].append({**record, "reason": "workspace_is_symlink"})
+            continue
+        if not entry.is_dir():
+            continue
+        if store.is_symlink():
+            result["skipped"].append({**record, "reason": "store_is_symlink"})
+            continue
+        if not store.is_dir():
+            continue
+        if not _gc_confined(base, entry, store):
+            result["skipped"].append({**record, "reason": "store_outside_projects_dir"})
+            continue
+        root, problem = _gc_recorded_root(store)
+        if root is None:
+            result["skipped"].append({**record, "reason": problem})
+            continue
+        record["project_root"] = root
+        present = _gc_path_present(root)
+        if present is None:
+            result["skipped"].append({**record, "reason": "project_root_unverifiable"})
+            continue
+        if present:
+            result["kept"].append({**record, "reason": "project_root_exists"})
+            continue
+        result["orphaned"].append({**record, "reason": "project_root_missing"})
+        if not apply:
+            continue
+        # Re-check immediately before deletion; never delete a store whose
+        # project path reappeared or whose confinement changed.
+        if _gc_path_present(root) is not False or not _gc_confined(base, entry, store) or store.is_symlink():
+            result["skipped"].append({**record, "reason": "changed_before_removal"})
+            continue
+        try:
+            shutil.rmtree(store)
+        except OSError as exc:
+            result["errors"].append({**record, "reason": type(exc).__name__})
+            continue
+        result["removed"].append(record)
+        try:
+            entry.rmdir()
+        except OSError:
+            pass  # Other workspace data (runs, changes) is preserved.
+    result["status"] = "APPLIED" if apply else "DRY_RUN"
+    if not apply and result["orphaned"]:
+        result["next"] = "Review the orphaned stores, then run: aips intelligence gc --yes"
+    return result
+
+
 def output(data: Any, fmt: str) -> None:
     if fmt == "json":
         print(json.dumps(data, ensure_ascii=False, indent=2))
@@ -2115,6 +2324,10 @@ def main() -> int:
     p.add_argument("--observe-run-id", help="Record this Retrieval operation in an existing AIPS run")
     p.add_argument("--format", choices=["yaml", "json"], default="yaml")
 
+    p = sub.add_parser("gc", help="List (default) or remove external stores whose project path no longer exists")
+    p.add_argument("--yes", action="store_true", help="Remove the listed orphaned stores; default is a dry run")
+    p.add_argument("--format", choices=["yaml", "json"], default="yaml")
+
     p = sub.add_parser("evaluate")
     p.add_argument("--project", default=os.getcwd())
     p.add_argument("--suite", required=True)
@@ -2122,6 +2335,14 @@ def main() -> int:
     p.add_argument("--format", choices=["yaml", "json"], default="yaml")
 
     args = parser.parse_args()
+    if args.command == "gc":
+        try:
+            result = gc_external_stores(config_home() / "projects", apply=args.yes)
+        except OSError as exc:
+            print(f"ERROR: {exc}", file=sys.stderr)
+            return 2
+        output(result, args.format)
+        return 1 if result.get("errors") or result.get("status") == "REFUSED" else 0
     root = project_root(Path(args.project))
     try:
         if args.command == "bootstrap":

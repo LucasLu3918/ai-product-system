@@ -57,6 +57,8 @@ The project lifecycle keeps `.ai/` opt-in and records `.ai/` plus `.ai.detached-
 
 Turn Context retains Project Intelligence freshness and refresh guidance. A READY but STALE result is advisory for confined local L2 source writes; UNKNOWN or non-READY state remains fail-closed.
 
+Turn Context also reports the active profile line (`aips_profile=strict` by default); `aips profile show` and `aips profile set` are the only profile surfaces, and the agent cannot write the switch.
+
 Publication diagnostics remain tied to the exact Change Impact candidate, while transient recovery repeats read-only evidence collection only.
 
 `aips project diagnose` 的 `recovery_plan` 列出原因、步驟相依、操作種類與所需授權，保持唯讀。`aips intelligence impact-candidates --max-depth 3` 提供最多三層候選關係；同目錄 import 可解析，但動態呼叫及全域 coverage 限制仍需人工覆核。
@@ -99,6 +101,8 @@ Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEM
 ## Execution
 
 In JSON mode, failed local `prepare` and `diagnose` calls return stable, redacted errors; text output and successful schemas remain compatible.
+
+Personal publication parses Shell words with NUL-marked expansions, so quoted literal `$` and backticks remain data while real expansions deny.
 
 The Claude Code publication Hook fails closed immediately after retryable remote errors and provides a separate read-only Doctor command; it does not wait for Doctor inside the synchronous Hook. Prepare reports timeouts with stable, redacted diagnostics.
 
@@ -174,7 +178,7 @@ MFLUX 固定命令表新增 Z-Image Turbo generate：`mflux-generate-z-image-tur
 
 Local creative execution supports MFLUX through fixed argv and ComfyUI through a loopback-only allowlisted workflow. It is explicit, create-only, and never downloads weights. ComfyUI model declarations live in `templates/creative/COMFYUI_MODEL_PROFILES.yaml` and may reuse only executor-reviewed topology families; profiles on the audited FLUX 3 Klein topology declare bounded sampler settings, with Base at 50 steps / CFG 3.5 and Distilled at 16 steps / CFG 1. Dynamic edit workflows can bind one to eight ordered local references, subject to per-file and aggregate size caps and per-file hash checks.
 
-The fixed FLUX 3 Klein preflight validates `TextGenerate` fields and values against the live `/object_info/TextGenerate` schema, including the `COMFY_DYNAMICCOMBO_V3` option schema and selected API option key. The API payload sends the key (for example, `"off"`); ComfyUI reconstructs the nested value used by the node implementation. AIPS binds this check to the final serialized workflow and verifies fixed nodes and links before the single `/prompt` request. Execution failures retain bounded node ID/type, exception class and safe missing/unexpected-argument summaries; raw provider text remains suppressed. These checks do not establish successful MPS inference.
+The fixed FLUX 3 Klein preflight validates `TextGenerate` fields and values against the live `/object_info/TextGenerate` schema, including the `COMFY_DYNAMICCOMBO_V3` option schema and selected API option key. The API payload sends the key (for example, `"off"`); ComfyUI reconstructs the nested value used by the node implementation. AIPS binds this check to the final serialized workflow and verifies fixed nodes and links before the single `/prompt` request. Execution failures retain bounded node ID/type, exception class and safe missing/unexpected-argument summaries; raw provider text remains suppressed. These checks do not establish successful MPS inference. Audited topology templates (`templates/creative/COMFYUI_TOPOLOGY_TEMPLATES.yaml`) describe the Z-Image and FLUX 3 Klein node graphs as data; a user-local profile may reference only one of them and can never add a node, input or endpoint (Scenario 271).
 
 ComfyUI Bundles may opt into `workflow.mode: dynamic_local` with a project-relative API JSON workflow. The executor reads bounded `/object_info` schemas, validates graph links and required fields, permits only nodes whose runtime module identifies them as ComfyUI core nodes, and requires explicit bindings for prompt, seed, dimensions, output and any reference input. Loader model choices must exist in the corresponding local inventory. The `creative workflows scan|import|inspect` commands are read-only except import, which is project-confined and create-only. These three commands emit fixed status acknowledgements instead of node inventories, workflow bodies or provider responses; other Creative CLI actions retain their structured response contract. This is a local schema compatibility path, not a guarantee that arbitrary checkpoints or model architectures will run successfully.
 
@@ -283,6 +287,8 @@ Plan36 publication diagnostics preserve this topic's existing behavior and autho
 
 Dependabot commit 的機器人 noreply author 與最後一行精確的 `Signed-off-by` trailer 屬於 Git 身分 metadata，由 `config/git-publication.yaml` 決定，不是 PII 例外；`pii.email.v2` 與其他位址仍會擋下，機器人身分不授予權限。
 
+Scenario 269 changes Turn Context preparation wording only; creative execution, external actions and the native write guard keep their existing controls.
+
 ## Security & Governance
 
 The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; all other WebM paths and near-matches remain subject to strict candidate scanning.
@@ -346,6 +352,8 @@ Content-safety detector changes are versioned (for example `pii.email.v2`) and b
 
 Scenario 261 regression coverage checks JSON and text error paths while preserving exit status and publication authority.
 
+Scenario 261 regression coverage includes quoted-heredoc PR bodies and content-safety scanning of the exact heredoc text.
+
 The Creative lifecycle test uses synthetic local providers to verify Base/Distilled profile settings and one-to-eight ordered staged-reference bindings. It does not certify real inference, image quality, independent review or user acceptance.
 
 Scenario 263 records the three exact Dewhollow WebM evidence-path exceptions and regression coverage that keeps near-matches and other WebM files under strict scanning.
@@ -408,7 +416,7 @@ The catalog contract verifies all 49 canonical Skills, all 38 vendored source pa
 
 `publication_planning.py` 重用 authority、candidate/history scan 與 GitHub PR evidence，提供 read-only `prepare` / `diagnose`。指紋包含 worktree、HEAD/base、remote/PR、policy 與 PR body digest；任何漂移需重新規劃，不能用診斷代碼放行。
 
-Claude Code publication Hook 使用八秒 hard deadline，結構化拒絕會記錄安全 phase 與 elapsed milliseconds。Prepare 完整掃描通過後，最多五分鐘的非授權 scan evidence 存在 private user cache，綁定 repository/worktree、base/head、push target、remote tip、diff、scanner 與 policy digest；Hook 每次重驗 live Git/remote state，並對缺少、過期、毀損或漂移 evidence fail closed。完整 candidate/history scan 仍是 Prepare 與 Integration Gate 必要步驟。
+Claude Code publication Hook 使用八秒 hard deadline，結構化拒絕會記錄安全 phase 與 elapsed milliseconds。Prepare 完整掃描通過後，最多 30 分鐘的非授權 scan evidence 存在 private user cache，綁定 repository/worktree、base/head、push target、remote tip、diff、scanner 與 policy digest；Hook 每次重驗 live Git/remote state，並對缺少、過期、毀損或漂移 evidence fail closed。完整 candidate/history scan 仍是 Prepare 與 Integration Gate 必要步驟。
 
 The OpenCode integration lifecycle exercises candidate tampering, source drift, path and symlink rejection, destination races, cache privacy, and end-to-end CLI dispatch.
 
@@ -591,6 +599,8 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 文件同步路徑正規化（Scenario 221）：`documentation_sync.evaluate_changes` 只移除開頭一個 `./`（`removeprefix`），不再用 `lstrip("./")` 逐字元剝除；先前 `.github/workflows/x.yml` 會被改成 `github/workflows/x.yml`，使 `config/documentation-sync.yaml` 中所有 `.github/**` 觸發條件（Technology Guide、evolution-radar、publication-preflight、documentation-platform、execution-isolation 等）失效。修正後，人工修改 workflow 需同步對應文件；純依賴升級仍由 `evaluate_candidate` 先行豁免。
 發布守門測試的合成掃描 fixture（`tests/test_publication_authority.py::scanner_fixture_assignment`）每次執行都把 16 個十六進位數字各放兩次後隨機排列，Shannon 熵固定為 4.0、高於 `generic-secret-assignment` 的 3.25 門檻，因此偵測結果不再隨機；原本直接使用 uuid4 hex 約有 0.7% 機率低於門檻而造成偶發失敗。掃描器規則與門檻不變。
 
+Scenario 269 lifecycle evidence covers task-scoped Turn Context preparation (READY+STALE related vs unrelated topics, read-only index status, hook wording) and the dry-run-by-default `aips intelligence gc` in a temporary config directory; Change Impact and existing hard stops stay unchanged.
+
 ## Product Delivery
 
 Publication diagnostics do not change Human approval, Host permission, Required Checks, merge policy or execution authority.
@@ -647,6 +657,8 @@ Plan21 Phase 0 records one exact-main full-validation timing observation and pin
 
 Publication CLI behavior is documented in the User Guide and linked to its Scenario 261 conformance evidence.
 
+The Claude Code standard publication recipe lives in the Claude Code adapter and is linked to Scenario 261.
+
 Project lifecycle guidance is placed in the canonical Existing Project, Installation and Architecture topics; Scenario 044 is the lifecycle evidence source.
 
 OpenCode stale-freshness 行為須在 Human Harness、Project Intelligence 指南、adapter 契約與 Scenario 267 中保持一致。
@@ -669,6 +681,8 @@ Documentation Placement 將每個 behavior-bearing source 綁到 canonical Human
 ## Runtime Content Safety Boundary
 
 The JSON fallback is non-authorizing and cannot substitute for a successful full candidate and history scan.
+
+PR-bound scan evidence is non-authorizing and cannot substitute for the full candidate and history scan.
 
 The shared publication scanner recognizes only the documented generated-password and parameterized SQL forms as non-literal assignment values. Known provider tokens, private keys and high-entropy literals remain detectable, and oversized text or JSON remains fail-closed under its configured finite bound. The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; there is no extension-wide exemption, and the 2,000,000-byte text limit remains unchanged. The same exact relative paths are excluded in any repository using the shared policy.
 

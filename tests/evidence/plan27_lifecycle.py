@@ -159,25 +159,36 @@ def main() -> int:
         assert all(row["status"] == "UNVERIFIED" for row in quality["visual_dimensions"].values())
         invalid = creative_quality_benchmark.summarize_trials(project, {"version": 1, "trials": [{"source": "fixture"}, {"source": "observed_host", "provider": "external"}]})
         assert invalid["artifact_bound_samples"] == 0 and invalid["invalid_or_unobserved"] == 2
+        state_patch = patch.dict(os.environ, {"XDG_STATE_HOME": str(root / "comfy-state")})
+        state_patch.start()
         provider = {"base_url": "http://127.0.0.1:8188", "workflow": {"1": {"inputs": {}}, "2": {"inputs": {}},
                     "3": {"inputs": {}}, "4": {"inputs": {}}}, "prompt_id": "1", "latent_node_id": "2",
                     "sampler_node_id": "3", "save_nodes": ["4"]}
         calls = []
+        queue_state = {"pending": ["owned-job"]}
         def timeout_request(url: str, **kwargs) -> bytes:
             calls.append((url, kwargs.get("data")))
             if url.endswith("/prompt"):
                 return b'{"prompt_id":"owned-job"}'
-            assert url.endswith("/queue") and json.loads(kwargs["data"]) == {"delete": ["owned-job"]}
+            assert url.endswith("/queue")
+            if kwargs.get("data") is None:
+                pending = [[1, item, {}, {}, []] for item in queue_state["pending"]]
+                return json.dumps({"queue_running": [[0, "foreign-job", {}, {}, []]], "queue_pending": pending}).encode()
+            assert json.loads(kwargs["data"]) == {"delete": ["owned-job"]}
+            queue_state["pending"] = []
             return b'{}'
         with patch.object(creative_execution, "local_request", side_effect=timeout_request), patch.object(creative_execution.time, "monotonic", side_effect=[0, 2]):
             try:
                 creative_execution.comfy_execute({"prompt": "fixture", "operation": "generate"}, provider, root / "never.png", 1)
             except creative_execution.Blocked as exc:
                 assert exc.reason_code == "comfy_job_recovery_required"
+                assert exc.diagnostics["job_state"] == "CLEARED" and exc.diagnostics["interrupt_requested"] is False
             else:
                 raise AssertionError("accepted job timeout permitted resubmission")
-        assert len(calls) == 2 and not (root / "never.png").exists()
+        # prompt, queue read, exact-id delete, re-check; the foreign running job is never interrupted.
+        assert [url.rsplit("/", 1)[1] for url, _ in calls] == ["prompt", "queue", "queue", "queue"] and not (root / "never.png").exists()
         calls.clear()
+        queue_state["pending"] = []
         def polling_request(url: str, **kwargs) -> bytes:
             if "/history/" in url:
                 raise creative_execution.TransientProviderError("fixture polling failure")
@@ -191,6 +202,7 @@ def main() -> int:
                 raise AssertionError("accepted polling failure permitted resubmission")
         assert len([url for url, _ in calls if url.endswith("/prompt")]) == 1
         assert not any(url.endswith("/interrupt") for url, _ in calls)
+        state_patch.stop()
         output = project / "fixture.png"
         def chunk(kind: bytes, data: bytes) -> bytes:
             return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data))

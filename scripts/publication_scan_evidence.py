@@ -12,7 +12,7 @@ from typing import Any
 
 import runtime_cache
 
-TTL_SECONDS = 300
+TTL_SECONDS = 1800
 SCHEMA_VERSION = 1
 
 

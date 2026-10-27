@@ -223,6 +223,8 @@ Review actual:
 
 Local JSON diagnostics from `prepare` or `diagnose` do not satisfy publication validation, scan evidence, or merge requirements; rerun the read-only checks after correcting the reported cause.
 
+A recipe in a publication denial is guidance only; it neither authorizes the command nor satisfies scan evidence or merge requirements.
+
 Personal publication requires an exact final-tree and candidate-history scan. Only the approved generated-password and parameterized SQL forms are treated as non-literal assignments; provider-token, private-key and high-entropy literal checks remain active.
 
 Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
@@ -471,6 +473,8 @@ The retention helper never deletes evidence or grants compaction authority. Expi
 
 The error serializer excludes raw exception text, paths, commands, and credentials; scan-evidence denials remain fail-closed.
 
+Claude Code quoted-heredoc (`<<'EOF'`) or single-quoted publication text is literal data that content safety still scans; real Shell expansion stays denied, and each denial names the supported recipe (Scenario 261).
+
 Publication Hook 的短效 scan evidence 不會放寬內容安全判斷或 sink policy。它綁定精確候選與掃描器／政策摘要；任何漂移都拒絕使用，Prepare 與最終 Gate 仍完整掃描。
 
 The only WebM exceptions are the three exact repository-relative Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; near-matches and all other WebM files retain strict scanning, and the 2,000,000-byte text limit is unchanged.
@@ -513,6 +517,8 @@ Email rule `pii.email.v2` reads only the exact ASCII `git` userinfo of an scp-li
 
 Publication preflight `git_identity` accepts the GitHub App bot noreply form (`<numeric id>+<slug>[bot]` on `users.noreply.github.com`, `identity.allowed_bot_author_patterns`) only in the candidate commit author field; committer and local `user.email` keep the human noreply formats. Before the `commit_messages` PII scan, exact `identity.trailer_identities` entries (currently Dependabot's `Signed-off-by: dependabot[bot]` with GitHub's support address) are replaced by `git-identity-metadata` only in the final trailer block of a commit authored by the same bot. `pii.email.v2` is unchanged, every other address still blocks, a malformed policy fails closed, and a bot identity grants no authority.
 
+Scenario 269 refreshes only the CLI help golden vectors for `aips intelligence gc`; content-safety detection, sink policy and commit scanning are unchanged.
+
 ## Runtime Policy Enforcement
 
 FLUX 3 Klein profile sampler bounds and dynamic reference counts do not create runtime actions or Resource Authorization grants. Loopback-only access, core-node schema, file-size limits, ordered slots and source-to-staged hash checks remain enforced before submission.
@@ -522,9 +528,9 @@ Remote publication timeouts remain fail-closed and non-authorizing. Claude Hook 
 Content-safety PASS is candidate evidence only and does not authorize PR merge or change publication mode.
 
 
-ComfyUI Resource Authorization remains separate from AVIF container validation and does not grant access to image payloads. Declarative model profiles do not alter loopback-only authorization; executor-reviewed node and topology-family allowlists remain code-owned.
+ComfyUI Resource Authorization remains separate from AVIF container validation and does not grant access to image payloads. Declarative model profiles do not alter loopback-only authorization; executor-reviewed node and topology-family allowlists remain code-owned. Local profile approval is an interactive, hash-bound Human confirmation; its output carries only profile ids and file names, and draft and approve open no network socket.
 
-Claude Code v2.1.295+ 的 publication PreToolUse guard 使用 `onFailure: block`；舊版或未知版維持相容設定並警示，不將支援能力推測為已啟用。
+Claude Code v2.1.295+ 的 publication PreToolUse guard 使用 `onFailure: block`；舊版或未知版維持相容設定並警示，不將支援能力推測為已啟用。代理對已安裝 AIPS 系統目錄與 profile 設定的寫入以 `PROTECTED_PATH_WRITE` 拒絕（Edit/Write/NotebookEdit/MultiEdit 與常見 Shell 寫入形式，盡力偵測，不宣稱完整防護）；讀取不受限制。
 The bounded font metadata scanner fails closed on missing dependencies, spoofed or malformed formats, size limits and Secret/PII/Injection findings. It does not grant runtime permission or alter Human approval.
 
 Commit-safety diagnostics are not Runtime Action approvals; they cannot satisfy independent review, Resource Authorization, merge confirmation, or Required Checks.
@@ -535,7 +541,7 @@ Claude Code's publication Hook returns a bounded denial for retryable remote err
 
 Publication Doctor reports only observed HTTP status and safe endpoint identity. Authentication, permission, missing resource, rate limit, service and network failures remain distinct. Unknown policy evidence remains `UNKNOWN_PERMISSION`/`UNAVAILABLE`; it blocks Doctor only when `AIPS_ENFORCE_REQUIRED_CHECKS=1`, while strict merge verification stays fail-closed. Diagnostic retries never run push, PR or merge actions.
 
-Personal PR merge accepts `gh pr merge --auto` only with an exact candidate/head binding. AIPS Required Checks enforcement is disabled by default and can be enabled with `AIPS_ENFORCE_REQUIRED_CHECKS=1`, which requires configured policy evidence and all required checks passing. A publication Hook has an eight-second hard deadline and returns a structured fail-closed denial with its last safe phase and elapsed time when that budget expires. `aips publish prepare` may cache only a five-minute exact-candidate Secret Scan pass in the private user cache; every Hook call still revalidates current Git, remote, target, policy, and authorization state. Missing or stale evidence blocks the Hook, and Prepare plus the final Integration Gate still run the full candidate/history scan. For an explicitly task-authorized merge, Claude Code may enable GitHub auto-merge without a second Claude prompt; Gemini retains native `ask_user`. GitHub still enforces required checks and repository rules. This option does not issue a Human grant or bypass repository policy.
+Personal PR merge accepts `gh pr merge --auto` only with an exact candidate/head binding. AIPS Required Checks enforcement is disabled by default and can be enabled with `AIPS_ENFORCE_REQUIRED_CHECKS=1`, which requires configured policy evidence and all required checks passing. A publication Hook has an eight-second hard deadline and returns a structured fail-closed denial with its last safe phase and elapsed time when that budget expires. `aips publish prepare` may cache only a 30-minute exact-candidate Secret Scan pass in the private user cache, bound separately to each planned push or PR creation; every Hook call still revalidates current Git, remote, target, policy, and authorization state. Missing or stale evidence blocks the Hook, and Prepare plus the final Integration Gate still run the full candidate/history scan. For an explicitly task-authorized merge, Claude Code may enable GitHub auto-merge without a second Claude prompt; Gemini retains native `ask_user`. GitHub still enforces required checks and repository rules. This option does not issue a Human grant or bypass repository policy.
 
 Commit and publication scanning treats `.m4a` as structured audio: the scanner validates bounded top-level atoms and an M4A-compatible `ftyp` brand, scans readable `moov` metadata for secrets, and does not decode audio `mdat` bytes as text. Invalid/spoofed files fail closed; files above 8 MiB are rejected with Git LFS or external object storage guidance. The existing text-file scan limit, staged content-safety checks and other binary-format handling remain in force.
 
@@ -639,6 +645,8 @@ unquoted heredoc 內的替換會遞迴分類，但解析只讀語法、不執行
 shell stdin/file、Git alias、env split-string、unquoted publication glob/tilde、未解析的 message
 expansion 一律 fail closed，並提供穩定拒絕原因碼與安全改寫提示。發布命令仍須 literal、可綁定的
 候選參數；一般參數替換不會放寬 SHA、ref、repository 或 approval scope 驗證。
+個人模式的 `gh pr create` 把加引號 heredoc 或單引號文字中的 `$`、反引號視為資料，內容安全掃描照常
+檢查原文；`$VAR`、反引號替換、`$"..."` 與 unquoted heredoc 仍拒絕，拒絕時附上支援的指令寫法。
 Git send-pack/http-push/receive-pack 與未綁定的 GitHub API／其他 mutation workflow 也拒絕旁路。
 這是 command gate，
 不是任意 Python／MCP／子程序的完整 OS sandbox。Codex/OpenCode 仍為 ADVISORY。

@@ -1724,6 +1724,8 @@ Per-module findings and direct coverage are measured without increasing a reposi
 
 ## Scenario 229 — Agent Eval Freshness Selection
 
+ComfyUI job-recovery lifecycle fixture（Plan27 lifecycle evidence）現在驗證 queue 讀取、確切 ID 刪除，以及不中斷非 AIPS 擁有的工作；這是恢復安全證據，不是 Agent 任務成果或品質量測。
+
 OpenCode host acceptance does not measure Agent outcome or quality; retain its separate exact-host integration evidence.
 
 Validation Shadow graduation evidence is separate from Agent Eval: report validator-level precision, recall, false-negative rate and confusion counts, keep zero-denominator rates null, and do not treat the report as a task outcome or activation authority.
@@ -1772,6 +1774,8 @@ Scenario 233 also covers `aips skills list`: localized/grouped text and JSON out
 
 `tests/evidence/skills_cli_lifecycle.py` and `tests/validation/skill_native_projection_contracts.py` cover native Skill install, repeat install, cross-Host ownership, conflicts, workspace isolation, digest-protected removal, Portable Command projection and legacy migration for Codex, Claude Code and Gemini CLI. These checks validate generated files and ownership behavior; real Host discovery and invocation remain unverified until exercised in each installed Host.
 
+Scenario 269 adds the `aips intelligence gc [--yes]` help line and command without changing existing CLI argument or error contracts.
+
 ## Scenario 234 — Local Character Artwork Provenance and Composition
 
 Creative image validation shares the bounded AVIF container check; provenance and visual review remain separate evidence.
@@ -1781,6 +1785,8 @@ Creative preset guidance and ComfyUI discovery remain static and local; Scenario
 OpenCode host acceptance verifies adapter integration only. It does not verify local image generation, visual quality or user acceptance.
 
 The lifecycle uses synthetic SVG/PNG fixtures to verify confined paths, active-content rejection, file dimensions and hashes, verified local-provider/license provenance, stable UTF-8 Traditional Chinese labels, non-overwriting deterministic sheet composition, and optional Creative Evidence manifest-digest binding. It does not invoke a model, download weights, attest identity consistency, or claim hardware performance; those require the user's local runtime and independent visual review.
+
+Scenario 269 keeps the creative Git write denial unchanged; only ordinary Turn Context refresh and index guidance becomes task-scoped.
 
 ## Scenario 235 — OpenCode Native Context and Action Guard
 
@@ -1807,6 +1813,8 @@ The V2 creative tool additionally requires a create/modify intent and a successf
 This Scenario is the canonical evidence pointer for OpenCode V2 context routing, action readiness, plugin lifecycle, and explicit unsupported boundaries.
 
 The lifecycle covers separate prompt dimensions, Chinese creative-asset routing, Project Intelligence readiness, session-root binding, direct native path/symlink decisions, Shell argument effects, V2 plugin ownership, private EPHEMERAL asset metadata cache, bounded privacy trace, performance measurement, and version-aware install/repair/removal. OpenCode v2.0.24 acceptance uses a loopback mock model to verify actual Context delivery, a new EPHEMERAL creative asset native write Allow, and an existing-asset edit Deny with incomplete Project Intelligence. No provider credentials are needed. Linux/WSL, V1, production-provider behavior, MCP/custom-tool writes, arbitrary Shell effects and writes outside OpenCode remain unverified or out of scope; overall governance stays ADVISORY.
+
+Scenario 269 makes Turn Context refresh and Retrieval index instructions task-scoped; the READY+STALE allow case and the OpenCode guard denials from Scenario 267 are unchanged.
 
 ## Scenario 238 — Creative Task Authorization and Multi-item Execution
 
@@ -1847,6 +1855,8 @@ The cross-profile quality evidence extension is covered by Scenario 258; this cr
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
 Publication CLI error serialization remains a separate contract and grants Skills no new Git or publication authority; see Scenario 261.
+
+Publication recipe diagnostics grant Skills no new Git or publication authority; see Scenario 261.
 
 Plan53 reuses the existing publication authority and scanner. It adds no Skill or Skill Explorer permission and grants no Git operation authority.
 
@@ -1891,7 +1901,7 @@ The native lifecycle fixture additionally checks `--upstream --all`, selected up
 
 Publication regression 增加 signed/unsigned、expiry、scope drift、8-way atomic consumption、shell AST／Hook deny 與 staged content 測試；由 governance validator 執行 `tests/test_publication_authority.py`。Fixture evidence 不證明 production issuer 或 universal subprocess enforcement。
 
-已接受的 ComfyUI 工作逾時或輪詢失敗時，測試 exact-ID queued cleanup、禁止全域 interrupt 與禁止自動重送；未知的 running completion 保持未驗證。
+已接受的 ComfyUI 工作逾時或輪詢失敗時，測試 exact-ID queued cleanup、只對 AIPS 擁有且正在執行的 prompt_id 送出指定 interrupt、不中斷他人工作、queue 無法讀取時不 interrupt、重啟後依本機 ledger 辨識擁有權（`aips creative recover`）與禁止自動重送；未知的 running completion 保持未驗證。
 
 Scenario 236 covers bounded `creative discover`, `preflight`, `execute`, `review`, and `trace` command contracts. Discovery probes installed MFLUX command/version status and only the fixed loopback ComfyUI service, separates command/runtime/model/preflight/inference evidence, and never starts a workflow. Static Apple Silicon FP8 warnings remain advisory; unavailable-engine recovery retains provider-specific reason codes without local path disclosure. Only explicit execution starts a configured local engine.
 
@@ -1916,6 +1926,8 @@ The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies c
 FLUX 3 Klein coverage also validates the live `TextGenerate` Dynamic Combo schema and final serialized payload shape before submission, rejects incompatible options without a POST, and checks that synthetic node/exception diagnostics omit prompts, paths, credentials and tracebacks. The lifecycle is adapter evidence only; MPS inference remains unverified.
 
 Release history 更新（純依賴升級文件豁免，Scenario 221）已審查本區段：Skill 整合、Explorer 與重用行為不變。
+
+Scenario 269 changes no Skill discovery or installation behavior; its lifecycle exercises Turn Context preparation and `aips intelligence gc`.
 
 
 ## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance
@@ -1985,6 +1997,8 @@ Current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md)
 
 Scenario 261 covers structured JSON errors from failed `prepare` and `diagnose` calls, with safe recovery guidance and no implied retry or publication authority.
 
+Scenario 261 also covers quoted-heredoc PR text, dynamic-argument denials with `PUBLICATION_ARGUMENT_DYNAMIC`, PR-bound scan evidence and the 30-minute evidence lifetime.
+
 Scenario 261 now also covers the bounded Hook deadline, safe upstream flags, exact short-lived scan evidence, and the distinction between ordinary Doctor visibility and strict Required Checks enforcement.
 
 Scenario 263 records the three exact Dewhollow WebM evidence-path exceptions and regression coverage that keeps near-matches and other WebM files under strict scanning.
@@ -2051,7 +2065,7 @@ Scenario 262 covers fail-closed Resource Authorization Profile/grant matching, H
 
 ## Scenario 268 — Model-agnostic ComfyUI Workflows
 
-Scenario 268 verifies opt-in local API workflow import, scan and inspection; bounded graph/schema validation; runtime core-node allowlisting; installed loader model checks; explicit prompt/seed/dimension/output/reference bindings; create-only generation output; and no automatic resubmission after an uncertain POST. Synthetic loopback evidence does not verify real model inference, hardware compatibility or image quality.
+Scenario 268 verifies opt-in local API workflow import, scan and inspection; bounded graph/schema validation; runtime core-node allowlisting; installed loader model checks; explicit prompt/seed/dimension/output/reference bindings; create-only generation output; and no automatic resubmission after an uncertain POST. Synthetic loopback evidence does not verify real model inference, hardware compatibility or image quality. Scenario 271 extends this topology work with audited template data, a generic validator, pre-refactor equivalence for every registered profile, and the user-local profile draft and approve gate.
 
 ## Scenario 263 — Commit Safety Diagnostics
 
@@ -2075,6 +2089,8 @@ The lifecycle verifies default Git destination rejection, explicit exact-root op
 
 A CLI JSON error response contains only allowlisted diagnostics; scan failures continue to block publication and never produce successful scan evidence.
 
+PR-bound scan evidence comes only from the same exact-candidate Prepare scan; a push-bound record never satisfies a PR creation.
+
 Publication scan evidence records a prior full Secret Scan only. Expiry or candidate/policy drift denies reuse; the final Gate continues to scan the complete candidate and history.
 
 Imported ComfyUI workflow JSON remains project content subject to existing content-safety and Change Boundary review; validation does not promote it to trusted instructions.
@@ -2092,3 +2108,9 @@ The `pii.email.v2` corpus proves Git remote `git` userinfo (scp-like, `ssh://`, 
 純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
 
 Dependabot commits: the GitHub App bot noreply author and Dependabot's exact final `Signed-off-by` trailer are Git identity metadata decided by `config/git-publication.yaml`, not PII exceptions; `pii.email.v2` and every other address stay blocking, and the bot identity grants no authority.
+
+Scenario 269 refreshes only the CLI help golden vectors for `aips intelligence gc`; content-safety detection, sink policy and commit scanning are unchanged.
+
+Scenario 272 covers the profile switch mechanism: default-strict loading, fail-closed diagnostics, a TTY and typed-phrase gate for `aips profile set`, and agent-write denial; no relaxation is enabled.
+
+Scenario 274 covers the profile-gated relaxations `claude_coauthor_trailer` (exact Claude co-author trailer in the final trailer block of the publication gate PII scan) and `post_merge_refresh` (one detached `aips intelligence refresh` per store per HEAD); both default to off.

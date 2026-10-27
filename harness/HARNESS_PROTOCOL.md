@@ -65,11 +65,13 @@ Load `SYSTEM_CORE.md` with minimal Harness rules and critical native/project ins
 
 ## Mutation safety
 
-For confined local L2 source writes, READY Project Intelligence with STALE freshness is advisory and remains visible with targeted refresh guidance. UNKNOWN freshness, non-READY Intelligence, unavailable canonical protocols, authority conflicts, escaping paths, creative writes and external/high-risk effects keep their existing stops.
+For confined local L2 source writes, READY Project Intelligence with STALE freshness is advisory and remains visible. Turn Context sets `refresh_required` and a task-scoped `targeted_refresh` only when task-relevant topics are affected or their irrelevance cannot be proven; `retrieval_index_required` is true only when the current task needs retrieval. Change Impact remains required for mutation. UNKNOWN freshness, non-READY Intelligence, unavailable canonical protocols, authority conflicts, escaping paths, creative writes and external/high-risk effects keep their existing stops.
 
 Staged AVIF metadata denials are produced by the content-safety scanner and do not broaden native runtime action interception.
 
 Creative workspace asset import is an explicit local CLI action bound to a reviewed source hash and an absent destination path.
+
+Profile switches (`~/.config/aips/profile.yaml`, strict by default) are changed only by `aips profile set` in an interactive terminal after a typed confirmation phrase; the Claude Code guard denies agent writes to the profile file and to that command.
 
 
 Optional creative `review-assist` is a separate current-user-authorized action bound to the active Session root; its local vision findings remain advisory and cannot grant write, generation or acceptance authority.
@@ -161,15 +163,15 @@ The Codex managed block preserves eligible runtime primary model preference and 
 
 Codex PreToolUse support remains `EXPERIMENTAL` and `ADVISORY`: the local probe denies only its harmless synthetic command. Do not infer live runtime coverage or change user-global hook configuration from this evidence.
 
-Creative adapters share a declarative model profile registry and closed executor topology families. Registry data can select exact installed components and bounded sampler values within an audited family; the FLUX 3 Klein Base and Distilled profiles share one reviewed topology and retain live schema checks. Dynamic ComfyUI edit slots may bind one to eight ordered local references, with staged-byte hash verification. These data selections cannot add arbitrary nodes, workflow links, endpoint access or authority. Local model inventory checks do not grant broader generation authority or arbitrary command arguments.
+Creative adapters share a declarative model profile registry and closed executor topology families. Registry data can select exact installed components and bounded sampler values within an audited family; the FLUX 3 Klein Base and Distilled profiles share one reviewed topology and retain live schema checks. Dynamic ComfyUI edit slots may bind one to eight ordered local references, with staged-byte hash verification. These data selections cannot add arbitrary nodes, workflow links, endpoint access or authority. Local model inventory checks do not grant broader generation authority or arbitrary command arguments. User-local profiles are approved only through the interactive `aips creative profile approve` gate and may reference audited topology templates only.
 
 Publication diagnosis is a read-only capability. Runtime adapters may report the shared reason code, phase, safe next step and Required Checks state, but must not treat diagnosis as permission, expose raw host output, modify policy, or execute a merge.
 
 ## Publication Root-Cause Recovery (Plan35)
 
-The Claude Code publication Hook also enforces an eight-second internal deadline and returns a fail-closed diagnostic with the last safe phase and elapsed time. A fresh Prepare scan record can avoid a duplicate Hook scan for five minutes, but never skips live authority, target, candidate or remote-tip checks.
+The Claude Code publication Hook also enforces an eight-second internal deadline and returns a fail-closed diagnostic with the last safe phase and elapsed time. A fresh Prepare scan record can avoid a duplicate Hook scan for 30 minutes, but never skips live authority, target, candidate or remote-tip checks.
 
-Managed native guard 必須維持拒絕優先。Claude Code 只有 v2.1.295+ 的 publication PreToolUse 使用 `onFailure: block`；舊版/未知版本不注入該欄位並明確警示。
+Managed native guard 必須維持拒絕優先。Claude Code 只有 v2.1.295+ 的 publication PreToolUse 使用 `onFailure: block`；舊版/未知版本不注入該欄位並明確警示。PreToolUse guard 的 matcher 另含 `Edit|Write|NotebookEdit|MultiEdit`，用於拒絕代理寫入已安裝 AIPS 系統目錄與 profile 設定（`PROTECTED_PATH_WRITE`；Bash 偵測為盡力而為，不是完整防護）；`aips update`/`install` 等人工 CLI 指令不被視為路徑寫入，仍由 CLI 自身的乾淨工作樹檢查約束。
 Claude `PostToolUseFailure` is a separate diagnostic event and does not alter this version-bound blocking rule.
 Plan40 requires stable explicit reason codes and a safe shared candidate/runtime binding across Prepare and native Hook output. Keep planned, AIPS-authorized, Host-decided, and executed states distinct; unknown errors map to `INTERNAL_DIAGNOSTIC_GAP`. An optional Diagnostic ID resolves only allowlisted entries from an explicitly configured hash-chained ledger after verification and never changes publication authority.
 

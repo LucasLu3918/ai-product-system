@@ -57,7 +57,8 @@ GIT_PUBLICATION_POLICY = ROOT / "config/git-publication.yaml"
 TRAILER_LINE_RE = re.compile(r"[A-Za-z][A-Za-z0-9-]*: \S.*", re.ASCII)
 TRAILER_KEY_RE = re.compile(r"[A-Za-z][A-Za-z0-9-]*", re.ASCII)
 BOT_SLUG_RE = re.compile(r"[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?", re.ASCII)
-IDENTITY_METADATA_PLACEHOLDER = "git-identity-metadata"
+PROFILE_TRAILER_LINE_RE = re.compile(r"([A-Za-z][A-Za-z0-9-]*): ([^<>\r\n]+) <([^<>\r\n]+)>", re.ASCII)
+IDENTITY_METADATA_PLACEHOLDER ="git-identity-metadata"
 
 
 def git(*args: str, check: bool = True) -> str:
@@ -534,8 +535,21 @@ def _string_list(value: Any, field: str) -> list[str]:
     return value
 
 
-def git_identity_policy() -> dict[str, Any]:
-    """Load the Git identity policy; any malformed entry raises GitIdentityPolicyError (callers fail closed)."""
+def _profile_values() -> dict[str, bool]:
+    """Effective AIPS profile switches; any problem yields the strict defaults (all off)."""
+    try:
+        from aips_profile import load_profile
+
+        return dict(load_profile().values)
+    except Exception:  # noqa: BLE001 - an unavailable profile must never relax the policy.
+        return {}
+
+
+def git_identity_policy(profile_values: dict[str, bool] | None = None) -> dict[str, Any]:
+    """Load the Git identity policy; any malformed entry raises GitIdentityPolicyError (callers fail closed).
+
+    ``profile_values`` are the effective AIPS profile switches (default: read from the profile file).
+    """
     try:
         policy = yaml.safe_load(GIT_PUBLICATION_POLICY.read_text(encoding="utf-8")) or {}
         identity = policy.get("identity") or {}
@@ -558,6 +572,21 @@ def git_identity_policy() -> dict[str, Any]:
             if not name.strip() or name != name.strip() or any(char in name for char in "<>\r\n"):
                 raise GitIdentityPolicyError("trailer identity name is malformed")
             trailers.append({"prefix": f"{key}: {name} <", "email": re.compile(pattern, re.ASCII), "slug": slug})
+        raw_profile = identity.get("profile_trailer_identities") or {}
+        if not isinstance(raw_profile, dict):
+            raise GitIdentityPolicyError("profile_trailer_identities must be a mapping")
+        enabled = profile_values if profile_values is not None else _profile_values()
+        for switch, entry in raw_profile.items():
+            if not isinstance(entry, dict) or set(entry) != {"key", "name_pattern", "email_pattern"}:
+                raise GitIdentityPolicyError("profile trailer identity requires exactly key, name_pattern and email_pattern")
+            key, name_pattern, pattern = (entry[field] for field in ("key", "name_pattern", "email_pattern"))
+            if not isinstance(switch, str) or not all(isinstance(item, str) and item.isascii() for item in (key, name_pattern, pattern)):
+                raise GitIdentityPolicyError("profile trailer identity fields must be ASCII strings")
+            if not TRAILER_KEY_RE.fullmatch(key):
+                raise GitIdentityPolicyError("profile trailer identity key is malformed")
+            compiled_name, compiled_email = re.compile(name_pattern, re.ASCII), re.compile(pattern, re.ASCII)
+            if enabled.get(switch) is True:
+                trailers.append({"key": key, "name": compiled_name, "email": compiled_email, "slug": None})
     except (OSError, re.error, yaml.YAMLError, AttributeError) as exc:
         raise GitIdentityPolicyError(type(exc).__name__) from exc
     if not human:
@@ -587,6 +616,14 @@ def mask_trailer_identities(message: str, author_email: str, policy: dict[str, A
     masked: list[str] = []
     for line in lines:
         for identity in policy["trailers"]:
+            if identity["slug"] is None:
+                # Profile-gated identity: exact key, name and address; the commit author is not constrained.
+                match = PROFILE_TRAILER_LINE_RE.fullmatch(line)
+                if (match and match.group(1) == identity["key"] and identity["name"].fullmatch(match.group(2))
+                        and identity["email"].fullmatch(match.group(3))):
+                    line = f"{match.group(1)}: {match.group(2)} <{IDENTITY_METADATA_PLACEHOLDER}>"
+                    break
+                continue
             prefix = identity["prefix"]
             if (
                 line.startswith(prefix)
@@ -1053,6 +1090,12 @@ def main() -> int:
     checks.add_argument("--head")
     checks.add_argument("--required-check", action="append")
     checks.add_argument("--format", choices=("yaml", "json"), default="yaml")
+    ship = subs.add_parser("ship", allow_abbrev=False, help="Personal publication: one scan, exact push, then PR create")
+    ship.add_argument("--title", required=True)
+    ship.add_argument("--body-file", required=True, type=Path)
+    ship.add_argument("--base", required=True, help="Remote default branch the PR targets")
+    ship.add_argument("--head", help="Current candidate branch; defaults to the checked-out branch")
+    ship.add_argument("--format", choices=("yaml", "json"), default="yaml")
     args = parser.parse_args()
     try:
         if args.command == "doctor":
@@ -1086,6 +1129,12 @@ def main() -> int:
             result["recovery"] = publication_planning.recovery_guidance(result)
             emit(result, args.format)
             return 1 if result["status"] == "BLOCKED" else 0
+        if args.command == "ship":
+            import publication_ship
+            result = publication_ship.run(Path.cwd(), {"title": args.title, "body_file": str(args.body_file),
+                                                       "base": args.base, "head": args.head})
+            emit(result, args.format)
+            return 0 if result["status"] == "COMPLETE" else 1
         if args.command == "docs-impact":
             for planned in args.planned_path:
                 if Path(planned).is_absolute() or ".." in Path(planned).parts or not planned or "\0" in planned:

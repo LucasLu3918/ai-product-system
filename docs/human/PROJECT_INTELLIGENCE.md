@@ -21,7 +21,7 @@ Git worktree 內的 `.ai/` 仍須明確 attach 才會建立；attach/detach 只�
 - `intelligence_missing`：需要時手動執行 `aips intelligence bootstrap --project <path>`；補足必要語意主題並完成審查後，再執行 `aips intelligence finalize --project <path>`。
 - `intelligence_partial`：依 status 補足必要語意主題與證據，再 finalize。
 - `intelligence_stale`：先檢視 `aips intelligence refresh-plan --project <path>`；確認影響範圍後才執行 refresh。
-- readiness 為 `READY` 且 freshness 為 `STALE`：Context 會保留 stale 狀態與 targeted refresh 指引，但不單獨阻擋受限的本地 L2 原始碼寫入；`UNKNOWN`、非 READY 與其他既有停止條件仍有效。
+- readiness 為 `READY` 且 freshness 為 `STALE`：Context 會保留 stale 狀態，但不單獨阻擋受限的本地 L2 原始碼寫入；只有任務相關主題受影響時才設定 `refresh_required` 與 `targeted_refresh`，`retrieval_index_required` 也只在任務需要檢索時為 true；`UNKNOWN`、非 READY 與其他既有停止條件仍有效。
 - `intelligence_blocked`：先處理阻擋原因，不略過 gate。
 
 重新執行 `aips intelligence status --project <path>` 或 `aips project diagnose <path>` 驗證結果。Runtime 設定與 MCP 靜態能力不證明 Host 中 Hook／工具確實執行；未取得原生實機證據時維持 `UNVERIFIED`。
@@ -41,6 +41,8 @@ Phase 5 的 Widgets 案例可重用的是 OpenAPI client 生成與驗證流程�
 Turn Context 依 `--target-path` 與 Runtime 選取適用指示；根目錄工作不會套用子目錄的 Adapter 範本。`--intent read|write` 可在語意不明時提供明確任務方向。非 Git 資料夾及尚無首筆 commit 的專案仍可取得基本 Context，歷史查詢則維持不可用。
 
 Turn Context 固定回傳 `SYSTEM_CORE.md`，並提供不含原始 prompt 的 `system_protocol_routes`，包含分類、canonical protocol IDs/paths 與解析狀態。Hook 僅顯示這些指標；一般修改的保守回退載入 Orchestrator、Change Impact 與 Quality Planning。必要路徑缺失時修改任務 fail-closed。
+
+Turn Context 另含一行 `aips_profile=` 顯示目前 profile 開關（預設 strict）；該行只回報開關名稱與原因碼，不改變 Intelligence 準備、刷新或 Change Impact 的判斷。
 
 ## 四份核心 Machine-readable 檔
 
@@ -433,6 +435,8 @@ Project Intelligence follows `orchestration/PROJECT_IDENTITY.md`. EPHEMERAL stor
 
 JSON-mode publication errors expose only stable, allowlisted diagnostics; they neither serialize raw exception details nor replace the final candidate/history scan.
 
+Publication recipe diagnostics are static text; they never echo commands and do not replace the final candidate/history scan.
+
 The publication Hook may reuse only a short-lived, integrity-checked record of a prior full scan. Candidate, repository/worktree, remote tip, target, diff, scanner or policy drift invalidates it; the record never replaces final candidate/history scanning.
 
 Candidate scanning reads the final tree and all commits in `base..head`; provider-token and private-key detection remain enabled. JSON text is scanned up to 8,000,000 bytes, while other text retains a 2,000,000-byte bound; an oversized or incomplete scan blocks publication. The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; there is no extension-wide exemption, and the 2,000,000-byte text limit remains unchanged. The same exact relative paths are excluded in any repository using the shared policy.
@@ -470,3 +474,7 @@ The `pii.email.v2` Git remote grammar changes only commit and publication PII fi
 Dependabot commit 的機器人 noreply author 與最後一行精確的 `Signed-off-by` trailer 屬於 Git 身分 metadata，由 `config/git-publication.yaml` 決定，不是 PII 例外；`pii.email.v2` 與其他位址仍會擋下，機器人身分不授予權限。
 
 Publication authorization is separate from Project Intelligence freshness: AIPS Required Checks enforcement is opt-in via `AIPS_ENFORCE_REQUIRED_CHECKS=1`; GitHub native protection remains effective.
+
+`aips intelligence gc` 只讀取 store 內記錄的專案路徑，不輸出 topic 內容；內容安全邊界不變（Scenario 269）。
+
+新 worktree 沒有外部 store 時，`bootstrap` 會以 copy-on-write 方式從同一 repository 的 READY store 複製一份；來源 store 只讀不寫，`worktree_identity` 變動只有在 provenance 可證明時才是觀察。複製被拒絕或失敗時退回正常初始化，並標示 `intelligence_seed_fallback`（Scenario 270）。

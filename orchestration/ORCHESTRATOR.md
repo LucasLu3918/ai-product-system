@@ -15,7 +15,7 @@ Scenario 266 records content-safety verification while preserving existing maint
 
 The publication workflow may use safe Prepare and Diagnostic ID observations during planning; they do not satisfy Human Authority, native Host confirmation, a required check, or the observed-execution condition.
 
-For an explicit creative asset transfer, review the hash-bound import candidate and invoke the exact-hash CLI import only after the destination check passes.
+For an explicit creative asset transfer, review the hash-bound import candidate and invoke the exact-hash CLI import only after the destination check passes. Local ComfyUI profile approval is not an orchestrator action; it requires a person at an interactive terminal (Scenario 271).
 
 
 For existing-project changes, the Agent may use `impact-candidates` as bounded discovery evidence; unresolved relations and global coverage limitations remain explicit through review and verification.
@@ -171,6 +171,8 @@ OpenCode hook subprocesses are asynchronous and bounded; permission decisions re
 
 
 An OpenCode Creative mutation grant is derived from the current native prompt-admission event and remains independent of compact Turn Context, retrieved Project Intelligence and transcript truncation.
+
+Profile switches (`aips profile set`) are person-only; the orchestrator must not run them, and the PR3 guard denies the agent Bash form.
 
 For detailed character illustrations, load calibration, direction and visual review progressively. Use read-only discovery, prepare, allowlisted configure and preflight before scoped execution. Normalize native Context and use user-only authorization; revoked requests and raster-medium fallback fail closed. Report execution, file validity, Human visual review and user acceptance separately.
 
@@ -393,6 +395,8 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 ## Change-class handoff to Integration Gate
 
 When local publication preflight fails in JSON mode, use its stable redacted reason to repair and re-observe; the diagnostic itself grants neither retry nor merge authority.
+
+When a publication command is denied, follow the static recipe in `next_step`/`next_step_zh` instead of trying command variants; run one publication command per Bash call.
 
 For an explicitly requested personal-mode PR merge, validate open/non-draft/mergeable state, exact head, allowlisted branch and live default base. AIPS independently requires configured Required Checks and passing checks only when `AIPS_ENFORCE_REQUIRED_CHECKS=1`; GitHub native policy remains effective.
 

@@ -212,6 +212,18 @@ def required_checks_policy(snapshot: dict[str, Any]) -> dict[str, Any]:
             "retryable": False, "checks": sorted(required), "sources": sources}
 
 
+def _profile_fields() -> dict[str, Any]:
+    """Active AIPS profile as names and a reason code only (PR10); values and paths are never reported."""
+    try:
+        try:
+            from aips_profile import diagnostic_fields
+        except ModuleNotFoundError:  # imported as a repository module
+            from scripts.aips_profile import diagnostic_fields
+        return diagnostic_fields()
+    except Exception:  # noqa: BLE001 - diagnostics must still render when the profile module is unavailable
+        return {"name": "strict", "status": "UNAVAILABLE", "non_default_fields": [], "reason_code": "PROFILE_UNAVAILABLE"}
+
+
 def doctor(root: Path, *, pr_number: int | None = None, branch: str | None = None,
            worktree_details: bool = False) -> dict[str, Any]:
     """Read-only repository, auth, policy, PR and required-check diagnosis."""
@@ -223,6 +235,7 @@ def doctor(root: Path, *, pr_number: int | None = None, branch: str | None = Non
                               "authentication": "UNKNOWN", "merge_methods": [],
                               "required_checks": {"status": "UNKNOWN", "checks": []},
                               "pr": None, "blockers": [], "diagnostics": [], "next_steps": [], "phases": []}
+    result["profile"] = _profile_fields()
     strict_required_checks = os.environ.get("AIPS_ENFORCE_REQUIRED_CHECKS") == "1"
     def finish() -> dict[str, Any]:
         result["next_steps"] = [item["next_step"] for item in result["diagnostics"]

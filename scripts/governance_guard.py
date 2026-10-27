@@ -30,8 +30,20 @@ try:
     from content_safety import safe_emit
 except ModuleNotFoundError:  # imported as a repository module
     from scripts.content_safety import safe_emit
+try:
+    from protected_paths import REASON_CODE as PROTECTED_PATH_REASON
+    from protected_paths import (
+        bash_command_writes_protected,
+        file_tool_write_is_protected,
+    )
+except ModuleNotFoundError:  # imported as a repository module
+    from scripts.protected_paths import REASON_CODE as PROTECTED_PATH_REASON
+    from scripts.protected_paths import (
+        bash_command_writes_protected,
+        file_tool_write_is_protected,
+    )
 
-PROTECTED = ("git_push", "git_tag", "gh_pr_create", "gh_pr_merge", "gh_release_create")
+PROTECTED = ("git_push", "git_tag", "gh_pr_create", "gh_pr_merge", "gh_release_create", "publish_ship")
 CONTENT_SENSITIVE = ("git_commit", *PROTECTED)
 logger = logging.getLogger(__name__)
 HOOK_DEADLINE_SECONDS = 8.0
@@ -254,6 +266,10 @@ def _direct_operations(tokens: list[str], cwd: Path | None = None, depth: int = 
     tokens = _unwrap(tokens)
     if not tokens:
         return []
+    from publication_commands import publish_ship_arguments
+    if publish_ship_arguments(tokens) is not None:
+        # One Bash command = one protected operation; the CLI's child git/gh calls are not agent Bash calls.
+        return ["publish_ship"]
     exe = Path(tokens[0]).name
 
     if exe in {"bash", "sh", "zsh"}:
@@ -471,7 +487,7 @@ def _commit_chain(command: str) -> tuple[list[list[str]], list[str]]:
     import bashlex
     from publication_commands import inline_literal_heredocs, shell_commands
     unsupported = PublicationError("commit must be standalone or follow literal git add commands joined by &&",
-                                   reason_code='COMMAND_FORM_UNSUPPORTED')
+                                   reason_code='COMMAND_FORM_UNSUPPORTED', detail_code='COMMIT_FORM_UNSUPPORTED')
     normalized = inline_literal_heredocs(command)
     commands = shell_commands(normalized, mark_dynamic=True)
     if len(commands) == 1:
@@ -861,6 +877,28 @@ def _hook_binding(cwd: Path, command: str, mode: str) -> dict[str, str] | None:
         return None
 
 
+def _protected_path_diagnostic(reason: str) -> dict[str, Any]:
+    """Static, input-free diagnostic: never echoes the protected path or the command."""
+    unavailable = reason == "PROTECTED_PATH_GUARD_UNAVAILABLE"
+    return {
+        "version": 2, "diagnostic_id": str(uuid.uuid4()), "reason_code": reason,
+        "detail": ("AIPS could not verify this write against the protected install or profile paths."
+                   if unavailable else
+                   "AIPS blocked an agent write to the installed AIPS system or profile settings."),
+        "detail_zh": ("AIPS 無法驗證此寫入是否指向受保護的安裝目錄或 profile 設定。" if unavailable else
+                      "AIPS 已阻擋代理寫入已安裝的 AIPS 系統目錄或 profile 設定。"),
+        "next_step": ("Retry only after the local check can run; do not work around the guard. "
+                      "請在本機檢查可執行後再重試，不要繞過 guard。" if unavailable else
+                      "Make system and profile changes in the development repository, publish them through a PR, "
+                      "and leave the installed copy untouched. 請在開發 repo 修改系統與 profile 內容並透過 PR 發布，不要直接修改已安裝副本。"),
+        "next_step_zh": ("本機檢查可執行後再重試；不要繞過 guard。" if unavailable else
+                         "在開發 repo 修改，透過 PR 發布；不要改動已安裝副本或 profile 設定。"),
+        "phase": "protected_path_guard", "category": "POLICY", "source": "AIPS_GUARD",
+        "blocking_rule": "protected_path", "blocking_rule_id": reason, "retryable": unavailable,
+        "recovery_mode": "HUMAN_OR_HOST_REQUIRED", "redacted": True,
+    }
+
+
 def deny_hook_input(runtime: str, reason: str, diagnostic: dict[str, Any] | None = None) -> int:
     """Return the runtime's normal deny envelope without echoing input data."""
     reason_messages = {
@@ -899,11 +937,16 @@ def deny_hook_input(runtime: str, reason: str, diagnostic: dict[str, Any] | None
         "M4A_TOO_LARGE": "AIPS cannot publish M4A files above 8 MiB; use Git LFS or external asset storage and keep the repository pointer/documentation here.",
         "M4A_INVALID": "AIPS could not verify this .m4a as a valid M4A audio file; use a correctly encoded file with matching extension.",
         "CONTENT_INSPECTION_UNAVAILABLE": "AIPS content inspection could not complete; check the local scanner and Git state.",
+        "PROTECTED_PATH_WRITE": "AIPS blocked an agent write to the installed AIPS system or profile settings.",
+        "PROTECTED_PATH_GUARD_UNAVAILABLE": "AIPS could not verify this write against the protected paths; the write was not allowed.",
     }
     detail = reason_messages.get(reason, "AIPS blocked this command during a required safety check.")
-    detail += " [" + reason + "]"
     if diagnostic is None:
         diagnostic = PublicationError("", reason).diagnostic()
+    if diagnostic.get("reason_code") == reason and diagnostic.get("next_step"):
+        # A static, input-free recipe stops agents from guessing command variants.
+        detail += " Next: " + str(diagnostic["next_step"])
+    detail += " [" + reason + "]"
     trace_status = ("SKIPPED_DEADLINE" if reason == "HOOK_DEADLINE_EXCEEDED"
                     else _record_publication_diagnostic(diagnostic, runtime))
     safe_fields = {key: diagnostic.get(key) for key in
@@ -1036,6 +1079,21 @@ def _hook_impl(runtime: str) -> int:
         else:
             print(json.dumps({"decision": "deny", "reason": reason}))
         return 0
+    # Protected install/profile writes are denied before publication classification (PR3, best-effort).
+    _HOOK_PHASE = "protected_path_guard"
+    try:
+        guard_cwd = Path(str(payload.get("cwd") or os.getcwd())).resolve()
+        protected_write = (
+            (runtime == "claude-code" and file_tool_write_is_protected(
+                str(payload.get("tool_name") or ""), tool_input or {}, guard_cwd))
+            or bash_command_writes_protected(command, guard_cwd)
+        )
+    except Exception as exc:  # noqa: BLE001 - an unverifiable path check must fail closed.
+        logger.warning("Protected path guard failed closed: %s", type(exc).__name__)
+        return deny_hook_input(runtime, "PROTECTED_PATH_GUARD_UNAVAILABLE",
+                               _protected_path_diagnostic("PROTECTED_PATH_GUARD_UNAVAILABLE"))
+    if protected_write:
+        return deny_hook_input(runtime, PROTECTED_PATH_REASON, _protected_path_diagnostic(PROTECTED_PATH_REASON))
     try:
         _HOOK_PHASE = "command_classification"
         operations = operations_for(command, Path(str(payload.get("cwd") or os.getcwd())).resolve())
@@ -1065,6 +1123,7 @@ def _hook_impl(runtime: str) -> int:
                 "gh_pr_create": "github_pr",
                 "gh_pr_merge": "github_pr",
                 "gh_release_create": "release_notes",
+                "publish_ship": "github_pr",
             }[operation]
             try:
                 safety = commit_safety(cwd, command) if operation == 'git_commit' else safe_emit(sink=sink, payload={"command": command})
@@ -1084,6 +1143,7 @@ def _hook_impl(runtime: str) -> int:
     hook_diagnostic = None
     reason = "no active AIPS Approval Record"
     merge_confirmation = None
+    ship_binding = None
     approval_operations = [operation for operation in operations if operation in PROTECTED]
     if not approval_operations:
         ok = True
@@ -1092,21 +1152,39 @@ def _hook_impl(runtime: str) -> int:
         try:
             _HOOK_PHASE = "publication_validation"
             if len(approval_operations) != 1:
-                raise ValueError('one protected publication operation per invocation required')
+                raise PublicationError('one protected publication operation per invocation required',
+                                       'COMMAND_FORM_UNSUPPORTED', phase='command_validation',
+                                       detail_code='MULTI_COMMAND_UNSUPPORTED')
             from publication_authority import (
                 publication_mode,
                 validate_personal_action,
             )
             mode = publication_mode()
             if mode == 'personal':
-                from publication_commands import shell_commands
-                parsed = shell_commands(command)
+                from publication_commands import command_form_detail, shell_commands
+                # Marked words let quoted literal `$`/backticks (for example a quoted heredoc PR
+                # body) through while every real expansion still carries a NUL marker and denies.
+                parsed = shell_commands(command, mark_dynamic=True)
                 if len(parsed) != 1 or len(approval_operations) != 1:
-                    raise PublicationError('one standalone publication operation required', reason_code='COMMAND_FORM_UNSUPPORTED')
+                    raise PublicationError('one standalone publication operation required', reason_code='COMMAND_FORM_UNSUPPORTED',
+                                           detail_code=command_form_detail(command))
                 _HOOK_PHASE = "publication_candidate_remote_and_evidence_validation"
-                publication = validate_personal_action(
-                    cwd, approval_operations[0], parsed[0], require_scan_evidence=True)
-                if approval_operations[0] == 'gh_pr_merge':
+                if approval_operations[0] == 'publish_ship':
+                    from publication_commands import publish_ship_arguments
+                    from publication_ship import validate_for_hook
+                    ship_args = publish_ship_arguments(parsed[0])
+                    if ship_args is None:
+                        raise PublicationError('use the single supported ship command', 'COMMAND_FORM_UNSUPPORTED',
+                                               detail_code='SHIP_FORM_UNSUPPORTED')
+                    ship = validate_for_hook(cwd, ship_args)
+                    ship_binding = ship['binding']
+                    publication = {}
+                else:
+                    publication = validate_personal_action(
+                        cwd, approval_operations[0], parsed[0], require_scan_evidence=True, literal_marked=True)
+                if approval_operations[0] == 'publish_ship':
+                    reason = 'personal publish ship checks passed; scan ' + ship['scan']
+                elif approval_operations[0] == 'gh_pr_merge':
                     merge_confirmation = publication.get('merge_confirmation')
                     if not merge_confirmation:
                         raise PublicationError('merge confirmation binding unavailable', reason_code='AUTHORITY_VALIDATION_MISSING')
@@ -1125,6 +1203,9 @@ def _hook_impl(runtime: str) -> int:
                     reason = 'personal publication checks passed'
                 ok = True
             else:
+                if approval_operations[0] == 'publish_ship':
+                    raise PublicationError('publish ship is available only in personal publication mode',
+                                           'ASSURANCE_MODE_BLOCKED', phase='authority_validation')
                 path = approval_path(cwd)
                 if path and not path.exists():
                     reason = "selected approval pointer does not exist; no fallback to a different scope"
@@ -1166,7 +1247,7 @@ def _hook_impl(runtime: str) -> int:
             0, int((time.monotonic() - (_HOOK_STARTED_AT or time.monotonic())) * 1000))
         _HOOK_PHASE = "diagnostic_recording"
         hook_diagnostic['trace_status'] = _record_publication_diagnostic(hook_diagnostic, runtime)
-    success_binding = _hook_binding(cwd, command, mode) if ok and approval_operations else None
+    success_binding = ship_binding or (_hook_binding(cwd, command, mode) if ok and approval_operations else None)
     if runtime == "claude-code":
         claude_auto_merge = bool(merge_confirmation and merge_confirmation.get('auto_merge'))
         print(json.dumps({"hookSpecificOutput": {

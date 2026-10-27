@@ -58,6 +58,8 @@ The canonical sink manifest is `config/content-safety.yaml`. Any new persistence
 
 A structured publication CLI error reports a failed local preflight only; it cannot claim a successful scan or authorize a protected sink.
 
+Quoted-heredoc or single-quoted publication text reaches the same `github_pr` sink scan as any literal argument; only real Shell expansion is denied before scanning.
+
 `ENFORCED` applies to AIPS-owned sinks. A verified native hook may report `TOOL_GUARDED`. MCP-only or unsupported host tools remain `ADVISORY`; AIPS must not claim universal interception.
 
 ## Delivery stages
@@ -84,3 +86,5 @@ Operational dashboard output follows the same sink-aware boundary: only a saniti
 - Unsupported runtime capability is never upgraded to `TOOL_GUARDED`.
 
 This content-safety boundary is unchanged by publication settings. AIPS Required Checks enforcement is separately opt-in via `AIPS_ENFORCE_REQUIRED_CHECKS=1`, and GitHub native protections remain effective.
+
+Scenario 269 changes only CLI help golden vectors for `aips intelligence gc`; these invariants are unchanged.

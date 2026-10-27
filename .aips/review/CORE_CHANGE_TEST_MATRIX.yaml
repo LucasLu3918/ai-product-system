@@ -1,59 +1,91 @@
 version: 1
 change:
-  id: publication-json-error-recovery
-  summary: Return safe, parseable JSON from prepare/diagnose on allowlisted local exceptions and complete the approved CI documentation closure.
+  id: dev-friction-optimization
+  summary: Reduce AIPS development friction without weakening fail-closed boundaries - Claude Code publication command compatibility with a 30-minute Prepare scan-evidence TTL and `aips publish ship` with merge-bound evidence, task-scoped Intelligence preparation and `aips intelligence gc`, parameterized ComfyUI sampler/runtime budget, AIPS-owned job interrupt, protected-path guard with preflight degradation, worktree Intelligence seeding, declarative topology templates with local profiles, a person-only profile switch mechanism and its first profile-gated relaxations. D5 (unverified-workflow import) was NOT implemented; the existing opt-in `dynamic_local` ComfyUI mode already ships.
   boundary:
-    - publication prepare/diagnose JSON error contract
-    - privacy, authorization, and non-execution guarantees
-    - Hook scan evidence and safe recovery lifecycle
-    - canonical documentation impact closure and placement
-    - CI Actions/Python lifecycle compatibility and post-merge validation
+    - publication command compatibility and scan-evidence TTL
+    - task-scoped Intelligence preparation and gc
+    - ComfyUI parameterization and runtime budget
+    - owned-job interrupt
+    - protected-path guard and preflight degradation
+    - worktree Intelligence seeding
+    - declarative topology templates and local profiles
+    - publish ship and merge-bound evidence
+    - profile switch mechanism
+    - profile-gated relaxations
 matrix:
-  - boundary: publication prepare/diagnose JSON error contract
-    reason: JSON consumers must receive a parseable blocked result on local exceptions while successful JSON and text output stay compatible.
+  - boundary: publication command compatibility and scan-evidence TTL
+    reason: Fully explicit and quoted-heredoc publication forms must stay data for content safety while dynamic forms and multiple protected operations stay denied; Prepare evidence still binds exact candidate, operation, target and policy within the 30-minute TTL.
     checks: &all_checks
       static_lint:
         applicable: true
-        evidence: "REQUIRED: repository Integration Gate static checks on exact candidate."
+        evidence: "REQUIRED: repository Integration Gate static checks on the exact candidate."
       unit:
         applicable: true
-        evidence: "PASS: 64 focused publication tests passed on the final implementation source (35.2 seconds)."
+        evidence: "PASS: PR1 focused publication authority, planning and scan-evidence tests. Full pytest after the last merge (PR11 tree): 341 passed, 332 subtests passed."
       integration:
         applicable: true
-        evidence: "REQUIRED: full exact-candidate local Integration Gate / Repository Validation."
+        evidence: "PASS: `python tests/validate_repository.py` on the integration tip - VALIDATION PASSED (scenarios=273 before PR11, 274 after). REQUIRED: full exact-candidate local Integration Gate."
       contract:
         applicable: true
-        evidence: "PASS: publish preflight contracts and static contracts; Preview reports zero missing documentation additions and placement PASS. Exact-candidate Gate remains required."
+        evidence: "PASS: capability registry valid (45 capabilities, 10 surfaces). REQUIRED: documentation sync and placement closure on the exact candidate."
       e2e:
         applicable: true
-        evidence: "REQUIRED: existing Hook/prepare/diagnose lifecycle fixtures in publication tests and Gate."
+        evidence: "REQUIRED: Hook/prepare lifecycle fixtures in the exact-candidate Gate. UNVERIFIED: real GitHub push, PR and merge through the Claude Code Hook."
       security:
         applicable: true
-        evidence: "REQUIRED: final-tree and base..head secret scan plus privacy assertions in focused tests and Gate."
+        evidence: "REQUIRED: final-tree and base..head secret scan on the exact candidate; privacy and redaction assertions in focused tests and the Gate."
       migration_recovery:
         applicable: true
-        evidence: "N/A — no persisted data or migration; retry/recovery semantics are covered by Hook and publication lifecycle checks."
+        evidence: "N/A - no persisted data migration; denial recipes and recovery semantics are covered by Hook and publication lifecycle checks."
       cli_harness:
         applicable: true
-        evidence: "REQUIRED: JSON/text CLI compatibility and Hook lifecycle checks in Gate."
+        evidence: "REQUIRED: CLI help golden vectors, JSON/text compatibility and Hook lifecycle checks in the exact-candidate Gate."
       docs_schema:
         applicable: true
-        evidence: "REQUIRED: recursive documentation impact closure and placement checks in Gate."
-  - boundary: privacy, authorization, and non-execution guarantees
-    reason: Failure diagnostics must not disclose unsafe context or grant authority, execute publication, or create API writes.
+        evidence: "REQUIRED: recursive documentation impact closure and placement checks on the exact candidate (closed in the integration documentation closure change)."
+  - boundary: task-scoped Intelligence preparation and gc
+    reason: Turn Context reports refresh and retrieval-index steps only when the task needs them, keeps fail-closed reasons and Change Impact unchanged, and `aips intelligence gc` stays dry-run by default and never deletes a store whose project path still exists.
     checks: *all_checks
-  - boundary: Hook scan evidence and safe recovery lifecycle
-    reason: A parseable blocked result must lead to safe recovery while the Hook continues to require valid candidate-bound scan evidence.
+  - boundary: ComfyUI parameterization and runtime budget
+    reason: Registry data selects only reviewed topology families and validated bounded sampler values and a bounded runtime budget; it creates no Runtime action, resource grant or new mutation authority.
     checks: *all_checks
-  - boundary: canonical documentation impact closure and placement
-    reason: Required canonical documents are part of the approved change boundary and must pass recursive impact and placement validators.
+  - boundary: owned-job interrupt
+    reason: AIPS interrupts only an accepted ComfyUI job it submitted and the queue reports running, with a private ownership ledger surviving restart; foreign jobs, unreadable queues and automatic resubmission remain forbidden.
+    checks:
+      <<: *all_checks
+      e2e:
+        applicable: true
+        evidence: "PASS: stateful synthetic loopback queue fixtures (creative execution, plan27 and dynamic workflow lifecycle). UNVERIFIED: real ComfyUI queue, weights and inference were not run."
+  - boundary: protected-path guard and preflight degradation
+    reason: Agent writes to the installed AIPS system checkout and user profile settings are denied best-effort with a bounded reason code, and system preflight degrades without discarding or committing local checkout changes while explicit update still refuses.
     checks: *all_checks
-  - boundary: CI Actions/Python lifecycle compatibility and post-merge validation
-    reason: CI workflow runner/action behavior, Python lifecycle execution, remote required-check aggregation and main post-merge validation remain part of Core assurance.
+  - boundary: worktree Intelligence seeding
+    reason: A new worktree copies a READY store of the same repository (copy-on-write, source read-only) and falls back to normal initialization with an observation on any refusal; wrong source selection or a false freshness proof must not occur.
+    checks: *all_checks
+  - boundary: declarative topology templates and local profiles
+    reason: Audited topology templates are checked by the generic validator, user-local profiles are drafted without downloading weights and approved only from an interactive terminal, and static smoke never runs ComfyUI or inference.
+    checks:
+      <<: *all_checks
+      e2e:
+        applicable: true
+        evidence: "PASS: PR6 recorded pytest 227 passed / 252 subtests and VALIDATION PASSED (270 scenarios) on its own tree. UNVERIFIED: model quality and backend compatibility, no real ComfyUI job or inference."
+  - boundary: publish ship and merge-bound evidence
+    reason: "`aips publish ship` is one protected operation that re-validates the same exact candidate, scan evidence and body digest before each push and PR child, and a merge needs merge-bound Prepare evidence; it grants no publication permission."
+    checks:
+      <<: *all_checks
+      e2e:
+        applicable: true
+        evidence: "REQUIRED: exact-candidate Gate lifecycle. UNVERIFIED: real GitHub push, PR creation and merge through `aips publish ship`; Scenario 273 and `tests/test_publication_ship.py` use fixtures."
+  - boundary: profile switch mechanism
+    reason: Profile switches default to strict, can be changed only by a person in an interactive terminal with a confirmation phrase, cannot be written or set by an agent, and appear in Turn Context as non-default only.
+    checks: *all_checks
+  - boundary: profile-gated relaxations
+    reason: The default-off `claude_coauthor_trailer` and `post_merge_refresh` switches relax exactly one trailer line shape in one PII scanner and one bounded background refresh; secret scanning, other PII rules, other trailers and publication authority stay unchanged. D5 unverified-workflow import was NOT implemented (existing opt-in `dynamic_local` already ships, Scenario 268).
     checks: *all_checks
 candidate:
-  base_sha: 776bb0c130d8f4223238f0b07ae013cb2c894cb3
-  changed_files_hash: 87f0ad92386562d277014787ca4f2c09bc1571c76ee8f940e9bd4979881d466c
+  base_sha: 5ab2246a74e5a3320de6d937c17aa86af103f3d7
+  changed_files_hash: 0209c895a5fa831c7cd74247d3dd57e394ed59e9f2a5fc5276b5aec02e4c8cbd
 review_evidence:
   required: false
 scope_recomputed_after_expansion: true

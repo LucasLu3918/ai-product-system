@@ -29,8 +29,8 @@ if conformance_helper.exists():
             errors.append("Scenario conformance total/registered count must match scenario inventory")
         if cov.get("uncovered") != 0:
             errors.append("Released scenario conformance registry must have no uncovered entries")
-        if cov.get("manual") != 20 or cov.get("agent_eval") != 54 or cov.get("deterministic") != 39:
-            errors.append("Scenario conformance baseline must retain 20 manual, 54 Agent Eval and 39 deterministic scenarios")
+        if cov.get("manual") != 20 or cov.get("agent_eval") != 54 or cov.get("deterministic") != 40:
+            errors.append("Scenario conformance baseline must retain 20 manual, 54 Agent Eval and 40 deterministic scenarios")
         if cov.get("automated") != sum(cov.get(kind, 0) for kind in ("deterministic", "lifecycle", "agent_eval")):
             errors.append("Automated scenario coverage must equal deterministic + lifecycle + Agent Eval evidence")
 

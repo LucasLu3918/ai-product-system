@@ -1,0 +1,12 @@
+# System Improvement Review — Dev Friction PR11: First Profile-Gated Relaxations
+
+- **Appropriateness:** Suitable. Both items remove recurring friction for one person on one machine and fit the PR10 switch mechanism, which exists for exactly this.
+- **User problem:** The Gate blocks the standard Claude co-author trailer through `pii.email.v2`, forcing commits without it. After a merge, READY-but-STALE Intelligence needs a manual refresh before the next relevant task.
+- **Proposed solution:** Two default-off switches. `claude_coauthor_trailer` extends the existing masked-trailer mechanism with one exact, profile-gated line shape. `post_merge_refresh` lets the Turn Context hook start one detached `aips intelligence refresh` per store per HEAD when the task-relevant topics are affected.
+- **Reuse / lower-layer alternative:** Reuses `trailer_identities` masking, PR10 `load_profile`, PR2 `task_refresh_requirement` and the existing `refresh` command with its writer lock. No new daemon or dependency.
+- **Security / reliability:** The trailer match is exact on key, name shape and address, final block only; all other findings are unchanged. Profile load failure means off. The refresh never blocks the turn, errors are swallowed, and the existing command refuses dirty worktrees and changed trees. One lock file per HEAD bounds repeated starts.
+- **Limitation:** Background refresh can only refresh revision metadata when the committed tree equals the verified tree; otherwise it reports that a semantic refresh is needed, so most real post-merge cases still need an agent or person for topic enrichment. The commit-time Claude Code guard already masks co-author trailers for its own scan; this switch covers the publication gate scan.
+- **Compatibility:** Switches off means no change. The config gains an additive key.
+- **Constitution impact:** NO. No Human approval, publication authority, merge confirmation, secret or other PII rule, node trust or ComfyUI boundary changes.
+- **Recommendation:** Adopt D2 and the background refresh as PR11. Do not adopt the D5 switch in this PR: dynamic_local already ships as an opt-in and gating it would be a tightening, not a relaxation.
+- **Additional optimization candidates:** Decide separately whether `dynamic_local` should require a profile switch (tightening) or merely record an `UNVERIFIED` topology marker in its manifest. Add a topic-aware semantic refresh only if a deterministic one becomes available.
