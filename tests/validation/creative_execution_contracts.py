@@ -31,6 +31,8 @@ required = (
 for path in required:
     if not path.is_file():
         errors.append(f"Missing local creative execution artifact: {path.relative_to(ROOT)}")
+if not (ROOT / "templates/creative/COMFYUI_TOPOLOGY_TEMPLATES.yaml").is_file():
+    errors.append("Missing audited ComfyUI topology template data: templates/creative/COMFYUI_TOPOLOGY_TEMPLATES.yaml")
 
 if all(path.is_file() for path in required):
     bundle = yaml.safe_load(required[1].read_text(encoding="utf-8")) or {}
@@ -41,6 +43,7 @@ if all(path.is_file() for path in required):
     plugin = (ROOT / "harness/adapters/opencode/plugin.ts").read_text(encoding="utf-8")
     compatibility = (ROOT / "harness/adapters/opencode/COMPATIBILITY.md").read_text(encoding="utf-8")
     profile_registry = yaml.safe_load(required[5].read_text(encoding="utf-8")) or {}
+    topology_text = (ROOT / "templates/creative/COMFYUI_TOPOLOGY_TEMPLATES.yaml").read_text(encoding="utf-8")
     asset_presets = (ROOT / "templates/creative/CREATIVE_ASSET_PRESETS.yaml").read_text(encoding="utf-8")
     contracts = (
         (bundle.get("mode") == "EPHEMERAL", "Bundle template must default to EPHEMERAL"),
@@ -48,7 +51,8 @@ if all(path.is_file() for path in required):
         ("shell=False" in executor and "subprocess.run" in executor, "MFLUX must use argv-only process execution"),
         ("ProxyHandler({})" in executor and "class NoRedirect" in executor, "ComfyUI requests must block proxies and redirects"),
         ("COMFY_CORE_NODES" in executor and "comfy_custom_node_blocked" in executor, "ComfyUI workflow must reject non-core nodes"),
-        ('profile_topology == "z_image_split_loader"' in executor and '"lumina2"' in executor and "comfy_model_unavailable" in executor, "Z-Image Turbo ComfyUI must remain a fixed, local-inventory-verified profile"),
+        ("COMFY_TOPOLOGY_TEMPLATE_IDS" in executor and "z_image_split_loader:" in topology_text and "clip_type: lumina2" in topology_text and "comfy_model_unavailable" in executor and "validate_local_profile_body" in executor, "Z-Image Turbo ComfyUI must remain a fixed, template-verified, local-inventory-verified profile"),
+        ("comfyui_topology.resolve_topology" in executor and "runtime_schema_class: TextGenerate" in topology_text and "validate_textgenerate_inputs" in executor, "topology templates must be checked by the generic validator and gate the TextGenerate schema by data"),
         ("strip_png_text_metadata" in executor and "prompt-bearing PNG text chunks" in executor, "ComfyUI outputs must not persist prompt-bearing PNG metadata"),
         ("UNETLoader" in required[4].read_text(encoding="utf-8") and "ConditioningZeroOut" in required[4].read_text(encoding="utf-8"), "Z-Image Turbo API template must retain its fixed split-loader topology"),
         ("creative-execution-manifest.json" in executor and "PENDING" in executor, "execution must retain provenance and pending human review"),

@@ -34,7 +34,7 @@ Creative font assets use the shared bounded metadata scanner described in Runtim
 
 The plan39 ComfyUI Resource Authorization lifecycle is tracked by Scenario 262 and its Core Change Matrix; its deterministic fixture uses loopback only and does not perform model inference.
 
-Dynamic local ComfyUI workflow behavior is tracked by Scenario 268 and its Large/Core Change Matrix. Keep bounded schema parsing, runtime core-node classification, explicit input bindings, local model inventory checks, create-only import/output and uncertain-submit recovery synchronized; its synthetic fixture never claims real model inference.
+Dynamic local ComfyUI workflow behavior is tracked by Scenario 268 and its Large/Core Change Matrix. Keep bounded schema parsing, runtime core-node classification, explicit input bindings, local model inventory checks, create-only import/output and uncertain-submit recovery synchronized; its synthetic fixture never claims real model inference. Audited topology templates and user-local profile draft/approve are tracked by Scenario 271; keep their evidence synthetic, offline and static.
 
 Core publication changes close recursive Human and Agent documentation placement before the exact-candidate Gate.
 

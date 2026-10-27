@@ -61,6 +61,8 @@ Publication Hook scan evidence is limited to Git candidate/history Secret Scanni
 
 ### Local ComfyUI model profiles
 
+User-local profiles are drafted with `aips creative profile draft` from installed weight names and approved only in an interactive terminal with `aips creative profile approve`; drafting makes no network request and downloads nothing (Scenario 271).
+
 For the shared audited FLUX 3 Klein topology, Base and Distilled profiles supply bounded sampler settings (50 steps / CFG 3.5 and 16 steps / CFG 1). Preflight validates `TextGenerate` input types, numeric ranges, combo choices and the live `COMFY_DYNAMICCOMBO_V3` format from `/object_info/TextGenerate`. Preserve the runtime-provided Dynamic Combo API object shape; validate the final serialized workflow and its fixed links before the single `/prompt` POST. Dynamic edits may bind `image_1` through `image_8` in order; every local file must pass the count/size bounds and staged-byte hash check. Provider failures may expose only allowlisted node ID/type, exception class and narrow safe argument summaries. Synthetic lifecycle evidence does not establish MPS inference.
 
 

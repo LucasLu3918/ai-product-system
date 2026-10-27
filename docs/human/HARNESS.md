@@ -100,7 +100,7 @@ OpenCode V2 derives Creative mutation authority from the current native prompt-a
 
 Runtime denial details now carry a bounded reason code, trace identifier and recovery action through the native Hook response; Profile paths, provider bodies and credentials remain excluded.
 
-OpenCode creative_execution 使用共享 executor 的 ComfyUI model profile registry；新增模型僅能沿用已審核拓樸家族並通過 sampler、live schema 與本機元件檢查，不擴大 Session authority、工具權限或任意命令。FLUX 3 Klein Base/Distilled 共用已審核 topology，分別設定 50 steps / CFG 3.5 與 16 steps / CFG 1。動態 ComfyUI edit 可綁定一至八張有序本機參考圖並逐張比對 staged bytes 雜湊。這些預檢不代表 MPS 推論已驗證。
+OpenCode creative_execution 使用共享 executor 的 ComfyUI model profile registry；新增模型僅能沿用已審核拓樸家族並通過 sampler、live schema 與本機元件檢查，不擴大 Session authority、工具權限或任意命令。FLUX 3 Klein Base/Distilled 共用已審核 topology，分別設定 50 steps / CFG 3.5 與 16 steps / CFG 1。動態 ComfyUI edit 可綁定一至八張有序本機參考圖並逐張比對 staged bytes 雜湊。這些預檢不代表 MPS 推論已驗證。 本次變更不新增 OpenCode 核准動作；使用者本機 profile 只由 `aips creative profile approve` 在互動式終端機核准。
 
 ComfyUI 的 `z-image-turbo` profile 使用 `templates/creative/COMFYUI_Z_IMAGE_TURBO_API.json` 固定 API 工作流；只有指定的 UNET、Qwen `lumina2` CLIP 與 VAE 權重會依 loopback `/object_info` 核對，不接受自訂節點或圖片編輯。
 

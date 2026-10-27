@@ -1,0 +1,1943 @@
+{
+ "mutations": {
+  "f_cfg_profile": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen3vl_4b_int8_convrot.safetensors",
+    "latent_node_id": "8",
+    "model_id": "flux3-image-klein-base",
+    "model_profile": "flux3-image-klein-base-int8",
+    "prompt_node_id": "5",
+    "prompt_upsampler_name": "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+    "sampler_node_id": "9",
+    "save_node_id": "11",
+    "unet_name": "flux3-image-klein-base-int8-convrot.safetensors",
+    "vae_name": "flux2-vae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_workflow_topology_invalid"
+   }
+  },
+  "f_clip_device": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen3vl_4b_int8_convrot.safetensors",
+    "latent_node_id": "8",
+    "model_id": "flux3-image-klein-base",
+    "model_profile": "flux3-image-klein-base-int8",
+    "prompt_node_id": "5",
+    "prompt_upsampler_name": "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+    "sampler_node_id": "9",
+    "save_node_id": "11",
+    "unet_name": "flux3-image-klein-base-int8-convrot.safetensors",
+    "vae_name": "flux2-vae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_workflow_topology_invalid"
+   }
+  },
+  "f_clip_names_duplicate": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen3vl_4b_int8_convrot.safetensors",
+    "latent_node_id": "8",
+    "model_id": "flux3-image-klein-base",
+    "model_profile": "flux3-image-klein-base-int8",
+    "prompt_node_id": "5",
+    "prompt_upsampler_name": "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+    "sampler_node_id": "9",
+    "save_node_id": "11",
+    "unet_name": "flux3-image-klein-base-int8-convrot.safetensors",
+    "vae_name": "flux2-vae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_workflow_topology_invalid"
+   }
+  },
+  "f_clip_type": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen3vl_4b_int8_convrot.safetensors",
+    "latent_node_id": "8",
+    "model_id": "flux3-image-klein-base",
+    "model_profile": "flux3-image-klein-base-int8",
+    "prompt_node_id": "5",
+    "prompt_upsampler_name": "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+    "sampler_node_id": "9",
+    "save_node_id": "11",
+    "unet_name": "flux3-image-klein-base-int8-convrot.safetensors",
+    "vae_name": "flux2-vae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_workflow_topology_invalid"
+   }
+  },
+  "f_encoder_upsampler_swapped": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen3vl_4b_int8_convrot.safetensors",
+    "latent_node_id": "8",
+    "model_id": "flux3-image-klein-base",
+    "model_profile": "flux3-image-klein-base-int8",
+    "prompt_node_id": "5",
+    "prompt_upsampler_name": "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+    "sampler_node_id": "9",
+    "save_node_id": "11",
+    "unet_name": "flux3-image-klein-base-int8-convrot.safetensors",
+    "vae_name": "flux2-vae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_workflow_topology_invalid"
+   }
+  },
+  "f_extra_node": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen3vl_4b_int8_convrot.safetensors",
+    "latent_node_id": "8",
+    "model_id": "flux3-image-klein-base",
+    "model_profile": "flux3-image-klein-base-int8",
+    "prompt_node_id": "5",
+    "prompt_upsampler_name": "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+    "sampler_node_id": "9",
+    "save_node_id": "11",
+    "unet_name": "flux3-image-klein-base-int8-convrot.safetensors",
+    "vae_name": "flux2-vae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_custom_node_blocked"
+   }
+  },
+  "f_latent_width": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen3vl_4b_int8_convrot.safetensors",
+    "latent_node_id": "8",
+    "model_id": "flux3-image-klein-base",
+    "model_profile": "flux3-image-klein-base-int8",
+    "prompt_node_id": "5",
+    "prompt_upsampler_name": "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+    "sampler_node_id": "9",
+    "save_node_id": "11",
+    "unet_name": "flux3-image-klein-base-int8-convrot.safetensors",
+    "vae_name": "flux2-vae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_workflow_topology_invalid"
+   }
+  },
+  "f_max_length": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen3vl_4b_int8_convrot.safetensors",
+    "latent_node_id": "8",
+    "model_id": "flux3-image-klein-base",
+    "model_profile": "flux3-image-klein-base-int8",
+    "prompt_node_id": "5",
+    "prompt_upsampler_name": "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+    "sampler_node_id": "9",
+    "save_node_id": "11",
+    "unet_name": "flux3-image-klein-base-int8-convrot.safetensors",
+    "vae_name": "flux2-vae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_workflow_topology_invalid"
+   }
+  },
+  "f_sampling_mode": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen3vl_4b_int8_convrot.safetensors",
+    "latent_node_id": "8",
+    "model_id": "flux3-image-klein-base",
+    "model_profile": "flux3-image-klein-base-int8",
+    "prompt_node_id": "5",
+    "prompt_upsampler_name": "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+    "sampler_node_id": "9",
+    "save_node_id": "11",
+    "unet_name": "flux3-image-klein-base-int8-convrot.safetensors",
+    "vae_name": "flux2-vae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_workflow_topology_invalid"
+   }
+  },
+  "f_save_link": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen3vl_4b_int8_convrot.safetensors",
+    "latent_node_id": "8",
+    "model_id": "flux3-image-klein-base",
+    "model_profile": "flux3-image-klein-base-int8",
+    "prompt_node_id": "5",
+    "prompt_upsampler_name": "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+    "sampler_node_id": "9",
+    "save_node_id": "11",
+    "unet_name": "flux3-image-klein-base-int8-convrot.safetensors",
+    "vae_name": "flux2-vae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_workflow_topology_invalid"
+   }
+  },
+  "f_steps_profile": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen3vl_4b_int8_convrot.safetensors",
+    "latent_node_id": "8",
+    "model_id": "flux3-image-klein-base",
+    "model_profile": "flux3-image-klein-base-int8",
+    "prompt_node_id": "5",
+    "prompt_upsampler_name": "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+    "sampler_node_id": "9",
+    "save_node_id": "11",
+    "unet_name": "flux3-image-klein-base-int8-convrot.safetensors",
+    "vae_name": "flux2-vae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_workflow_topology_invalid"
+   }
+  },
+  "f_system_prompt_empty": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen3vl_4b_int8_convrot.safetensors",
+    "latent_node_id": "8",
+    "model_id": "flux3-image-klein-base",
+    "model_profile": "flux3-image-klein-base-int8",
+    "prompt_node_id": "5",
+    "prompt_upsampler_name": "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+    "sampler_node_id": "9",
+    "save_node_id": "11",
+    "unet_name": "flux3-image-klein-base-int8-convrot.safetensors",
+    "vae_name": "flux2-vae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_workflow_topology_invalid"
+   }
+  },
+  "f_textgen_missing_key": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen3vl_4b_int8_convrot.safetensors",
+    "latent_node_id": "8",
+    "model_id": "flux3-image-klein-base",
+    "model_profile": "flux3-image-klein-base-int8",
+    "prompt_node_id": "5",
+    "prompt_upsampler_name": "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+    "sampler_node_id": "9",
+    "save_node_id": "11",
+    "unet_name": "flux3-image-klein-base-int8-convrot.safetensors",
+    "vae_name": "flux2-vae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_workflow_topology_invalid"
+   }
+  },
+  "f_thinking_true": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen3vl_4b_int8_convrot.safetensors",
+    "latent_node_id": "8",
+    "model_id": "flux3-image-klein-base",
+    "model_profile": "flux3-image-klein-base-int8",
+    "prompt_node_id": "5",
+    "prompt_upsampler_name": "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+    "sampler_node_id": "9",
+    "save_node_id": "11",
+    "unet_name": "flux3-image-klein-base-int8-convrot.safetensors",
+    "vae_name": "flux2-vae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_workflow_topology_invalid"
+   }
+  },
+  "f_unet_name_mismatch": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen3vl_4b_int8_convrot.safetensors",
+    "latent_node_id": "8",
+    "model_id": "flux3-image-klein-base",
+    "model_profile": "flux3-image-klein-base-int8",
+    "prompt_node_id": "5",
+    "prompt_upsampler_name": "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+    "sampler_node_id": "9",
+    "save_node_id": "11",
+    "unet_name": "flux3-image-klein-base-int8-convrot.safetensors",
+    "vae_name": "flux2-vae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_workflow_topology_invalid"
+   }
+  },
+  "f_vae_link": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen3vl_4b_int8_convrot.safetensors",
+    "latent_node_id": "8",
+    "model_id": "flux3-image-klein-base",
+    "model_profile": "flux3-image-klein-base-int8",
+    "prompt_node_id": "5",
+    "prompt_upsampler_name": "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+    "sampler_node_id": "9",
+    "save_node_id": "11",
+    "unet_name": "flux3-image-klein-base-int8-convrot.safetensors",
+    "vae_name": "flux2-vae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_workflow_topology_invalid"
+   }
+  },
+  "z_batch_size": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen_3_4b.safetensors",
+    "latent_node_id": "13",
+    "model_id": "z-image-turbo",
+    "model_profile": "z-image-turbo",
+    "prompt_node_id": "27",
+    "sampler_node_id": "3",
+    "save_node_id": "9",
+    "unet_name": "z_image_turbo_bf16.safetensors",
+    "vae_name": "ae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_model_profile_invalid"
+   }
+  },
+  "z_bool_batch": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen_3_4b.safetensors",
+    "latent_node_id": "13",
+    "model_id": "z-image-turbo",
+    "model_profile": "z-image-turbo",
+    "prompt_node_id": "27",
+    "sampler_node_id": "3",
+    "save_node_id": "9",
+    "unet_name": "z_image_turbo_bf16.safetensors",
+    "vae_name": "ae.safetensors"
+   },
+   "outcome": {
+    "accepted": true,
+    "final_prompt": {
+     "11": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+       "model": [
+        "28",
+        0
+       ],
+       "shift": 3
+      }
+     },
+     "13": {
+      "class_type": "EmptySD3LatentImage",
+      "inputs": {
+       "batch_size": true,
+       "height": 64,
+       "width": 64
+      }
+     },
+     "27": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+       "clip": [
+        "30",
+        0
+       ],
+       "text": "fixture caption"
+      }
+     },
+     "28": {
+      "class_type": "UNETLoader",
+      "inputs": {
+       "unet_name": "z_image_turbo_bf16.safetensors",
+       "weight_dtype": "default"
+      }
+     },
+     "29": {
+      "class_type": "VAELoader",
+      "inputs": {
+       "vae_name": "ae.safetensors"
+      }
+     },
+     "3": {
+      "class_type": "KSampler",
+      "inputs": {
+       "cfg": 1,
+       "denoise": 1,
+       "latent_image": [
+        "13",
+        0
+       ],
+       "model": [
+        "11",
+        0
+       ],
+       "negative": [
+        "33",
+        0
+       ],
+       "positive": [
+        "27",
+        0
+       ],
+       "sampler_name": "res_multistep",
+       "scheduler": "simple",
+       "seed": 7,
+       "steps": 8
+      }
+     },
+     "30": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+       "clip_name": "qwen_3_4b.safetensors",
+       "device": "default",
+       "type": "lumina2"
+      }
+     },
+     "33": {
+      "class_type": "ConditioningZeroOut",
+      "inputs": {
+       "conditioning": [
+        "27",
+        0
+       ]
+      }
+     },
+     "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+       "samples": [
+        "3",
+        0
+       ],
+       "vae": [
+        "29",
+        0
+       ]
+      }
+     },
+     "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+       "filename_prefix": "aips_local",
+       "images": [
+        "8",
+        0
+       ]
+      }
+     }
+    },
+    "provider": {
+     "latent_node_id": "13",
+     "profile": {
+      "clip_type": "lumina2",
+      "components": {
+       "clip_name": "qwen_3_4b.safetensors",
+       "unet_name": [
+        "z_image_turbo_bf16.safetensors",
+        "z_image_turbo_fp16.safetensors",
+        "z_image_turbo_fp8.safetensors"
+       ],
+       "vae_name": "ae.safetensors"
+      },
+      "model_id": "z-image-turbo",
+      "operation": "generate",
+      "sampler": {
+       "cfg": 1,
+       "denoise": 1,
+       "sampler_name": "res_multistep",
+       "scheduler": "simple",
+       "steps": null
+      },
+      "topology": "z_image_split_loader",
+      "upsampler": {}
+     },
+     "prompt_field": "text",
+     "prompt_id": "27",
+     "sampler_node_id": "3",
+     "save_nodes": [
+      "9"
+     ]
+    }
+   }
+  },
+  "z_cfg_profile": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen_3_4b.safetensors",
+    "latent_node_id": "13",
+    "model_id": "z-image-turbo",
+    "model_profile": "z-image-turbo",
+    "prompt_node_id": "27",
+    "sampler_node_id": "3",
+    "save_node_id": "9",
+    "unet_name": "z_image_turbo_bf16.safetensors",
+    "vae_name": "ae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_model_profile_invalid"
+   }
+  },
+  "z_clip_device": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen_3_4b.safetensors",
+    "latent_node_id": "13",
+    "model_id": "z-image-turbo",
+    "model_profile": "z-image-turbo",
+    "prompt_node_id": "27",
+    "sampler_node_id": "3",
+    "save_node_id": "9",
+    "unet_name": "z_image_turbo_bf16.safetensors",
+    "vae_name": "ae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_model_profile_invalid"
+   }
+  },
+  "z_clip_type": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen_3_4b.safetensors",
+    "latent_node_id": "13",
+    "model_id": "z-image-turbo",
+    "model_profile": "z-image-turbo",
+    "prompt_node_id": "27",
+    "sampler_node_id": "3",
+    "save_node_id": "9",
+    "unet_name": "z_image_turbo_bf16.safetensors",
+    "vae_name": "ae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_model_profile_invalid"
+   }
+  },
+  "z_denoise": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen_3_4b.safetensors",
+    "latent_node_id": "13",
+    "model_id": "z-image-turbo",
+    "model_profile": "z-image-turbo",
+    "prompt_node_id": "27",
+    "sampler_node_id": "3",
+    "save_node_id": "9",
+    "unet_name": "z_image_turbo_bf16.safetensors",
+    "vae_name": "ae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_model_profile_invalid"
+   }
+  },
+  "z_extra_input": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen_3_4b.safetensors",
+    "latent_node_id": "13",
+    "model_id": "z-image-turbo",
+    "model_profile": "z-image-turbo",
+    "prompt_node_id": "27",
+    "sampler_node_id": "3",
+    "save_node_id": "9",
+    "unet_name": "z_image_turbo_bf16.safetensors",
+    "vae_name": "ae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_workflow_topology_invalid"
+   }
+  },
+  "z_extra_node": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen_3_4b.safetensors",
+    "latent_node_id": "13",
+    "model_id": "z-image-turbo",
+    "model_profile": "z-image-turbo",
+    "prompt_node_id": "27",
+    "sampler_node_id": "3",
+    "save_node_id": "9",
+    "unet_name": "z_image_turbo_bf16.safetensors",
+    "vae_name": "ae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_custom_node_blocked"
+   }
+  },
+  "z_latent_size_free": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen_3_4b.safetensors",
+    "latent_node_id": "13",
+    "model_id": "z-image-turbo",
+    "model_profile": "z-image-turbo",
+    "prompt_node_id": "27",
+    "sampler_node_id": "3",
+    "save_node_id": "9",
+    "unet_name": "z_image_turbo_bf16.safetensors",
+    "vae_name": "ae.safetensors"
+   },
+   "outcome": {
+    "accepted": true,
+    "final_prompt": {
+     "11": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+       "model": [
+        "28",
+        0
+       ],
+       "shift": 3
+      }
+     },
+     "13": {
+      "class_type": "EmptySD3LatentImage",
+      "inputs": {
+       "batch_size": 1,
+       "height": 64,
+       "width": 64
+      }
+     },
+     "27": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+       "clip": [
+        "30",
+        0
+       ],
+       "text": "fixture caption"
+      }
+     },
+     "28": {
+      "class_type": "UNETLoader",
+      "inputs": {
+       "unet_name": "z_image_turbo_bf16.safetensors",
+       "weight_dtype": "default"
+      }
+     },
+     "29": {
+      "class_type": "VAELoader",
+      "inputs": {
+       "vae_name": "ae.safetensors"
+      }
+     },
+     "3": {
+      "class_type": "KSampler",
+      "inputs": {
+       "cfg": 1,
+       "denoise": 1,
+       "latent_image": [
+        "13",
+        0
+       ],
+       "model": [
+        "11",
+        0
+       ],
+       "negative": [
+        "33",
+        0
+       ],
+       "positive": [
+        "27",
+        0
+       ],
+       "sampler_name": "res_multistep",
+       "scheduler": "simple",
+       "seed": 7,
+       "steps": 8
+      }
+     },
+     "30": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+       "clip_name": "qwen_3_4b.safetensors",
+       "device": "default",
+       "type": "lumina2"
+      }
+     },
+     "33": {
+      "class_type": "ConditioningZeroOut",
+      "inputs": {
+       "conditioning": [
+        "27",
+        0
+       ]
+      }
+     },
+     "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+       "samples": [
+        "3",
+        0
+       ],
+       "vae": [
+        "29",
+        0
+       ]
+      }
+     },
+     "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+       "filename_prefix": "aips_local",
+       "images": [
+        "8",
+        0
+       ]
+      }
+     }
+    },
+    "provider": {
+     "latent_node_id": "13",
+     "profile": {
+      "clip_type": "lumina2",
+      "components": {
+       "clip_name": "qwen_3_4b.safetensors",
+       "unet_name": [
+        "z_image_turbo_bf16.safetensors",
+        "z_image_turbo_fp16.safetensors",
+        "z_image_turbo_fp8.safetensors"
+       ],
+       "vae_name": "ae.safetensors"
+      },
+      "model_id": "z-image-turbo",
+      "operation": "generate",
+      "sampler": {
+       "cfg": 1,
+       "denoise": 1,
+       "sampler_name": "res_multistep",
+       "scheduler": "simple",
+       "steps": null
+      },
+      "topology": "z_image_split_loader",
+      "upsampler": {}
+     },
+     "prompt_field": "text",
+     "prompt_id": "27",
+     "sampler_node_id": "3",
+     "save_nodes": [
+      "9"
+     ]
+    }
+   }
+  },
+  "z_missing_node": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen_3_4b.safetensors",
+    "latent_node_id": "13",
+    "model_id": "z-image-turbo",
+    "model_profile": "z-image-turbo",
+    "prompt_node_id": "27",
+    "sampler_node_id": "3",
+    "save_node_id": "9",
+    "unet_name": "z_image_turbo_bf16.safetensors",
+    "vae_name": "ae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_workflow_topology_invalid"
+   }
+  },
+  "z_negative_conditioning": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen_3_4b.safetensors",
+    "latent_node_id": "13",
+    "model_id": "z-image-turbo",
+    "model_profile": "z-image-turbo",
+    "prompt_node_id": "27",
+    "sampler_node_id": "3",
+    "save_node_id": "9",
+    "unet_name": "z_image_turbo_bf16.safetensors",
+    "vae_name": "ae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_workflow_topology_invalid"
+   }
+  },
+  "z_prompt_link_clip": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen_3_4b.safetensors",
+    "latent_node_id": "13",
+    "model_id": "z-image-turbo",
+    "model_profile": "z-image-turbo",
+    "prompt_node_id": "27",
+    "sampler_node_id": "3",
+    "save_node_id": "9",
+    "unet_name": "z_image_turbo_bf16.safetensors",
+    "vae_name": "ae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_workflow_topology_invalid"
+   }
+  },
+  "z_sampler_name": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen_3_4b.safetensors",
+    "latent_node_id": "13",
+    "model_id": "z-image-turbo",
+    "model_profile": "z-image-turbo",
+    "prompt_node_id": "27",
+    "sampler_node_id": "3",
+    "save_node_id": "9",
+    "unet_name": "z_image_turbo_bf16.safetensors",
+    "vae_name": "ae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_model_profile_invalid"
+   }
+  },
+  "z_save_prefix_untouched_schema": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen_3_4b.safetensors",
+    "latent_node_id": "13",
+    "model_id": "z-image-turbo",
+    "model_profile": "z-image-turbo",
+    "prompt_node_id": "27",
+    "sampler_node_id": "3",
+    "save_node_id": "9",
+    "unet_name": "z_image_turbo_bf16.safetensors",
+    "vae_name": "ae.safetensors"
+   },
+   "outcome": {
+    "accepted": true,
+    "final_prompt": {
+     "11": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+       "model": [
+        "28",
+        0
+       ],
+       "shift": 3
+      }
+     },
+     "13": {
+      "class_type": "EmptySD3LatentImage",
+      "inputs": {
+       "batch_size": 1,
+       "height": 64,
+       "width": 64
+      }
+     },
+     "27": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+       "clip": [
+        "30",
+        0
+       ],
+       "text": "fixture caption"
+      }
+     },
+     "28": {
+      "class_type": "UNETLoader",
+      "inputs": {
+       "unet_name": "z_image_turbo_bf16.safetensors",
+       "weight_dtype": "default"
+      }
+     },
+     "29": {
+      "class_type": "VAELoader",
+      "inputs": {
+       "vae_name": "ae.safetensors"
+      }
+     },
+     "3": {
+      "class_type": "KSampler",
+      "inputs": {
+       "cfg": 1,
+       "denoise": 1,
+       "latent_image": [
+        "13",
+        0
+       ],
+       "model": [
+        "11",
+        0
+       ],
+       "negative": [
+        "33",
+        0
+       ],
+       "positive": [
+        "27",
+        0
+       ],
+       "sampler_name": "res_multistep",
+       "scheduler": "simple",
+       "seed": 7,
+       "steps": 8
+      }
+     },
+     "30": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+       "clip_name": "qwen_3_4b.safetensors",
+       "device": "default",
+       "type": "lumina2"
+      }
+     },
+     "33": {
+      "class_type": "ConditioningZeroOut",
+      "inputs": {
+       "conditioning": [
+        "27",
+        0
+       ]
+      }
+     },
+     "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+       "samples": [
+        "3",
+        0
+       ],
+       "vae": [
+        "29",
+        0
+       ]
+      }
+     },
+     "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+       "filename_prefix": "aips_local",
+       "images": [
+        "8",
+        0
+       ]
+      }
+     }
+    },
+    "provider": {
+     "latent_node_id": "13",
+     "profile": {
+      "clip_type": "lumina2",
+      "components": {
+       "clip_name": "qwen_3_4b.safetensors",
+       "unet_name": [
+        "z_image_turbo_bf16.safetensors",
+        "z_image_turbo_fp16.safetensors",
+        "z_image_turbo_fp8.safetensors"
+       ],
+       "vae_name": "ae.safetensors"
+      },
+      "model_id": "z-image-turbo",
+      "operation": "generate",
+      "sampler": {
+       "cfg": 1,
+       "denoise": 1,
+       "sampler_name": "res_multistep",
+       "scheduler": "simple",
+       "steps": null
+      },
+      "topology": "z_image_split_loader",
+      "upsampler": {}
+     },
+     "prompt_field": "text",
+     "prompt_id": "27",
+     "sampler_node_id": "3",
+     "save_nodes": [
+      "9"
+     ]
+    }
+   }
+  },
+  "z_shift": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen_3_4b.safetensors",
+    "latent_node_id": "13",
+    "model_id": "z-image-turbo",
+    "model_profile": "z-image-turbo",
+    "prompt_node_id": "27",
+    "sampler_node_id": "3",
+    "save_node_id": "9",
+    "unet_name": "z_image_turbo_bf16.safetensors",
+    "vae_name": "ae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_model_profile_invalid"
+   }
+  },
+  "z_unet_name_mismatch": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen_3_4b.safetensors",
+    "latent_node_id": "13",
+    "model_id": "z-image-turbo",
+    "model_profile": "z-image-turbo",
+    "prompt_node_id": "27",
+    "sampler_node_id": "3",
+    "save_node_id": "9",
+    "unet_name": "z_image_turbo_bf16.safetensors",
+    "vae_name": "ae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_model_profile_invalid"
+   }
+  },
+  "z_vae_link": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen_3_4b.safetensors",
+    "latent_node_id": "13",
+    "model_id": "z-image-turbo",
+    "model_profile": "z-image-turbo",
+    "prompt_node_id": "27",
+    "sampler_node_id": "3",
+    "save_node_id": "9",
+    "unet_name": "z_image_turbo_bf16.safetensors",
+    "vae_name": "ae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_workflow_topology_invalid"
+   }
+  },
+  "z_weight_dtype": {
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen_3_4b.safetensors",
+    "latent_node_id": "13",
+    "model_id": "z-image-turbo",
+    "model_profile": "z-image-turbo",
+    "prompt_node_id": "27",
+    "sampler_node_id": "3",
+    "save_node_id": "9",
+    "unet_name": "z_image_turbo_bf16.safetensors",
+    "vae_name": "ae.safetensors"
+   },
+   "outcome": {
+    "accepted": false,
+    "reason_code": "comfy_model_profile_invalid"
+   }
+  }
+ },
+ "system_profiles": {
+  "flux3-image-klein-base-int8": {
+   "bundle": {
+    "height": 64,
+    "operation": "generate",
+    "prompt": "fixture caption",
+    "seed": 7,
+    "steps": 8,
+    "width": 64
+   },
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen3vl_4b_int8_convrot.safetensors",
+    "latent_node_id": "8",
+    "model_id": "flux3-image-klein-base",
+    "model_profile": "flux3-image-klein-base-int8",
+    "prompt_node_id": "5",
+    "prompt_upsampler_name": "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+    "sampler_node_id": "9",
+    "save_node_id": "11",
+    "unet_name": "flux3-image-klein-base-int8-convrot.safetensors",
+    "vae_name": "flux2-vae.safetensors"
+   },
+   "outcome": {
+    "accepted": true,
+    "final_prompt": {
+     "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+       "unet_name": "flux3-image-klein-base-int8-convrot.safetensors",
+       "weight_dtype": "default"
+      }
+     },
+     "10": {
+      "class_type": "VAEDecode",
+      "inputs": {
+       "samples": [
+        "9",
+        0
+       ],
+       "vae": [
+        "4",
+        0
+       ]
+      }
+     },
+     "11": {
+      "class_type": "SaveImage",
+      "inputs": {
+       "filename_prefix": "aips_local",
+       "images": [
+        "10",
+        0
+       ]
+      }
+     },
+     "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+       "clip_name": "qwen3vl_4b_int8_convrot.safetensors",
+       "device": "default",
+       "type": "flux3"
+      }
+     },
+     "3": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+       "clip_name": "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+       "device": "default",
+       "type": "flux3"
+      }
+     },
+     "4": {
+      "class_type": "VAELoader",
+      "inputs": {
+       "vae_name": "flux2-vae.safetensors"
+      }
+     },
+     "5": {
+      "class_type": "TextGenerate",
+      "inputs": {
+       "clip": [
+        "3",
+        0
+       ],
+       "max_length": 1024,
+       "mtp": "off",
+       "prompt": "fixture caption",
+       "sampling_mode": "off",
+       "system_prompt": "You are a fashion product-photography prompt writer. Expand the user's request into one concise, self-contained image caption in English. Preserve the exact garment, accessory, color, fabric, cut, fit, and styling details supplied by the user; never invent or alter product specifications, logos, text, or additional products. When a recurring adult KOHAMI model is requested, keep her identity consistent: an adult East Asian woman in her early twenties, gentle Japanese sweet-fashion mood, natural dark hair with soft bangs, realistic skin texture and subtle makeup. Describe a relaxed, physically plausible pose and a small natural expression, with soft daylight, restrained neutral interiors, realistic fabric texture, and an editorial lifestyle photograph. Avoid glossy retouching, plastic skin, perfect symmetry, stiff posing, CGI, and stock-photo exaggeration. Output one paragraph only, with no heading or explanation.",
+       "thinking": false,
+       "use_default_template": true
+      }
+     },
+     "6": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+       "clip": [
+        "2",
+        0
+       ],
+       "text": [
+        "5",
+        0
+       ]
+      }
+     },
+     "7": {
+      "class_type": "ConditioningZeroOut",
+      "inputs": {
+       "conditioning": [
+        "6",
+        0
+       ]
+      }
+     },
+     "8": {
+      "class_type": "EmptyFlux2LatentImage",
+      "inputs": {
+       "batch_size": 1,
+       "height": 64,
+       "width": 64
+      }
+     },
+     "9": {
+      "class_type": "KSampler",
+      "inputs": {
+       "cfg": 3.5,
+       "denoise": 1,
+       "latent_image": [
+        "8",
+        0
+       ],
+       "model": [
+        "1",
+        0
+       ],
+       "negative": [
+        "7",
+        0
+       ],
+       "positive": [
+        "6",
+        0
+       ],
+       "sampler_name": "euler",
+       "scheduler": "simple",
+       "seed": 7,
+       "steps": 50
+      }
+     }
+    },
+    "provider": {
+     "latent_node_id": "8",
+     "profile": {
+      "clip_type": "flux3",
+      "components": {
+       "clip_name": "qwen3vl_4b_int8_convrot.safetensors",
+       "prompt_upsampler_name": "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+       "unet_name": "flux3-image-klein-base-int8-convrot.safetensors",
+       "vae_name": "flux2-vae.safetensors"
+      },
+      "model_id": "flux3-image-klein-base",
+      "operation": "generate",
+      "sampler": {
+       "cfg": 3.5,
+       "denoise": 1,
+       "sampler_name": "euler",
+       "scheduler": "simple",
+       "steps": 50
+      },
+      "topology": "flux3_klein_t2i",
+      "upsampler": {
+       "max_length": 1024
+      }
+     },
+     "prompt_field": "prompt",
+     "prompt_id": "5",
+     "sampler_node_id": "9",
+     "save_nodes": [
+      "11"
+     ]
+    }
+   }
+  },
+  "flux3-image-klein-base-int8:variant-bundle": {
+   "bundle": {
+    "height": 256,
+    "operation": "generate",
+    "prompt": "another fixture caption",
+    "seed": 123,
+    "steps": 12,
+    "width": 512
+   },
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen3vl_4b_int8_convrot.safetensors",
+    "latent_node_id": "8",
+    "model_id": "flux3-image-klein-base",
+    "model_profile": "flux3-image-klein-base-int8",
+    "prompt_node_id": "5",
+    "prompt_upsampler_name": "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+    "sampler_node_id": "9",
+    "save_node_id": "11",
+    "unet_name": "flux3-image-klein-base-int8-convrot.safetensors",
+    "vae_name": "flux2-vae.safetensors"
+   },
+   "outcome": {
+    "accepted": true,
+    "final_prompt": {
+     "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+       "unet_name": "flux3-image-klein-base-int8-convrot.safetensors",
+       "weight_dtype": "default"
+      }
+     },
+     "10": {
+      "class_type": "VAEDecode",
+      "inputs": {
+       "samples": [
+        "9",
+        0
+       ],
+       "vae": [
+        "4",
+        0
+       ]
+      }
+     },
+     "11": {
+      "class_type": "SaveImage",
+      "inputs": {
+       "filename_prefix": "aips_local",
+       "images": [
+        "10",
+        0
+       ]
+      }
+     },
+     "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+       "clip_name": "qwen3vl_4b_int8_convrot.safetensors",
+       "device": "default",
+       "type": "flux3"
+      }
+     },
+     "3": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+       "clip_name": "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+       "device": "default",
+       "type": "flux3"
+      }
+     },
+     "4": {
+      "class_type": "VAELoader",
+      "inputs": {
+       "vae_name": "flux2-vae.safetensors"
+      }
+     },
+     "5": {
+      "class_type": "TextGenerate",
+      "inputs": {
+       "clip": [
+        "3",
+        0
+       ],
+       "max_length": 1024,
+       "mtp": "off",
+       "prompt": "another fixture caption",
+       "sampling_mode": "off",
+       "system_prompt": "You are a fashion product-photography prompt writer. Expand the user's request into one concise, self-contained image caption in English. Preserve the exact garment, accessory, color, fabric, cut, fit, and styling details supplied by the user; never invent or alter product specifications, logos, text, or additional products. When a recurring adult KOHAMI model is requested, keep her identity consistent: an adult East Asian woman in her early twenties, gentle Japanese sweet-fashion mood, natural dark hair with soft bangs, realistic skin texture and subtle makeup. Describe a relaxed, physically plausible pose and a small natural expression, with soft daylight, restrained neutral interiors, realistic fabric texture, and an editorial lifestyle photograph. Avoid glossy retouching, plastic skin, perfect symmetry, stiff posing, CGI, and stock-photo exaggeration. Output one paragraph only, with no heading or explanation.",
+       "thinking": false,
+       "use_default_template": true
+      }
+     },
+     "6": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+       "clip": [
+        "2",
+        0
+       ],
+       "text": [
+        "5",
+        0
+       ]
+      }
+     },
+     "7": {
+      "class_type": "ConditioningZeroOut",
+      "inputs": {
+       "conditioning": [
+        "6",
+        0
+       ]
+      }
+     },
+     "8": {
+      "class_type": "EmptyFlux2LatentImage",
+      "inputs": {
+       "batch_size": 1,
+       "height": 256,
+       "width": 512
+      }
+     },
+     "9": {
+      "class_type": "KSampler",
+      "inputs": {
+       "cfg": 3.5,
+       "denoise": 1,
+       "latent_image": [
+        "8",
+        0
+       ],
+       "model": [
+        "1",
+        0
+       ],
+       "negative": [
+        "7",
+        0
+       ],
+       "positive": [
+        "6",
+        0
+       ],
+       "sampler_name": "euler",
+       "scheduler": "simple",
+       "seed": 123,
+       "steps": 50
+      }
+     }
+    },
+    "provider": {
+     "latent_node_id": "8",
+     "profile": {
+      "clip_type": "flux3",
+      "components": {
+       "clip_name": "qwen3vl_4b_int8_convrot.safetensors",
+       "prompt_upsampler_name": "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+       "unet_name": "flux3-image-klein-base-int8-convrot.safetensors",
+       "vae_name": "flux2-vae.safetensors"
+      },
+      "model_id": "flux3-image-klein-base",
+      "operation": "generate",
+      "sampler": {
+       "cfg": 3.5,
+       "denoise": 1,
+       "sampler_name": "euler",
+       "scheduler": "simple",
+       "steps": 50
+      },
+      "topology": "flux3_klein_t2i",
+      "upsampler": {
+       "max_length": 1024
+      }
+     },
+     "prompt_field": "prompt",
+     "prompt_id": "5",
+     "sampler_node_id": "9",
+     "save_nodes": [
+      "11"
+     ]
+    }
+   }
+  },
+  "flux3-image-klein-distilled-int8": {
+   "bundle": {
+    "height": 64,
+    "operation": "generate",
+    "prompt": "fixture caption",
+    "seed": 7,
+    "steps": 8,
+    "width": 64
+   },
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen3vl_4b_int8_convrot.safetensors",
+    "latent_node_id": "8",
+    "model_id": "flux3-image-klein-distilled",
+    "model_profile": "flux3-image-klein-distilled-int8",
+    "prompt_node_id": "5",
+    "prompt_upsampler_name": "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+    "sampler_node_id": "9",
+    "save_node_id": "11",
+    "unet_name": "flux3-image-klein-int8-convrot.safetensors",
+    "vae_name": "flux2-vae.safetensors"
+   },
+   "outcome": {
+    "accepted": true,
+    "final_prompt": {
+     "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+       "unet_name": "flux3-image-klein-int8-convrot.safetensors",
+       "weight_dtype": "default"
+      }
+     },
+     "10": {
+      "class_type": "VAEDecode",
+      "inputs": {
+       "samples": [
+        "9",
+        0
+       ],
+       "vae": [
+        "4",
+        0
+       ]
+      }
+     },
+     "11": {
+      "class_type": "SaveImage",
+      "inputs": {
+       "filename_prefix": "aips_local",
+       "images": [
+        "10",
+        0
+       ]
+      }
+     },
+     "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+       "clip_name": "qwen3vl_4b_int8_convrot.safetensors",
+       "device": "default",
+       "type": "flux3"
+      }
+     },
+     "3": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+       "clip_name": "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+       "device": "default",
+       "type": "flux3"
+      }
+     },
+     "4": {
+      "class_type": "VAELoader",
+      "inputs": {
+       "vae_name": "flux2-vae.safetensors"
+      }
+     },
+     "5": {
+      "class_type": "TextGenerate",
+      "inputs": {
+       "clip": [
+        "3",
+        0
+       ],
+       "max_length": 1024,
+       "mtp": "off",
+       "prompt": "fixture caption",
+       "sampling_mode": "off",
+       "system_prompt": "You are a fashion product-photography prompt writer. Expand the user's request into one concise, self-contained image caption in English. Preserve the exact garment, accessory, color, fabric, cut, fit, and styling details supplied by the user; never invent or alter product specifications, logos, text, or additional products. When a recurring adult KOHAMI model is requested, keep her identity consistent: an adult East Asian woman in her early twenties, gentle Japanese sweet-fashion mood, natural dark hair with soft bangs, realistic skin texture and subtle makeup. Describe a relaxed, physically plausible pose and a small natural expression, with soft daylight, restrained neutral interiors, realistic fabric texture, and an editorial lifestyle photograph. Avoid glossy retouching, plastic skin, perfect symmetry, stiff posing, CGI, and stock-photo exaggeration. Output one paragraph only, with no heading or explanation.",
+       "thinking": false,
+       "use_default_template": true
+      }
+     },
+     "6": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+       "clip": [
+        "2",
+        0
+       ],
+       "text": [
+        "5",
+        0
+       ]
+      }
+     },
+     "7": {
+      "class_type": "ConditioningZeroOut",
+      "inputs": {
+       "conditioning": [
+        "6",
+        0
+       ]
+      }
+     },
+     "8": {
+      "class_type": "EmptyFlux2LatentImage",
+      "inputs": {
+       "batch_size": 1,
+       "height": 64,
+       "width": 64
+      }
+     },
+     "9": {
+      "class_type": "KSampler",
+      "inputs": {
+       "cfg": 1,
+       "denoise": 1,
+       "latent_image": [
+        "8",
+        0
+       ],
+       "model": [
+        "1",
+        0
+       ],
+       "negative": [
+        "7",
+        0
+       ],
+       "positive": [
+        "6",
+        0
+       ],
+       "sampler_name": "euler",
+       "scheduler": "simple",
+       "seed": 7,
+       "steps": 16
+      }
+     }
+    },
+    "provider": {
+     "latent_node_id": "8",
+     "profile": {
+      "clip_type": "flux3",
+      "components": {
+       "clip_name": "qwen3vl_4b_int8_convrot.safetensors",
+       "prompt_upsampler_name": "qwen3.5_9b_flux3_prompt_upsampler_w4a8.safetensors",
+       "unet_name": "flux3-image-klein-int8-convrot.safetensors",
+       "vae_name": "flux2-vae.safetensors"
+      },
+      "model_id": "flux3-image-klein-distilled",
+      "operation": "generate",
+      "sampler": {
+       "cfg": 1,
+       "denoise": 1,
+       "sampler_name": "euler",
+       "scheduler": "simple",
+       "steps": 16
+      },
+      "topology": "flux3_klein_t2i",
+      "upsampler": {
+       "max_length": 1024
+      }
+     },
+     "prompt_field": "prompt",
+     "prompt_id": "5",
+     "sampler_node_id": "9",
+     "save_nodes": [
+      "11"
+     ]
+    }
+   }
+  },
+  "z-image-turbo": {
+   "bundle": {
+    "height": 64,
+    "operation": "generate",
+    "prompt": "fixture caption",
+    "seed": 7,
+    "steps": 8,
+    "width": 64
+   },
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen_3_4b.safetensors",
+    "latent_node_id": "13",
+    "model_id": "z-image-turbo",
+    "model_profile": "z-image-turbo",
+    "prompt_node_id": "27",
+    "sampler_node_id": "3",
+    "save_node_id": "9",
+    "unet_name": "z_image_turbo_bf16.safetensors",
+    "vae_name": "ae.safetensors"
+   },
+   "outcome": {
+    "accepted": true,
+    "final_prompt": {
+     "11": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+       "model": [
+        "28",
+        0
+       ],
+       "shift": 3
+      }
+     },
+     "13": {
+      "class_type": "EmptySD3LatentImage",
+      "inputs": {
+       "batch_size": 1,
+       "height": 64,
+       "width": 64
+      }
+     },
+     "27": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+       "clip": [
+        "30",
+        0
+       ],
+       "text": "fixture caption"
+      }
+     },
+     "28": {
+      "class_type": "UNETLoader",
+      "inputs": {
+       "unet_name": "z_image_turbo_bf16.safetensors",
+       "weight_dtype": "default"
+      }
+     },
+     "29": {
+      "class_type": "VAELoader",
+      "inputs": {
+       "vae_name": "ae.safetensors"
+      }
+     },
+     "3": {
+      "class_type": "KSampler",
+      "inputs": {
+       "cfg": 1,
+       "denoise": 1,
+       "latent_image": [
+        "13",
+        0
+       ],
+       "model": [
+        "11",
+        0
+       ],
+       "negative": [
+        "33",
+        0
+       ],
+       "positive": [
+        "27",
+        0
+       ],
+       "sampler_name": "res_multistep",
+       "scheduler": "simple",
+       "seed": 7,
+       "steps": 8
+      }
+     },
+     "30": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+       "clip_name": "qwen_3_4b.safetensors",
+       "device": "default",
+       "type": "lumina2"
+      }
+     },
+     "33": {
+      "class_type": "ConditioningZeroOut",
+      "inputs": {
+       "conditioning": [
+        "27",
+        0
+       ]
+      }
+     },
+     "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+       "samples": [
+        "3",
+        0
+       ],
+       "vae": [
+        "29",
+        0
+       ]
+      }
+     },
+     "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+       "filename_prefix": "aips_local",
+       "images": [
+        "8",
+        0
+       ]
+      }
+     }
+    },
+    "provider": {
+     "latent_node_id": "13",
+     "profile": {
+      "clip_type": "lumina2",
+      "components": {
+       "clip_name": "qwen_3_4b.safetensors",
+       "unet_name": [
+        "z_image_turbo_bf16.safetensors",
+        "z_image_turbo_fp16.safetensors",
+        "z_image_turbo_fp8.safetensors"
+       ],
+       "vae_name": "ae.safetensors"
+      },
+      "model_id": "z-image-turbo",
+      "operation": "generate",
+      "sampler": {
+       "cfg": 1,
+       "denoise": 1,
+       "sampler_name": "res_multistep",
+       "scheduler": "simple",
+       "steps": null
+      },
+      "topology": "z_image_split_loader",
+      "upsampler": {}
+     },
+     "prompt_field": "text",
+     "prompt_id": "27",
+     "sampler_node_id": "3",
+     "save_nodes": [
+      "9"
+     ]
+    }
+   }
+  },
+  "z-image-turbo:variant-bundle": {
+   "bundle": {
+    "height": 256,
+    "operation": "generate",
+    "prompt": "another fixture caption",
+    "seed": 123,
+    "steps": 12,
+    "width": 512
+   },
+   "config": {
+    "base_url": "http://127.0.0.1:8188",
+    "clip_name": "qwen_3_4b.safetensors",
+    "latent_node_id": "13",
+    "model_id": "z-image-turbo",
+    "model_profile": "z-image-turbo",
+    "prompt_node_id": "27",
+    "sampler_node_id": "3",
+    "save_node_id": "9",
+    "unet_name": "z_image_turbo_bf16.safetensors",
+    "vae_name": "ae.safetensors"
+   },
+   "outcome": {
+    "accepted": true,
+    "final_prompt": {
+     "11": {
+      "class_type": "ModelSamplingAuraFlow",
+      "inputs": {
+       "model": [
+        "28",
+        0
+       ],
+       "shift": 3
+      }
+     },
+     "13": {
+      "class_type": "EmptySD3LatentImage",
+      "inputs": {
+       "batch_size": 1,
+       "height": 256,
+       "width": 512
+      }
+     },
+     "27": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+       "clip": [
+        "30",
+        0
+       ],
+       "text": "another fixture caption"
+      }
+     },
+     "28": {
+      "class_type": "UNETLoader",
+      "inputs": {
+       "unet_name": "z_image_turbo_bf16.safetensors",
+       "weight_dtype": "default"
+      }
+     },
+     "29": {
+      "class_type": "VAELoader",
+      "inputs": {
+       "vae_name": "ae.safetensors"
+      }
+     },
+     "3": {
+      "class_type": "KSampler",
+      "inputs": {
+       "cfg": 1,
+       "denoise": 1,
+       "latent_image": [
+        "13",
+        0
+       ],
+       "model": [
+        "11",
+        0
+       ],
+       "negative": [
+        "33",
+        0
+       ],
+       "positive": [
+        "27",
+        0
+       ],
+       "sampler_name": "res_multistep",
+       "scheduler": "simple",
+       "seed": 123,
+       "steps": 12
+      }
+     },
+     "30": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+       "clip_name": "qwen_3_4b.safetensors",
+       "device": "default",
+       "type": "lumina2"
+      }
+     },
+     "33": {
+      "class_type": "ConditioningZeroOut",
+      "inputs": {
+       "conditioning": [
+        "27",
+        0
+       ]
+      }
+     },
+     "8": {
+      "class_type": "VAEDecode",
+      "inputs": {
+       "samples": [
+        "3",
+        0
+       ],
+       "vae": [
+        "29",
+        0
+       ]
+      }
+     },
+     "9": {
+      "class_type": "SaveImage",
+      "inputs": {
+       "filename_prefix": "aips_local",
+       "images": [
+        "8",
+        0
+       ]
+      }
+     }
+    },
+    "provider": {
+     "latent_node_id": "13",
+     "profile": {
+      "clip_type": "lumina2",
+      "components": {
+       "clip_name": "qwen_3_4b.safetensors",
+       "unet_name": [
+        "z_image_turbo_bf16.safetensors",
+        "z_image_turbo_fp16.safetensors",
+        "z_image_turbo_fp8.safetensors"
+       ],
+       "vae_name": "ae.safetensors"
+      },
+      "model_id": "z-image-turbo",
+      "operation": "generate",
+      "sampler": {
+       "cfg": 1,
+       "denoise": 1,
+       "sampler_name": "res_multistep",
+       "scheduler": "simple",
+       "steps": null
+      },
+      "topology": "z_image_split_loader",
+      "upsampler": {}
+     },
+     "prompt_field": "text",
+     "prompt_id": "27",
+     "sampler_node_id": "3",
+     "save_nodes": [
+      "9"
+     ]
+    }
+   }
+  }
+ }
+}

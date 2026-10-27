@@ -2063,7 +2063,7 @@ Scenario 262 covers fail-closed Resource Authorization Profile/grant matching, H
 
 ## Scenario 268 — Model-agnostic ComfyUI Workflows
 
-Scenario 268 verifies opt-in local API workflow import, scan and inspection; bounded graph/schema validation; runtime core-node allowlisting; installed loader model checks; explicit prompt/seed/dimension/output/reference bindings; create-only generation output; and no automatic resubmission after an uncertain POST. Synthetic loopback evidence does not verify real model inference, hardware compatibility or image quality.
+Scenario 268 verifies opt-in local API workflow import, scan and inspection; bounded graph/schema validation; runtime core-node allowlisting; installed loader model checks; explicit prompt/seed/dimension/output/reference bindings; create-only generation output; and no automatic resubmission after an uncertain POST. Synthetic loopback evidence does not verify real model inference, hardware compatibility or image quality. Scenario 271 extends this topology work with audited template data, a generic validator, pre-refactor equivalence for every registered profile, and the user-local profile draft and approve gate.
 
 ## Scenario 263 — Commit Safety Diagnostics
 
