@@ -411,6 +411,8 @@ Plan42 content-safety changes bind the affected staged-font and publication boun
 
 Publication changes reach the Core Gate only after matrix evidence binds the exact candidate and documents the required checks policy boundary.
 
+When a validation workflow or its action pin changes, reconcile the canonical matrix, immutable upstream SHA, toolchain contract and documentation closure before running the exact-candidate Gate.
+
 The exact-candidate Integration Gate verifies deterministic publication diagnostics, target policy evidence, safe native Hook output and read-only transient recovery before remote publication.
 
 A blocked publication must re-observe PR/head/base/checks and distinguish Host, AIPS and GitHub errors; successful Gate evidence alone does not authorize native merge.

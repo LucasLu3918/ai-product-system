@@ -275,6 +275,8 @@ GitHub auto-merge planning is not Scheduler execution: `aips publish prepare --a
 
 Timing summaries use complete same-candidate records, group by change class and deduplicate reruns. The observation/graduation policy still controls cohort readiness; P50/P95 alone cannot enable selective validation.
 
+The validation workflow installs setup-node only when the selected candidate toolchain requires Node. Its pinned action version changes the CI environment, not Scheduler runtime behavior; the same full candidate Gate remains required.
+
 Shared path classification supplies safe root/prefix inventory only. CI dependency planning and validator selection retain independent risk rules, and unknown or malformed paths preserve full-validation behavior.
 
 For required full-repository lifecycle fixtures, CI always installs the Python packages in `requirements.txt`, `requirements-validation.txt`, `requirements-visual.txt` and `requirements-openapi.txt` under tested constraints. Candidate-path selection still controls Node and Playwright Chromium installation.

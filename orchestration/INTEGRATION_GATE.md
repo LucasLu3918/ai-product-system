@@ -30,6 +30,8 @@ Scenario 266 records content-safety verification while preserving existing maint
 
 The local Integration Gate still requires a completely clean worktree for the candidate it validates; the untracked-file relaxation applies only to publication authorization.
 
+Workflow action changes bind the canonical matrix to the live base SHA and exact changed-file set. The matrix records immutable action provenance and retained Node/cache contracts; its Gate evidence is not merge authority.
+
 
 Publication diagnostics changes require the Core Change Matrix to bind the exact source, tests, scenario and documentation file set before the local Gate runs.
 Plan44's matrix separately verifies fail-closed command details, Claude native failure redaction and unchanged ALREADY_MERGED/Branch Hygiene recovery before publication.

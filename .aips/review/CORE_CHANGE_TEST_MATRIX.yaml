@@ -8,7 +8,7 @@ review_evidence:
   required: false
 candidate:
   base_sha: e1a84015d3227b07c6e34ba676642e11f129ab6b
-  changed_files_hash: d3f030dbe689f4d21e9e747636f7cb6f2e3e180c43432deaf981c3a96ea3f829
+  changed_files_hash: 2cf0f5f5a943d8adb90e7d473b94ed6505e6bfeaeb4c67c1970e35de51b180f5
 matrix:
   - boundary: GitHub Actions setup-node provenance and validation-workflow contract
     reason: The workflow dependency pin changes, but application runtime behavior and project source APIs do not.
@@ -38,9 +38,9 @@ matrix:
         applicable: false
         na_reason: No CLI or Harness behavior changes.
       docs_schema:
-        applicable: false
-        na_reason: This is a pure workflow dependency pin update; the repository publication rules exempt documentation changes for this exact change type.
+        applicable: true
+        evidence: AIPS docs-impact reports the exact-candidate documentation closure and placement complete across all 13 changed paths.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
-status: DRAFT
+status: READY

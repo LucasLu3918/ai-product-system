@@ -356,6 +356,8 @@ Content-safety detector changes are versioned (for example `pii.email.v2`) and b
 
 The lifecycle fixture covers Qwen Image Edit Plus ordered ports, the three-image limit, invalid-slot rejection, and unchanged Qwen Image 2.1 object-map injection; it does not claim real inference.
 
+The validation workflow pins setup-node v7.1.0 by its verified commit and retains Node 24 plus npm cache configuration; exact-candidate Gate and required repository CI establish the update evidence.
+
 Scenario 235 驗證 OpenCode 超限診斷、受限 trace 欄位與 fail-closed 原生寫入；不得把它解讀成一般 Shell/MCP 或程式外寫入的保護證據。
 
 Scenario 261 regression coverage checks JSON and text error paths while preserving exit status and publication authority.
