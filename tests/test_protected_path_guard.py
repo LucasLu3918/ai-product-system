@@ -262,6 +262,11 @@ class GuardHookSubprocessTests(unittest.TestCase):
         self._assert_allowed('Bash', {'command': 'aips system preflight ' + str(self.project)})
         self._assert_allowed('Bash', {'command': f'echo ok > {self.project}/out.txt'})
 
+    def test_profile_switch_by_agent_is_denied_while_profile_reads_are_allowed(self):
+        self._assert_denied('Bash', {'command': 'aips profile set test_relax true'})
+        self._assert_denied('Bash', {'command': 'cd ' + str(self.project) + ' && aips profile set test_relax false'})
+        self._assert_allowed('Bash', {'command': 'aips profile show --format json'})
+
     def test_publication_hook_still_handles_non_protected_commands(self):
         _stdout, response = self._run_hook('Bash', {'command': 'git status'})
         self.assertEqual(response, {})

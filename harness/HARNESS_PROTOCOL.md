@@ -71,6 +71,8 @@ Staged AVIF metadata denials are produced by the content-safety scanner and do n
 
 Creative workspace asset import is an explicit local CLI action bound to a reviewed source hash and an absent destination path.
 
+Profile switches (`~/.config/aips/profile.yaml`, strict by default) are changed only by `aips profile set` in an interactive terminal after a typed confirmation phrase; the Claude Code guard denies agent writes to the profile file and to that command.
+
 
 Optional creative `review-assist` is a separate current-user-authorized action bound to the active Session root; its local vision findings remain advisory and cannot grant write, generation or acceptance authority.
 

@@ -2108,3 +2108,5 @@ The `pii.email.v2` corpus proves Git remote `git` userinfo (scp-like, `ssh://`, 
 Dependabot commits: the GitHub App bot noreply author and Dependabot's exact final `Signed-off-by` trailer are Git identity metadata decided by `config/git-publication.yaml`, not PII exceptions; `pii.email.v2` and every other address stay blocking, and the bot identity grants no authority.
 
 Scenario 269 refreshes only the CLI help golden vectors for `aips intelligence gc`; content-safety detection, sink policy and commit scanning are unchanged.
+
+Scenario 272 covers the profile switch mechanism: default-strict loading, fail-closed diagnostics, a TTY and typed-phrase gate for `aips profile set`, and agent-write denial; no relaxation is enabled.

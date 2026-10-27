@@ -307,6 +307,8 @@ The OpenCode V2 plugin resolves compact Turn Context on primary dispatch and key
 
 The Turn Context Manifest keeps `SYSTEM_CORE.md` in the fixed layer and returns task-specific canonical protocol routes as bounded pointers. Compact output and runtime hooks expose route IDs, paths and resolution status without storing the prompt; required missing routes fail closed for mutation.
 
+Compact output and runtime hooks also expose one `aips_profile=` line that reports switch names and reason codes only; profile switches are person-only (`aips profile set`) and are not an Intelligence input.
+
 Every turn resolves the Intelligence index, but does not reload every topic.
 
 ~~~text

@@ -42,6 +42,8 @@ Turn Context 依 `--target-path` 與 Runtime 選取適用指示；根目錄工�
 
 Turn Context 固定回傳 `SYSTEM_CORE.md`，並提供不含原始 prompt 的 `system_protocol_routes`，包含分類、canonical protocol IDs/paths 與解析狀態。Hook 僅顯示這些指標；一般修改的保守回退載入 Orchestrator、Change Impact 與 Quality Planning。必要路徑缺失時修改任務 fail-closed。
 
+Turn Context 另含一行 `aips_profile=` 顯示目前 profile 開關（預設 strict）；該行只回報開關名稱與原因碼，不改變 Intelligence 準備、刷新或 Change Impact 的判斷。
+
 ## 四份核心 Machine-readable 檔
 
 - `PROJECT_INTELLIGENCE.yaml`：Identity / Branch / Worktree / State / Topic pointers。

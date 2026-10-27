@@ -240,3 +240,5 @@ Before READY, review each affected-but-unchanged node and record `reviewed_safe`
 For a multi-perspective review, include the seeds, risk policy, budgets, index freshness, graph coverage, exact versus inferred edges, unresolved/truncated evidence and affected-but-unchanged dispositions. Reviewers assess whether the evidence supports the implementation and diff; traversal does not prove compiler-resolved completeness.
 
 Task-scoped Turn Context preparation does not relax Change Impact: `change_impact_required` stays true for every likely mutation, even when READY+STALE freshness is advisory and no refresh is required.
+
+The `aips_profile=` line in Turn Context is informational: no profile switch relaxes `change_impact_required`.

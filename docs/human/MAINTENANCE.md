@@ -129,6 +129,8 @@ Plan36 publication diagnostics preserve this topic's existing behavior and autho
 
 Scenario 269 documentation closure covers the Harness, Project Intelligence, CLI help and OpenCode compatibility rules for task-scoped Turn Context preparation and `aips intelligence gc`.
 
+Scenario 272 covers the profile switch mechanism: strict defaults, fail-closed loading, TTY and typed-phrase confirmation for `aips profile set`, and the agent guard for profile writes.
+
 ## Architecture Diagram Impact Check
 
 本次更新 Project Intelligence 局部圖；頂層 runtime、Harness、Product Delivery 與安裝生命週期圖評估為 N/A，因沒有改變其流程或邊界。

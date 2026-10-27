@@ -57,6 +57,8 @@ The project lifecycle keeps `.ai/` opt-in and records `.ai/` plus `.ai.detached-
 
 Turn Context retains Project Intelligence freshness and refresh guidance. A READY but STALE result is advisory for confined local L2 source writes; UNKNOWN or non-READY state remains fail-closed.
 
+Turn Context also reports the active profile line (`aips_profile=strict` by default); `aips profile show` and `aips profile set` are the only profile surfaces, and the agent cannot write the switch.
+
 Publication diagnostics remain tied to the exact Change Impact candidate, while transient recovery repeats read-only evidence collection only.
 
 `aips project diagnose` 的 `recovery_plan` 列出原因、步驟相依、操作種類與所需授權，保持唯讀。`aips intelligence impact-candidates --max-depth 3` 提供最多三層候選關係；同目錄 import 可解析，但動態呼叫及全域 coverage 限制仍需人工覆核。
