@@ -2240,3 +2240,14 @@ scenarios:
       - scripts/publication_diagnostics.py
       - tests/test_profile_switch.py
       - tests/test_protected_path_guard.py
+  - id: "274"
+    path: tests/scenarios/274-profile-gated-relaxations.md
+    coverage: lifecycle
+    evidence:
+      - tests/scenarios/274-profile-gated-relaxations.md
+      - scripts/aips_profile.py
+      - scripts/publish_preflight.py
+      - config/git-publication.yaml
+      - scripts/turn_context_hook.py
+      - tests/test_pr11_profile_relaxations.py
+      - tests/test_profile_switch.py

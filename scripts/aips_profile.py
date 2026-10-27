@@ -9,7 +9,7 @@ The file is ``profile.yaml`` under the AIPS config home (``XDG_CONFIG_HOME`` hon
 A missing file means every switch keeps its strict default. A malformed file, an unknown
 key or a value of the wrong type fails closed to the defaults and reports a bounded
 diagnostic (reason code and field names only). Switches come from the fixed allow-list
-``SWITCHES`` in code; PR10 defines the mechanism with no relaxation enabled.
+``SWITCHES`` in code; every switch defaults to off.
 
 ``aips profile set`` is the only writer. It needs an interactive terminal on stdin and
 stderr, prints the old value, the new value and the security implication, and requires
@@ -56,7 +56,18 @@ class Switch:
 
 
 # Fixed allow-list defined in code. Keys from the file or from `set` outside this mapping are refused.
-SWITCHES: dict[str, Switch] = {}
+SWITCHES: dict[str, Switch] = {
+    "claude_coauthor_trailer": Switch(
+        default=False,
+        implication_zh="Git 發布閘門的提交訊息 PII 掃描會放行最後 trailer 區塊中確切符合 Claude 共同作者格式的一行；其他電子郵件、內文電子郵件與其他 trailer 仍被攔截。",
+        implication_en="The publication gate commit-message PII scan allows one exact Claude co-author trailer in the final trailer block; every other address, body text address and other trailer stays blocked.",
+    ),
+    "post_merge_refresh": Switch(
+        default=False,
+        implication_zh="Turn Context hook 在 Intelligence 為 READY 但 STALE 且任務相關主題受影響時，每個 store 每個 HEAD 最多啟動一次背景 `aips intelligence refresh`；只寫入 AIPS Intelligence store，不阻擋該回合。",
+        implication_en="When Intelligence is READY but STALE with task-relevant topics affected, the Turn Context hook starts at most one detached `aips intelligence refresh` per store per HEAD; it writes only the AIPS Intelligence store and never blocks the turn.",
+    ),
+}
 
 RECOVERY = {
     "PROFILE_FILE_MALFORMED": "profile.yaml 不是有效的 version 1 YAML；所有開關已回到預設值。請由人修正或移除該檔。",
@@ -67,7 +78,7 @@ RECOVERY = {
     "PROFILE_VALUE_TYPE_INVALID": "profile.yaml 的開關值必須是 true 或 false；整個檔案已忽略，所有開關回到預設值。",
     "PROFILE_UNAVAILABLE": "無法載入 profile 設定；所有開關以嚴格預設值運作。",
     "PROFILE_SET_REQUIRES_TTY": "切換需要互動式終端機，並由人輸入確認片語；代理或非互動環境不得切換。",
-    "PROFILE_KEY_NOT_ALLOWED": "此 key 不在允許切換清單中；目前版本沒有可切換的放寬項目。",
+    "PROFILE_KEY_NOT_ALLOWED": "此 key 不在允許切換清單中；請以 `aips profile show` 查看可用開關。",
     "PROFILE_VALUE_INVALID": "開關值只能是 true 或 false。",
     "PROFILE_VALUE_UNCHANGED": "此開關已是這個值；未寫入任何設定。",
     "PROFILE_FILE_INVALID": "profile.yaml 目前無效，為避免覆寫內容，拒絕切換；請由人先修正或移除該檔。",

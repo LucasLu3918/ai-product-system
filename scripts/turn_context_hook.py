@@ -5,13 +5,65 @@ import argparse
 import json
 import math
 import os
+import re
 import subprocess
 import sys
+from pathlib import Path
 
 try:
-    from aips_profile import turn_context_line
+    from aips_profile import load_profile, turn_context_line
 except Exception:  # noqa: BLE001 - a profile import problem must never block the turn context
+    load_profile = None
     turn_context_line = None
+
+POST_MERGE_SWITCH = "post_merge_refresh"
+HEAD_PATTERN = re.compile(r"^[0-9a-f]{40,64}$")
+LOCK_PREFIX = ".post-merge-refresh-"
+
+
+def post_merge_refresh_due(data: dict) -> bool:
+    """READY but STALE Intelligence whose task-relevant topics are affected (PR2 task_refresh_requirement)."""
+    intelligence = data.get("intelligence") or {}
+    req = data.get("requirements") or {}
+    return (intelligence.get("readiness") == "READY" and intelligence.get("freshness") == "STALE"
+            and bool(req.get("refresh_required")) and bool(req.get("freshness_advisory"))
+            and req.get("refresh_reason") == "task_topics_affected")
+
+
+def maybe_start_post_merge_refresh(data: dict, popen=subprocess.Popen) -> bool:
+    """With the person-enabled post_merge_refresh switch, start one detached `aips intelligence refresh`.
+
+    At most once per Intelligence store per HEAD (exclusive lock file inside the store). The turn never waits
+    for the child, and any failure returns False without side effects outside the store.
+    """
+    try:
+        if load_profile is None or load_profile().values.get(POST_MERGE_SWITCH) is not True:
+            return False
+        if not post_merge_refresh_due(data):
+            return False
+        project = data.get("project") or {}
+        root = Path(str(project.get("root") or ""))
+        store = Path(str(project.get("intelligence_store") or ""))
+        if not root.is_dir() or not store.is_dir() or store.is_symlink():
+            return False
+        head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, capture_output=True, text=True, timeout=3, check=False).stdout.strip()
+        if not HEAD_PATTERN.fullmatch(head):
+            return False
+        lock = store / f"{LOCK_PREFIX}{head}.lock"
+        for stale in store.glob(f"{LOCK_PREFIX}*.lock"):
+            if stale != lock and stale.is_file() and not stale.is_symlink():
+                stale.unlink(missing_ok=True)
+        try:
+            fd = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY | getattr(os, "O_NOFOLLOW", 0), 0o600)
+        except FileExistsError:
+            return False
+        os.close(fd)
+        popen([os.environ.get("AIPS_BIN", "aips"), "intelligence", "refresh", "--project", str(root)],
+              stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+              start_new_session=True, close_fds=True)
+        return True
+    except Exception:  # noqa: BLE001 - the background refresh is best effort and must never affect the turn
+        return False
 
 
 def profile_line() -> str:
@@ -237,6 +289,8 @@ def main() -> int:
         data = {"error": str(exc), "fail_policy": {"mode": "soft"}}
 
     additional = compact_context(data)
+    if maybe_start_post_merge_refresh(data):
+        additional += "\npost_merge_refresh=STARTED (detached background `aips intelligence refresh`; this turn does not wait)"
 
     if args.runtime == "gemini-cli":
         print(json.dumps(
