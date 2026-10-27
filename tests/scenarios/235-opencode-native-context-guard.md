@@ -23,6 +23,8 @@
 - V2-only plugin ownership is digest-bound and preserves unowned, edited, or unknown-version files; V1 gets no V2 plugin;
 - each Context and native file decision resolves the active Session directory; plugin setup location is not reused across sessions;
 - Context delivery remains within a 12,000-byte UTF-8 budget, and permission decisions refresh the Context for the active target;
+- if the compact Context projection still exceeds 12,000 bytes, delivery remains unavailable and reports stable `context_compaction_over_budget`, source/projection byte counts and up to three fixed section names with serialized sizes; supported native file writes also deny before manifest policy evaluation; no section values, prompt, path or raw CLI output enter the user diagnostic or trace;
+- the over-budget message gives read-only Context inspection and refresh-plan commands, preserves project-write denial, and the trace reader rejects unknown section names, excessive entries and oversized byte values;
 - non-Git EPHEMERAL creative sessions receive a read-only asset/profile index from an external private cache; version suggestions never create or overwrite files or create `.ai/`;
 - installation diagnostics distinguish supported major, unknown version, projection integrity, host discovery, and Hook execution, with a restart/new-session remediation;
 - `aips harness trace` returns only allowlisted event fields and never prompt, credential, asset content, full path, or model reasoning;

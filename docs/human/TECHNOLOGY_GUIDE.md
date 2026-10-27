@@ -33,6 +33,8 @@ OpenCode V2 registers a bounded creative tool that requires explicit intent. Its
 
 ### Turn-Aware Global Harness
 
+OpenCode V2 keeps a 12,000-byte UTF-8 Context cap. Irreducible compact-projection overflow returns a stable reason, byte counts and at most three fixed section-size entries; supported native file writes deny before ordinary manifest policy evaluation. Prompts, section values and paths are excluded, and Shell/MCP effects remain outside the verified guard.
+
 The OpenCode V2 adapter derives Context from the active Session root, caps the compact manifest at 12,000 bytes, and reports bounded hook timings without persisting prompts or file contents.
 
 AIPS 將 Runtime/User instructions、Project rules、Project Intelligence 與 AIPS protocol 組合成 bounded context。不同 Runtime 使用各自可驗證的 integration strategy。

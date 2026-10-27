@@ -132,6 +132,8 @@ MCP 使用 `aips mcp config --client opencode` 產生 v2 `mcp.servers.aips` 預�
 
 V2 Plugin 依每個 Session 的實際目錄解析 Harness 與 Project Intelligence；Context 大小上限為 12,000 bytes，寫入授權前會對目標路徑重查。`aips harness doctor` 分開回報投影、版本、Host discovery 與 Hook 執行狀態，並提示需要的安裝／重啟步驟。安裝成功仍不代表 Context 送達模型或 permission hook 已驗證。
 
+若來源 manifest 與精簡投影仍超過 12,000 bytes，OpenCode 會回報 `context_compaction_over_budget`、來源／投影位元組數及最多三個最大的投影區塊名稱；診斷不包含區塊內容、prompt 或完整路徑，且在 Context 恢復前仍拒絕專案寫入。先執行 `aips intelligence context --runtime opencode --project "$PWD" --prompt "<task>" --full --explain --format json` 檢視細節，再用 `aips intelligence refresh-plan --project "$PWD"` 判斷受影響的 Intelligence 主題；只更新必要主題後重試。`aips harness trace --limit 20` 可查看安全的大小與原因碼欄位。
+
 EPHEMERAL 創意工作會唯讀掃描圖片與 SVG 的路徑、格式及檔案中繼資料，快取存放在專案外的使用者快取，且不建立 `.ai/`。可用 `aips creative scan --project PATH` 更新素材索引，用 `aips creative next-version --project PATH --target RELATIVE_ASSET` 建議下一個未使用的版本路徑；它不會寫入或覆蓋素材。執行證據可用 `aips harness trace --limit 20` 查看，事件檔不保存 prompt、憑證、素材內容、完整路徑或模型推理。
 
 Shell 只放行可界定的唯讀命令形式，包含固定參數的 AIPS 診斷，會阻擋已知寫檔、子程序執行、設定注入及路徑逃逸選項。字串檢查不是程序沙箱；一般 MCP/custom tools 與外部程序副作用不在此 Hook 保護範圍。唯一例外是綁定目前 EPHEMERAL Session 的 `creative_execution`：它只讀取限定 Bundle，預檢後才可明確執行，輸出受限於宣告的新素材路徑。OpenCode v2.0.24 的隔離原生驗收已驗證 Context 請求與檔案 Allow/Deny；整體治理仍為 ADVISORY。

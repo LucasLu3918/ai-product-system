@@ -302,6 +302,8 @@ When product-delivery behavior changes, review together:
 
 ### Harness / Runtime adapters
 
+OpenCode Context overflow is a fail-closed adapter condition: preserve the 12,000-byte cap, bounded private trace fields, targeted recovery guidance and native file denial until projection succeeds. Scenario 235 and the credential-free version-bound acceptance remain separate evidence.
+
 
 When Harness behavior changes, review together:
 

@@ -151,6 +151,8 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 
 ## Agent / machine canonical 文件
 
+OpenCode Context 的 12,000-byte 上限、超限安全診斷及 native file deny 邊界，由 OpenCode adapter、Harness protocol 與 Scenario 235 維護；診斷不代表任意 Shell、MCP 或程式外寫入已受保護。
+
 Claude Code 標準發布寫法的代理端正本是 `harness/adapters/claude-code/CLAUDE.md`。
 
 `publication_scan_evidence.py` is mapped by `config/documentation-placement.yaml` to the publication-preflight Human topic; Scenario 261 remains the verification contract for the Hook and Doctor lifecycle.

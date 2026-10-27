@@ -73,6 +73,8 @@ aips mcp inspect
 
 ## Runtime integration
 
+OpenCode managed V2 plugin 的 Context 上限為 12,000 bytes。若投影無法符合上限，先按 Harness 診斷檢視 Context 與 refresh plan；修復前支援的 native file writes 會被拒絕。重新安裝或 Host discovery 不會自行驗證 Context delivery。
+
 Installing the Claude Code adapter adds the standard publication recipe to the managed `CLAUDE.md` block; it grants no publication permission.
 
 The managed Claude Code publication Hook has an eight-second hard deadline. For protected pushes, run `aips publish prepare` first so the full candidate/history scan can create the short-lived private evidence record; the Hook rechecks candidate and remote state on every invocation.

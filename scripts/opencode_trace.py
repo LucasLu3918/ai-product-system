@@ -14,8 +14,12 @@ ALLOWED_FIELDS = {
     "at", "runtime", "event", "status", "decision", "level", "session", "project",
     "domain", "intent", "effect", "readiness", "workflow_count", "duration_ms",
     "context_bytes", "context_command_ms", "creative_asset_count", "truncated", "action", "reason_code", "project_mode",
-    "session_root_source",
+    "session_root_source", "context_original_bytes", "context_projection_bytes", "context_max_bytes", "context_largest_sections",
     "provider", "operation",
+}
+CONTEXT_SECTIONS = {
+    "task", "selected_protocols", "intelligence_topics", "retrieval", "creative_workspace",
+    "intelligence", "freshness", "instruction_resolution", "fail_policy",
 }
 ENUMS = {
     "event": {"plugin", "context", "permission", "shell", "creative_admission", "creative_execution"},
@@ -28,7 +32,7 @@ ENUMS = {
     "readiness": {"READY", "PARTIAL", "UNREVIEWED", "unknown"},
     "project_mode": {"EPHEMERAL", "ATTACHED", "UNKNOWN"},
     "action": {"edit", "write", "patch", "apply_patch"},
-    "reason_code": {"policy_allow", "policy_deny", "target_missing", "target_escape", "creative_target_exists", "creative_target_unsupported", "creative_git_workspace", "intelligence_not_ready", "intelligence_stale", "instruction_conflict", "action_unsupported", "external_approval_required", "session_directory_unavailable", "read_only_scan_failed", "shell_readonly_allow", "shell_aips_readonly", "shell_aips_command_unsupported", "shell_aips_arguments_unsupported", "shell_path_escape", "shell_operators_unsupported", "shell_command_unsupported", "shell_find_effect_unsupported", "shell_sed_effect_unsupported", "shell_git_command_unsupported", "shell_option_unsupported", "shell_policy_denied", "creative_ephemeral_required", "creative_bundle_invalid", "creative_timeout", "creative_execution_failed", "creative_response_invalid", "creative_tool_result", "creative_authorization_unavailable", "creative_authorization_input_invalid", "creative_authorization_action_invalid", "creative_admission_grant_missing", "creative_intent_required", "creative_session_mismatch", "creative_output_limit_exceeded", "prompt_admitted"},
+    "reason_code": {"policy_allow", "policy_deny", "target_missing", "target_escape", "creative_target_exists", "creative_target_unsupported", "creative_git_workspace", "intelligence_not_ready", "intelligence_stale", "instruction_conflict", "action_unsupported", "external_approval_required", "session_directory_unavailable", "read_only_scan_failed", "shell_readonly_allow", "shell_aips_readonly", "shell_aips_command_unsupported", "shell_aips_arguments_unsupported", "shell_path_escape", "shell_operators_unsupported", "shell_command_unsupported", "shell_find_effect_unsupported", "shell_sed_effect_unsupported", "shell_git_command_unsupported", "shell_option_unsupported", "shell_policy_denied", "creative_ephemeral_required", "creative_bundle_invalid", "creative_timeout", "creative_execution_failed", "creative_response_invalid", "creative_tool_result", "creative_authorization_unavailable", "creative_authorization_input_invalid", "creative_authorization_action_invalid", "creative_admission_grant_missing", "creative_intent_required", "creative_session_mismatch", "creative_output_limit_exceeded", "prompt_admitted", "context_compaction_over_budget"},
     "session_root_source": {"directory", "location_directory", "worktree"},
     "provider": {"mflux_local", "comfyui_local", "unknown"},
     "operation": {"generate", "edit", "unknown"},
@@ -58,6 +62,25 @@ def _clean(record: dict[str, Any]) -> dict[str, Any] | None:
             if not isinstance(value, int) or isinstance(value, bool) or not 0 <= value <= maximum:
                 return None
             result[key] = value
+    for key in ("context_original_bytes", "context_projection_bytes", "context_max_bytes"):
+        value = record.get(key)
+        if value is not None:
+            if not isinstance(value, int) or isinstance(value, bool) or not 0 <= value <= 2 * 1024 * 1024:
+                return None
+            result[key] = value
+    sections = record.get("context_largest_sections")
+    if sections is not None:
+        if not isinstance(sections, list) or len(sections) > 3:
+            return None
+        clean_sections = []
+        for section in sections:
+            if not isinstance(section, dict) or set(section) != {"section", "bytes"}:
+                return None
+            name, size = section["section"], section["bytes"]
+            if name not in CONTEXT_SECTIONS or not isinstance(size, int) or isinstance(size, bool) or not 0 <= size <= 2 * 1024 * 1024:
+                return None
+            clean_sections.append({"section": name, "bytes": size})
+        result["context_largest_sections"] = clean_sections
     for key in ("truncated",):
         value = record.get(key)
         if value is not None:

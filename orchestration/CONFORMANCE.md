@@ -98,6 +98,8 @@ Each creative response derives its grant from the current native prompt hook and
 
 Prompt classification keeps its legacy tuple and adds domain, intent, effect, and L0-L3 readiness. A managed V2 plugin resolves the active Session directory, injects a bounded Context before primary model dispatch, and rechecks current Context and target confinement before supported native file permissions. L1 is limited to new creative assets in non-Git workspaces; L2 requires READY/CURRENT project evidence; external actions retain existing Human approval. EPHEMERAL creative sessions receive read-only asset metadata from a private external cache with versioned no-overwrite suggestions. Shell rejects known command/argument side effects but is not a process sandbox. Optional native acceptance uses an isolated loopback mock model to verify actual Context delivery and native file Allow/Deny. Host discovery and execution remain UNVERIFIED without that evidence, so governance remains ADVISORY. `aips harness trace` provides an allowlisted privacy-limited event view. MCP/custom tools and out-of-process writes are outside the guard.
 
+If compact Context still exceeds 12,000 bytes, return `context_compaction_over_budget`, bounded byte counts and up to three fixed section-size entries. Keep Context unavailable and deny supported native file writes before manifest policy evaluation; provide read-only recovery commands and exclude prompt, section values, raw paths and CLI output.
+
 `tests/scenario_coverage.yaml` is the canonical mapping from Scenario ID/path to coverage classification and evidence.
 
 Allowed coverage:

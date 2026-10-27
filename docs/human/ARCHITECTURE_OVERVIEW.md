@@ -49,6 +49,8 @@ OpenCode V2 derives creative mutation grants from the current native prompt admi
 
 OpenCode V2 的 AIPS Plugin 以 Session directory 裝載精簡 Turn Context，並在原生檔案權限前重查目標；另提供綁定 EPHEMERAL Session 的 Creative 工具。任意 Shell 子程序仍不宣稱受保護。
 
+若精簡 Context 投影超過 12,000 bytes，OpenCode 會回報安全的區塊大小與復原指令，並拒絕 Context 投遞及支援的原生檔案寫入；不擴張到 Shell/MCP 保護，也不改變 ADVISORY 邊界。
+
 Runtime adapters distinguish malformed hook input from a valid request with no applicable action. Resolution failures carry stable machine-readable status and reason codes, while diagnostics remain on stderr so callers can safely parse stdout.
 
 Portable Commands 以 Canonical ID（例如 `aips.plan`）將同一治理工作流渲染為 Slash Command、Skill 或 generic MCP bootstrap；它是 advisory access plane，不取代 Runtime-native Adapter 的 turn hook 或 pre-tool guard。

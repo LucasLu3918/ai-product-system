@@ -76,6 +76,8 @@ features:
 
 ## 文件如何組織
 
+OpenCode Harness 的 Context 超限原因與復原步驟，請從 [Harness 指南](HARNESS.md)查閱；native action 限制與驗收範圍見 [Conformance](CONFORMANCE.md) Scenario 235。
+
 Git／PR 發佈診斷與安全復原請參閱 [User Guide](USER_GUIDE.md)；CLI 錯誤輸出契約由 Scenario 261 覆蓋。
 
 Claude Code 的標準 commit／push／PR 寫法請參閱 Claude Code adapter；由 Scenario 261 覆蓋。

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Diagnose OpenCode Turn Context projection overflow with stable reason codes, bounded section-size metadata, privacy-safe trace fields and targeted recovery commands while keeping project writes denied until Context fits.
+
 - Return structured, redacted JSON diagnoses with safe recovery steps when publication prepare/diagnose encounters CLI-level errors; preserve text-mode output, exit status, and non-authorizing behavior.
 
 - Add opt-in model-agnostic local ComfyUI API workflows with bounded schema/graph validation, core-node trust checks, explicit input bindings, local model inventory validation, create-only workflow import/output, and no automatic retry after uncertain submission; fixed profiles remain the default and real inference is unverified.

@@ -217,6 +217,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
+OpenCode 顯示 `context_compaction_over_budget` 時，先以 `aips intelligence context --runtime opencode --project "$PWD" --prompt "<task>" --full --explain --format json` 檢視，再執行 `aips intelligence refresh-plan --project "$PWD"`。僅更新受影響的 Intelligence 主題後重試；修復前支援的 native file writes 維持拒絕。診斷不包含 prompt 或 section 內容，且不涵蓋一般 Shell/MCP 寫入。
+
 Claude Code 的 managed publication Hook 在八秒內完成檢查；逾時會以安全 phase 與耗時回報 fail-closed 拒絕，不會自動重試。受保護的 push 前先執行 `aips publish prepare`，讓 Hook 使用 30 分鐘內、綁定精確候選的私有掃描證據；Prepare 會為它規劃的 push 或 PR 建立各自綁定的證據。Claude Code 的標準發布寫法見 `harness/adapters/claude-code/CLAUDE.md`。
 
 FLUX 3 Klein 的 `TextGenerate` runtime schema 檢查由既有 Harness executor 執行，並在唯一一次 ComfyUI `/prompt` 請求前驗證最終工作流；預檢不會啟動生成。

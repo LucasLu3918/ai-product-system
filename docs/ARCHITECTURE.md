@@ -10,6 +10,8 @@ Project-local AIPS state is opt-in through `aips attach`. In Git worktrees, atta
 
 OpenCode direct local L2 writes use the Project Intelligence readiness and instruction checks; READY freshness that is STALE remains visible but is not a standalone denial for a confined source target. UNKNOWN, non-READY and independent guard conditions remain blocking.
 
+OpenCode also keeps its existing 12,000-byte transient Context ceiling. If the compact projection remains oversized, delivery and supported native file writes fail closed; the adapter reports bounded section-size metadata and read-only recovery commands without changing the architecture flow or authority boundary.
+
 Staged media content is inspected by the existing bounded safety scanner; AVIF adds metadata extraction without changing Harness authority or provider execution, creative provenance or licensing, personal publication approval, or ComfyUI resource authorization.
 
 Plan44 extends the existing flow with allowlisted shell-form detail and Claude-only native failure evidence; it adds no authority service, retry path or architecture component.

@@ -2040,6 +2040,7 @@ scenarios:
       - scripts/project_intelligence.py
       - scripts/opencode_native_guard.py
       - scripts/opencode_trace.py
+      - harness/adapters/opencode/context_diagnostics.mjs
       - scripts/creative_workspace_profile.py
       - scripts/opencode_skill_projection.py
       - harness/adapters/opencode/plugin.ts

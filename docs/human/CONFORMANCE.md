@@ -1790,6 +1790,8 @@ Scenario 269 keeps the creative Git write denial unchanged; only ordinary Turn C
 
 ## Scenario 235 — OpenCode Native Context and Action Guard
 
+When the compact projection exceeds 12,000 bytes, Scenario 235 also requires stable `context_compaction_over_budget` diagnostics, bounded section-size trace metadata, read-only recovery guidance, and denial of supported native file writes before manifest policy evaluation. Section values, prompts, paths, and raw CLI output stay excluded.
+
 Dynamic ComfyUI workflow validation does not bypass native prompt admission or the explicit Creative execution guard.
 
 Scenario 267 adds a READY+STALE local-write case and retains denial evidence for UNKNOWN freshness, non-READY Intelligence, authority conflicts, path escapes, creative Git writes and external actions.
