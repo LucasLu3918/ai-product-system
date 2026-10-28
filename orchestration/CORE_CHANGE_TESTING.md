@@ -103,6 +103,8 @@ A Large/Core Change is not complete when:
 
 ## Evidence
 
+For native publication changes, include a dirty-worktree fixture that proves the immutable candidate SHA/ref and scan binding stay stable while local staged/modified/untracked content is preserved. Keep Integration Gate's separate reproducible-candidate requirement explicit.
+
 Validation Shadow graduation evidence names the confusion-count and null-rate cases, exact-SHA unique-PR fallback, and unchanged full-run Gate. A completed `NOT_READY` cohort remains distinct from collector failure.
 
 Validation Observation collection must distinguish a completed `NOT_READY` cohort from collection failures, preserve strict `--require-ready` behavior, report precision/recall with explicit zero-denominator semantics, and leave the full repository Gate enabled. Its lifecycle verifies exact-head unique-PR attribution when the run omits its PR link. Dependency Review shadow evidence must use the same candidate and immutable action policy as the standalone check, remain non-blocking during the 2–4 week parity window, and not change the required `repository` result; promotion requires a separate reviewed change after parity is demonstrated.

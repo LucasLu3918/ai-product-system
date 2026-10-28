@@ -255,15 +255,7 @@ def doctor(root: Path, *, pr_number: int | None = None, branch: str | None = Non
         if worktree_details:
             result["worktree_details"] = dirty
         result["phases"].append({"phase": "worktree_validation", "status": dirty["status"],
-                                 "blocking": dirty["status"] == "DIRTY"})
-        if dirty["status"] == "DIRTY":
-            result["blockers"].append("worktree_dirty")
-            item = authority.PublicationError("publication requires a clean worktree", "WORKTREE_DIRTY",
-                context={"worktree": root, "candidate_sha": result.get("candidate_sha")},
-                phase="worktree_validation").diagnostic()
-            if not worktree_details:
-                item.pop("worktree_details", None)
-            result["diagnostics"].append(item)
+                                 "blocking": False})
         remote = authority.git(root, "remote", "get-url", "origin")
         repo = repository_slug(remote)
         if not repo or not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repo):

@@ -4,7 +4,9 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ## Runtime flow
 
-CLI installation does not enable Runtime adapters. An explicit `aips harness install` registers them; update and preflight refresh only when existing enablement records are verifiable. Unknown records are preserved and reported. The observation and adapter refresh are not yet protected by a shared cross-process lock; concurrent disable is unverified. This installation boundary does not yet provide per-repository governance modes.
+Native publication validates an immutable committed candidate SHA/ref. Dirty working-tree state is reported separately and is not pushed with that commit.
+
+CLI installation does not enable Runtime adapters. An explicit `aips harness install` registers them; update and preflight refresh only when existing enablement records are verifiable. Unknown records are preserved and reported. Install, refresh and disable use a shared per-user cross-process lock. This installation boundary does not yet provide per-repository governance modes.
 
 Claude Code publication PreToolUse uses a bounded eight-second decision path. Each push still checks the exact candidate, full target ref, remote tip and current authority; a fresh, 30-minute private Secret Scan record can avoid only the duplicate Hook scan and never authorizes execution.
 

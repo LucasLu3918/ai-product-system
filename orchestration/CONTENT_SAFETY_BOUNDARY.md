@@ -12,6 +12,8 @@ Imported ComfyUI API workflows remain untrusted project content. Dynamic executi
 
 ## Contract
 
+Working-tree cleanliness is not a content-safety substitute: the scanner continues to inspect the exact committed candidate and applicable history, while unrelated working files remain outside the candidate and are not silently added.
+
 Static AVIF EXIF/XMP metadata uses the existing media registry and strict scanner under an 8 MiB input and 1 MiB metadata limit; unknown or animated structures fail closed without decoding image payload as text.
 
 Commit Hook and read-only `aips safety diagnose commit` call the same staged-candidate implementation. Commit scans always use strict ignore-marker behavior. Supported PNG, JPEG, WebP, M4A, MP3, TTF, OTF, WOFF and WOFF2 metadata is bounded and format-aware; font signatures and declared decompressed sizes are checked before fontTools parsing. FontTools/Brotli absence, malformed or spoofed fonts, unsupported binaries and incomplete scans fail closed with redacted structured diagnostics. Git blob sizes are checked before staged contents are loaded. This is a content decision, not publication authority.

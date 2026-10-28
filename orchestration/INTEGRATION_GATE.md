@@ -189,6 +189,8 @@ The shared module-extraction lifecycle verifies retrieval storage helper exports
 
 ## GitHub required-check compatibility
 
+The Integration Gate still evaluates a reproducible committed base/head candidate. That validation-input requirement does not make an unrelated dirty working tree a general native `git push` precondition.
+
 The required repository aggregate continues to carry the complete Integration Gate result.
 
 Its always-run repository lifecycle fixtures receive Python packages from all four validation requirement files under tested constraints. The candidate plan continues to select Node and Chromium runtime installation independently.

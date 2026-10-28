@@ -147,6 +147,8 @@ Publication Preflight lifecycle evidence stubs the Python module probe before as
 
 ## Failure behavior
 
+Scheduler readiness does not depend on ordinary Git working-tree cleanliness. Publication uses its own exact committed-candidate validation; this does not change task ownership, cleanup protection, or scheduler failure semantics.
+
 Runtime Harness installation is outside the Scheduler state machine. Task readiness, retry, or resume must not implicitly enable, refresh, or disable a Runtime adapter; those lifecycle actions remain explicit CLI operations.
 
 ComfyUI node selection and Qwen Image Edit Plus reference mapping remain outside Scheduler state transitions; Scenario 236 tests the workflow binding independently from task scheduling and resume state.

@@ -559,6 +559,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 ## Maintenance governance
 
+Native publication uses the committed candidate SHA/ref; local staged, modified or untracked files remain outside that candidate and do not independently block a push. Candidate scanning and remote policy checks are unchanged.
+
 Publication recovery is an explicit read-only observation step. Scenario 260/261 and the Core Change Matrix keep Hook latency, timeout redaction and publication authority independently verifiable.
 
 Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.

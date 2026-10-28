@@ -29,6 +29,9 @@ class PublicationDiagnosticsTest(unittest.TestCase):
                        cwd=self.root, check=True, capture_output=True, text=True)
 
     def test_doctor_reports_policy_and_checks_without_side_effects(self):
+        (self.root / 'dirty-fixture.txt').write_text('local-only')
+        subprocess.run(['git', 'add', 'dirty-fixture.txt'], cwd=self.root, check=True,
+                       capture_output=True, text=True)
         real_run = subprocess.run
         calls = []
 
@@ -63,7 +66,8 @@ class PublicationDiagnosticsTest(unittest.TestCase):
         self.assertTrue(result["read_only"])
         self.assertFalse(result["api_write_performed"])
         self.assertEqual(result["version"], 2)
-        self.assertEqual(result["worktree"]["status"], "CLEAN")
+        self.assertEqual(result["worktree"]["status"], "DIRTY")
+        self.assertNotIn("worktree_dirty", result["blockers"])
         self.assertTrue(any(item["phase"] == "worktree_validation" for item in result["phases"]))
         self.assertEqual(result["merge_methods"], ["rebase", "squash"])
         self.assertEqual(result["policy"]["required_checks"], ["repository"])

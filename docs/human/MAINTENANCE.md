@@ -161,6 +161,8 @@ A Large/Core Change that materially changes a documented architecture flow but l
 
 ## Self-improvement / Constitution / publish approval
 
+Git Publish Approval binds the immutable candidate commit and target ref. Uncommitted files are reported separately and are not pushed with that commit; the exact-candidate Integration Gate still requires reproducible validation inputs.
+
 Changes to this system first pass `orchestration/SYSTEM_SELF_IMPROVEMENT.md`.
 
 If Constitution semantics are affected, the Constitutional Change Gate must complete before implementation. Material system changes also require Core Change Approval.

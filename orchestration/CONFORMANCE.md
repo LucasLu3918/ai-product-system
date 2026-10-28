@@ -1159,6 +1159,8 @@ Scenario 269 changes no Skill catalog or installation behavior; it adds task-sco
 
 ## Scenario 260 — Publication diagnostics and Doctor
 
+Publication lifecycle regression evidence covers a dirty selected worktree with a fixed candidate SHA: the plan and push remain commit-bound, local files are preserved, and dirty status is not an AIPS-only publication blocker. GitHub policy, required checks and content scanning remain unchanged.
+
 Scenario 263 is separate from publication Doctor and cannot satisfy PR merge checks or approval.
 
 Plan40 verifies explicit publication reason codes, safe common Prepare/Hook bindings, independent lifecycle states, and optional verified Diagnostic ID lookup; all remain non-authorizing observations.

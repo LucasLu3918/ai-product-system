@@ -91,6 +91,8 @@ Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Det
 
 ## Change Impact
 
+Publication impact is bound to the selected worktree and committed candidate SHA; unrelated uncommitted files are diagnostic context only and do not alter the candidate diff or scan evidence.
+
 Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
 
 

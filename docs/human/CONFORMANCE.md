@@ -2015,6 +2015,8 @@ Current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md)
 
 ## Scenario 260 — Publication diagnostics and Doctor
 
+Publication lifecycle evidence covers a dirty selected worktree with an immutable candidate: planning and `publish ship` remain bound to the committed SHA, preserve local files, and do not classify that state as an AIPS publication blocker. Remote errors and repository protection evidence remain independently enforced.
+
 Scenario 261 covers structured JSON errors from failed `prepare` and `diagnose` calls, with safe recovery guidance and no implied retry or publication authority.
 
 A validated workflow action pin remains bound to the PR head; diagnostics and individual advisory jobs do not replace the required `repository` result for merge readiness.

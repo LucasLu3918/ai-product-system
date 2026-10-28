@@ -260,7 +260,7 @@ PUBLICATION_DIAGNOSTICS = {
     'PR_BASE_MISMATCH': ('The PR does not target the live default branch.', 'Re-plan for the verified default branch; do not retarget a stale merge.'),
     'REQUIRED_CHECKS_INCOMPLETE': ('Required PR checks are missing, pending, or failing.', 'Wait for the exact candidate’s required aggregate to pass, then re-observe.'),
     'REQUIRED_CHECKS_UNAVAILABLE': ('Required PR check state could not be observed.', 'Check GitHub access and connectivity, then re-read checks; do not merge on unknown state.'),
-    'PUBLICATION_SCAN_EVIDENCE_REQUIRED': ('Fresh exact-candidate secret-scan evidence is missing or no longer valid.', 'For a push or PR of a clean candidate, run the single supported command `aips publish ship --title <title> --body-file <file> --base <default-branch>` from the candidate worktree. For a merge, run `aips publish prepare` and then the exact planned merge command within 30 minutes.'),
+    'PUBLICATION_SCAN_EVIDENCE_REQUIRED': ('Fresh exact-candidate secret-scan evidence is missing or no longer valid.', 'For a push or PR of a committed candidate, run the single supported command `aips publish ship --title <title> --body-file <file> --base <default-branch>` from the candidate worktree. For a merge, run `aips publish prepare` and then the exact planned merge command within 30 minutes.'),
     'SHIP_PUSH_FAILED': ('The exact candidate push did not reach the remote.', 'No PR was created. Re-run the same `aips publish ship` command; it re-observes the remote and pushes only when the remote tip is not already the candidate.', 'push_validation', 'INTERNAL'),
     'SHIP_PR_CREATE_FAILED': ('The candidate is on the remote but its PR create did not complete.', 'Re-run the same `aips publish ship` command; it skips the completed push and creates the PR only when no PR exists for this candidate.', 'pr_create', 'INTERNAL'),
     'HOOK_DEADLINE_EXCEEDED': ('The publication Hook reached its eight-second execution deadline.', 'No publication was authorized. Resolve the observed phase, then run one fresh read-only diagnosis or Prepare before retrying.'),
@@ -312,7 +312,7 @@ PUBLICATION_DIAGNOSTICS_ZH = {
     'SECRET_SCAN_GIT_OBJECT_MISSING': ('秘密掃描需要的 Git 物件目前無法讀取。', '在此工作樹還原或取得候選歷史，再重新驗證。'),
     'SECRET_SCAN_FILE_UNREADABLE': ('秘密掃描器無法完整檢查候選檔案。', '修復候選內容的讀取或 UTF-8 編碼問題，再重新驗證。'),
     'SECRET_SCAN_POLICY_UNAVAILABLE': ('無法讀取必要的秘密掃描政策。', '恢復儲存庫秘密掃描政策的讀取權限，再重新驗證。'),
-    'PUBLICATION_SCAN_EVIDENCE_REQUIRED': ('目前候選缺少未過期的秘密掃描證據。', '對乾淨候選，從候選工作樹執行唯一支援的指令 `aips publish ship --title <標題> --body-file <檔案> --base <預設分支>`；它只掃描一次並執行精確 push 與建立 PR。合併請先執行 `aips publish prepare`，並在 30 分鐘內執行它規劃的精確 merge 指令。'),
+    'PUBLICATION_SCAN_EVIDENCE_REQUIRED': ('目前候選缺少未過期的秘密掃描證據。', '對已提交候選，從候選工作樹執行唯一支援的指令 `aips publish ship --title <標題> --body-file <檔案> --base <預設分支>`；它只掃描一次並執行精確 push 與建立 PR。合併請先執行 `aips publish prepare`，並在 30 分鐘內執行它規劃的精確 merge 指令。'),
     'SHIP_PUSH_FAILED': ('候選推送未到達遠端。', '尚未建立 PR。重新執行同一個 `aips publish ship` 指令；它會重新觀測遠端，只有遠端尚未指向候選時才推送。'),
     'SHIP_PR_CREATE_FAILED': ('候選已在遠端，但建立 PR 未完成。', '重新執行同一個 `aips publish ship` 指令；它會略過已完成的推送，且只有此候選尚無 PR 時才建立。'),
     'HOOK_DEADLINE_EXCEEDED': ('發布 Hook 超過八秒執行期限，已拒絕操作。', '確認診斷中的安全階段；完成該階段後再執行一次唯讀診斷或 Prepare。'),
@@ -715,9 +715,6 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
         git(root, 'merge-base', '--is-ancestor', base, head)
     except PublicationError as exc:
         raise PublicationError('base is not a candidate ancestor', 'BASE_NOT_ANCESTOR') from exc
-    if worktree_dirty_details(root)['status'] == 'DIRTY':
-        raise PublicationError('publication requires a clean worktree', 'WORKTREE_DIRTY',
-                               context={'worktree': root, 'candidate_sha': head}, phase='candidate_validation')
     diff = subprocess.run(['git', 'diff', '--binary', base, head, '--'], cwd=root, capture_output=True, timeout=15, check=False)
     files = subprocess.run(['git', 'diff', '--name-only', '-z', base, head, '--'], cwd=root, capture_output=True, timeout=15, check=False)
     if diff.returncode or files.returncode:

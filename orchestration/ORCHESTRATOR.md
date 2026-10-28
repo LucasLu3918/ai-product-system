@@ -262,6 +262,8 @@ Large/core changes are proposal-first. Use `templates/core-change-proposal.md`. 
 
 ## Git Publish Approval
 
+Publication approval and diagnostics bind the selected worktree, immutable source SHA and target ref. Uncommitted files remain local; the orchestrator must not stage them implicitly or treat their presence alone as a push denial.
+
 Commit Content Safety findings explain local recovery; they do not replace this proposal-first approval or authorize a merge.
 
 Publication Prepare and Diagnostic ID lookup provide safe evidence for this approval review. `PLANNED`, `AUTHORIZED` at the AIPS Hook layer, or a verified diagnostic record never substitutes for Human intent, native Host confirmation, required checks or an observed merge.

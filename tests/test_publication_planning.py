@@ -96,16 +96,14 @@ class PlanningTest(unittest.TestCase):
         self.assertEqual(result['status'], 'PLANNED', result)
         self.assertEqual(result['invocations'][0]['argv'][:3], ['git', 'push', 'origin'])
 
-    def test_dirty_and_wrong_root_have_safe_codes(self):
+    def test_uncommitted_worktree_content_does_not_block_committed_candidate(self):
         (self.repo / 'private.txt').write_text('untracked')
         (self.repo / 'file.txt').write_text('uncommitted tracked edit\n')
-        diagnostic = self.prepare()['diagnostics'][0]
-        self.assertEqual(diagnostic['reason_code'], 'WORKTREE_DIRTY')
-        self.assertEqual(diagnostic['phase'], 'candidate_validation')
-        self.assertEqual(diagnostic['candidate_sha'], self.head)
-        self.assertEqual(diagnostic['worktree_details']['paths']['modified'], ['file.txt'])
-        self.assertEqual(diagnostic['worktree_details']['paths']['untracked'], ['private.txt'])
-        self.assertTrue(diagnostic['redacted'])
+        result = self.prepare()
+        self.assertEqual(result['status'], 'PLANNED', result)
+        self.assertEqual(result['candidate']['candidate_sha'], self.head)
+        self.assertEqual(result['candidate']['worktree_status'], 'DIRTY')
+        self.assertNotIn('WORKTREE_DIRTY', [item.get('reason_code') for item in result['diagnostics']])
         result = planning.prepare(self.repo / '.git', title='Candidate', body_file=self.body)
         self.assertEqual(result['status'], 'BLOCKED')
 

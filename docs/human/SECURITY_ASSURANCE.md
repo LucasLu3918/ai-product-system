@@ -555,6 +555,8 @@ OpenCode native acceptance is bounded evidence, not a process sandbox. Arbitrary
 
 ### Git publication: 個人模式與高保證模式
 
+個人發布會綁定已提交的 candidate SHA/ref。工作樹的 staged、modified、deleted 或 untracked 狀態只作診斷，未提交內容不會進入候選推送；完整候選／歷史秘密掃描、遠端身分、原生授權與 GitHub 保護仍照常執行。
+
 預設的 `personal` 模式適用於個人快速開發。當 `/etc/aips/publication-authority.yaml` 不存在時，Agent 在完成既有候選／秘密掃描與明確命令檢查後，可推送至自己的工程分支並建立或更新指向遠端預設分支的 PR；使用者明確指定 local-only／不發布時則不推送。任務明確要求合併且符合下方條件時，可逐次以支援的原生確認流程合併 PR。此模式接受一般個人帳號下 Agent 使用現有 GitHub 權限發布，不提供外部簽章隔離保證。
 
 個人模式只允許目前的工程分支推送至同名遠端分支，而且只接受 fetch/push URL 相同的唯一 `origin`；支援普通 push 或精確 `--force-with-lease`。建立 PR 也限工程分支並只能以遠端即時公告的預設分支為目標。掃描起點取自遠端 HEAD 與預設分支即時 SHA，不採信本機可改寫的 `origin/HEAD`；需先取得該 SHA 對應的物件，否則拒絕發布。PR merge 限明確單一 PR number、精確 `--match-head-commit`、目前 allowlist 工程 branch、開啟且非 draft 且 mergeable 的 PR 與遠端預設 base；AIPS 的 Required Checks 門檻預設停用，設定 `AIPS_ENFORCE_REQUIRED_CHECKS=1` 後才要求 policy evidence 可驗證且 checks 全部通過。GitHub 原生規則仍會生效；admin merge 與刪除 branch 仍拒絕。一般 Claude Code `PreToolUse` 以原生 `ask` 顯示 PR、base/head SHA 與 checks 後要求確認；若目前任務明確授權合併，Claude 可透過相同候選驗證的 `gh pr merge --auto` 啟用 GitHub auto-merge，不再要求第二次 Claude 確認，GitHub 仍會等待 checks 與 repository policy。Gemini CLI 在 AIPS extension 啟用時，對一般與 `--auto` merge 均由 `policies/personal-pr-merge.toml` 在 `default`、`autoEdit`、`yolo` 以 `interactive=true` 的 `ask_user` 要求逐次確認，再由 AIPS hook 顯示綁定細節。Gemini 較高優先級的使用者或管理者政策可覆寫 extension rule。GitHub 使用 head SHA 鎖定候選；base SHA 是執行前觀測，兩者不是原子 compare-and-swap。Codex Hook 維持 `ADVISORY`，無法保證攔截直接 merge 命令；Human 接受此個人模式限制。直接推送預設分支、刪除分支、tag/release、未知命令或不乾淨／無法驗證的候選仍拒絕。`git commit` 的既有 staged content scan、遠端候選秘密掃描與必要本地 Gate 保持適用。個人模式不建立 `APPROVED` 紀錄或簽章。

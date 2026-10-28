@@ -67,6 +67,9 @@ def _with_lifecycle(result: dict[str, Any], root: Path | None = None) -> dict[st
         root = Path(observation['worktree'])
     candidate: dict[str, Any] = dict(result.get('candidate') or {})
     candidate.setdefault('status', 'PASS' if result.get('scan') == 'PASS' else 'NOT_VALIDATED')
+    if observation.get('worktree_status'):
+        candidate['worktree_status'] = observation['worktree_status']
+        candidate['worktree_dirty_path_count'] = observation.get('worktree_dirty_path_count', 0)
     if root is not None and observation.get('branch') and observation.get('head'):
         try:
             candidate.update(authority.runtime_binding(
@@ -141,6 +144,7 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
                 raise authority.PublicationError('invalid present trust root', 'AUTHORITY_CONFIG_INVALID') from exc
         branch = authority.git(root, 'branch', '--show-current')
         head = authority.git(root, 'rev-parse', 'HEAD^{commit}')
+        worktree_state = authority.worktree_dirty_details(root)
         if not branch or not branch.startswith(authority.PERSONAL_BRANCH_PREFIXES):
             raise authority.PublicationError('current engineering branch required', reason_code='BRANCH_NOT_ALLOWLISTED')
         if not title.strip() or not body_file.is_file() or body_file.is_symlink():
@@ -162,9 +166,6 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
         if merged:
             # A squash merge need not make the feature HEAD an ancestor of main.
             # Bind the exact PR head and verify its GitHub merge commit in the live base.
-            if authority.worktree_dirty_details(root)['status'] == 'DIRTY':
-                raise authority.PublicationError('dirty candidate', 'WORKTREE_DIRTY',
-                    context={'worktree': root, 'candidate_sha': head}, phase='post_merge_reconciliation')
             commit = (merged[-1].get('mergeCommit') or {}).get('oid', '')
             if not re.fullmatch(r'[0-9a-f]{40,64}', commit):
                 raise authority.PublicationError('merge commit unavailable', 'PR_STATE_AMBIGUOUS')
@@ -179,7 +180,7 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
                           operation='POST_MERGE_RECONCILIATION', idempotent=True,
                           observation=observation, fingerprint=fingerprint, scan='NOT_REQUIRED_ALREADY_MERGED')
             return _with_lifecycle(result, root)
-        # Reuse the exact existing syntax, identity, clean-tree and ancestry checks.
+        # Reuse the exact existing syntax, identity and ancestry checks for this committed candidate.
         phase = 'push_validation'
         scope = authority.action(root, 'git_push', push, base, personal=mode == 'personal')
         phase = 'content_scan'
@@ -194,6 +195,8 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
         observation = {
             'worktree': str(root), 'repository_id': scope['repository_id'],
             'worktree_id': scope['worktree_id'], 'head': head, 'base': base,
+            'worktree_status': worktree_state['status'],
+            'worktree_dirty_path_count': worktree_state.get('path_count', 0),
             'branch': branch, 'base_branch': base_branch, 'mode': mode,
             'remote_digest': authority.digest(remote_url), 'remote_head': remote_head,
             'diff_digest': scope['diff_digest'], 'policy_digest': policy_hash,
@@ -204,7 +207,8 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
             'scan_evidence': {'status': 'PASS', 'binding_digest': evidence_digest,
                               'expires_in_seconds': scan_evidence_ttl},
         }
-        fingerprint = authority.digest(observation)
+        fingerprint = authority.digest({key: value for key, value in observation.items()
+                                        if key not in {'worktree_status', 'worktree_dirty_path_count'}})
         result.update(observation=observation, fingerprint=fingerprint, scan='PASS')
         if expected_fingerprint and expected_fingerprint != fingerprint:
             raise authority.PublicationError('stale publication observation', 'CANDIDATE_CHANGED')
@@ -399,13 +403,7 @@ def doctor(worktree: Path, *, branch: str | None = None, pr_number: int | None =
         result['candidate_sha'] = head
         result['worktree'] = {'branch': branch_name, 'status': dirty['status']}
         result['phases'].append({'phase': 'worktree_validation', 'status': dirty['status'],
-                                 'blocking': dirty['status'] == 'DIRTY'})
-        if dirty['status'] == 'DIRTY':
-            item = authority.PublicationError('publication requires a clean worktree', 'WORKTREE_DIRTY',
-                context={'worktree': root, 'candidate_sha': head}, phase='worktree_validation').diagnostic()
-            if not worktree_details:
-                item.pop('worktree_details', None)
-            result['diagnostics'].append(item)
+                                 'blocking': False})
 
         repo = _repo(root)
         remote_url = authority.git(root, 'remote', 'get-url', 'origin')

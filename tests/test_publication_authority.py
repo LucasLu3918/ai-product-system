@@ -109,6 +109,10 @@ class PublicationTest(unittest.TestCase):
         with self.assertRaises(auth.PublicationError):
             self.verify()
 
+    def test_uncommitted_worktree_state_is_not_part_of_publication_approval_scope(self):
+        (self.repo / 'local-note.txt').write_text('not part of the approved candidate\n')
+        self.verify()
+
     def test_dirty_worktree_details_are_grouped_and_diagnostics_are_versioned(self):
         (self.repo / 'file.txt').write_text('staged content\n')
         self.run_git(self.repo, 'add', 'file.txt')
@@ -500,10 +504,9 @@ class PublicationTest(unittest.TestCase):
             self.verify(cwd=self.path / 'other')
         self.assertIsNone(auth.approval_location(self.path / 'other'))
 
-    def test_candidate_dirty_and_implicit_extra_tags(self):
+    def test_candidate_dirty_is_accepted_but_implicit_extra_tags_are_rejected(self):
         (self.repo / 'file.txt').write_text('changed again')
-        with self.assertRaises(auth.PublicationError):
-            self.verify()
+        self.verify()
 
         self.run_git(self.repo, 'restore', 'file.txt')
         self.run_git(self.repo, 'config', 'push.followTags', 'true')
