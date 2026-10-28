@@ -52,6 +52,8 @@ Runtime decisions expose `status`, `phase`, `reason_code`, `source`, `retryable`
 
 Runtime policy decisions consume the explicit action envelope and verified native enforcement capability; project mode is advisory input and cannot override global policy.
 
+Policy rule conditions may bind `destination_host`, `destination_port`, `destination_method`, and `destination_path`; all supplied conditions are conjunctive exact matches. Hosts are case-insensitive, methods are compared case-insensitively and configured in uppercase, while ports and paths match exactly. Unknown condition keys or invalid condition values fail policy validation instead of being ignored. A project-local policy can therefore allow a single observed endpoint while retaining `default_effect: DENY`; Resource Authorization remains an independent preceding check.
+
 ComfyUI workflow schema and final serialized-payload validation are application-level checks rather than native tool authorization. They do not bypass Runtime Action policy or OpenCode prompt admission; only the separately requested Creative execution action can submit to the configured loopback service. Passing the fixed FLUX 3 Klein `TextGenerate` check does not establish MPS inference.
 
 AVIF metadata findings remain in the content-safety scanner and are not Runtime Action Envelope decisions or execution permissions.
@@ -69,8 +71,6 @@ The project mode layer is an opt-in AIPS policy after the independent runtime po
 The global administrator high-assurance publication trust root remains separate and is evaluated for every content-sensitive operation before a project mode can relax AIPS checks. Project YAML cannot replace that trust root. GitHub branch protection, required checks, and native Host confirmation remain effective in every project mode.
 
 `config/runtime-policy.yaml` defaults to `DENY`. External destinations must be explicitly allowlisted. Built-in SAL3/4 and confidential/restricted external actions require exact approval, `TOOL_GUARDED`, and a current verified sandbox egress receipt. The checked-in sandbox registry currently has no verified allowlist egress provider, so those actions resolve to `BLOCKED` even when a hook can intercept them. This is the truthful current capability.
-
-Policy rule conditions may bind `destination_host`, `destination_port`, `destination_method`, and `destination_path`; all supplied conditions are conjunctive exact matches. Hosts are case-insensitive, methods are compared case-insensitively and configured in uppercase, while ports and paths match exactly. Unknown condition keys or invalid condition values fail policy validation instead of being ignored. A project-local policy can therefore allow a single observed endpoint while retaining `default_effect: DENY`; Resource Authorization remains an independent preceding check.
 
 Decisions:
 

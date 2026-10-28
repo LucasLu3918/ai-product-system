@@ -348,6 +348,8 @@ Focused Intelligence context evidence must distinguish storage deduplication fro
 
 For the publication Core boundary, review Hook timing/redaction, Doctor policy states, exact evidence invalidation, upstream flag parsing and full candidate/history scanning against the final matrix-bound diff.
 
+Runtime Policy destination-matching changes require evidence for exact host, port, method, and path matches plus fail-closed handling of unknown or malformed conditions; keep this distinct from Resource Authorization profile validation.
+
 Independent-review evidence remains separate from Required Checks. When reviewing publication changes, verify `AIPS_ENFORCE_REQUIRED_CHECKS` and ensure its default affects only AIPS's own merge gate, not Doctor observations or GitHub rules.
 
 Publication Hook recovery tests assert zero inline Doctor calls, immediate fail-closed guidance and safe Prepare timeout fields (Scenario 260/261); exact-candidate evidence is recorded in the Core Change Matrix.

@@ -2085,6 +2085,8 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 
 Resource profiles and grants remain independently validated; optional project modes do not authorize ComfyUI endpoints or submissions.
 
+Runtime Policy destination conditions additionally require exact host, port, method, and path matches; invalid or unknown conditions fail closed without replacing Resource Authorization.
+
 Scenario 236 adds the Qwen Image Edit Plus per-port mapping under the same fixed loopback destination and existing resource authorization boundary.
 
 Scenario 236 now exercises Base and Distilled on the same reviewed Klein topology and ordered one-to-eight local reference bindings. Resource grants, fixed loopback destinations and diagnostics remain unchanged; staged references are hash-checked before submission.

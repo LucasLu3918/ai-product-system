@@ -220,6 +220,8 @@ Dependabot repository preflight and action pin sync (Scenario 221): `scripts/rep
 
 Task ownership is validated against the run-state record before work is scheduled; unknown or conflicting owners fail closed and cannot be inferred from conversation history.
 
+Scheduler readiness does not authorize runtime resources. Each ComfyUI action still requires an independently valid Resource Authorization profile and a Runtime Policy rule whose supplied destination conditions all match.
+
 Publication Prepare and diagnostic lookup are read-only observations; their lifecycle fields do not become scheduler grants or execution receipts. Only an independently observed completed native action may be reported as executed.
 
 The Claude publication Hook's one-shot Doctor observation does not create a scheduled task, retry a workflow or change execution ownership.
