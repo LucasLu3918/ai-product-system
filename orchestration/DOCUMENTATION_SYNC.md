@@ -12,6 +12,8 @@ OpenTelemetry export sources are mapped to the observability/run-state topics an
 
 ## Purpose
 
+For the optional Harness lifecycle, keep explicit registration, OFF/ACTIVE/UNKNOWN status, verified-ACTIVE-only refresh, and preservation of unrecognized local state synchronized across Human installation/runtime guides and their lifecycle evidence. Do not imply per-project observe/assist/enforce modes.
+
 Map shared runtime cache and package-install diagnostics into existing canonical publication and installation topics. Preserve the current topic structure and verify the recursive documentation closure with the final candidate.
 
 Keep Human-facing and Agent-facing documentation synchronized with behavior-bearing AIPS changes.

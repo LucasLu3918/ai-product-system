@@ -19,6 +19,14 @@ else:
     if focused.returncode != 0:
         errors.append(f"Migration state inventory tests failed: {focused.stdout.strip()} {focused.stderr.strip()}")
 
+harness_enablement_test = ROOT / "tests/test_harness_enablement.py"
+if not harness_enablement_test.exists():
+    errors.append("Missing Harness enablement tests")
+else:
+    focused = subprocess.run([sys.executable, str(harness_enablement_test)], capture_output=True, text=True, check=False)
+    if focused.returncode != 0:
+        errors.append(f"Harness enablement tests failed: {focused.stdout.strip()} {focused.stderr.strip()}")
+
 visual_profile_helper = ROOT / "scripts/visual_profile.py"
 visual_profile_evidence = ROOT / "tests/evidence/visual_profile_lifecycle.py"
 for required in (visual_profile_helper, visual_profile_evidence):
@@ -233,7 +241,7 @@ with tempfile.TemporaryDirectory() as tmp:
             errors.append("Failed harness uninstall must preserve ownership state for retry")
         (home / ".fake-gemini-fail-uninstall").unlink()
         retry = subprocess.run(["bash", str(cli), "harness", "uninstall"], env=env, capture_output=True, text=True)
-        if retry.returncode != 0 or harness_home.exists():
+        if retry.returncode != 0 or not harness_home.exists() or not (harness_home / "disabled").is_file():
             errors.append("Harness uninstall retry should succeed after Gemini unregister recovers")
 
 

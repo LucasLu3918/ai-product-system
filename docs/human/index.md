@@ -76,6 +76,8 @@ features:
 
 ## 文件如何組織
 
+安裝 AIPS CLI 不會自動註冊 Runtime adapter。需要整合時，請依 [Installation](INSTALLATION.md) 明確安裝 Harness；停用狀態與卸載時本機資料保留方式見 [Harness](HARNESS.md) 與 [Conformance](CONFORMANCE.md)。
+
 本機創意工作流與參考圖限制見[使用指南](USER_GUIDE.md)、[技術指南](TECHNOLOGY_GUIDE.md)及[Scenario 236](CONFORMANCE.md#scenario-236--local-creative-bundle-execution)。
 
 OpenCode Harness 的 Context 超限原因與復原步驟，請從 [Harness 指南](HARNESS.md)查閱；native action 限制與驗收範圍見 [Conformance](CONFORMANCE.md) Scenario 235。

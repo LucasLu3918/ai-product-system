@@ -50,7 +50,7 @@ aips commands list
 
 ## 開始工作
 
-開啟平常使用的 Agent 或 IDE，直接描述你想完成的目標、限制條件與驗收方式。AIPS 會依 Runtime 可用能力提供任務相關脈絡；Agent 再依工作內容進行規劃、實作與驗證。
+安裝 CLI 不會自動啟用 Runtime adapter。需要將 AIPS 整合至支援的 Agent 時，先檢查 `aips harness status`，再明確執行 `aips harness install`。啟用後可開啟 Agent 或 IDE，描述目標、限制與驗收方式；可用能力取決於 Runtime 的實際支援。
 
 ~~~text
 需求與驗收方式

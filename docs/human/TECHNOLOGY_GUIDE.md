@@ -11,6 +11,8 @@ Retrieval relation candidates are built by a small standard-library module behin
 
 ## Runtime & Integration
 
+CLI installation does not automatically register Runtime adapters. Harness state is classified as `OFF`, `ACTIVE`, or `UNKNOWN`; refresh is allowed only for verified `ACTIVE` ownership. Explicit uninstall removes verifiable external integrations, records `OFF`, and preserves local ownership plus unrecognized files.
+
 OpenCode checks direct native-write targets against Project Intelligence readiness, freshness, instruction authority and project-root confinement; READY+STALE freshness is advisory for local L2 source writes only.
 
 Scenario 266 findings remain untrusted content and do not grant Runtime Context or action authority.
@@ -52,6 +54,8 @@ Cursor、Windsurf、GitHub Copilot CLI、Amp、Codex 與 generic 設定只產生
 Role、Skill、Protocol 與 Project evidence 只在 task relevant 時載入，避免把整個 system context 常駐每個 Turn。
 
 Canonical AIPS Skills 可從 MCP Resource 按需載入，也可由 `aips skills install` 投影成 Codex、Claude Code、Gemini CLI 原生 Skills；Portable Commands 可用同一 ownership manifest 提供 Host 原生命令入口。安裝記錄 Host、scope、來源與逐檔 SHA-256；重複安裝不建立副本，移除只刪除仍吻合摘要的 AIPS-owned 檔案。投影契約與 lifecycle 測試驗證目錄、格式及所有權，不宣稱已驗證各 Host 實際載入。
+
+`aips skills list` reads canonical Skill metadata and remains available independently of Runtime adapter enablement; it does not install Skills or write project state.
 
 ## Project Understanding
 
@@ -631,6 +635,8 @@ Planning Package 可用 EARS 結構表達適合的功能需求，並以 optional
 Implementation Resolution 先釐清 REST/OpenAPI authority，再依既有專案證據或新專案的 Human-confirmed 選型建立 Implementation Profile。Go、PHP、Python、.NET 語言 Profile 提供穩定基線，專案規則與工具鏈仍優先。結構驗證器只檢查欄位、來源和 ownership 衝突，不判斷架構或技術建議是否正確；未取得驗證證據時回報 `UNVERIFIED`。
 
 ## Evolution & Maintenance
+
+Core behavior changes are recorded under the single `Unreleased` changelog heading with compatibility notes before they are considered for a release.
 
 Publication timeout and Hook recovery changes stay bound to Scenario 260/261, documentation placement closure and the exact-candidate Core Matrix.
 

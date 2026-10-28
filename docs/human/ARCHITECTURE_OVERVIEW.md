@@ -1,5 +1,7 @@
 # 系統架構總覽
 
+CLI 安裝與 Runtime adapter 啟用分開：`aips harness install` 是明確啟用入口；更新與 preflight 只刷新可驗證的既有啟用紀錄。不明紀錄會保留並警示；狀態觀察與 adapter 刷新尚無共同跨程序鎖，並行停用仍未驗證。per-repository 治理模式仍未由此切片實作。
+
 
 AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前架構**；版本歷史放 CHANGELOG，Scenario 證據歷史放 Conformance。
 

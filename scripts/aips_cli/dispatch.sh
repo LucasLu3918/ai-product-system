@@ -289,6 +289,15 @@ case "${1:-help}" in
   _refresh-harness-after-update)
     refresh_harness_if_installed
     ;;
+  _refresh-harness-inner)
+    refresh_harness_impl
+    ;;
+  _harness-install-inner)
+    harness_install_impl
+    ;;
+  _harness-uninstall-inner)
+    harness_uninstall_impl
+    ;;
   doctor)
     doctor
     ;;

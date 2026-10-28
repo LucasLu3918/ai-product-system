@@ -147,6 +147,8 @@ Publication Preflight lifecycle evidence stubs the Python module probe before as
 
 ## Failure behavior
 
+Runtime Harness installation is outside the Scheduler state machine. Task readiness, retry, or resume must not implicitly enable, refresh, or disable a Runtime adapter; those lifecycle actions remain explicit CLI operations.
+
 ComfyUI node selection and Qwen Image Edit Plus reference mapping remain outside Scheduler state transitions; Scenario 236 tests the workflow binding independently from task scheduling and resume state.
 
 For local `prepare` and `diagnose` failures, JSON callers receive a stable redacted result; recovery remains an observation and never authorizes retry or publication.

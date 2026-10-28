@@ -46,6 +46,8 @@ OpenCode integration retains system preflight and existing-host lifecycle checks
 
 ## Scenario 233 — Public CLI Help and Error Contracts
 
+Harness lifecycle regression evidence additionally covers default-OFF CLI installation, explicit adapter registration, fail-closed unknown ownership, and uninstall preservation of local state. See `tests/evidence/install_preflight_lifecycle.py` and `tests/test_harness_enablement.py`; these checks do not assert per-project governance modes.
+
 The separate `creative workflows` routes preserve the Skills CLI surface and are covered by Scenario 268.
 
 Scenario 263 adds a read-only `aips safety diagnose commit` contract; Skill listing and publication authority remain separate.

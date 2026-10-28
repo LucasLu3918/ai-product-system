@@ -538,12 +538,53 @@ def cli_collision_contract() -> None:
         require(foreign_result.returncode != 0 and "not owned by this AIPS installation" in foreign_result.stderr, "Foreign symlink collision must stop install")
         require(foreign.is_symlink() and foreign.resolve() == target.resolve(), "Foreign symlink collision was replaced")
 
+        marker_env = make_env(base / "marker-runtime", base / "marker-validation.log")
+        marker_dir = Path(marker_env["XDG_CONFIG_HOME"]) / "aips"
+        marker_dir.mkdir(parents=True)
+        foreign_data = base / "foreign-marker-target"
+        foreign_data.write_text("preserve user data\n", encoding="utf-8")
+        marker_path = marker_dir / "system-dir"
+        marker_path.symlink_to(foreign_data)
+        marker_result = cli(system, ["install"], marker_env)
+        require(marker_result.returncode != 0, "system-dir symlink must stop install")
+        require(foreign_data.read_text(encoding="utf-8") == "preserve user data\n", "system-dir symlink target was overwritten")
+        require(not (Path(marker_env["AIPS_BIN_HOME"]) / "aips").exists(), "marker conflict must not create a CLI link")
+        marker_path.unlink()
+        marker_path.write_text("/different/system\n", encoding="utf-8")
+        foreign_marker = cli(system, ["install"], marker_env)
+        require(foreign_marker.returncode != 0, "foreign system marker must stop install")
+        require(marker_path.read_text(encoding="utf-8") == "/different/system\n", "foreign system marker was overwritten")
+
+        alias = base / "system-alias"
+        alias.symlink_to(system, target_is_directory=True)
+        alias_marker = str(alias) + "\n"
+        marker_path.write_text(alias_marker, encoding="utf-8")
+        alias_install = cli(system, ["install"], marker_env)
+        require(alias_install.returncode == 0, f"equivalent system marker should be accepted: {alias_install.stderr}")
+        require(marker_path.read_text(encoding="utf-8") == alias_marker, "equivalent existing marker must not be rewritten")
+
+        linkfail_env = make_env(base / "linkfail-runtime", base / "linkfail-validation.log")
+        fake_link = base / "linkfail-runtime" / "fake-bin" / "ln"
+        fake_link.write_text("#!/usr/bin/env bash\nexit 1\n", encoding="utf-8")
+        fake_link.chmod(0o755)
+        link_failure = cli(system, ["install"], linkfail_env)
+        require(link_failure.returncode != 0, "install must not report success when CLI link creation fails")
+        require(not (Path(linkfail_env["AIPS_BIN_HOME"]) / "aips").exists(), "failed link fixture unexpectedly created CLI link")
+
         owned_home = base / "owned-bin"
         owned_home.mkdir()
         owned = owned_home / "aips"
         owned.symlink_to(system / "bin" / "aips")
         env_owned = make_env(base / "owned-runtime", base / "owned-validation.log", bin_home=owned_home)
-        owned_result = cli(system, ["install"], env_owned)
+        host_settings = Path(env_owned["HOME"]) / ".claude" / "settings.json"
+        host_settings.parent.mkdir(parents=True)
+        host_original = b'{ "keep" : true, "hooks": {} }\n'
+        host_settings.write_bytes(host_original)
+        previous_umask = os.umask(0o002)
+        try:
+            owned_result = cli(system, ["install"], env_owned)
+        finally:
+            os.umask(previous_umask)
         require(owned_result.returncode == 0, f"Exact AIPS symlink should be reusable: {owned_result.stdout} {owned_result.stderr}")
         require(
             f'Until PATH is updated, run: "{owned}" doctor' in owned_result.stdout,
@@ -554,8 +595,43 @@ def cli_collision_contract() -> None:
             "Install must print an absolute Harness status command when AIPS_BIN_HOME is not on PATH",
         )
         require(owned.is_symlink() and owned.resolve() == (system / "bin" / "aips").resolve(), "Owned CLI symlink was not preserved")
-        require((Path(env_owned["XDG_CONFIG_HOME"]) / "aips" / "system-dir").exists(), "Owned symlink reuse must record the installed system")
-        require((Path(env_owned["XDG_CONFIG_HOME"]) / "aips" / "harness" / "installation.yaml").exists(), "Owned symlink reuse must continue through installation integrity and Harness registration")
+        system_marker = Path(env_owned["XDG_CONFIG_HOME"]) / "aips" / "system-dir"
+        require(system_marker.exists(), "Owned symlink reuse must record the installed system")
+        require(system_marker.stat().st_mode & 0o077 == 0, "new system marker must remain private under a permissive umask")
+        harness_manifest = Path(env_owned["XDG_CONFIG_HOME"]) / "aips" / "harness" / "installation.yaml"
+        require(not harness_manifest.exists(), "fresh install must not implicitly enable Harness")
+        off_status = cli(system, ["harness", "status"], env_owned)
+        require(off_status.returncode == 0 and "Harness: OFF" in off_status.stdout, "status must report Harness OFF")
+        off_doctor = cli(system, ["harness", "doctor"], env_owned)
+        require(off_doctor.returncode == 0 and "Harness: OFF" in off_doctor.stdout, "doctor must accept intentionally disabled Harness")
+        off_refresh = cli(system, ["_refresh-harness-after-update"], env_owned)
+        require(off_refresh.returncode == 0 and not harness_manifest.exists(), "update must not implicitly enable Harness")
+        project = base / "off-project"
+        project.mkdir()
+        update = cli(system, ["update"], env_owned)
+        require(update.returncode == 0 and not harness_manifest.exists(), f"update enabled Harness: {update.stderr}")
+        preflight = cli(system, ["preflight", str(project)], env_owned)
+        require(preflight.returncode == 0 and not harness_manifest.exists(), f"preflight enabled Harness: {preflight.stderr}")
+        require(host_settings.read_bytes() == host_original, "off install/update/preflight modified host settings")
+        require(not (project / ".ai").exists(), "off preflight modified project state")
+        previous_umask = os.umask(0o002)
+        try:
+            explicit = cli(system, ["harness", "install"], env_owned)
+        finally:
+            os.umask(previous_umask)
+        require(explicit.returncode == 0 and harness_manifest.exists(), "explicit Harness installation must register ownership")
+        require(harness_manifest.parent.stat().st_mode & 0o022 == 0, "new Harness state must not be group- or world-writable")
+        enabled_refresh = cli(system, ["_refresh-harness-after-update"], env_owned)
+        require(enabled_refresh.returncode == 0 and "Refreshing AIPS Global Harness" in enabled_refresh.stdout, "explicitly enabled Harness must continue to refresh")
+        harness_manifest.write_text("bad: [", encoding="utf-8")
+        unknown_refresh = cli(system, ["_refresh-harness-after-update"], env_owned)
+        require(unknown_refresh.returncode == 0, "unknown enablement must not stop ordinary update")
+        require("Harness enablement is unknown" in unknown_refresh.stderr, "unknown enablement must be reported")
+        require(harness_manifest.read_text(encoding="utf-8") == "bad: [", "unknown ownership must be preserved")
+        unknown_status = cli(system, ["harness", "status"], env_owned)
+        require("Harness: UNKNOWN" in unknown_status.stdout, "status must not report invalid ownership as active")
+        unknown_doctor = cli(system, ["harness", "doctor"], env_owned)
+        require(unknown_doctor.returncode != 0 and "UNKNOWN" in unknown_doctor.stderr, "doctor must report invalid ownership")
         require(not (Path(env_owned["HOME"]) / ".zprofile").exists(), "Non-interactive install without --configure-shell must not modify a shell profile")
 
 
@@ -703,6 +779,30 @@ def uninstall_with_partial_harness_preserves_user_data() -> None:
         direct = cli(system, ["harness", "uninstall"], env)
         require(direct.returncode != 0, "direct uninstall must refuse ambiguous harness ownership")
         require(note.exists() and settings.read_bytes() == original, "direct uninstall changed ambiguous state")
+
+        owned_env = make_env(base / "owned-runtime", base / "owned-validation.log")
+        owned_system = base / "owned-harness-system"
+        shutil.copytree(
+            ROOT, owned_system,
+            ignore=shutil.ignore_patterns(".git", ".venv", ".venv.*", "node_modules", "__pycache__", "*.pyc"),
+        )
+        make_fake_venv(owned_system)
+        installed = cli(owned_system, ["harness", "install"], owned_env)
+        require(installed.returncode == 0, f"explicit Harness install failed: {installed.stdout} {installed.stderr}")
+        owned_harness = Path(owned_env["XDG_CONFIG_HOME"]) / "aips" / "harness"
+        retained = owned_harness / "user-note.txt"
+        retained.write_text("preserve after owned uninstall\n", encoding="utf-8")
+        removed = cli(owned_system, ["harness", "uninstall"], owned_env)
+        require(removed.returncode == 0, f"owned Harness uninstall failed: {removed.stdout} {removed.stderr}")
+        require(retained.read_text(encoding="utf-8") == "preserve after owned uninstall\n", "uninstall deleted unrecognized user data")
+        disabled = cli(owned_system, ["harness", "status"], owned_env)
+        require(disabled.returncode == 0 and "Harness: OFF" in disabled.stdout, "uninstalled Harness state must report OFF")
+        require("AUTOMATIC" not in disabled.stdout, "OFF status must not expose stale adapter state as active")
+        repeated = cli(owned_system, ["harness", "uninstall"], owned_env)
+        require(repeated.returncode == 0 and "already OFF" in repeated.stdout, "repeated uninstall must be safe and idempotent")
+        refresh = cli(owned_system, ["_refresh-harness-after-update"], owned_env)
+        require(refresh.returncode == 0, f"ordinary refresh failed after uninstall: {refresh.stderr}")
+        require("Harness: OFF" in cli(owned_system, ["harness", "status"], owned_env).stdout, "refresh re-enabled explicitly uninstalled Harness")
 
         outside = base / "unowned-manifest.yaml"
         outside.write_text("user-owned manifest\n", encoding="utf-8")

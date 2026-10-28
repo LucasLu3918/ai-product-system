@@ -27,6 +27,8 @@ aips conformance report
 
 Registry 位於 `tests/scenario_coverage.yaml`。
 
+Harness 安裝生命週期另由 `tests/evidence/install_preflight_lifecycle.py` 與 `tests/test_harness_enablement.py` 驗證：AIPS CLI 安裝預設不註冊 Runtime adapter；明確安裝後才為 `ACTIVE`，有效停用標記為 `OFF`，無法驗證的狀態為 `UNKNOWN`。卸載保留 Harness ownership 目錄與其中未辨識資料。
+
 ## v0.13 Baseline
 
 v0.13 發布時採保守分類：既有 001–095 若沒有明確的一對一 executable evidence，就維持 `manual`。這不是表示它們沒有任何 validator 關聯，而是 AIPS 不把間接相關檢查誇大成 Scenario-level automation。

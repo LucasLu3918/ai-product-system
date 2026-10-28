@@ -15,6 +15,8 @@ The shared OpenCode integration lifecycle contains independent Skill Explorer an
 
 Upstream native Skill lifecycle behavior is documented in User Guide and Harness; ownership-safe removal and source validation evidence belong in Technology Guide, Maintenance, and Scenario 259. Keep command behavior aligned across these canonical sections.
 
+Harness registration remains an explicit user action after AIPS CLI installation. Keep the OFF/ACTIVE/UNKNOWN classification, refresh eligibility, and uninstall preservation of unknown local data aligned across Installation, Harness, User Guide, Technology Guide, and lifecycle evidence.
+
 ~~~text
 docs/human/*.md
 → Human current behavior / how-to / explanation

@@ -523,6 +523,8 @@ Scenario 269 refreshes only the CLI help golden vectors for `aips intelligence g
 
 ## Runtime Policy Enforcement
 
+Optional Harness registration is classified from a bounded, regular ownership record and a system identity marker. Symlinks, malformed records, foreign system identities, and unreadable state remain `UNKNOWN`; refresh does not rewrite them. Uninstall removes only verified external integrations and marks the local Harness `OFF` while preserving unknown local files.
+
 Dynamic ComfyUI reference injection remains limited to trusted built-in encoder nodes, project-staged files with matching source hashes, loopback-only requests, and one explicit submission. Edit Plus adds only bounded ordered input mapping.
 
 FLUX 3 Klein profile sampler bounds and dynamic reference counts do not create runtime actions or Resource Authorization grants. Loopback-only access, core-node schema, file-size limits, ordered slots and source-to-staged hash checks remain enforced before submission.

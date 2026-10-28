@@ -22,6 +22,8 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 安裝與 CI gate 的 current behavior 會同步反映在 Getting Started、Installation、User Guide、Architecture 與 Technology Guide 的指定 topic sections。
 
+Harness 的選用啟用、`OFF`／`ACTIVE`／`UNKNOWN` 狀態與保留本機額外資料的卸載行為，以 Installation 和 Harness 為操作入口；驗證邊界見 Conformance，技術概述見 Technology Guide。
+
 ## 文件角色
 
 Skill Explorer behavior remains independent from local creative workflow updates; see Scenario 259 for Skills and Scenario 236 for Qwen ComfyUI reference contracts.

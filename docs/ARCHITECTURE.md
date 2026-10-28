@@ -4,6 +4,8 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ## Runtime flow
 
+CLI installation does not enable Runtime adapters. An explicit `aips harness install` registers them; update and preflight refresh only when existing enablement records are verifiable. Unknown records are preserved and reported. The observation and adapter refresh are not yet protected by a shared cross-process lock; concurrent disable is unverified. This installation boundary does not yet provide per-repository governance modes.
+
 Claude Code publication PreToolUse uses a bounded eight-second decision path. Each push still checks the exact candidate, full target ref, remote tip and current authority; a fresh, 30-minute private Secret Scan record can avoid only the duplicate Hook scan and never authorizes execution.
 
 Project-local AIPS state is opt-in through `aips attach`. In Git worktrees, attach/detach maintain anchored `.ai/` and `.ai.detached-*` entries in repository-local `info/exclude`; non-Git projects need no Git metadata, and project `.gitignore` remains untouched.
@@ -908,7 +910,9 @@ Project Diagnostics reports read-only next actions and recovery pointers; it doe
 
 ~~~mermaid
 flowchart TD
-    INSTALL[aips install] --> DET[Detect Runtimes]
+    INSTALL[aips install] --> CLI[CLI installed without Runtime adapters]
+    CLI --> ENABLE[Explicit aips harness install]
+    ENABLE --> DET[Detect Runtimes]
     DET --> C[Codex Managed Block / CONTEXT_ALWAYS]
     DET --> CL[Claude Hook + Managed Block]
     DET --> G[Gemini Extension + BeforeAgent]

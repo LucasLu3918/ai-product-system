@@ -33,7 +33,7 @@ Managed Runtime hooks keep content-safety and publication checks fail-closed. Re
 )
 ~~~
 
-安裝器會管理 AIPS system checkout、Python virtual environment、CLI 與支援的 Runtime 整合。預設安裝路徑為 `$XDG_DATA_HOME/aips/system`，若未設定 `XDG_DATA_HOME` 則使用 `~/.local/share/aips/system`。可用 `AIPS_INSTALL_DIR` 指定其他 system checkout 路徑。
+安裝器會管理 AIPS system checkout、Python virtual environment 與 CLI；Runtime 整合須另行明確執行 `aips harness install`。預設安裝路徑為 `$XDG_DATA_HOME/aips/system`，若未設定 `XDG_DATA_HOME` 則使用 `~/.local/share/aips/system`。可用 `AIPS_INSTALL_DIR` 指定其他 system checkout 路徑。
 
 `--configure-shell` 會在 zsh 或 bash profile 加入有明確 AIPS 標記的 `PATH` 區塊，方便新終端找到 `aips`。若你自行管理 shell 設定，改用 `--no-configure-shell`。
 
@@ -91,7 +91,7 @@ OpenCode 原生直接寫入在 Project Intelligence 為 READY、但 freshness �
 
 Commit 時的 AVIF 中繼資料掃描採用內建且有界的解析器，不需安裝額外套件，也不新增原生 Runtime adapter 需求。
 
-安裝或更新後，以 `aips harness status` 檢視可辨識的 Runtime，再依 Host 提示使用 `aips harness install` 或 `aips harness doctor`。解除整合可使用 `aips harness uninstall`；只移除 CLI 時使用 `aips uninstall`。
+安裝後不會自動啟用 Runtime adapter；需要整合時先檢視 `aips harness status`，再明確執行 `aips harness install`。更新只刷新可驗證的既有啟用紀錄；不明狀態會保留，`aips harness status` 與 `aips harness doctor` 會回報 `UNKNOWN`，請先檢視所有權紀錄。解除整合可使用 `aips harness uninstall`；它會移除可驗證的外部整合、將狀態設為 `OFF`，並保留使用者層 ownership 與額外資料。只移除 CLI 時使用 `aips uninstall`。
 
 不同 Agent 的 Context、工具權限與原生 Hook 能力並不相同。安裝狀態或靜態探測只能說明設定狀態；有版本綁定的 Host 驗收才可證明指定環境中的行為。Codex 的部分防護維持 ADVISORY，不能視為作業系統層級的隔離。
 
@@ -109,7 +109,7 @@ MCP 設定可用 `aips mcp config --client <client>` 預覽。該命令不會替
 
 確認 Agent 已安裝，並使用支援的本機 Runtime 版本。執行 `aips harness status` 和 `aips harness doctor` 查看探測到的設定與可恢復問題；缺少 Host 時不會自動建立不存在的整合。
 
-### 顯示 `Harness: active`，但 Host 沒有載入
+### 顯示 `Harness: ACTIVE`，但 Host 沒有載入
 
 `active` 表示 AIPS 找到受管理設定，不能證明 Host 已讀取或執行它。重新啟動 Host、確認目前工作階段使用的設定路徑，並依該 Runtime 的驗收方式確認 Context 或 Hook 實際生效。
 

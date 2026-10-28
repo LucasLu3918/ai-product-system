@@ -55,7 +55,7 @@ aips mcp inspect
 
 For a scoped local creative bundle, run `aips creative preflight --project <project> --bundle <bundle.yaml>` before an explicit `aips creative execute`; preflight never starts a generator.
 
-安裝完成後，直接使用原本的 Codex、Claude Code、Gemini CLI，或把 AIPS MCP Server 接到支援 MCP 的 Host。
+安裝 CLI 後，若要啟用支援的 Runtime adapter，請明確執行 `aips harness install`；也可依 Host 文件自行設定 AIPS MCP Server。
 
 ~~~bash
 aips harness status
@@ -68,7 +68,7 @@ AIPS 不取代既有 AGENTS.md、CLAUDE.md、GEMINI.md 或 custom Skills；只�
 
 OpenCode V2 uses the managed AIPS Harness adapter for Session-scoped Context, supported native file decisions, and explicit Shell/MCP boundaries; Core changes require the exact-candidate Gate before publication.
 
-OpenCode 已安裝時，`aips update` 會更新由 AIPS 擁有的全域指示、Skills 與 Commands；使用者修改的投影會保留並回報衝突。詳見 [Harness](docs/human/HARNESS.md)。
+已明確啟用 AIPS Harness 且 OpenCode 可用時，`aips update` 會更新由 AIPS 擁有的全域指示、Skills 與 Commands；使用者修改的投影會保留並回報衝突。詳見 [Harness](docs/human/HARNESS.md)。
 
 ~~~bash
 aips update

@@ -219,6 +219,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
+安裝 AIPS CLI 不會註冊 Runtime adapter；`aips harness status` 初始回報 `OFF`。需要個人整合時才執行 `aips harness install`。更新只刷新可驗證的啟用記錄；`UNKNOWN` 會保留原狀。`aips harness uninstall` 移除可驗證的外部整合並保留本機 ownership／額外資料，標記 `OFF`。
+
 Creative ComfyUI workflows use the separate AIPS Creative execution contract; Qwen reference binding does not expand Host adapter permissions.
 
 OpenCode 顯示 `context_compaction_over_budget` 時，先以 `aips intelligence context --runtime opencode --project "$PWD" --prompt "<task>" --full --explain --format json` 檢視，再執行 `aips intelligence refresh-plan --project "$PWD"`。僅更新受影響的 Intelligence 主題後重試；修復前支援的 native file writes 維持拒絕。診斷不包含 prompt 或 section 內容，且不涵蓋一般 Shell/MCP 寫入。
@@ -359,7 +361,7 @@ Skills and portable commands can direct users to the core `aips publish doctor` 
 
 使用 <a href="./skill-catalog.html">Skill Explorer</a> 依名稱、用途或分類搜尋 49 個目前可用的 AIPS Skills，並複製提示範例。Explorer 與 `aips skills list --include-upstream` 也列出 Matt Pocock 上游 38 項 vendored Skills、來源摘要、路由處置與安裝資格；31 項可安裝，7 項同名技能使用 AIPS canonical 版本。`disposition` 描述與 AIPS 的整合關係，使用者仍可自行決定是否安裝上游副本。`$grill-with-docs` 是獨立明確呼叫 Skill，不會由一般規劃或寫文件需求自動觸發。Writing Fragments、Beats、Shape 維持明確要求才使用。
 
-終端機可執行 `aips skills list` 查看繁中分組清單；以 `--capability <id>`、`--trigger <trigger>` 篩選，`--include-upstream` 加入上游 38 項、路由處置、安裝資格與本地來源路徑，`--locale en` 切換英文，`--group-by category|status|source` 切換分組，`--format json` 輸出機器可讀資料。此命令只讀取 Skill 中繼資料，不會修改 Skill 或索引。
+終端機可執行 `aips skills list` 查看繁中分組清單；CLI 可獨立於 Runtime adapter 啟用狀態使用。以 `--capability <id>`、`--trigger <trigger>` 篩選，`--include-upstream` 加入上游 38 項、路由處置、安裝資格與本地來源路徑，`--locale en` 切換英文，`--group-by category|status|source` 切換分組，`--format json` 輸出機器可讀資料。此命令只讀取 Skill 中繼資料，不會修改 Skill 或索引。
 
 將 AIPS Skills 安裝為 Host 原生 Skills，可使用 `aips skills install <skill-id> --host codex|claude|gemini`。Codex 與 Gemini 共用 `~/.agents/skills`；Claude Code 使用 `~/.claude/skills`。加入 `--scope workspace --project <path>` 可改裝在指定專案；以 `aips skills status` 檢查紀錄，以 `aips skills uninstall <skill-id> --host <host>` 移除。安裝紀錄位於 AIPS XDG config 下的 `skills/ownership.json`，記錄 Host、路徑及逐檔摘要。重複安裝會更新同一份 AIPS-owned 投影，不會覆寫無主控記錄的原生 Skill。卸載只刪除摘要仍吻合的檔案；修改檔案與額外資源會保留。
 

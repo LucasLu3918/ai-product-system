@@ -306,6 +306,8 @@ When product-delivery behavior changes, review together:
 
 ### Harness / Runtime adapters
 
+The CLI installation lifecycle does not register a Runtime adapter. The Harness lifecycle evidence covers explicit registration, fail-closed `UNKNOWN` classification, refresh only for verified `ACTIVE` ownership, and uninstall preservation of unrecognized local files.
+
 When Harness behavior changes, review together:
 
 - harness/BOOTSTRAP + HARNESS_PROTOCOL + ADAPTER_CONTRACT;

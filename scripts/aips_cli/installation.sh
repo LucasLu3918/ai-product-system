@@ -14,7 +14,9 @@ install_cli() {
   say "Installing AIPS runtime dependencies..."
   install_runtime_dependencies
 
-  mkdir -p "$BIN_HOME" "$CONFIG_HOME"
+  mkdir -p "$BIN_HOME"
+  [ ! -L "$CONFIG_HOME" ] || die "AIPS config directory is a symlink; existing data was preserved."
+  (umask 077; mkdir -p "$CONFIG_HOME")
 
   if [ -e "$BIN_HOME/aips" ] || [ -L "$BIN_HOME/aips" ]; then
     if [ -L "$BIN_HOME/aips" ]; then
@@ -29,11 +31,32 @@ install_cli() {
     fi
   fi
 
-  ln -s "$SYSTEM_DIR/bin/aips" "$BIN_HOME/aips" 2>/dev/null || true
-  printf '%s\n' "$SYSTEM_DIR" > "$CONFIG_HOME/system-dir"
+  local system_marker="$CONFIG_HOME/system-dir" marker_size recorded_system recorded_canonical actual_canonical
+  [ ! -L "$system_marker" ] || die "System marker is a symlink; existing data was preserved."
+  if [ -e "$system_marker" ]; then
+    [ -f "$system_marker" ] && [ -r "$system_marker" ] || die "System marker is not a readable regular file; existing data was preserved."
+    marker_size="$(wc -c < "$system_marker")"
+    [ "$marker_size" -le 16384 ] || die "System marker is too large; existing data was preserved."
+    recorded_system="$(cat "$system_marker")"
+    case "$recorded_system" in /*) ;; *) die "System marker is not absolute; existing data was preserved." ;; esac
+    recorded_canonical="$(canonical_path "$recorded_system" || true)"
+    actual_canonical="$(canonical_path "$SYSTEM_DIR" || true)"
+    [ -n "$recorded_canonical" ] && [ "$recorded_canonical" = "$actual_canonical" ] ||
+      die "System marker belongs to a different installation; existing data was preserved."
+  else
+    (umask 077; set -C; printf '%s\n' "$SYSTEM_DIR" > "$system_marker") || die "System marker appeared or could not be created; existing data was preserved."
+  fi
+
+  if ! ln -s "$SYSTEM_DIR/bin/aips" "$BIN_HOME/aips" 2>/dev/null; then
+    local verified_target expected_target
+    verified_target="$(canonical_path "$BIN_HOME/aips" || true)"
+    expected_target="$(canonical_path "$SYSTEM_DIR/bin/aips" || true)"
+    [ -L "$BIN_HOME/aips" ] && [ -n "$verified_target" ] && [ "$verified_target" = "$expected_target" ] ||
+      die "CLI link could not be created or safely verified; existing data was preserved."
+  fi
 
   validate_installation
-  harness_install
+  say "Runtime adapters are not enabled by installation. Use 'aips harness install' to enable them explicitly."
 
   if [ "$configure_shell" = "true" ]; then
     shell_install
