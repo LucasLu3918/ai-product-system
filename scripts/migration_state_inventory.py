@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Inspect tracked AIPS state without modifying the worktree or Git index."""
 from __future__ import annotations
 

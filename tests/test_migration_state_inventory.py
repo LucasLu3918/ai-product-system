@@ -81,7 +81,7 @@ class InventoryTest(unittest.TestCase):
 
     def test_cli_requires_explicit_dry_run(self):
         command = [str(CLI), 'migrate-state', '--project', str(self.root)]
-        refused = subprocess.run(command, capture_output=True, text=True)
+        refused = subprocess.run(command, capture_output=True, text=True, check=False)
         self.assertNotEqual(refused.returncode, 0)
         accepted = subprocess.run(command + ['--dry-run'], capture_output=True, text=True, check=True)
         self.assertEqual(len(json.loads(accepted.stdout)['files']), 2)
@@ -89,7 +89,7 @@ class InventoryTest(unittest.TestCase):
     def test_non_repository_fails_without_creating_files(self):
         with tempfile.TemporaryDirectory() as directory:
             other = Path(directory)
-            result = subprocess.run([sys.executable, str(SCRIPT), '--project', str(other), '--dry-run'], capture_output=True, text=True)
+            result = subprocess.run([sys.executable, str(SCRIPT), '--project', str(other), '--dry-run'], capture_output=True, text=True, check=False)
             self.assertNotEqual(result.returncode, 0)
             self.assertEqual(list(other.iterdir()), [])
 
