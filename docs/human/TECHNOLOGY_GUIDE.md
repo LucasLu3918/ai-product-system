@@ -106,6 +106,8 @@ Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEM
 
 ## Execution
 
+The publication path resolves literal `git -C <path> push` to its actual target worktree before candidate validation, so caller cwd cannot redirect candidate identity.
+
 Publication parsing supports exact SHA refspecs and `-u` / `--set-upstream` with the current branch name. Shorthand resolves to the already observed full HEAD SHA/ref and continues through the same candidate scan, approval and remote policy.
 
 OpenCode 原生檔案寫入先確認精簡 Context 在 12,000 bytes 內；若無法壓縮至上限，Context 保持不可用，原生寫入在 manifest policy 前拒絕。

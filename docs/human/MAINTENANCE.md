@@ -12,6 +12,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+Native `git -C <path> push` validation follows the explicit target worktree, including its candidate SHA and scan evidence; invalid or dynamic target paths remain blocked.
+
 Publication parser changes preserve exact-candidate binding: upstream branch shorthand is accepted only for the checked-out branch and is normalized to the observed full HEAD SHA/ref. The regular scan, authorization and required-check boundaries still apply.
 
 Changes to local creative workflow contracts must update Scenario 236 and the user, technology, architecture, security, and orchestration references selected by the documentation-impact rules.

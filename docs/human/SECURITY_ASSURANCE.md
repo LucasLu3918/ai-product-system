@@ -523,6 +523,8 @@ Scenario 269 refreshes only the CLI help golden vectors for `aips intelligence g
 
 ## Runtime Policy Enforcement
 
+For `git -C <path> push`, validation resolves the literal path from invocation cwd and binds candidate, target ref and scanning to that worktree; unavailable or dynamic targets fail closed.
+
 For native pushes, AIPS accepts an explicit full candidate SHA/ref or upstream shorthand naming only the checked-out branch. It normalizes the shorthand to the observed full HEAD SHA and full ref; branch-name ambiguity, `HEAD`, and other branches remain blocked, with scanning and Human authority unchanged.
 
 Optional Harness registration is classified from a bounded, regular ownership record and a system identity marker. Symlinks, malformed records, foreign system identities, and unreadable state remain `UNKNOWN`; refresh does not rewrite them. Uninstall removes only verified external integrations and marks the local Harness `OFF` while preserving unknown local files.

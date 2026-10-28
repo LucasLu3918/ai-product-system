@@ -287,30 +287,35 @@ def diagnose(worktree: Path, command: str) -> dict[str, Any]:
     """Validate a native literal command without execution or grant consumption."""
     from publication_commands import CommandError, command_form_detail, shell_commands
     try:
-        root = worktree.expanduser().resolve(strict=True)
-        if Path(authority.git(root, 'rev-parse', '--show-toplevel')).resolve() != root:
-            raise authority.PublicationError('worktree root mismatch', 'CWD_MISMATCH')
+        invocation_cwd = worktree.expanduser().resolve(strict=True)
         # Match the Hook: quoted literal `$`/backticks are data; real expansions keep a NUL marker.
         parsed = shell_commands(command, mark_dynamic=True)
         if len(parsed) != 1:
             raise authority.PublicationError('standalone command required', 'COMMAND_FORM_UNSUPPORTED',
                                              detail_code=command_form_detail(command))
         argv = parsed[0]
-        operation = ('git_push' if argv[:2] == ['git', 'push'] else
+        git_c_push = argv[:2] == ['git', '-C'] and len(argv) >= 4 and argv[3] == 'push'
+        operation = ('git_push' if argv[:2] == ['git', 'push'] or git_c_push else
                      'gh_pr_create' if argv[:3] == ['gh', 'pr', 'create'] else
                      'gh_pr_merge' if argv[:3] == ['gh', 'pr', 'merge'] else None)
         if not operation:
             raise authority.PublicationError('unsupported planning operation', 'COMMAND_FORM_UNSUPPORTED')
+        target_cwd, normalized_argv = (authority.resolve_git_push_target(invocation_cwd, argv)
+                                       if operation == 'git_push' else (invocation_cwd, argv))
+        root = Path(authority.git(target_cwd, 'rev-parse', '--show-toplevel')).resolve()
+        if operation != 'git_push' and root != invocation_cwd:
+            raise authority.PublicationError('worktree root mismatch', 'CWD_MISMATCH')
         mode = authority.publication_mode()
         if mode == 'high_assurance':
             try:
                 authority.configured_authority()
             except (authority.PublicationError, OSError, ValueError, TypeError, yaml.YAMLError) as exc:
                 raise authority.PublicationError('invalid present trust root', 'AUTHORITY_CONFIG_INVALID') from exc
-        observed = authority.validate_personal_action(root, operation, argv, literal_marked=True)
+        observed = authority.validate_personal_action(invocation_cwd, operation, argv, literal_marked=True)
         if mode == 'high_assurance':
             # Diagnostics must honor the selected mode's stricter exact lease syntax.
-            authority.action(root, operation, argv, observed['base_commit'], personal=False, literal_marked=True)
+            authority.action(target_cwd, operation, normalized_argv, observed['base_commit'],
+                             personal=False, literal_marked=True)
         result = {'version': 2, 'status': 'VALIDATED' if mode == 'personal' else 'AWAITING_AUTHORITY',
                   'authorized': False, 'read_only': True, 'executed': False,
                   'grant_consumed': False, 'operation': operation, 'mode': mode,

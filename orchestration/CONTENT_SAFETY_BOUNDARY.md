@@ -74,6 +74,8 @@ Pure dependency update documentation exemption (Scenario 221): `pure_dependency_
 
 ## Security invariants
 
+A literal `git -C <path> push` is scanned against the resolved target worktree; no fallback to caller cwd or another checkout is permitted, and unbound paths fail closed.
+
 Publication push normalization accepts the current branch shorthand only with an explicit upstream flag and binds it to the observed full candidate SHA/ref. The candidate remains subject to the same final-tree and history scan; normalization creates no authorization.
 
 The publication Hook's short-lived scan evidence records a successful full Secret Scan but does not alter content-safety decisions or sink policy. Missing, stale, corrupt or mismatched evidence fails closed, and Prepare plus the final Integration Gate still scan the complete candidate and history.

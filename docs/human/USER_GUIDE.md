@@ -745,6 +745,8 @@ Retrieval index persistence is an internal, rebuildable cache boundary in `scrip
 
 ## Git Publication 與 Release
 
+使用 `git -C <path> push` 時，`<path>` 以執行命令時的 cwd 為基準解析；AIPS 將候選 SHA、ref 與掃描綁定到該目標工作樹。無效、缺漏或動態路徑會在候選檢查前拒絕。
+
 原生推送可使用完整候選 SHA 與完整分支 ref，或 `git push -u/--set-upstream origin <目前分支>`。分支縮寫只接受所選工作樹目前分支，並正規化為已觀測的完整 HEAD SHA/ref；裸分支名稱、`HEAD` 或其他分支仍拒絕。語法支援不代表授權，掃描、遠端政策與 Human approval 仍照常執行。
 
 一般 personal publication 只推送已提交的 candidate SHA/ref。本機未提交修改會保留並顯示為工作樹診斷，不會被自動加入候選，也不會單獨阻擋該 commit；遠端授權、完整內容掃描與 GitHub 保護仍適用。

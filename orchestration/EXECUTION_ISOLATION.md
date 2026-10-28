@@ -43,6 +43,8 @@ The local ComfyUI workflow adapter is a loopback resource boundary, not an OS pr
 
 ## Worktree ownership
 
+A publication command with literal `git -C <path>` resolves that target from invocation cwd and binds candidate validation to its actual Git worktree; invalid paths do not fall back to the caller checkout.
+
 
 AIPS-created worktrees live outside the project source tree:
 

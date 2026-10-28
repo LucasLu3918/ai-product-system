@@ -127,6 +127,8 @@ No orphan registry entries are allowed.
 
 ## Release behavior
 
+Conformance covers literal `git -C <path> push` from a different invocation cwd and confirms candidate, scan and diagnostics use the resolved target worktree.
+
 Native push conformance includes `-u` / `--set-upstream` shorthand for the checked-out branch only; validation binds it to the observed full HEAD SHA/ref and retains the existing scan and authority boundaries.
 
 Repository validation runs the conformance checker. Missing/duplicate/unknown entries fail validation. `uncovered` is release-blocking under the current registry policy. `manual` is allowed but remains visible as automation debt.

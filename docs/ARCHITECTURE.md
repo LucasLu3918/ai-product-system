@@ -332,6 +332,8 @@ The alias candidate is deterministic and transparent. It is not an embedding pro
 
 ## Maintenance and publication evidence
 
+The literal `git -C <path> push` form resolves its target relative to invocation cwd and binds candidate inspection and scanning to that actual worktree; missing or dynamic paths fail closed.
+
 Native Git push parsing accepts an exact candidate SHA to the current full branch ref, or `-u` / `--set-upstream` with the current branch name; the latter is normalized to the already observed HEAD SHA and full ref. This syntax support grants no publication authority and does not bypass candidate scanning.
 
 Doctor keeps Required Checks permission failures visible as unknown. They become Doctor blockers only with `AIPS_ENFORCE_REQUIRED_CHECKS=1`; strict merge validation continues to block unknown policy evidence, while GitHub native rules remain active.

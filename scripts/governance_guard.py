@@ -853,26 +853,30 @@ def _record_publication_diagnostic(diagnostic: dict[str, Any], runtime: str) -> 
 
 def _hook_binding(cwd: Path, command: str, mode: str) -> dict[str, str] | None:
     try:
+        import publication_authority as authority
         from publication_commands import shell_commands
         parsed = shell_commands(command)
         if len(parsed) != 1:
             return None
         argv = parsed[0]
         target_ref = ''
-        if argv[:2] == ['git', 'push']:
-            args = argv[2:]
+        target_cwd = Path(cwd)
+        if argv[:2] == ['git', 'push'] or argv[:2] == ['git', '-C'] and len(argv) >= 4 and argv[3] == 'push':
+            target_cwd, normalized = authority.resolve_git_push_target(target_cwd, argv)
+            args = normalized[2:]
             while args and args[0].startswith('-'):
                 args = args[1:]
             if len(args) == 2 and ':' in args[1]:
                 target_ref = args[1].split(':', 1)[1]
+            elif len(args) == 2 and any(flag in {'-u', '--set-upstream'} for flag in normalized[2:]):
+                target_ref = 'refs/heads/' + args[1]
         elif argv[:3] == ['gh', 'pr', 'create'] and '--base' in argv:
             target_ref = 'refs/heads/' + argv[argv.index('--base') + 1]
         if not target_ref.startswith('refs/heads/'):
             return None
-        head = subprocess.run(['git', 'rev-parse', 'HEAD^{commit}'], cwd=cwd,
-                              capture_output=True, text=True, timeout=5, check=True).stdout.strip()
-        from publication_authority import runtime_binding
-        return runtime_binding(cwd, candidate_sha=head, target_ref=target_ref, mode=mode)
+        target_root = Path(authority.git(target_cwd, 'rev-parse', '--show-toplevel')).resolve()
+        head = authority.git(target_root, 'rev-parse', 'HEAD^{commit}')
+        return authority.runtime_binding(target_root, candidate_sha=head, target_ref=target_ref, mode=mode)
     except Exception:  # noqa: BLE001 - binding is optional evidence; never crash the Hook.
         return None
 

@@ -694,7 +694,10 @@ def validate_action_form(operation: str, argv: list[str], *, literal_marked: boo
         'gh_pr_merge': ['gh', 'pr', 'merge'],
         'gh_release_create': ['gh', 'release', 'create'],
     }
-    if operation not in expected or not argv or argv[:len(expected[operation])] != expected[operation]:
+    git_c_push = (operation == 'git_push' and argv[:2] == ['git', '-C']
+                  and len(argv) >= 4 and argv[3] == 'push')
+    if (operation not in expected or not argv or
+            not git_c_push and argv[:len(expected[operation])] != expected[operation]):
         raise PublicationError('use a supported standalone literal publication command',
                                'COMMAND_FORM_UNSUPPORTED', phase='command_validation')
     if any('\0' in word or not literal_marked and ('$' in word or '`' in word) for word in argv):
@@ -703,11 +706,38 @@ def validate_action_form(operation: str, argv: list[str], *, literal_marked: boo
                                detail_code='PUBLICATION_ARGUMENT_DYNAMIC')
 
 
+def resolve_git_push_target(cwd: Path, argv: list[str]) -> tuple[Path, list[str]]:
+    """Resolve one literal `git -C <path> push` to its actual target directory and argv."""
+    if argv[:2] != ['git', '-C']:
+        return Path(cwd).resolve(), argv
+    if len(argv) < 4 or argv[3] != 'push':
+        raise PublicationError('only git -C <path> push is supported for publication',
+                               'COMMAND_FORM_UNSUPPORTED', phase='command_validation')
+    raw_path = argv[2]
+    if not raw_path or '\0' in raw_path or '$' in raw_path or '`' in raw_path:
+        raise PublicationError('git -C target must be one literal path',
+                               'COMMAND_FORM_UNSUPPORTED', phase='command_validation',
+                               detail_code='PUBLICATION_ARGUMENT_DYNAMIC')
+    target = Path(raw_path)
+    if not target.is_absolute():
+        target = Path(cwd) / target
+    try:
+        target = target.resolve(strict=True)
+        if not target.is_dir():
+            raise OSError('target is not a directory')
+    except OSError as exc:
+        raise PublicationError('explicit git -C target is unavailable', 'CWD_MISMATCH',
+                               phase='worktree_validation') from exc
+    return target, ['git', 'push', *argv[4:]]
+
+
 def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: bool = False,
            literal_marked: bool = False) -> dict[str, Any]:
     """Observe a supported standalone literal command; implicit/multi-target pushes deny."""
     validate_action_form(operation, argv, literal_marked=literal_marked)
-    root = Path(git(cwd, 'rev-parse', '--show-toplevel')).resolve()
+    invocation_cwd = Path(cwd).resolve()
+    target_cwd, action_argv = resolve_git_push_target(invocation_cwd, argv) if operation == 'git_push' else (invocation_cwd, argv)
+    root = Path(git(target_cwd, 'rev-parse', '--show-toplevel')).resolve()
     head = git(root, 'rev-parse', 'HEAD^{commit}')
     if not re.fullmatch(r'[0-9a-f]{40,64}', base):
         raise PublicationError('explicit base commit SHA required', reason_code='BASE_SHA_INVALID')
@@ -726,15 +756,18 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
         'diff_digest': 'sha256:' + hashlib.sha256(diff.stdout).hexdigest(),
         'operations': [operation], 'argv': argv,
     }
+    if operation == 'git_push' and action_argv != argv:
+        result['normalized_argv'] = action_argv
+        result['target_worktree_id'] = result['worktree_id']
     if not result['branch']:
         raise PublicationError('publication requires an explicit feature branch', reason_code='BRANCH_NOT_ALLOWLISTED')
     remote = 'origin'
     force = False
     delete = False
     if operation == 'git_push':
-        if argv[:2] != ['git', 'push']:
+        if action_argv[:2] != ['git', 'push']:
             raise PublicationError('use a standalone git push without wrappers/global options', 'COMMAND_FORM_UNSUPPORTED')
-        args = argv[2:]
+        args = action_argv[2:]
         flags = []
         while args and args[0].startswith('-'):
             flag, args = args[0], args[1:]
@@ -987,8 +1020,10 @@ def validate_personal_action(cwd: Path, operation: str, argv: list[str], *,
     validate_action_form(operation, argv, literal_marked=literal_marked)
     if operation not in PERSONAL_PUBLICATION_OPERATIONS:
         raise PublicationError('operation is unavailable in personal publication mode', reason_code='ASSURANCE_MODE_BLOCKED')
-    root = Path(git(cwd, 'rev-parse', '--show-toplevel')).resolve()
-    base = _personal_base(root, operation, argv)
+    invocation_cwd = Path(cwd).resolve()
+    target_cwd, normalized_argv = resolve_git_push_target(invocation_cwd, argv) if operation == 'git_push' else (invocation_cwd, argv)
+    root = Path(git(target_cwd, 'rev-parse', '--show-toplevel')).resolve()
+    base = _personal_base(root, operation, normalized_argv)
     from check_secret_leakage import DEFAULT_POLICY, load_policy, scan_candidate
     try:
         policy, policy_hash = load_policy(DEFAULT_POLICY)
@@ -1004,7 +1039,11 @@ def validate_personal_action(cwd: Path, operation: str, argv: list[str], *,
         raise PublicationError('mandatory candidate secret-scan policy is invalid',
             safe['reason_code'], phase=safe['phase'],
             context={'error_class': safe['error_class'], 'component': safe['component']}) from exc
-    validated_scope = action(root, operation, argv, base, personal=True, literal_marked=literal_marked)
+    validated_scope = action(root, operation, normalized_argv, base, personal=True, literal_marked=literal_marked)
+    if argv != normalized_argv:
+        validated_scope['argv'] = argv
+        validated_scope['normalized_argv'] = normalized_argv
+        validated_scope['target_worktree_id'] = identity(root)['worktree_id']
     if require_scan_evidence:
         try:
             from publication_scan_evidence import valid as scan_evidence_valid

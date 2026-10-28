@@ -309,6 +309,14 @@ class PlanningTest(unittest.TestCase):
         self.assertEqual(shorthand['candidate']['candidate_sha'], self.head)
         self.assertEqual(shorthand['candidate']['target_ref'], 'refs/heads/codex/plan30')
 
+    def test_diagnose_git_c_push_uses_the_explicit_target_worktree(self):
+        command = f'git -C {self.repo} push origin {self.head}:refs/heads/codex/plan30'
+        result = planning.diagnose(self.root, command)
+        self.assertEqual(result['status'], 'VALIDATED', result)
+        self.assertFalse(result['authorized'])
+        self.assertEqual(result['candidate']['candidate_sha'], self.head)
+        self.assertEqual(result['candidate']['target_ref'], 'refs/heads/codex/plan30')
+
 
     def test_push_target_must_match_current_engineering_branch(self):
         command = 'git push origin ' + self.head + ':refs/heads/codex/another-branch'

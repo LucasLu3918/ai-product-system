@@ -73,6 +73,8 @@ aips mcp inspect
 
 ## Runtime integration
 
+The runtime resolves literal `git -C <path> push` against the command invocation cwd and validates the explicit target repository; it does not silently fall back to another checkout.
+
 When an installed runtime sees `git push -u/--set-upstream origin <current-branch>`, publication validation binds it to the selected worktree’s observed full HEAD SHA and full branch ref; install state does not grant publication authority.
 
 Installing or updating the CLI does not impose a clean-worktree requirement on native Git publication. Runtime adapter enablement and publication policy remain separate; exact candidate and GitHub checks still apply.

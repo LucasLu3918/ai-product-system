@@ -431,6 +431,8 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 
 ## Security 與 Governance
 
+A literal `git -C <path> push` binds candidate identity and scanning to the explicit target worktree, even when the invocation cwd differs; invalid or dynamic paths fail before candidate inspection.
+
 For native Git publication, `-u` / `--set-upstream` may name only the selected worktree’s current branch; AIPS binds that shorthand to its observed full HEAD SHA and full ref before the existing scan and authorization checks.
 
 The Qwen Edit Plus mapping does not add node classes, endpoints, or authority: it remains within the reviewed core-node policy and verifies staged reference bytes before the single ComfyUI submission.

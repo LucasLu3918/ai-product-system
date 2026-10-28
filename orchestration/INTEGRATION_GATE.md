@@ -301,6 +301,8 @@ Versioned review matrices may preserve history, but CI consumes only the canonic
 Parallel Runtime Port Isolation does not change Integration Gate authority or candidate semantics. Runtime port lifecycle evidence is executed by repository validation for the exact candidate, while Scheduler-focused validation continues to check deterministic Task Graph metadata. A port lease is ephemeral execution coordination evidence and is not included as a merge/release authorization token.
 ## Content Safety Gate
 
+When native Git uses `-C`, the explicit path selects the candidate worktree and the Integration Gate scans that exact candidate; an unresolved target is a blocker.
+
 The native Git parser accepts upstream shorthand only for the current branch and resolves it to the immutable observed HEAD SHA/full ref. This convenience does not change the Integration Gate’s complete candidate scan or publication authorization requirements.
 
 The exact-candidate scanner inspects static AVIF EXIF/XMP metadata under the same 8 MiB media cap and a 1 MiB metadata cap; malformed or animated AVIF fails closed, and image payload bytes are not decoded as text.

@@ -380,15 +380,36 @@ class PublicationTest(unittest.TestCase):
         with self.assertRaisesRegex(auth.PublicationError, 'secret scan blocked'):
             auth.validate_personal_action(self.repo, 'git_push', command)
 
-    def test_unsupported_command_form_is_rejected_before_candidate_or_secret_scan(self):
-        command = ['git', '-C', str(self.repo), 'push', 'origin',
-                   self.head + ':refs/heads/codex/test']
-        with patch('publication_authority.git', side_effect=AssertionError('candidate inspected')), \
-                patch('check_secret_leakage.scan_candidate', side_effect=AssertionError('scanner called')) as scan, \
-                self.assertRaises(auth.PublicationError) as caught:
-            auth.validate_personal_action(self.repo, 'git_push', command)
-        self.assertEqual(caught.exception.reason_code, 'COMMAND_FORM_UNSUPPORTED')
-        scan.assert_not_called()
+    def test_git_c_push_binds_explicit_target_worktree(self):
+        self.run_git(self.repo, 'switch', '-c', 'codex/git-c-target')
+        head = self.run_git(self.repo, 'rev-parse', 'HEAD')
+        command = ['git', '-C', 'repo', 'push', 'origin',
+                   head + ':refs/heads/codex/git-c-target']
+        observed = auth.validate_personal_action(self.path, 'git_push', command)
+        self.assertEqual(observed['candidate_commit'], head)
+        self.assertEqual(observed['target_ref'], 'refs/heads/codex/git-c-target')
+        self.assertEqual(observed['target_worktree_id'], auth.identity(self.repo)['worktree_id'])
+        binding = guard._hook_binding(
+            self.path, 'git -C repo push origin ' + head + ':refs/heads/codex/git-c-target', 'personal')
+        self.assertEqual(binding['candidate_sha'], head)
+        self.assertEqual(binding['target_ref'], 'refs/heads/codex/git-c-target')
+        self.assertEqual(binding['worktree_id'], observed['target_worktree_id'])
+
+    def test_git_c_invalid_or_dynamic_path_fails_before_candidate_or_secret_scan(self):
+        for command in [
+            ['git', '-C', 'missing-repository', 'push', 'origin',
+             self.head + ':refs/heads/codex/test'],
+            ['git', '-C', '\0shell-expansion:$TARGET', 'push', 'origin',
+             self.head + ':refs/heads/codex/test'],
+        ]:
+            with self.subTest(command=command), \
+                    patch('publication_authority.git', side_effect=AssertionError('candidate inspected')), \
+                    patch('check_secret_leakage.scan_candidate', side_effect=AssertionError('scanner called')) as scan, \
+                    self.assertRaises(auth.PublicationError) as caught:
+                auth.validate_personal_action(self.path, 'git_push', command, literal_marked=True)
+            self.assertIn(caught.exception.reason_code,
+                          {'CWD_MISMATCH', 'COMMAND_FORM_UNSUPPORTED', 'PUBLICATION_ARGUMENT_DYNAMIC'})
+            scan.assert_not_called()
 
     def test_secret_scanner_failure_has_stable_redacted_publication_diagnostic(self):
         raw = 'private token https://secret.invalid/value'

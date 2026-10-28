@@ -400,6 +400,8 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 
 ## Change-class handoff to Integration Gate
 
+A literal `git -C <path> push` must hand off the resolved target worktree so candidate and scan evidence cannot be borrowed from invocation cwd.
+
 For native Git pushes, the explicit upstream branch shorthand is accepted only for the current checked-out branch and is bound to the observed full HEAD SHA/ref; the Integration Gate still performs its complete candidate scan.
 
 When local publication preflight fails in JSON mode, use its stable redacted reason to repair and re-observe; the diagnostic itself grants neither retry nor merge authority.
