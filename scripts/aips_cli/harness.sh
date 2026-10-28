@@ -202,6 +202,15 @@ uninstall_gemini_adapter() {
 }
 
 harness_uninstall() {
+  if [ ! -e "$HARNESS_HOME" ] && [ ! -L "$HARNESS_HOME" ]; then
+    say "No AIPS Harness state found; runtime adapter cleanup was skipped."
+    return 0
+  fi
+  if [ -L "$HARNESS_HOME" ] || [ -L "$OWNERSHIP_MANIFEST" ] || [ ! -f "$OWNERSHIP_MANIFEST" ]; then
+    warn "Harness ownership is unclear; preserved all state. Inspect it and run: aips harness doctor"
+    return 1
+  fi
+
   local failed="false" py
   py="$(python_bin)"
 

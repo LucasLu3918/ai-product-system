@@ -61,14 +61,14 @@ def system_fixture(base: Path, name: str) -> tuple[Path, Path]:
     configure_git(system)
     git(system, "add", "-A")
     git(system, "commit", "-qm", "fixture baseline")
-    run(["git", "clone", "--bare", str(system), str(remote)], check=True)
+    run(["git", "clone", "--no-local", "--bare", str(system), str(remote)], check=True)
     git(system, "remote", "add", "origin", str(remote))
     return system, remote
 
 
 def remote_commit(remote: Path, base: Path, name: str, mutate) -> str:
     updater = base / name
-    run(["git", "clone", "-q", str(remote), str(updater)], check=True)
+    run(["git", "clone", "--no-local", "-q", str(remote), str(updater)], check=True)
     configure_git(updater)
     mutate(updater)
     git(updater, "add", "-A")
@@ -117,7 +117,7 @@ def init_product(base: Path) -> tuple[Path, Path, str, str]:
     git(project, "add", "app.txt", "nested/app.txt")
     git(project, "commit", "-qm", "product baseline")
     baseline = git(project, "rev-parse", "HEAD").stdout.strip()
-    run(["git", "clone", "--bare", str(project), str(remote)], check=True)
+    run(["git", "clone", "--no-local", "--bare", str(project), str(remote)], check=True)
     git(project, "remote", "add", "origin", str(remote))
 
     def mutate(updater: Path) -> None:
@@ -650,7 +650,87 @@ def shell_integration_lifecycle() -> None:
         require(shell_check.returncode == 0, "Managed profile block must support spaces in AIPS_BIN_HOME")
 
 
+
+def uninstall_without_harness_preserves_host_settings() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        base = Path(tmp)
+        system = base / "uninstall-no-harness-system"
+        shutil.copytree(
+            ROOT, system,
+            ignore=shutil.ignore_patterns(".git", ".venv", ".venv.*", "node_modules", "__pycache__", "*.pyc"),
+        )
+        make_fake_venv(system)
+        env = make_env(base / "runtime", base / "validation.log")
+        settings = Path(env["HOME"]) / ".claude" / "settings.json"
+        settings.parent.mkdir(parents=True)
+        original = b'{ "user-setting" : true, "hooks": {} }\n'
+        settings.write_bytes(original)
+        harness = Path(env["XDG_CONFIG_HOME"]) / "aips" / "harness"
+        require(not harness.exists(), "fixture must not have harness state")
+        result = cli(system, ["uninstall"], env)
+        require(result.returncode == 0, f"uninstall without harness failed: {result.stdout} {result.stderr}")
+        require(settings.read_bytes() == original, "uninstall without harness changed unowned host settings")
+        require(not harness.exists(), "uninstall must not create harness state")
+        direct = cli(system, ["harness", "uninstall"], env)
+        require(direct.returncode == 0, f"direct uninstall without harness failed: {direct.stderr}")
+        require(settings.read_bytes() == original, "direct uninstall without harness changed host settings")
+
+
+
+def uninstall_with_partial_harness_preserves_user_data() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        base = Path(tmp)
+        system = base / "uninstall-partial-harness-system"
+        shutil.copytree(
+            ROOT, system,
+            ignore=shutil.ignore_patterns(".git", ".venv", ".venv.*", "node_modules", "__pycache__", "*.pyc"),
+        )
+        make_fake_venv(system)
+        env = make_env(base / "runtime", base / "validation.log")
+        harness = Path(env["XDG_CONFIG_HOME"]) / "aips" / "harness"
+        harness.mkdir(parents=True)
+        note = harness / "user-note.txt"
+        note.write_text("preserve user data\n", encoding="utf-8")
+        settings = Path(env["HOME"]) / ".claude" / "settings.json"
+        settings.parent.mkdir(parents=True)
+        original = b'{ "user-setting" : true, "hooks": {} }\n'
+        settings.write_bytes(original)
+        result = cli(system, ["uninstall"], env)
+        require(result.returncode != 0, "ambiguous harness ownership must stop uninstall")
+        require(note.read_text(encoding="utf-8") == "preserve user data\n", "partial harness state was removed")
+        require(settings.read_bytes() == original, "ambiguous harness uninstall changed host settings")
+        require("harness doctor" in result.stderr, "partial state must report recovery guidance")
+        direct = cli(system, ["harness", "uninstall"], env)
+        require(direct.returncode != 0, "direct uninstall must refuse ambiguous harness ownership")
+        require(note.exists() and settings.read_bytes() == original, "direct uninstall changed ambiguous state")
+
+        outside = base / "unowned-manifest.yaml"
+        outside.write_text("user-owned manifest\n", encoding="utf-8")
+        (harness / "installation.yaml").symlink_to(outside)
+        linked = cli(system, ["uninstall"], env)
+        require(linked.returncode != 0, "symlinked ownership must stop uninstall")
+        require(outside.read_text(encoding="utf-8") == "user-owned manifest\n", "symlink target was modified")
+        require(note.exists() and settings.read_bytes() == original, "symlinked ownership must preserve state")
+        direct_linked = cli(system, ["harness", "uninstall"], env)
+        require(direct_linked.returncode != 0 and note.exists(), "direct uninstall must preserve symlinked ownership state")
+
+        link_env = make_env(base / "link-runtime", base / "link-validation.log")
+        config = Path(link_env["XDG_CONFIG_HOME"]) / "aips"
+        config.mkdir(parents=True)
+        target = base / "unowned-directory"
+        target.mkdir()
+        (target / "note.txt").write_text("preserve\n", encoding="utf-8")
+        (config / "harness").symlink_to(target, target_is_directory=True)
+        linked_dir = cli(system, ["uninstall"], link_env)
+        require(linked_dir.returncode != 0, "symlinked harness directory must stop uninstall")
+        require((target / "note.txt").read_text(encoding="utf-8") == "preserve\n", "symlinked directory target was modified")
+        direct_dir = cli(system, ["harness", "uninstall"], link_env)
+        require(direct_dir.returncode != 0 and (target / "note.txt").exists(), "direct uninstall must preserve symlinked directory")
+
+
 def main() -> int:
+    uninstall_without_harness_preserves_host_settings()
+    uninstall_with_partial_harness_preserves_user_data()
     preflight_and_project_lifecycle()
     divergence_gate()
     stable_update_without_tag_gate()

@@ -143,7 +143,7 @@ aips system preflight /path/to/project
 aips uninstall
 ~~~
 
-解除安裝會移除 AIPS 管理的 Runtime 整合與 CLI 連結。Shell `PATH` 區塊只會在安全條件成立時移除；若設定遭使用者修改或安裝目錄還有其他程式，AIPS 會保留區塊並提示處理方式。
+解除安裝會移除 AIPS 管理的 Runtime 整合與 CLI 連結。若沒有 Harness 狀態，解除安裝會略過 Runtime adapter 設定的清理。若 Harness 狀態存在但缺少一般的所有權紀錄，或狀態路徑為符號連結，解除安裝會停止並保留資料；請先檢視狀態並執行 `aips harness doctor`。Shell `PATH` 區塊只會在安全條件成立時移除；若設定遭使用者修改或安裝目錄還有其他程式，AIPS 會保留區塊並提示處理方式。
 
 下列選項用於明確擴大清除範圍：
 

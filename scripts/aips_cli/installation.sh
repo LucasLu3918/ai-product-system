@@ -97,7 +97,6 @@ uninstall_cli() {
   fi
 
   rm -f "$CONFIG_HOME/system-dir"
-  rm -rf "$CONFIG_HOME/harness"
   if [ "$remove_cache" = "true" ]; then
     rm -rf "$CONFIG_HOME/projects"
     say "Removed External Project Intelligence cache."

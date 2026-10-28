@@ -1,46 +1,175 @@
 version: 1
 change:
-  id: setup-node-7.1.0-workflow-pin-20261028
-  summary: Update the repository validation workflow to the verified immutable actions/setup-node v7.1.0 commit while retaining Node 24 and npm cache settings.
+  id: zero-coupling-optional-governance
+  summary: Repository-independent external state, optional governance, native Git
+    compatibility and safe migration.
   boundary:
-    - GitHub Actions setup-node provenance and validation-workflow contract
+  - external state and repository/worktree identity
+  - installation, modes and runtime adapter ownership
+  - native Git and publication authority
+  - state migration, recovery and durable knowledge
+  - CLI, documentation, CI and compatibility
 review_evidence:
   required: false
-candidate:
-  base_sha: e1a84015d3227b07c6e34ba676642e11f129ab6b
-  changed_files_hash: 2cf0f5f5a943d8adb90e7d473b94ed6505e6bfeaeb4c67c1970e35de51b180f5
 matrix:
-  - boundary: GitHub Actions setup-node provenance and validation-workflow contract
-    reason: The workflow dependency pin changes, but application runtime behavior and project source APIs do not.
-    checks:
-      static_lint:
-        applicable: true
-        evidence: Exact-candidate Integration Gate and repository CI validate the workflow syntax and immutable action pin.
-      unit:
-        applicable: false
-        na_reason: No application logic or unit-level behavior changes.
-      integration:
-        applicable: true
-        evidence: Exact-candidate GitHub Actions repository check executes the updated workflow on the candidate.
-      contract:
-        applicable: true
-        evidence: The workflow retains Node 24, npm caching and package-lock cache path; setup-node resolves to the verified v7.1.0 upstream commit.
-      e2e:
-        applicable: false
-        na_reason: No product runtime behavior changes; workflow execution is covered by the candidate CI run.
-      security:
-        applicable: true
-        evidence: Mandatory exact-candidate secret scan plus immutable SHA pin and upstream commit provenance verification.
-      migration_recovery:
-        applicable: false
-        na_reason: No persisted data, schema or user configuration changes.
-      cli_harness:
-        applicable: false
-        na_reason: No CLI or Harness behavior changes.
-      docs_schema:
-        applicable: true
-        evidence: AIPS docs-impact reports the exact-candidate documentation closure and placement complete across all 13 changed paths.
-scope_recomputed_after_expansion: true
-actual_diff_reconciled: true
-blockers: []
-status: READY
+- boundary: external state and repository/worktree identity
+  reason: State persistence and cross-worktree isolation must preserve data and authorization
+    separation.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: null
+    unit:
+      applicable: true
+      evidence: null
+    integration:
+      applicable: true
+      evidence: null
+    contract:
+      applicable: true
+      evidence: null
+    e2e:
+      applicable: true
+      evidence: null
+    security:
+      applicable: true
+      evidence: null
+    migration_recovery:
+      applicable: true
+      evidence: null
+    cli_harness:
+      applicable: true
+      evidence: null
+    docs_schema:
+      applicable: true
+      evidence: null
+- boundary: installation, modes and runtime adapter ownership
+  reason: Default behavior and user-owned adapter state must remain safe and reversible.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: null
+    unit:
+      applicable: true
+      evidence: null
+    integration:
+      applicable: true
+      evidence: null
+    contract:
+      applicable: true
+      evidence: null
+    e2e:
+      applicable: true
+      evidence: null
+    security:
+      applicable: true
+      evidence: null
+    migration_recovery:
+      applicable: true
+      evidence: null
+    cli_harness:
+      applicable: true
+      evidence: null
+    docs_schema:
+      applicable: true
+      evidence: null
+- boundary: native Git and publication authority
+  reason: Operation identity, exact candidate, safety scans and platform protections
+    must remain valid.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: null
+    unit:
+      applicable: true
+      evidence: null
+    integration:
+      applicable: true
+      evidence: null
+    contract:
+      applicable: true
+      evidence: null
+    e2e:
+      applicable: true
+      evidence: null
+    security:
+      applicable: true
+      evidence: null
+    migration_recovery:
+      applicable: true
+      evidence: null
+    cli_harness:
+      applicable: true
+      evidence: null
+    docs_schema:
+      applicable: true
+      evidence: null
+- boundary: state migration, recovery and durable knowledge
+  reason: Tracked and untracked user data need reviewed destinations, backup and recoverability.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: null
+    unit:
+      applicable: true
+      evidence: null
+    integration:
+      applicable: true
+      evidence: null
+    contract:
+      applicable: true
+      evidence: null
+    e2e:
+      applicable: true
+      evidence: null
+    security:
+      applicable: true
+      evidence: null
+    migration_recovery:
+      applicable: true
+      evidence: null
+    cli_harness:
+      applicable: true
+      evidence: null
+    docs_schema:
+      applicable: true
+      evidence: null
+- boundary: CLI, documentation, CI and compatibility
+  reason: Users without AIPS and existing users must retain clear supported workflows.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: null
+    unit:
+      applicable: true
+      evidence: null
+    integration:
+      applicable: true
+      evidence: null
+    contract:
+      applicable: true
+      evidence: null
+    e2e:
+      applicable: true
+      evidence: null
+    security:
+      applicable: true
+      evidence: null
+    migration_recovery:
+      applicable: true
+      evidence: null
+    cli_harness:
+      applicable: true
+      evidence: null
+    docs_schema:
+      applicable: true
+      evidence: null
+scope_recomputed_after_expansion: false
+actual_diff_reconciled: false
+blockers:
+- Planned boundaries and acceptance cases are incomplete; evidence must be attached
+  to exact candidate.
+- Full repository validation requires pinned dependencies and platform-compatible
+  execution.
+- Publication and installer caller coverage remains partially mapped.
+status: DRAFT

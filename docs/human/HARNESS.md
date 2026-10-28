@@ -120,7 +120,7 @@ OpenCode acceptance reports are bound to a host version, platform and AIPS/plugi
 
 安裝時自動偵測 `opencode`，在設定根目錄建立受管理 `AGENTS.md`、49 個 canonical Skills 投影、三個原生 Commands；只在確認 OpenCode V2 後才安裝 `plugins/aips-opencode.ts`。description 由 Skill frontmatter 維護；相對 canonical 參照轉為已安裝 AIPS 路徑，其他資源依 canonical source directory 解析。
 
-`aips harness install` 更新未遭使用者修改的投影；`aips harness doctor` 與 `python scripts/opencode_skill_projection.py check` 檢查 drift。重名、修改過的檔案、symlink、錯誤 manifest 均保留並回報衝突；解除安裝只移除已記錄且未改動的資源，失敗保留 ownership 供重試。使用者 JSON/JSONC、模型設定及專案內容保留。
+`aips harness uninstall` 在沒有 Harness 狀態時略過 Runtime adapter 清理；狀態存在但缺少一般所有權紀錄或路徑是符號連結時，會停止並保留資料。`aips harness install` 更新未遭使用者修改的投影；`aips harness doctor` 與 `python scripts/opencode_skill_projection.py check` 檢查 drift。重名、修改過的檔案、symlink、錯誤 manifest 均保留並回報衝突；解除安裝只移除已記錄且未改動的資源，失敗保留 ownership 供重試。使用者 JSON/JSONC、模型設定及專案內容保留。
 
 #### 在 OpenCode 以外載入 AIPS Skills
 
