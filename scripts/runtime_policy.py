@@ -149,6 +149,12 @@ def validate_policy(policy: dict[str, Any]) -> None:
     if not isinstance(rules, list):
         raise PolicyError("rules must be a list")
     seen: set[str] = set()
+    condition_keys = {
+        "destination_trust", "destination_host", "destination_port",
+        "destination_method", "destination_path", "effective_sal_gte",
+        "effective_sal_lte", "data_class_any", "protected_asset_any",
+        "contains_secret",
+    }
     for rule in rules:
         if not isinstance(rule, dict):
             raise PolicyError("each policy rule must be a mapping")
@@ -159,14 +165,63 @@ def validate_policy(policy: dict[str, Any]) -> None:
             raise PolicyError(f"rule {rule['id']}: unsupported effect")
         if not isinstance(rule.get("priority", 0), int):
             raise PolicyError(f"rule {rule['id']}: priority must be an integer")
-        if not isinstance(rule.get("when") or {}, dict):
+        condition = rule.get("when") or {}
+        if not isinstance(condition, dict):
             raise PolicyError(f"rule {rule['id']}: when must be a mapping")
+        unknown = set(condition) - condition_keys
+        if unknown:
+            raise PolicyError(f"rule {rule['id']}: unsupported condition key(s): {', '.join(sorted(unknown))}")
+        for key in ("destination_host", "destination_path"):
+            value = condition.get(key)
+            if value is not None and (not isinstance(value, str) or not value.strip() or len(value) > 2048
+                                      or "\r" in value or "\n" in value):
+                raise PolicyError(f"rule {rule['id']}: {key} must be a bounded non-empty string")
+        if condition.get("destination_host") is not None and "/" in condition["destination_host"]:
+            raise PolicyError(f"rule {rule['id']}: destination_host must be a hostname or IP address")
+        port = condition.get("destination_port")
+        if port is not None and (not isinstance(port, int) or isinstance(port, bool) or not 1 <= port <= 65535):
+            raise PolicyError(f"rule {rule['id']}: destination_port must be an integer from 1 to 65535")
+        method = condition.get("destination_method")
+        if method is not None and (not isinstance(method, str) or not re.fullmatch(r"[A-Z]+", method)):
+            raise PolicyError(f"rule {rule['id']}: destination_method must be an uppercase HTTP method")
+        trust = condition.get("destination_trust")
+        if trust is not None and (not isinstance(trust, list)
+                                  or any(item not in {"internal", "approved_external", "external", "unknown"}
+                                         for item in trust)):
+            raise PolicyError(f"rule {rule['id']}: destination_trust must be a list of supported trust levels")
+        for key in ("effective_sal_gte", "effective_sal_lte"):
+            value = condition.get(key)
+            if value is not None and (not isinstance(value, int) or isinstance(value, bool) or not 0 <= value <= 4):
+                raise PolicyError(f"rule {rule['id']}: {key} must be an integer from 0 to 4")
+        for key in ("data_class_any", "protected_asset_any"):
+            value = condition.get(key)
+            if value is not None and (not isinstance(value, list)
+                                      or any(not isinstance(item, str) or not item for item in value)):
+                raise PolicyError(f"rule {rule['id']}: {key} must be a list of non-empty strings")
+        if "data_class_any" in condition and any(item not in DATA_CLASSES for item in condition["data_class_any"]):
+            raise PolicyError(f"rule {rule['id']}: data_class_any contains an unsupported data class")
+        if "contains_secret" in condition and not isinstance(condition["contains_secret"], bool):
+            raise PolicyError(f"rule {rule['id']}: contains_secret must be boolean")
 
 
 def _matches(action: dict[str, Any], condition: dict[str, Any], contains_secret: bool) -> bool:
-    trust = action["destination"].get("trust")
+    destination = action["destination"]
+    trust = destination.get("trust")
     if "destination_trust" in condition and trust not in condition["destination_trust"]:
         return False
+    exact_destination = {
+        "destination_host": (destination.get("host") or "").lower(),
+        "destination_port": destination.get("port"),
+        "destination_method": (destination.get("method") or "").upper(),
+        "destination_path": destination.get("path"),
+    }
+    for key, observed in exact_destination.items():
+        if key in condition:
+            expected = condition[key]
+            if key == "destination_host":
+                expected = expected.lower()
+            if observed != expected:
+                return False
     minimum_sal = condition.get("effective_sal_gte")
     if minimum_sal is not None:
         sal = action["context"].get("effective_sal")

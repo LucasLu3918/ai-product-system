@@ -12,6 +12,8 @@ The orchestrator coordinates work. It is not a super-role and cannot override go
 
 Installing the AIPS CLI does not register a Runtime adapter. Harness enablement, refresh, and disablement are explicit user-directed CLI lifecycle actions; the orchestrator must not trigger them as an incidental task-preflight or resume side effect.
 
+For ComfyUI actions, evaluate the declared resource and operation through Resource Authorization, then apply Runtime Policy destination conditions. Scheduling or a valid profile alone is not runtime authorization.
+
 Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
 
 

@@ -52,6 +52,8 @@ Runtime decisions expose `status`, `phase`, `reason_code`, `source`, `retryable`
 
 Runtime policy decisions consume the explicit action envelope and verified native enforcement capability; project mode is advisory input and cannot override global policy.
 
+Policy rule conditions may bind `destination_host`, `destination_port`, `destination_method`, and `destination_path`; all supplied conditions are conjunctive exact matches. Hosts are case-insensitive, methods are compared case-insensitively and configured in uppercase, while ports and paths match exactly. Unknown condition keys or invalid condition values fail policy validation instead of being ignored. A project-local policy can therefore allow a single observed endpoint while retaining `default_effect: DENY`; Resource Authorization remains an independent preceding check.
+
 ComfyUI workflow schema and final serialized-payload validation are application-level checks rather than native tool authorization. They do not bypass Runtime Action policy or OpenCode prompt admission; only the separately requested Creative execution action can submit to the configured loopback service. Passing the fixed FLUX 3 Klein `TextGenerate` check does not establish MPS inference.
 
 AVIF metadata findings remain in the content-safety scanner and are not Runtime Action Envelope decisions or execution permissions.

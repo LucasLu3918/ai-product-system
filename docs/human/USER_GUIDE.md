@@ -449,6 +449,8 @@ Installation entrypoint workflow 保留既有 pull request 路徑與平台檢查
 
 平行工作透過獨立 worktree 與 runtime resource 配額隔離；隔離狀態可觀測，但不會擴大專案或 Host 權限。
 
+ComfyUI 操作須同時通過 Resource Authorization 與 Runtime Policy。Runtime Policy 可將目的地限制到精確 host、port、method 與 path；profile 缺漏或目的地不符時，應先修正受信任設定與授權範圍，不要重試被拒絕的請求。
+
 Qwen Edit Plus references remain project-staged, hash-verified, and submitted only through the existing local loopback ComfyUI boundary.
 
 FLUX 3 Klein 仍使用固定本機 ComfyUI workflow；`TextGenerate` 的 live schema 與最終序列化欄位會在 loopback `/prompt` 前核對，MPS 推論狀態獨立保留為未驗證。

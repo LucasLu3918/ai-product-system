@@ -16,6 +16,8 @@ It does not infer intent, discover permissions from prose, or grant protected pu
 
 Publication resource binding resolves literal `git -C <path>` from invocation cwd and binds authorization checks to the resulting target worktree and candidate; dynamic or missing paths are denied.
 
+ComfyUI permission is scoped by the explicit Resource Authorization profile and remains separate from Runtime Policy. Policy rules may further constrain the exact destination host, port, method, and path; an endpoint policy allow cannot broaden the profile.
+
 ComfyUI creative reference bindings remain constrained by the existing local-project resource scope. Qwen Image Edit Plus maps no more than three contiguous staged references and does not widen the authorization grant.
 
 Publication scan evidence is not a Resource Authorization grant: it describes one successful scanner result and cannot authorize a Git operation or expand a declared resource scope.

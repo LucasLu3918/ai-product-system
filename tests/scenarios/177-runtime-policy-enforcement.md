@@ -19,6 +19,7 @@ Verify deterministic action authorization, truthful native-hook enforcement, exa
 - A changed destination, arguments/profile digest, policy digest, data label, Change Boundary, or expired approval is `BLOCKED` as stale.
 - Codex remains `ADVISORY`; a policy decision is not represented as mechanical enforcement there.
 - Semantic `DENY`/`ESCALATE` may tighten an otherwise allowed result. Semantic `ALLOW`, timeout, or provider error cannot override deterministic `DENY` or produce an unverified `ALLOW`.
+- A rule conditioned on exact destination host, port, method, and path allows only the full matching tuple; changing any one field denies. Unknown condition keys and invalid values fail policy validation.
 - Audit records contain action/policy digests and outcome metadata only; raw action arguments and secrets are absent.
 
 ## Limitations

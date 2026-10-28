@@ -1,79 +1,29 @@
 version: 1
 candidate:
-  base_sha: ac28991334cb8f53fce864973ad1142b0257979f
-  changed_files_hash: 8ff65a92f1f77da25fa11ec310465bb0e1adccc8e89a8b8451cd83796a40576d
+  base_sha: a46c65fe69d58f0b92662627f9360fa082caf05b
+  changed_files_hash: cbc473f6d36956425927e91eecc3e699cd1b2c8bf27b15719278dde76fc746b7
 change:
-  id: zero-coupling-optional-governance
-  summary: Repository-independent external state, optional governance, native Git compatibility and safe migration.
+  id: runtime-policy-exact-destination
+  summary: Match Runtime Policy destination conditions exactly and reject malformed conditions while preserving the independent Resource Authorization boundary.
   boundary:
-  - external state and repository/worktree identity
-  - installation, optional governance modes and runtime adapter ownership
-  - native Git, publication authority and security scanning
-  - state migration, recovery, backup and durable knowledge
-  - CLI, documentation, scenarios, CI and compatibility projections
+    - Runtime Policy destination condition validation and exact host, port, method, and path matching
+    - Claude and Gemini native hook decisions for policy allow and deny cases
+    - ComfyUI Resource Authorization separation and canonical documentation/conformance
 review_evidence:
   required: false
 matrix:
-- boundary: external state and repository/worktree identity
-  reason: External persistence, identity stability and cross-worktree isolation must preserve data and authorization separation.
-  checks:
-    static_lint: {applicable: true, evidence: "tests/validate_repository.py — validation.static_contracts and syntax_contracts PASS"}
-    unit: {applicable: true, evidence: "tests/evidence/identity_resume_isolation.py; tests/test_migration_state_inventory.py (13 tests); full repository Gate PASS"}
-    integration: {applicable: true, evidence: "tests/evidence/project_intelligence_lifecycle.py; tests/evidence/runtime_port_isolation_lifecycle.py; tests/evidence/telemetry_export_lifecycle.py"}
-    contract: {applicable: true, evidence: "tests/validation/runtime_contracts.py and full repository Gate PASS"}
-    e2e: {applicable: true, evidence: "tests/evidence/identity_resume_isolation.py; tests/evidence/layered_context_memory_lifecycle.py"}
-    security: {applicable: true, evidence: "tests/test_migration_state_inventory.py no-follow, permissions, hash-stability and external-backup checks; full repository Gate PASS"}
-    migration_recovery: {applicable: true, evidence: "tests/test_migration_state_inventory.py (13 tests); tests/evidence/project_knowledge_migration_lifecycle.py; 129-file external backup manifest verification"}
-    cli_harness: {applicable: true, evidence: "tests/evidence/identity_resume_isolation.py; tests/evidence/project_intelligence_lifecycle.py"}
-    docs_schema: {applicable: true, evidence: "documentation placement, audience, sync and scenario conformance checks PASS"}
-- boundary: installation, optional governance modes and runtime adapter ownership
-  reason: Default-off governance and user-owned adapter/project state must remain safe, optional and reversible.
-  checks:
-    static_lint: {applicable: true, evidence: "tests/validate_repository.py — static_contracts and project_governance_modes_contracts PASS"}
-    unit: {applicable: true, evidence: "tests/test_project_governance_modes.py (20 tests) PASS"}
-    integration: {applicable: true, evidence: "tests/evidence/install_preflight_lifecycle.py PASS; tests/evidence/project_intelligence_lifecycle.py PASS"}
-    contract: {applicable: true, evidence: "tests/validation/project_governance_modes_contracts.py; tests/validation/runtime_contracts.py PASS"}
-    e2e: {applicable: true, evidence: "tests/evidence/install_preflight_lifecycle.py PASS, including uninstall preservation of existing .ai data"}
-    security: {applicable: true, evidence: "tests/test_project_governance_modes.py; full repository static and runtime policy contracts PASS"}
-    migration_recovery: {applicable: true, evidence: "tests/evidence/install_preflight_lifecycle.py; tests/evidence/project_knowledge_migration_lifecycle.py PASS"}
-    cli_harness: {applicable: true, evidence: "tests/evidence/install_preflight_lifecycle.py; tests/evidence/identity_resume_isolation.py PASS"}
-    docs_schema: {applicable: true, evidence: "documentation placement, audience, sync and scenario conformance checks PASS"}
-- boundary: native Git, publication authority and security scanning
-  reason: Repository-independent operation identity, exact-candidate binding, safe scanning and native host permissions must remain valid.
-  checks:
-    static_lint: {applicable: true, evidence: "tests/validate_repository.py — publication and static contracts PASS"}
-    unit: {applicable: true, evidence: "tests/test_publication_authority.py; tests/test_publication_diagnostics.py; tests/test_publication_planning.py (110 tests) PASS"}
-    integration: {applicable: true, evidence: "tests/evidence/publish_preflight_lifecycle.py PASS; full repository Gate PASS"}
-    contract: {applicable: true, evidence: "publication authority, diagnostics and planning contract suites in full repository Gate PASS"}
-    e2e: {applicable: true, evidence: "tests/evidence/publish_preflight_lifecycle.py and full repository Gate PASS; exact-candidate Integration Gate is required before remote publication"}
-    security: {applicable: true, evidence: "full repository security/publication contracts PASS; exact-candidate final-tree and history scanner is required by the Integration Gate before remote publication"}
-    migration_recovery: {applicable: true, evidence: "tests/evidence/publish_preflight_lifecycle.py and publication authority recovery cases PASS"}
-    cli_harness: {applicable: true, evidence: "tests/evidence/publish_preflight_lifecycle.py; full repository CLI and Hook contracts PASS"}
-    docs_schema: {applicable: true, evidence: "documentation placement, audience, sync and scenario conformance checks PASS"}
-- boundary: state migration, recovery, backup and durable knowledge
-  reason: Tracked and ignored user data require verified destinations, an external backup, and explicit recovery behavior.
-  checks:
-    static_lint: {applicable: true, evidence: "tests/validate_repository.py — static contracts PASS"}
-    unit: {applicable: true, evidence: "tests/test_migration_state_inventory.py (13 tests) PASS"}
-    integration: {applicable: true, evidence: "tests/evidence/project_knowledge_migration_lifecycle.py; tests/evidence/project_intelligence_lifecycle.py PASS"}
-    contract: {applicable: true, evidence: "tests/validation/runtime_contracts.py; migration CLI contract checks PASS"}
-    e2e: {applicable: true, evidence: "tests/evidence/project_knowledge_migration_lifecycle.py; install/uninstall preservation lifecycle PASS"}
-    security: {applicable: true, evidence: "external private backup, symlink refusal, SHA before/after and preserved local ignored data verified"}
-    migration_recovery: {applicable: true, evidence: "129 tracked review files preserved with SHA manifest; ignored .aips/.DS_Store preserved in 130-artifact external backup; recovery path unit-tested"}
-    cli_harness: {applicable: true, evidence: "migration inventory CLI dry-run/apply/recovery tests and project lifecycle PASS"}
-    docs_schema: {applicable: true, evidence: "migration manifest; documentation placement, audience, sync and scenario conformance checks PASS"}
-- boundary: CLI, documentation, scenarios, CI and compatibility projections
-  reason: Users without AIPS and existing users need supported native-Git workflows and generated/canonical documentation alignment.
-  checks:
-    static_lint: {applicable: true, evidence: "tests/validate_repository.py — static, registry, workflow and documentation contracts PASS"}
-    unit: {applicable: true, evidence: "tests/test_project_governance_modes.py; tests/test_migration_state_inventory.py; full repository Gate PASS"}
-    integration: {applicable: true, evidence: "tests/evidence/install_preflight_lifecycle.py; tests/evidence/project_intelligence_lifecycle.py PASS"}
-    contract: {applicable: true, evidence: "275 scenario conformance; capability registry; documentation placement, audience and sync checks PASS"}
-    e2e: {applicable: true, evidence: "tests/evidence/install_preflight_lifecycle.py and complete repository Gate PASS"}
-    security: {applicable: true, evidence: "full repository security, publication and runtime policy contracts PASS"}
-    migration_recovery: {applicable: true, evidence: "tests/evidence/project_knowledge_migration_lifecycle.py and migration manifest verification PASS"}
-    cli_harness: {applicable: true, evidence: "source and installed CLI lifecycle, Harness, publication and project identity evidence PASS"}
-    docs_schema: {applicable: true, evidence: "documentation sync, audience, placement, static contracts and 275 scenario conformance PASS"}
+  - boundary: Runtime Policy exact destination matching and fail-closed validation
+    reason: A policy allow must apply only to the supplied exact endpoint conditions; malformed conditions must not be ignored or broaden access.
+    checks:
+      static_lint: {applicable: true, evidence: "Exact-candidate Integration Gate ruff-critical and ruff-debt-ratchet checks"}
+      unit: {applicable: true, evidence: "tests/test_runtime_policy.py"}
+      integration: {applicable: true, evidence: "tests/evidence/runtime_policy_lifecycle.py — Claude/Gemini hook lifecycle"}
+      contract: {applicable: true, evidence: "tests/validation/runtime_policy_contracts.py and repository validator"}
+      e2e: {applicable: true, evidence: "tests/evidence/runtime_policy_lifecycle.py — synthetic hook requests verify exact endpoint allow and mismatch denial"}
+      security: {applicable: true, evidence: "Runtime Policy unit, contract, native Hook lifecycle and mandatory candidate secret scan in exact-candidate Integration Gate"}
+      migration_recovery: {applicable: false, na_reason: "No persisted state, schema migration, or recovery behavior changes."}
+      cli_harness: {applicable: true, evidence: "tests/evidence/runtime_policy_lifecycle.py — managed Claude and Gemini native hook behavior"}
+      docs_schema: {applicable: true, evidence: "Publish preview documentation closure/placement plus tests/validate_repository.py and scenario conformance checks"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []

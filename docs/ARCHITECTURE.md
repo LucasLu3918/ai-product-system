@@ -6,6 +6,8 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 Native publication validates an immutable committed candidate SHA/ref. Dirty working-tree state is reported separately and is not pushed with that commit.
 
+ComfyUI actions pass both the independent Resource Authorization profile and Runtime Policy. Runtime Policy destination conditions can constrain the exact host, port, method, and path; an allow for one endpoint does not authorize other destinations.
+
 CLI installation does not enable Runtime adapters. An explicit `aips harness install` registers them; update and preflight refresh only when existing enablement records are verifiable. Unknown records are preserved and reported. Install, refresh and disable use a shared per-user cross-process lock. Per-repository modes are separately opt-in and stored in user-level configuration.
 
 An absent project mode record resolves to `off`. `aips project mode set` writes only under `$XDG_CONFIG_HOME/aips/projects/` (default `~/.config/aips/projects/`), keyed by the opaque repository identity. `observe` and `assist` provide advisory context without changing host permission; `enforce` requires an explicit allowlisted action scope. Hard content safety scans still run in every mode and cannot be downgraded to advisory. `off` skips only optional project-level governance. Runtime policy, protected AIPS installation paths, global administrator high-assurance publication authority, and GitHub branch protections remain independent.

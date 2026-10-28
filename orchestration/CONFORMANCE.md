@@ -1187,6 +1187,8 @@ Scenario 260 verifies the read-only `aips publish doctor`, Required Checks class
 
 Resource profile validity remains separate from project governance mode and does not authorize endpoint access by itself.
 
+The Runtime Policy hook also matches every supplied destination host, port, method, and path condition exactly and denies invalid or unknown conditions; it does not grant Resource Authorization.
+
 Scenario 236 adds bounded Qwen Image Edit Plus per-port reference mapping while retaining the Scenario 262 fixed loopback and Resource Authorization boundary.
 
 FLUX 3 Klein lifecycle coverage checks live `TextGenerate` Dynamic Combo schema and final serialized payload preservation, blocks unsupported options before submission, and verifies bounded redacted node failure diagnostics. It does not establish MPS model execution.
