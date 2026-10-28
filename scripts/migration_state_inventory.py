@@ -64,12 +64,29 @@ def inventory(project: Path) -> dict:
     if root_result.returncode:
         raise ValueError('project is not an accessible Git worktree')
     root = Path(os.fsdecode(root_result.stdout[:-1]))
-    result = subprocess.run(['git', '-C', str(root), 'ls-files', '-z', '--', '.ai', '.aips'],
-                            capture_output=True, check=False)
-    if result.returncode:
-        raise ValueError('could not inspect tracked AIPS paths')
-    files = [inspect_path(root, os.fsdecode(raw)) for raw in result.stdout.split(b'\0') if raw]
-    return {'version': 1, 'scope': 'tracked working-tree paths', 'files': files}
+    entries: dict[str, str] = {}
+    categories = (
+        ('tracked', []),
+        ('untracked', ['--others', '--exclude-standard']),
+        ('ignored', ['--others', '--ignored', '--exclude-standard']),
+    )
+    for tracking, options in categories:
+        result = subprocess.run(['git', '-C', str(root), 'ls-files', '-z', *options, '--', '.ai', '.aips'],
+                                capture_output=True, check=False)
+        if result.returncode:
+            raise ValueError(f'could not inspect {tracking} AIPS paths')
+        for raw in result.stdout.split(b'\0'):
+            if raw:
+                entries.setdefault(os.fsdecode(raw), tracking)
+    files = []
+    for name, tracking in sorted(entries.items()):
+        row = inspect_path(root, name)
+        row['tracking'] = tracking
+        files.append(row)
+    return {'version': 1, 'scope': 'Git-listed AIPS working-tree paths',
+            'limitations': ['Empty directories and contents of nested repositories may not be listed.'],
+            'files': files}
+
 
 
 def main() -> int:

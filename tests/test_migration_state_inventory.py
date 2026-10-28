@@ -38,6 +38,18 @@ class InventoryTest(unittest.TestCase):
         self.assertIsNone(rows['.aips/outside']['sha256'])
         self.assertEqual(before, subprocess.check_output(['git', '-C', str(self.root), 'status', '--porcelain=v1', '-z']))
 
+    def test_untracked_and_ignored_are_reported_without_mutation(self):
+        (self.root / '.gitignore').write_text('/.aips/ignored.txt\n')
+        (self.root / '.aips' / 'ignored.txt').write_text('private note')
+        (self.root / '.aips' / 'untracked.txt').write_text('new note')
+        before = subprocess.check_output(['git', '-C', str(self.root), 'status', '--porcelain=v1', '-z'])
+        result = subprocess.run([sys.executable, str(SCRIPT), '--project', str(self.root), '--dry-run'], capture_output=True, text=True, check=True)
+        rows = {row['path']: row for row in json.loads(result.stdout)['files']}
+        self.assertEqual(rows['.aips/ignored.txt']['tracking'], 'ignored')
+        self.assertEqual(rows['.aips/untracked.txt']['tracking'], 'untracked')
+        self.assertEqual(rows['.aips/ignored.txt']['classification'], 'review_required')
+        self.assertEqual(before, subprocess.check_output(['git', '-C', str(self.root), 'status', '--porcelain=v1', '-z']))
+
     def test_missing_and_replaced_parent_stay_unavailable(self):
         nested = self.root / '.aips' / 'nested'
         nested.mkdir()
