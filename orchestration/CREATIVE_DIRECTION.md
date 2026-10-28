@@ -55,6 +55,8 @@ Material visual artifacts use `visual-quality-review`. Review against the approv
 
 ## Local character artwork
 
+Creative workspaces and grants remain separate from repository governance state; AIPS project attachment does not create project-local metadata or authorize generated-asset publication.
+
 OpenCode EPHEMERAL creative Context remains subject to the shared 12,000-byte ceiling. Irreducible projection overflow denies supported native file actions and suggests read-only Context/refresh-plan inspection; it does not grant Creative execution or expand Shell/MCP coverage.
 
 Creative execution is unaffected by the Claude Code publication recipe; committing generated assets still uses the same commit content-safety scan, and Prepare scan evidence (30 minutes, PR-bound) never authorizes creative output.

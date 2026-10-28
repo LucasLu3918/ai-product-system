@@ -317,12 +317,3 @@ identity_cmd() {
   [ -n "$py" ] || die "python3 is required."
   "$py" "$SYSTEM_DIR/scripts/aips_identity.py" show "$@"
 }
-
-refresh_harness_if_installed() {
-  # system-dir is created only by AIPS install. A plain repository checkout
-  # must not register global Agent integrations implicitly.
-  if [ -f "$CONFIG_HOME/system-dir" ]; then
-    say "Refreshing AIPS Global Harness for the installed system..."
-    harness_install
-  fi
-}

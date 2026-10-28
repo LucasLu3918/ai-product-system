@@ -68,6 +68,7 @@ def main() -> int:
 
         env = dict(os.environ)
         env["XDG_CONFIG_HOME"] = str(config)
+        env["XDG_STATE_HOME"] = str(base / "state")
 
         iso_a = create(project, env, "agent-a", "frontend-a")
         iso_b = create(project, env, "agent-b", "frontend-b")

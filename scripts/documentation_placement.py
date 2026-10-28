@@ -97,6 +97,12 @@ def static_errors(config: dict[str, Any]) -> list[str]:
             path = ROOT / raw_path
             if not path.is_file():
                 continue
+            if not allowed:
+                if path.suffix.lower() == ".md":
+                    errors.append(
+                        f"{rule.get('id')}: Markdown placement for {raw_path} must name at least one canonical H2"
+                    )
+                continue
             actual = {name for name, _ in h2_items(path.read_text(encoding="utf-8"))}
             missing = sorted(set(allowed) - actual)
             if missing:
@@ -334,6 +340,10 @@ def placement_errors(config: dict[str, Any], base: str, *, working_tree: bool = 
         first_h2 = min((start for start, _ in ranges.values()), default=len(lines) + 1)
         allowed_union: set[str] = set()
         for rule_id, allowed in requirements:
+            if not allowed and Path(doc).suffix.lower() != ".md":
+                # Diagrams and other non-Markdown artifacts are reviewed at file
+                # scope; they have no H2 sections to bind added lines to.
+                continue
             missing = sorted(set(allowed) - set(ranges))
             if missing:
                 errors.append(f"{rule_id}: configured canonical H2 sections missing from {doc}: {missing}")

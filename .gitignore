@@ -12,3 +12,7 @@ __pycache__/
 docs/human/.vitepress/dist/
 docs/human/.vitepress/cache/
 node_modules/
+
+# Optional local agent state; keep it out of the AIPS repository.
+/.ai/
+/.aips/

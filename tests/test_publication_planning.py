@@ -14,6 +14,7 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 import governance_guard as guard
+import project_governance_mode
 import publication_authority as auth
 import publication_diagnostics
 import publication_planning as planning
@@ -42,6 +43,8 @@ class PlanningTest(unittest.TestCase):
         self.addCleanup(temp.cleanup)
         self.root = Path(temp.name).resolve()
         os.environ['XDG_CACHE_HOME'] = str(self.root / 'cache')
+        os.environ['XDG_CONFIG_HOME'] = str(self.root / 'config')
+        os.environ['XDG_STATE_HOME'] = str(self.root / 'state')
         self.repo, self.remote = self.root / 'repo', self.root / 'remote.git'
         self.repo.mkdir()
         self.git(self.repo, 'init', '-b', 'main')
@@ -58,6 +61,10 @@ class PlanningTest(unittest.TestCase):
         (self.repo / 'file.txt').write_text('candidate\n')
         self.git(self.repo, 'commit', '-am', 'candidate')
         self.head = self.git(self.repo, 'rev-parse', 'HEAD')
+        project_governance_mode.set_mode(
+            self.repo, 'enforce',
+            ['gh_pr_create', 'gh_pr_merge', 'gh_release_create', 'git_commit', 'git_push', 'git_tag', 'publish_ship'],
+        )
         self.body = self.root / 'body.md'
         self.body.write_text('Candidate validation evidence.\n')
         self.rows = []
@@ -96,16 +103,14 @@ class PlanningTest(unittest.TestCase):
         self.assertEqual(result['status'], 'PLANNED', result)
         self.assertEqual(result['invocations'][0]['argv'][:3], ['git', 'push', 'origin'])
 
-    def test_dirty_and_wrong_root_have_safe_codes(self):
+    def test_uncommitted_worktree_content_does_not_block_committed_candidate(self):
         (self.repo / 'private.txt').write_text('untracked')
         (self.repo / 'file.txt').write_text('uncommitted tracked edit\n')
-        diagnostic = self.prepare()['diagnostics'][0]
-        self.assertEqual(diagnostic['reason_code'], 'WORKTREE_DIRTY')
-        self.assertEqual(diagnostic['phase'], 'candidate_validation')
-        self.assertEqual(diagnostic['candidate_sha'], self.head)
-        self.assertEqual(diagnostic['worktree_details']['paths']['modified'], ['file.txt'])
-        self.assertEqual(diagnostic['worktree_details']['paths']['untracked'], ['private.txt'])
-        self.assertTrue(diagnostic['redacted'])
+        result = self.prepare()
+        self.assertEqual(result['status'], 'PLANNED', result)
+        self.assertEqual(result['candidate']['candidate_sha'], self.head)
+        self.assertEqual(result['candidate']['worktree_status'], 'DIRTY')
+        self.assertNotIn('WORKTREE_DIRTY', [item.get('reason_code') for item in result['diagnostics']])
         result = planning.prepare(self.repo / '.git', title='Candidate', body_file=self.body)
         self.assertEqual(result['status'], 'BLOCKED')
 
@@ -305,6 +310,19 @@ class PlanningTest(unittest.TestCase):
             self.repo, 'git push -u origin ' + self.head + ':refs/heads/codex/plan30')
         self.assertEqual(upstream['status'], 'VALIDATED', upstream)
         self.assertFalse(upstream['authorized'])
+        shorthand = planning.diagnose(self.repo, 'git push -u origin codex/plan30')
+        self.assertEqual(shorthand['status'], 'VALIDATED', shorthand)
+        self.assertFalse(shorthand['authorized'])
+        self.assertEqual(shorthand['candidate']['candidate_sha'], self.head)
+        self.assertEqual(shorthand['candidate']['target_ref'], 'refs/heads/codex/plan30')
+
+    def test_diagnose_git_c_push_uses_the_explicit_target_worktree(self):
+        command = f'git -C {self.repo} push origin {self.head}:refs/heads/codex/plan30'
+        result = planning.diagnose(self.root, command)
+        self.assertEqual(result['status'], 'VALIDATED', result)
+        self.assertFalse(result['authorized'])
+        self.assertEqual(result['candidate']['candidate_sha'], self.head)
+        self.assertEqual(result['candidate']['target_ref'], 'refs/heads/codex/plan30')
 
 
     def test_push_target_must_match_current_engineering_branch(self):

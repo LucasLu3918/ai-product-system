@@ -118,6 +118,10 @@ case "${1:-help}" in
       *) die "Unknown skills command: $sub. Run 'aips skills --help'." ;;
     esac
     ;;
+  migrate-state)
+    shift
+    "$(python_bin)" "$SYSTEM_DIR/scripts/migration_state_inventory.py" "$@"
+    ;;
   intelligence)
     sub="${2:-status}"
     shift 2 || true
@@ -128,7 +132,7 @@ case "${1:-help}" in
     shift 2 || true
     case "$sub" in
       help|-h|--help)
-        say "Usage: aips project <check|diagnose> ..."
+        say "Usage: aips project <check|diagnose|mode> ..."
         ;;
       check)
         [ "$#" -eq 1 ] || die "Usage: aips project check <project-path>"
@@ -136,6 +140,9 @@ case "${1:-help}" in
         ;;
       diagnose)
         project_diagnose "$@"
+        ;;
+      mode)
+        project_mode "$@"
         ;;
       *) die "Unknown project command: $sub" ;;
     esac
@@ -284,6 +291,15 @@ case "${1:-help}" in
     ;;
   _refresh-harness-after-update)
     refresh_harness_if_installed
+    ;;
+  _refresh-harness-inner)
+    refresh_harness_impl
+    ;;
+  _harness-install-inner)
+    harness_install_impl
+    ;;
+  _harness-uninstall-inner)
+    harness_uninstall_impl
     ;;
   doctor)
     doctor

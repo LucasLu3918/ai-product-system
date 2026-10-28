@@ -181,8 +181,12 @@ exit 0
         (home / ".fake-gemini-fail-uninstall").unlink()
         retry = subprocess.run(["bash", str(CLI), "harness", "uninstall"], env=env, capture_output=True, text=True)
         require(retry.returncode == 0, f"Uninstall retry failed: {retry.stdout} {retry.stderr}")
-        require(not harness_home.exists(), "Successful retry must clear AIPS ownership state")
+        require(harness_home.exists(), "Successful retry must preserve the ownership directory")
+        require((harness_home / "disabled").is_file(), "Successful retry must persist OFF state")
         require(not (home / ".fake-gemini-extension").exists(), "Successful retry must unregister Gemini extension")
+        status = subprocess.run(["bash", str(CLI), "harness", "status"], env=env, capture_output=True, text=True, check=False)
+        require(status.returncode == 0 and "Harness: OFF" in status.stdout, "Successful retry must report OFF")
+        require("AUTOMATIC" not in status.stdout, "OFF status must not display stale adapter state")
 
 
 def main() -> int:

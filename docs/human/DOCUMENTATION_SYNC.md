@@ -15,6 +15,8 @@ The shared OpenCode integration lifecycle contains independent Skill Explorer an
 
 Upstream native Skill lifecycle behavior is documented in User Guide and Harness; ownership-safe removal and source validation evidence belong in Technology Guide, Maintenance, and Scenario 259. Keep command behavior aligned across these canonical sections.
 
+Harness registration remains an explicit user action after AIPS CLI installation. Keep the OFF/ACTIVE/UNKNOWN classification, refresh eligibility, and uninstall preservation of unknown local data aligned across Installation, Harness, User Guide, Technology Guide, and lifecycle evidence.
+
 ~~~text
 docs/human/*.md
 → Human current behavior / how-to / explanation
@@ -41,7 +43,7 @@ Claude Code 發布寫法以 Claude Code adapter 為代理說明、Scenario 261 �
 
 The character-artwork trigger remains scoped to creative behavior. Publication evidence changes are documented in publication and security topics and do not change artwork or provenance guidance.
 
-Project lifecycle guidance records that `.ai/` is created only by explicit attach and that attach/detach keep AIPS state in repository-local Git excludes without changing `.gitignore`; Scenario 044 covers lifecycle behavior and tracked-file limits.
+Project lifecycle guidance records that new AIPS state is external and attach/detach never write project files or Git metadata; Scenario 044 covers no-write behavior and legacy-data preservation.
 
 OpenCode READY+STALE advisory behavior is documented with Project Intelligence and Harness current behavior; Scenario 267 and its lifecycle evidence are the executable contract.
 
@@ -268,6 +270,8 @@ Canonical source 是 docs/human/TECHNOLOGY_GUIDE.md。舊 HTML 只保留 backwar
 Getting Started / Installation / User Guide 以 task-oriented方式導覽；Architecture / Technology Guide 負責 explanation；Conformance 負責 reference/evidence history；Maintenance 文件給 maintainer。
 
 ## Deterministic protection
+
+Placement and synchronization previews include staged, unstaged and untracked candidate paths; missing downstream canonical references remain blocking until updated.
 
 Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
 

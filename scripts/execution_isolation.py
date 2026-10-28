@@ -21,6 +21,7 @@ from aips_identity import (
     config_home,
     project_root as canonical_project_root,
     repository_identity,
+    state_home,
 )
 from sandbox_providers import resolve as resolve_sandbox_provider
 
@@ -55,15 +56,15 @@ def project_root(path: Path) -> Path:
 
 
 def state_dir(root: Path) -> Path:
-    return config_home() / "isolation" / repository_identity(root)["repository_id"]
+    return state_home() / "isolation" / repository_identity(root)["repository_id"]
 
 
 def worktree_dir(root: Path) -> Path:
-    return config_home() / "worktrees" / repository_identity(root)["repository_id"]
+    return state_home() / "worktrees" / repository_identity(root)["repository_id"]
 
 
 def runtime_dir(root: Path) -> Path:
-    return config_home() / "runtime" / repository_identity(root)["repository_id"]
+    return state_home() / "runtime" / repository_identity(root)["repository_id"]
 
 
 def port_registry_path(root: Path) -> Path:
@@ -175,16 +176,17 @@ def _record_repository_id(record: dict[str, Any]) -> str | None:
 
 def _record_paths(root: Path) -> list[Path]:
     repo_id = repository_identity(root)["repository_id"]
-    base = config_home() / "isolation"
-    if not base.exists():
-        return []
     result: list[Path] = []
-    for path in sorted(base.glob("*/*.yaml")):
-        doc = load_yaml(path)
-        if doc.get("ownership") != "aips":
+    bases = (state_home() / "isolation", config_home() / "isolation")
+    for base in bases:
+        if not base.exists():
             continue
-        if _record_repository_id(doc) == repo_id:
-            result.append(path)
+        for path in sorted(base.glob("*/*.yaml")):
+            doc = load_yaml(path)
+            if doc.get("ownership") != "aips":
+                continue
+            if _record_repository_id(doc) == repo_id:
+                result.append(path)
     return result
 
 
@@ -730,11 +732,9 @@ def remove_isolation(args: argparse.Namespace) -> tuple[dict[str, Any], int]:
         raise RuntimeError("isolation record does not belong to this repository")
 
     target = Path(str(record.get("path", ""))).resolve()
-    global_managed_root = (config_home() / "worktrees").resolve()
-    try:
-        target.relative_to(global_managed_root)
-    except ValueError as exc:
-        raise RuntimeError("refusing to remove worktree outside AIPS-managed roots") from exc
+    global_managed_roots = ((state_home() / "worktrees").resolve(), (config_home() / "worktrees").resolve())
+    if not any(target == managed_root or managed_root in target.parents for managed_root in global_managed_roots):
+        raise RuntimeError("refusing to remove worktree outside AIPS-managed roots")
 
     if target.exists():
         if target not in _registered_worktrees(root):

@@ -7,6 +7,8 @@ Usage:
   aips uninstall [--remove-venv] [--remove-cache] [--remove-shell-integration]
   aips system preflight <project-path> [--allow-major]
   aips project check <project-path>
+  aips migrate-state --project <path> --dry-run  (inspect .ai/.aips paths)
+  aips migrate-state --project <path> --apply --backup-to <external-path> --confirm-repository-id <id>
   aips project diagnose <project-path> [--runtime codex|opencode|claude-code|gemini-cli|unknown] [--format text|yaml|json]
   aips preflight <project-path> [--allow-major]  (compatibility alias)
 
@@ -150,8 +152,8 @@ Install enables the Global Harness for safely supported runtimes.
 Uninstall removes only AIPS-owned runtime integrations and preserves user/project instructions and skills.
 
 Project modes:
-  EPHEMERAL  no project-local .ai/ is created; reusable Intelligence may live in AIPS external cache.
-  ATTACHED   created explicitly with 'aips attach'; project-local persistent AIPS state is enabled.
+  EXTERNAL   all new project Intelligence and run state lives outside the repository.
+  LEGACY     existing .ai/ data is preserved and imported without rewriting the source.
 EOF
 }
 

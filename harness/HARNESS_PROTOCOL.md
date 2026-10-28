@@ -49,6 +49,8 @@ Report TURN_NATIVE / CONTEXT_ALWAYS / SESSION_ONLY / MANUAL / UNSUPPORTED separa
 
 ## Project persistence
 
+Project Intelligence, governance preferences and run checkpoints use the private user-state store keyed by verified repository identity; attach, preflight and uninstall do not create project-local AIPS files or alter the Git configuration.
+
 ATTACHED projects use `.ai/intelligence/`. EPHEMERAL projects remain source-clean but may reuse external Intelligence at `~/.config/aips/projects/<project-id>/intelligence/`.
 
 Local Creative Bundle preparation is limited to an explicit project-relative scope in a non-Git EPHEMERAL project. It creates versioned Profile/Bundle files without overwrite and leaves engine/model/license provenance unconfigured; prepare never invokes a generator.

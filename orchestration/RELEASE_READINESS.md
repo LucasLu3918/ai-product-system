@@ -52,6 +52,8 @@ READY never bypasses human/security/governance approval.
 
 ## Candidate integrity
 
+Project-state migration preserves user files and records a verified backup before index-only changes; release evidence must bind the exact migrated candidate and its complete changed-file set.
+
 Content-safety classification and publication scanning are part of exact-candidate integrity: injection detection uses added lines, while Secret/PII scanning covers the complete candidate diff. Stable reason codes aid diagnosis but do not authorize publication or relax required checks.
 
 Version and release notes for core publication changes are finalized only after exact-candidate validation and required remote checks pass.

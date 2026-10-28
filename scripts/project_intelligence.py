@@ -28,6 +28,7 @@ from aips_identity import (
 from aips_identity import (
     repository_identity as canonical_repository_identity,
 )
+from aips_identity import state_home as canonical_state_home
 from content_safety import safe_emit as safe_context_emit
 from git_paths import GitPathsError, run_git_paths
 from observed_stage import observed_stage
@@ -121,6 +122,10 @@ def config_home() -> Path:
     return canonical_config_home()
 
 
+def state_home() -> Path:
+    return canonical_state_home()
+
+
 def system_root() -> Path:
     return Path(__file__).resolve().parents[1]
 
@@ -160,12 +165,10 @@ def local_store(root: Path) -> Path:
 
 def intelligence_store(root: Path, create: bool = False) -> tuple[Path, str, str]:
     ident = repository_identity(root)
-    if (root / ".ai").is_dir():
-        store = local_store(root)
-        mode = "ATTACHED"
-    else:
-        store = external_store(root)
-        mode = "EPHEMERAL"
+    # Project Intelligence is user-state data. Legacy .ai/intelligence is
+    # imported explicitly, but never remains the active write target.
+    store = external_store(root)
+    mode = "EPHEMERAL"
     if create:
         (store / "topics").mkdir(parents=True, exist_ok=True)
         (store / "reviews").mkdir(parents=True, exist_ok=True)
@@ -496,6 +499,10 @@ def seeded_bootstrap(root: Path, attempt: dict[str, Any]) -> dict[str, Any]:
 
 
 def bootstrap(root: Path) -> dict[str, Any]:
+    legacy = local_store(root) / "PROJECT_INTELLIGENCE.yaml"
+    external = external_store(root) / "PROJECT_INTELLIGENCE.yaml"
+    if legacy.is_file() and not external.exists():
+        migrate_attached(root)
     seed_attempt: dict[str, Any] | None = None
     probe, probe_mode, _probe_pid = intelligence_store(root)
     if probe_mode == "EPHEMERAL" and not (probe / "PROJECT_INTELLIGENCE.yaml").exists():
@@ -573,6 +580,8 @@ def bootstrap(root: Path) -> dict[str, Any]:
 
 def git_dirty_paths(root: Path) -> list[str]:
     """Return complete staged, unstaged and untracked path sets."""
+    if run_git(root, ["rev-parse", "--show-toplevel"]) is None:
+        return []
     result: set[str] = set()
     for args in (
         ["diff", "--name-only", "-z", "--"],
@@ -1516,10 +1525,8 @@ def refresh(root: Path) -> dict[str, Any]:
 
 
 def impact_path(root: Path, change_id: str) -> Path:
-    store, mode, _pid = intelligence_store(root, create=True)
-    if mode == "ATTACHED":
-        return root / ".ai" / "runs" / change_id / "CHANGE_IMPACT.yaml"
-    return store.parent / "changes" / f"{change_id}.yaml"
+    _store, _mode, workspace_id = intelligence_store(root, create=True)
+    return state_home() / "projects" / workspace_id / "changes" / f"{change_id}.yaml"
 
 
 def impact_init(root: Path, prompt: str, change_id: str | None, *, reset: bool = False) -> dict[str, Any]:
@@ -1991,17 +1998,15 @@ def validated_copytree(src: Path, dst: Path) -> None:
 
 
 def migrate_attached(root: Path) -> dict[str, Any]:
-    if not (root / ".ai").is_dir():
-        raise RuntimeError("Project must be attached before migrating Intelligence")
-    src = external_store(root)
-    dst = local_store(root)
-    if not src.exists():
-        return {"status": "NO_EXTERNAL_CACHE", "destination": str(dst)}
-    if dst.exists() and (dst / "PROJECT_INTELLIGENCE.yaml").exists():
-        return {"status": "LOCAL_ALREADY_PRESENT", "source_preserved": str(src), "destination": str(dst)}
+    """Copy legacy project-local Intelligence to user state without deleting it."""
+    src = local_store(root)
+    dst = external_store(root)
+    if not (src / "PROJECT_INTELLIGENCE.yaml").is_file():
+        return {"status": "NO_LEGACY_INTELLIGENCE", "destination": str(dst)}
+    if (dst / "PROJECT_INTELLIGENCE.yaml").is_file():
+        return {"status": "EXTERNAL_ALREADY_PRESENT", "source_preserved": str(src), "destination": str(dst)}
     validated_copytree(src, dst)
-    shutil.rmtree(src)
-    return {"status": "MIGRATED", "source_removed": str(src), "destination": str(dst)}
+    return {"status": "COPIED_TO_EXTERNAL", "source_preserved": str(src), "destination": str(dst)}
 
 
 def sync_external(root: Path) -> dict[str, Any]:

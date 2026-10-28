@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Install the CLI without automatically registering Runtime adapters; explicitly enable existing Harness integration with `aips harness install`. Update and preflight refresh only verifiable existing enablement records; unknown records are preserved. Harness uninstall records `OFF` and preserves local ownership state and unrecognized user data.
+
+- Add per-repository `off`, `observe`, `assist`, and explicitly scoped `enforce` modes through user-level configuration and CLI; show the selected mode in `aips status`. Optional governance does not grant Host permission or weaken runtime policy, protected paths, hard content safety, or GitHub protections.
+
 - Diagnose OpenCode Turn Context projection overflow with stable reason codes, bounded section-size metadata, privacy-safe trace fields and targeted recovery commands while keeping project writes denied until Context fits.
 
 - Return structured, redacted JSON diagnoses with safe recovery steps when publication prepare/diagnose encounters CLI-level errors; preserve text-mode output, exit status, and non-authorizing behavior.

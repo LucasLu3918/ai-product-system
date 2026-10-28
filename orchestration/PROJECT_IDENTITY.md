@@ -41,8 +41,8 @@ Workspace-scoped state uses `workspace_id`:
 Repository-wide writer coordination uses `repository_id`:
 
 ~~~text
-~/.config/aips/isolation/<repository-id>/
-~/.config/aips/worktrees/<repository-id>/
+~/.local/state/aips/isolation/<repository-id>/
+~/.local/state/aips/worktrees/<repository-id>/
 ~~~
 
 This prevents separate worktrees of one repository from acquiring conflicting writers for the same Change Boundary.

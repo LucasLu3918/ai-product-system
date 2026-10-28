@@ -33,7 +33,7 @@ Managed Runtime hooks keep content-safety and publication checks fail-closed. Re
 )
 ~~~
 
-安裝器會管理 AIPS system checkout、Python virtual environment、CLI 與支援的 Runtime 整合。預設安裝路徑為 `$XDG_DATA_HOME/aips/system`，若未設定 `XDG_DATA_HOME` 則使用 `~/.local/share/aips/system`。可用 `AIPS_INSTALL_DIR` 指定其他 system checkout 路徑。
+安裝器會管理 AIPS system checkout、Python virtual environment 與 CLI；Runtime 整合須另行明確執行 `aips harness install`。預設安裝路徑為 `$XDG_DATA_HOME/aips/system`，若未設定 `XDG_DATA_HOME` 則使用 `~/.local/share/aips/system`。可用 `AIPS_INSTALL_DIR` 指定其他 system checkout 路徑。
 
 `--configure-shell` 會在 zsh 或 bash profile 加入有明確 AIPS 標記的 `PATH` 區塊，方便新終端找到 `aips`。若你自行管理 shell 設定，改用 `--no-configure-shell`。
 
@@ -73,6 +73,14 @@ aips mcp inspect
 
 ## Runtime integration
 
+AIPS does not enable repository governance when the CLI is installed. Check a project with `aips project mode show`; opt in with `aips project mode set observe` or `aips project mode set assist`. Select `enforce` only with an explicit action scope, for example `aips project mode set enforce --project /path/to/project --scope git_push,gh_pr_merge`. Settings live under the user XDG configuration, outside the project.
+
+The runtime resolves literal `git -C <path> push` against the command invocation cwd and validates the explicit target repository; it does not silently fall back to another checkout.
+
+When an installed runtime sees `git push -u/--set-upstream origin <current-branch>`, publication validation binds it to the selected worktree’s observed full HEAD SHA and full branch ref; install state does not grant publication authority.
+
+Installing or updating the CLI does not impose a clean-worktree requirement on native Git publication. Runtime adapter enablement and publication policy remain separate; exact candidate and GitHub checks still apply.
+
 Qwen Image Edit 2511 workflow support uses an already configured local ComfyUI runtime and locally installed model weights; AIPS installation does not download models or enable cloud execution.
 
 OpenCode managed V2 plugin 的 Context 上限為 12,000 bytes。若投影無法符合上限，先按 Harness 診斷檢視 Context 與 refresh plan；修復前支援的 native file writes 會被拒絕。重新安裝或 Host discovery 不會自行驗證 Context delivery。
@@ -85,13 +93,13 @@ ComfyUI model profiles 隨 AIPS registry 提供；FLUX 3 Klein Base/Distilled �
 
 Creative ComfyUI `dynamic_local` workflow support reuses the installed AIPS executor and Python dependencies. It does not install ComfyUI, custom nodes, model weights, or a remote service; the local ComfyUI API and selected model files must already be available. Workflow scan and preflight are read-only, while workflow import is an explicit project-confined create-only operation.
 
-一般專案不會自動建立 `.ai/`。只有明確執行 `aips attach <project>` 才會使用 project-local state；若專案位於 Git worktree，AIPS 會在本機 `info/exclude` 排除 `.ai/` 與 detach 封存目錄，不修改專案 `.gitignore`。
+一般專案不會建立 `.ai/` 或 `.aips/`。`aips attach <project>` 只會在使用者層初始化或匯入外部 Project Intelligence，不會修改專案檔案、Git config、hooks、`info/exclude` 或 `.gitignore`。既有 `.ai/` 資料會保留；驗證過的 Intelligence 以複製方式匯入，原始資料不刪除。
 
 OpenCode 原生直接寫入在 Project Intelligence 為 READY、但 freshness 為 STALE 時，可依既有 L2 advisory 邊界繼續；系統仍會明確顯示過期狀態。freshness 為 UNKNOWN、準備度不足、指示來源權限衝突未解或目標路徑越界時，仍維持原有停止條件。詳細 allow／deny 契約見 Scenario 267。
 
 Commit 時的 AVIF 中繼資料掃描採用內建且有界的解析器，不需安裝額外套件，也不新增原生 Runtime adapter 需求。
 
-安裝或更新後，以 `aips harness status` 檢視可辨識的 Runtime，再依 Host 提示使用 `aips harness install` 或 `aips harness doctor`。解除整合可使用 `aips harness uninstall`；只移除 CLI 時使用 `aips uninstall`。
+安裝後不會自動啟用 Runtime adapter；需要整合時先檢視 `aips harness status`，再明確執行 `aips harness install`。更新只刷新可驗證的既有啟用紀錄；不明狀態會保留，`aips harness status` 與 `aips harness doctor` 會回報 `UNKNOWN`，請先檢視所有權紀錄。解除整合可使用 `aips harness uninstall`；它會移除可驗證的外部整合、將狀態設為 `OFF`，並保留使用者層 ownership 與額外資料。只移除 CLI 時使用 `aips uninstall`。
 
 不同 Agent 的 Context、工具權限與原生 Hook 能力並不相同。安裝狀態或靜態探測只能說明設定狀態；有版本綁定的 Host 驗收才可證明指定環境中的行為。Codex 的部分防護維持 ADVISORY，不能視為作業系統層級的隔離。
 
@@ -109,7 +117,7 @@ MCP 設定可用 `aips mcp config --client <client>` 預覽。該命令不會替
 
 確認 Agent 已安裝，並使用支援的本機 Runtime 版本。執行 `aips harness status` 和 `aips harness doctor` 查看探測到的設定與可恢復問題；缺少 Host 時不會自動建立不存在的整合。
 
-### 顯示 `Harness: active`，但 Host 沒有載入
+### 顯示 `Harness: ACTIVE`，但 Host 沒有載入
 
 `active` 表示 AIPS 找到受管理設定，不能證明 Host 已讀取或執行它。重新啟動 Host、確認目前工作階段使用的設定路徑，並依該 Runtime 的驗收方式確認 Context 或 Hook 實際生效。
 
@@ -143,7 +151,7 @@ aips system preflight /path/to/project
 aips uninstall
 ~~~
 
-解除安裝會移除 AIPS 管理的 Runtime 整合與 CLI 連結。Shell `PATH` 區塊只會在安全條件成立時移除；若設定遭使用者修改或安裝目錄還有其他程式，AIPS 會保留區塊並提示處理方式。
+解除安裝會移除 AIPS 管理的 Runtime 整合與 CLI 連結。若沒有 Harness 狀態，解除安裝會略過 Runtime adapter 設定的清理。若 Harness 狀態存在但缺少一般的所有權紀錄，或狀態路徑為符號連結，解除安裝會停止並保留資料；請先檢視狀態並執行 `aips harness doctor`。Shell `PATH` 區塊只會在安全條件成立時移除；若設定遭使用者修改或安裝目錄還有其他程式，AIPS 會保留區塊並提示處理方式。
 
 下列選項用於明確擴大清除範圍：
 

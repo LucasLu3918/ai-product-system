@@ -74,13 +74,14 @@ def main() -> int:
         )
         require(boot.returncode == 0, f"bootstrap failed: {boot.stdout} {boot.stderr}")
         boot_doc = json.loads(boot.stdout)
-        require(boot_doc.get("mode") == "ATTACHED", "legacy .ai project must remain ATTACHED")
+        require(boot_doc.get("mode") == "EPHEMERAL", "legacy project knowledge must be externalized")
 
-        store = project / ".ai" / "intelligence"
+        store = Path(boot_doc["store"])
         intel_path = store / "PROJECT_INTELLIGENCE.yaml"
         registry_path = store / "SOURCE_REGISTRY.yaml"
         require(intel_path.is_file(), "canonical Project Intelligence was not created")
         require(registry_path.is_file(), "SOURCE_REGISTRY was not created")
+        require(not (project / ".ai" / "intelligence").exists(), "bootstrap must not create project-local Intelligence")
         require(legacy_index.is_file(), "legacy Project Knowledge must be preserved")
         require(digest(legacy_index) == legacy_before, "bootstrap must not rewrite legacy Project Knowledge")
 

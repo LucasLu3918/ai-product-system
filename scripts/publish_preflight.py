@@ -52,7 +52,7 @@ except ModuleNotFoundError:  # imported as a repository module by lifecycle evid
         sys.path.insert(0, str(ROOT))
     from scripts.browser_runtime import discover_browser, probe_browser
 
-CANONICAL_MATRIX = ROOT / ".aips/review/CORE_CHANGE_TEST_MATRIX.yaml"
+CANONICAL_MATRIX = ROOT / "docs/qa/CORE_CHANGE_TEST_MATRIX.yaml"
 GIT_PUBLICATION_POLICY = ROOT / "config/git-publication.yaml"
 TRAILER_LINE_RE = re.compile(r"[A-Za-z][A-Za-z0-9-]*: \S.*", re.ASCII)
 TRAILER_KEY_RE = re.compile(r"[A-Za-z][A-Za-z0-9-]*", re.ASCII)

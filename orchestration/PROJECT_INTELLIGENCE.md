@@ -27,10 +27,12 @@ Read-only Context remains available in ordinary directories and repositories wit
 
 ## Storage
 
-Attached project:
+Project records use opaque repository identities in the user-state store; project attachment does not create or rewrite repository-local configuration.
+
+External user-state store (all projects):
 
 ~~~text
-.ai/intelligence/
+~/.config/aips/projects/<project-id>/intelligence/
 ├── PROJECT_INTELLIGENCE.yaml
 ├── SOURCE_REGISTRY.yaml
 ├── IMPACT_GRAPH.yaml
@@ -47,7 +49,7 @@ Attached project:
     └── PROJECT_INTELLIGENCE_REVIEW.html
 ~~~
 
-Ephemeral project:
+Legacy project-local `.ai/intelligence/` is read-only and imported by validated copy; the source remains unchanged.
 
 ~~~text
 ~/.config/aips/projects/<project-id>/intelligence/
@@ -404,7 +406,7 @@ token usage / observed latency
 
 The baseline is explicitly a controlled v0.20-style static-topic comparison, not a claim that every historical v0.20 turn behaved identically. Evaluation scope is limited to task-specific repository evidence retrieval. It does not measure overall Agent task completion, stable Intelligence semantic correctness, model/provider quality or a production latency SLO.
 
-Keep evaluation control data outside the indexed product source (or under the attached AIPS `.ai/` workspace, which Retrieval Intelligence excludes) so expected answers cannot contaminate retrieval results.
+Keep evaluation control data outside the indexed product source so expected answers cannot contaminate retrieval results.
 
 A suite declares:
 
@@ -618,7 +620,7 @@ Do not claim the project has been initialized merely from directory/file-name in
 
 Retrieval relation extraction behavior is versioned with the disposable index schema. When changing which source relationships are indexed, increment `SCHEMA_VERSION` so unchanged files are fully re-extracted; incremental content hashes alone cannot remove relations produced by an older extractor. Parse raw source only in memory for syntax-sensitive call-name extraction; persist only redacted chunks and relationship rows.
 
-EPHEMERAL remains the default. Explicit attach/detach in a Git worktree add root-relative `.ai/` and `.ai.detached-*` patterns to repository-local `info/exclude`; this does not modify `.gitignore` or remove already tracked paths.
+All new Intelligence, run and Change Impact data stays in external user state. `aips attach` initializes or imports there; `aips detach` is a compatibility no-op for storage. Neither command writes `.ai/`, `.git/info/exclude` or `.gitignore`; legacy `.ai/` content remains unchanged.
 
 Content-safety findings are advisory retrieval inputs and do not change Project Intelligence authority or graph completeness.
 
@@ -703,13 +705,7 @@ Documentation trigger、出版 preflight、workflow 或其測試契約變更時�
 
 Project Intelligence provides the reusable graph. Per-change impact remains a run artifact rather than permanent project policy.
 
-Attached:
-
-~~~text
-.ai/runs/<change-id>/CHANGE_IMPACT.yaml
-~~~
-
-Ephemeral:
+All projects:
 
 ~~~text
 ~/.config/aips/projects/<project-id>/changes/<change-id>.yaml
@@ -731,15 +727,13 @@ Publication-tool impact includes the selected checkout, installed/source CLI rou
 A project can switch storage modes without losing Intelligence.
 
 ~~~text
-EPHEMERAL External Cache
-→ aips attach
-→ validated migrate into .ai/intelligence/
-→ External copy removed after successful migration
+Legacy `.ai/intelligence/`
+→ explicit `aips attach` or `aips intelligence bootstrap`
+→ validated copy into external user state
+→ source remains unchanged for review or rollback
 
-ATTACHED .ai/intelligence/
-→ aips detach
-→ validated sync to External Cache
-→ then archive .ai/
+All new checkpoints and Change Impact drafts
+→ external user state only
 ~~~
 
 Never maintain two silently diverging canonical copies.

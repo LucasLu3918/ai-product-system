@@ -67,6 +67,9 @@ def _with_lifecycle(result: dict[str, Any], root: Path | None = None) -> dict[st
         root = Path(observation['worktree'])
     candidate: dict[str, Any] = dict(result.get('candidate') or {})
     candidate.setdefault('status', 'PASS' if result.get('scan') == 'PASS' else 'NOT_VALIDATED')
+    if observation.get('worktree_status'):
+        candidate['worktree_status'] = observation['worktree_status']
+        candidate['worktree_dirty_path_count'] = observation.get('worktree_dirty_path_count', 0)
     if root is not None and observation.get('branch') and observation.get('head'):
         try:
             candidate.update(authority.runtime_binding(
@@ -141,6 +144,7 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
                 raise authority.PublicationError('invalid present trust root', 'AUTHORITY_CONFIG_INVALID') from exc
         branch = authority.git(root, 'branch', '--show-current')
         head = authority.git(root, 'rev-parse', 'HEAD^{commit}')
+        worktree_state = authority.worktree_dirty_details(root)
         if not branch or not branch.startswith(authority.PERSONAL_BRANCH_PREFIXES):
             raise authority.PublicationError('current engineering branch required', reason_code='BRANCH_NOT_ALLOWLISTED')
         if not title.strip() or not body_file.is_file() or body_file.is_symlink():
@@ -162,9 +166,6 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
         if merged:
             # A squash merge need not make the feature HEAD an ancestor of main.
             # Bind the exact PR head and verify its GitHub merge commit in the live base.
-            if authority.worktree_dirty_details(root)['status'] == 'DIRTY':
-                raise authority.PublicationError('dirty candidate', 'WORKTREE_DIRTY',
-                    context={'worktree': root, 'candidate_sha': head}, phase='post_merge_reconciliation')
             commit = (merged[-1].get('mergeCommit') or {}).get('oid', '')
             if not re.fullmatch(r'[0-9a-f]{40,64}', commit):
                 raise authority.PublicationError('merge commit unavailable', 'PR_STATE_AMBIGUOUS')
@@ -179,7 +180,7 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
                           operation='POST_MERGE_RECONCILIATION', idempotent=True,
                           observation=observation, fingerprint=fingerprint, scan='NOT_REQUIRED_ALREADY_MERGED')
             return _with_lifecycle(result, root)
-        # Reuse the exact existing syntax, identity, clean-tree and ancestry checks.
+        # Reuse the exact existing syntax, identity and ancestry checks for this committed candidate.
         phase = 'push_validation'
         scope = authority.action(root, 'git_push', push, base, personal=mode == 'personal')
         phase = 'content_scan'
@@ -194,6 +195,8 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
         observation = {
             'worktree': str(root), 'repository_id': scope['repository_id'],
             'worktree_id': scope['worktree_id'], 'head': head, 'base': base,
+            'worktree_status': worktree_state['status'],
+            'worktree_dirty_path_count': worktree_state.get('path_count', 0),
             'branch': branch, 'base_branch': base_branch, 'mode': mode,
             'remote_digest': authority.digest(remote_url), 'remote_head': remote_head,
             'diff_digest': scope['diff_digest'], 'policy_digest': policy_hash,
@@ -204,7 +207,8 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
             'scan_evidence': {'status': 'PASS', 'binding_digest': evidence_digest,
                               'expires_in_seconds': scan_evidence_ttl},
         }
-        fingerprint = authority.digest(observation)
+        fingerprint = authority.digest({key: value for key, value in observation.items()
+                                        if key not in {'worktree_status', 'worktree_dirty_path_count'}})
         result.update(observation=observation, fingerprint=fingerprint, scan='PASS')
         if expected_fingerprint and expected_fingerprint != fingerprint:
             raise authority.PublicationError('stale publication observation', 'CANDIDATE_CHANGED')
@@ -283,30 +287,35 @@ def diagnose(worktree: Path, command: str) -> dict[str, Any]:
     """Validate a native literal command without execution or grant consumption."""
     from publication_commands import CommandError, command_form_detail, shell_commands
     try:
-        root = worktree.expanduser().resolve(strict=True)
-        if Path(authority.git(root, 'rev-parse', '--show-toplevel')).resolve() != root:
-            raise authority.PublicationError('worktree root mismatch', 'CWD_MISMATCH')
+        invocation_cwd = worktree.expanduser().resolve(strict=True)
         # Match the Hook: quoted literal `$`/backticks are data; real expansions keep a NUL marker.
         parsed = shell_commands(command, mark_dynamic=True)
         if len(parsed) != 1:
             raise authority.PublicationError('standalone command required', 'COMMAND_FORM_UNSUPPORTED',
                                              detail_code=command_form_detail(command))
         argv = parsed[0]
-        operation = ('git_push' if argv[:2] == ['git', 'push'] else
+        git_c_push = argv[:2] == ['git', '-C'] and len(argv) >= 4 and argv[3] == 'push'
+        operation = ('git_push' if argv[:2] == ['git', 'push'] or git_c_push else
                      'gh_pr_create' if argv[:3] == ['gh', 'pr', 'create'] else
                      'gh_pr_merge' if argv[:3] == ['gh', 'pr', 'merge'] else None)
         if not operation:
             raise authority.PublicationError('unsupported planning operation', 'COMMAND_FORM_UNSUPPORTED')
+        target_cwd, normalized_argv = (authority.resolve_git_push_target(invocation_cwd, argv)
+                                       if operation == 'git_push' else (invocation_cwd, argv))
+        root = Path(authority.git(target_cwd, 'rev-parse', '--show-toplevel')).resolve()
+        if operation != 'git_push' and root != invocation_cwd:
+            raise authority.PublicationError('worktree root mismatch', 'CWD_MISMATCH')
         mode = authority.publication_mode()
         if mode == 'high_assurance':
             try:
                 authority.configured_authority()
             except (authority.PublicationError, OSError, ValueError, TypeError, yaml.YAMLError) as exc:
                 raise authority.PublicationError('invalid present trust root', 'AUTHORITY_CONFIG_INVALID') from exc
-        observed = authority.validate_personal_action(root, operation, argv, literal_marked=True)
+        observed = authority.validate_personal_action(invocation_cwd, operation, argv, literal_marked=True)
         if mode == 'high_assurance':
             # Diagnostics must honor the selected mode's stricter exact lease syntax.
-            authority.action(root, operation, argv, observed['base_commit'], personal=False, literal_marked=True)
+            authority.action(target_cwd, operation, normalized_argv, observed['base_commit'],
+                             personal=False, literal_marked=True)
         result = {'version': 2, 'status': 'VALIDATED' if mode == 'personal' else 'AWAITING_AUTHORITY',
                   'authorized': False, 'read_only': True, 'executed': False,
                   'grant_consumed': False, 'operation': operation, 'mode': mode,
@@ -399,13 +408,7 @@ def doctor(worktree: Path, *, branch: str | None = None, pr_number: int | None =
         result['candidate_sha'] = head
         result['worktree'] = {'branch': branch_name, 'status': dirty['status']}
         result['phases'].append({'phase': 'worktree_validation', 'status': dirty['status'],
-                                 'blocking': dirty['status'] == 'DIRTY'})
-        if dirty['status'] == 'DIRTY':
-            item = authority.PublicationError('publication requires a clean worktree', 'WORKTREE_DIRTY',
-                context={'worktree': root, 'candidate_sha': head}, phase='worktree_validation').diagnostic()
-            if not worktree_details:
-                item.pop('worktree_details', None)
-            result['diagnostics'].append(item)
+                                 'blocking': False})
 
         repo = _repo(root)
         remote_url = authority.git(root, 'remote', 'get-url', 'origin')

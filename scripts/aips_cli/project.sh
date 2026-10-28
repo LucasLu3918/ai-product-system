@@ -1,168 +1,44 @@
-write_system_snapshot() {
-  local project="$1"
-  local ai_dir="$project/.ai"
-  local version commit timestamp
-  version="$(current_version)"
-  commit="$(current_commit)"
-  timestamp="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
-  mkdir -p "$ai_dir"
-  cat > "$ai_dir/SYSTEM.yaml" <<EOF
-system:
-  name: ai-product-system
-  repository: $REPO_SLUG
-  version: "$version"
-  commit: "$commit"
-  updated_at: "$timestamp"
-  local_path: "$SYSTEM_DIR"
-EOF
-}
-
-init_project() {
-  local project="$1"
-  [ -d "$project" ] || die "Project path does not exist: $project"
-
-  local ai_dir="$project/.ai"
-  mkdir -p "$ai_dir/runs" "$ai_dir/decisions"
-
-  for name in PROJECT.md STATE.yaml MANIFEST.yaml; do
-    if [ ! -e "$ai_dir/$name" ]; then
-      cp "$SYSTEM_DIR/templates/workspace/$name" "$ai_dir/$name"
-      say "Created .ai/$name"
-    else
-      say "Kept existing .ai/$name"
-    fi
-  done
-
-  write_system_snapshot "$project"
-  say "Workspace initialized: $ai_dir"
-}
-
-ensure_project_local_excludes() {
-  local project="$1"
-  local git_root git_prefix exclude_file pattern last_char
-
-  if ! git_root="$(git -C "$project" rev-parse --show-toplevel 2>/dev/null)"; then
-    say "Project is not in a Git worktree; no local Git excludes were needed."
-    return 0
-  fi
-
-  if ! git_prefix="$(git -C "$project" rev-parse --show-prefix 2>/dev/null)"; then
-    warn "Could not resolve the project path inside its Git worktree."
-    return 1
-  fi
-  if ! exclude_file="$(git -C "$project" rev-parse --git-path info/exclude 2>/dev/null)"; then
-    warn "Could not resolve the repository-local Git exclude file."
-    return 1
-  fi
-  case "$exclude_file" in
-    /*) ;;
-    *) exclude_file="$project/$exclude_file" ;;
-  esac
-
-  if [ ! -e "$exclude_file" ]; then
-    mkdir -p "$(dirname "$exclude_file")" || {
-      warn "Could not create the repository-local Git metadata directory."
-      return 1
-    }
-    : >> "$exclude_file" || {
-      warn "Could not create the repository-local Git exclude file."
-      return 1
-    }
-  fi
-  if [ ! -f "$exclude_file" ]; then
-    warn "The repository-local Git exclude path is not a regular file."
-    return 1
-  fi
-
-  for pattern in "/${git_prefix}.ai/" "/${git_prefix}.ai.detached-*/"; do
-    if grep -Fqx "$pattern" "$exclude_file" 2>/dev/null; then
-      continue
-    fi
-    if [ -s "$exclude_file" ]; then
-      last_char="$(tail -c 1 "$exclude_file" 2>/dev/null || true)"
-      if [ -n "$last_char" ]; then
-        printf '\n' >> "$exclude_file" || {
-          warn "Could not update the repository-local Git exclude file."
-          return 1
-        }
-      fi
-    fi
-    printf '%s\n' "$pattern" >> "$exclude_file" || {
-      warn "Could not update the repository-local Git exclude file."
-      return 1
-    }
-    say "Added local Git exclude: $pattern"
-  done
-
-  return 0
-}
-
 attach_project() {
   local project="$1"
   [ -d "$project" ] || die "Project path does not exist: $project"
-
-  if [ ! -d "$project/.ai" ]; then
-    local detached
-    detached="$(find "$project" -maxdepth 1 -type d -name '.ai.detached-*' -print 2>/dev/null | sort | tail -n 1 || true)"
-    if [ -n "$detached" ]; then
-      warn "A detached AI workspace already exists: $detached"
-      say "Restore it first if you want to continue that workspace:"
-      say "  mv \"$detached\" \"$project/.ai\""
-      say "Then rerun:"
-      say "  aips attach \"$project\""
-      return 2
-    fi
-  fi
-
-  ensure_project_local_excludes "$project" || return 1
-
-  init_project "$project"
-
   local migration
-  if ! migration="$(intelligence_cmd migrate-attached --project "$project" --format json 2>&1)"; then
-    warn "Project attached, but External Project Intelligence migration failed: $migration"
-    warn "Existing Intelligence was preserved; resolve this before relying on persistent Intelligence."
+  if [ -f "$project/.ai/intelligence/PROJECT_INTELLIGENCE.yaml" ]; then
+    migration="$(intelligence_cmd migrate-attached --project "$project" --format json 2>&1)" || {
+      warn "Could not import legacy project Intelligence into external state: $migration"
+      return 1
+    }
   else
-    say "Project Intelligence migration: $migration"
+    migration="$(intelligence_cmd bootstrap --project "$project" --format json 2>&1)" || {
+      warn "Could not initialize external Project Intelligence: $migration"
+      return 1
+    }
   fi
-
-  say "Project attached to AI Product System: $project"
+  say "Project Intelligence external state: $migration"
+  say "AIPS enabled for this project using external user state: $project"
+  say "No project files, Git config or Git excludes were created or changed."
 }
 
 detach_project() {
   local project="$1"
   [ -d "$project" ] || die "Project path does not exist: $project"
 
-  if [ ! -d "$project/.ai" ]; then
-    say "Project is already detached (no .ai workspace): $project"
-    return 0
-  fi
-
-  ensure_project_local_excludes "$project" || return 1
-
   local sync_result
-  if ! sync_result="$(intelligence_cmd sync-external --project "$project" --format json 2>&1)"; then
-    die "Cannot safely detach because Project Intelligence could not be synced to External Cache: $sync_result"
+  if ! sync_result="$(intelligence_cmd migrate-attached --project "$project" --format json 2>&1)"; then
+    die "Could not preserve legacy project Intelligence in external state: $sync_result"
   fi
-  say "Project Intelligence external sync: $sync_result"
-
-  local stamp archive
-  stamp="$(date -u +"%Y%m%d-%H%M%S")"
-  archive="$project/.ai.detached-$stamp"
-  [ ! -e "$archive" ] || die "Detach archive already exists: $archive"
-
-  mv "$project/.ai" "$archive"
-  say "Project detached: $project"
-  say "Workspace preserved: $archive"
-  say "Product source code was not modified."
-  say "To restore:"
-  say "  mv \"$archive\" \"$project/.ai\""
-  say "  aips attach \"$project\""
+  say "No project-local AIPS workspace is active; all new state remains external."
+  say "Legacy .ai data, if present, is preserved unchanged."
+  say "Use 'aips project mode set off --project \"$project\"' to disable optional governance."
 }
 
 status_project() {
-  local project="$1"
+  local project="$1" governance_mode="UNKNOWN" mode_report py
   [ -d "$project" ] || die "Project path does not exist: $project"
+
+  py="$(python_bin)"
+  if mode_report="$("$py" "$SYSTEM_DIR/scripts/project_governance_mode.py" show --project "$project" --format json 2>/dev/null)"; then
+    governance_mode="$(printf '%s' "$mode_report" | "$py" -c 'import json,sys; print(json.load(sys.stdin).get("mode") or "UNKNOWN")' 2>/dev/null || echo UNKNOWN)"
+  fi
 
   say "AI Product System status"
   say "System dir: $SYSTEM_DIR"
@@ -175,27 +51,17 @@ status_project() {
   fi
 
   say "Project: $project"
-  if [ -d "$project/.ai" ]; then
-    say "Project attached: yes"
-    say "Project mode: ATTACHED"
-    say "Workspace: $project/.ai"
-    if [ -f "$project/.ai/SYSTEM.yaml" ]; then
-      local recorded_version recorded_commit
-      recorded_version="$(awk -F': ' '/^[[:space:]]*version:/ {gsub(/"/,"",$2); print $2; exit}' "$project/.ai/SYSTEM.yaml" || true)"
-      recorded_commit="$(awk -F': ' '/^[[:space:]]*commit:/ {gsub(/"/,"",$2); print $2; exit}' "$project/.ai/SYSTEM.yaml" || true)"
-      [ -n "$recorded_version" ] && say "Recorded system version: $recorded_version"
-      [ -n "$recorded_commit" ] && say "Recorded system commit: $recorded_commit"
-    fi
-  else
-    say "Project attached: no"
-    say "Project mode: EPHEMERAL"
-    if intelligence_cmd status --project "$project" --format json >/dev/null 2>&1; then
-      say "External Project Intelligence: resolvable"
-    fi
-    local detached
-    detached="$(find "$project" -maxdepth 1 -type d -name '.ai.detached-*' -print 2>/dev/null | sort | tail -n 1 || true)"
-    [ -n "$detached" ] && say "Latest detached workspace: $detached"
+  say "Optional governance mode: $governance_mode"
+  say "Project mode: EXTERNAL (no project-local AIPS writes)"
+  if intelligence_cmd status --project "$project" --format json >/dev/null 2>&1; then
+    say "External Project Intelligence: resolvable"
   fi
+  if [ -d "$project/.ai" ]; then
+    say "Legacy .ai data: present (preserved; not used for new writes)"
+  else
+    say "Legacy .ai data: absent"
+  fi
+  return 0
 }
 
 project_check() {
@@ -205,11 +71,7 @@ project_check() {
 
   say "Project check"
   say "Project: $project"
-  if [ -d "$project/.ai" ]; then
-    say "Project mode: ATTACHED"
-  else
-    say "Project mode: EPHEMERAL"
-  fi
+  say "Project mode: EXTERNAL (no project-local AIPS writes)"
 
   local report freshness py
   if report="$(intelligence_cmd status --project "$project" --format json 2>/dev/null)"; then
@@ -227,6 +89,14 @@ project_diagnose() {
   py="$(python_bin)"
   [ -n "$py" ] || die "python3 is required."
   "$py" "$SYSTEM_DIR/scripts/project_diagnostics.py" "$@"
+}
+
+project_mode() {
+  [ "$#" -ge 1 ] || die "Usage: aips project mode <show|set> [options]"
+  local py
+  py="$(python_bin)"
+  [ -n "$py" ] || die "python3 is required."
+  "$py" "$SYSTEM_DIR/scripts/project_governance_mode.py" "$@"
 }
 
 validate_repo() {

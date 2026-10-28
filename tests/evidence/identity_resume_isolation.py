@@ -55,6 +55,7 @@ def main() -> int:
 
         env = dict(os.environ)
         env["XDG_CONFIG_HOME"] = str(config)
+        env["XDG_STATE_HOME"] = str(base / "state")
 
         main_identity = json_run(
             [sys.executable, str(IDENTITY), "show", "--project", str(project), "--format", "json"], env
@@ -140,11 +141,11 @@ def main() -> int:
             ],
             env,
         )
-        canonical_legacy = config / "aips" / "projects" / workspace_id / "runs" / "legacy" / "CHECKPOINT.yaml"
+        canonical_legacy = Path(env["XDG_STATE_HOME"]) / "aips" / "projects" / workspace_id / "runs" / "legacy" / "CHECKPOINT.yaml"
         require(migrated["legacy_checkpoint"] is True, "legacy checkpoint compatibility flag missing")
         require(migrated["status"] == "CURRENT", "clean matching legacy checkpoint should remain resumable")
         require(canonical_legacy.exists(), "legacy external run was not migrated to canonical namespace")
-        require(not (legacy_run / "CHECKPOINT.yaml").exists(), "legacy external run copy should be moved")
+        require((legacy_run / "CHECKPOINT.yaml").exists(), "legacy external run migration must preserve its source")
 
         (project / ".ai").mkdir()
         attached_cp = json_run(
@@ -161,11 +162,10 @@ def main() -> int:
             ],
             env,
         )
-        require(attached_cp["mode"] == "ATTACHED", "attached checkpoint mode missing")
-        require(attached_resume["status"] == "CURRENT", "AIPS-owned .ai checkpoint writes must not stale the workspace")
-        # Remove local AIPS state so the remaining Git worktree checks see only product state.
-        import shutil
-        shutil.rmtree(project / ".ai")
+        require(attached_cp["mode"] == "EPHEMERAL", "checkpoint must use external state even with a legacy .ai directory")
+        require(attached_resume["status"] == "CURRENT", "external checkpoint should remain resumable")
+        require(not list((project / ".ai").iterdir()), "checkpoint must not write into a legacy .ai directory")
+        (project / ".ai").rmdir()
 
         iso1 = json_run(
             [

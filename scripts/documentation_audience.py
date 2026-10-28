@@ -33,6 +33,7 @@ def validate_config(config: dict[str, Any]) -> list[str]:
     standalone = config.get("standalone_human_documents")
     legacy = config.get("legacy_paths")
     human_roots = config.get("human_document_roots", [])
+    shared_roots = config.get("shared_document_roots", [])
     if not isinstance(shared, list):
         errors.append("shared_docs must be a list")
     if not isinstance(human, list) or not human:
@@ -44,10 +45,17 @@ def validate_config(config: dict[str, Any]) -> list[str]:
     if not isinstance(human_roots, list):
         errors.append("human_document_roots must be a list")
         human_roots = []
+    if not isinstance(shared_roots, list):
+        errors.append("shared_document_roots must be a list")
+        shared_roots = []
     for raw in human_roots:
         value = Path(str(raw))
         if value.is_absolute() or ".." in value.parts or not str(value).startswith("docs/") or str(value) == "docs/human":
             errors.append(f"Human-only document root must be a safe docs/ path outside docs/human/: {raw}")
+    for raw in shared_roots:
+        value = Path(str(raw))
+        if value.is_absolute() or ".." in value.parts or not str(value).startswith("docs/") or str(value) == "docs/human":
+            errors.append(f"Shared document root must be a safe docs/ path outside docs/human/: {raw}")
     if isinstance(human, list):
         for path in human:
             if not str(path).startswith("docs/human/"):
@@ -95,6 +103,9 @@ def validate_layout(root: Path, config: dict[str, Any]) -> list[str]:
     for raw in human_roots:
         if not (root / raw).is_dir():
             errors.append(f"Missing Human-only document root: {raw}")
+    for raw in config.get("shared_document_roots") or []:
+        if not (root / str(raw)).is_dir():
+            errors.append(f"Missing shared document root: {raw}")
 
     standalone = {str(path) for path in config.get("standalone_human_documents") or []}
     for raw in standalone:
@@ -103,6 +114,7 @@ def validate_layout(root: Path, config: dict[str, Any]) -> list[str]:
             errors.append(f"Missing standalone Human-only artifact: {raw}")
 
     shared = {str(path) for path in config.get("shared_docs") or []}
+    shared_roots = {str(path) for path in config.get("shared_document_roots") or []}
     docs_root = root / "docs"
     if docs_root.is_dir():
         for child in docs_root.iterdir():
@@ -114,7 +126,7 @@ def validate_layout(root: Path, config: dict[str, Any]) -> list[str]:
             )
             if child.is_file() and child.name in {".DS_Store", "Thumbs.db", "desktop.ini"} or ignored.returncode == 0:
                 continue
-            if child.is_dir() and (rel == "docs/human" or rel in human_roots):
+            if child.is_dir() and (rel == "docs/human" or rel in human_roots or rel in shared_roots):
                 continue
             if child.is_file() and rel in shared:
                 continue

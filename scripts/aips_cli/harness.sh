@@ -48,6 +48,45 @@ write_ownership_manifest() {
     --owned-home "$OWNED_HOME" --bin-home "$BIN_HOME" --target "$OWNERSHIP_MANIFEST" >/dev/null
 }
 
+harness_enablement_record() {
+  local py
+  py="$(python_bin)"
+  [ -n "$py" ] || return 1
+  "$py" "$SYSTEM_DIR/scripts/harness_enablement.py" --config "$CONFIG_HOME" --system "$SYSTEM_DIR" "$@"
+}
+
+harness_enablement_state() {
+  harness_enablement_record "$@"
+}
+
+run_harness_lifecycle_locked() {
+  local py
+  py="$(python_bin)"
+  [ -n "$py" ] || return 1
+  "$py" "$SYSTEM_DIR/scripts/harness_enablement.py" --config "$CONFIG_HOME" --system "$SYSTEM_DIR" \
+    --lock-exec "$SYSTEM_DIR/bin/aips" "$@"
+}
+
+refresh_harness_if_installed() {
+  run_harness_lifecycle_locked _refresh-harness-inner
+}
+
+refresh_harness_impl() {
+  local state
+  if ! state="$(harness_enablement_state --require-install-marker)"; then
+    warn "Harness enablement could not be verified; existing integrations were not changed."
+    return 0
+  fi
+  case "$state" in
+    ACTIVE)
+      say "Refreshing AIPS Global Harness for the installed system..."
+      harness_install_impl
+      ;;
+    OFF) ;;
+    *) warn "Harness enablement is unknown; existing integrations were not changed. Review ownership records before an explicit harness install." ;;
+  esac
+}
+
 install_opencode_adapter() {
   local py target
   py="$(python_bin)"
@@ -163,12 +202,20 @@ install_gemini_adapter() {
 }
 
 harness_install() {
-  mkdir -p "$HARNESS_HOME" "$OWNED_HOME" "$ADAPTER_STATE_HOME"
+  run_harness_lifecycle_locked _harness-install-inner
+}
+
+harness_install_impl() {
+  [ ! -L "$CONFIG_HOME" ] || die "AIPS config directory is a symlink; existing data was preserved."
+  (umask 077; mkdir -p "$CONFIG_HOME")
+  [ ! -L "$HARNESS_HOME" ] || die "Harness state directory is a symlink; existing data was preserved."
+  (umask 077; mkdir -p "$HARNESS_HOME" "$OWNED_HOME" "$ADAPTER_STATE_HOME")
   install_codex_adapter
   install_claude_adapter
   install_gemini_adapter
   install_opencode_adapter
   write_ownership_manifest
+  harness_enablement_record --clear-disabled
   say "AIPS Global Harness installed."
   say "Run: aips harness status"
 }
@@ -202,6 +249,25 @@ uninstall_gemini_adapter() {
 }
 
 harness_uninstall() {
+  run_harness_lifecycle_locked _harness-uninstall-inner
+}
+
+harness_uninstall_impl() {
+  if [ ! -e "$HARNESS_HOME" ] && [ ! -L "$HARNESS_HOME" ]; then
+    say "No AIPS Harness state found; runtime adapter cleanup was skipped."
+    return 0
+  fi
+  local current_state
+  current_state="$(harness_enablement_state 2>/dev/null || true)"
+  if [ "$current_state" = "OFF" ]; then
+    say "AIPS Global Harness is already OFF; preserved all ownership and user state at: $HARNESS_HOME"
+    return 0
+  fi
+  if [ -L "$HARNESS_HOME" ] || [ -L "$OWNERSHIP_MANIFEST" ] || [ ! -f "$OWNERSHIP_MANIFEST" ]; then
+    warn "Harness ownership is unclear; preserved all state. Inspect it and run: aips harness doctor"
+    return 1
+  fi
+
   local failed="false" py
   py="$(python_bin)"
 
@@ -249,15 +315,30 @@ harness_uninstall() {
     return 1
   fi
 
-  rm -rf "$HARNESS_HOME"
+  if ! harness_enablement_record --mark-disabled; then
+    warn "Runtime integrations were removed, but the Harness state could not be marked OFF; preserved all state at: $HARNESS_HOME"
+    return 1
+  fi
   say "AIPS Global Harness removed."
+  say "Harness ownership and any additional user data were preserved at: $HARNESS_HOME"
   say "User/project Agent instructions, Skills, source and Project Intelligence were preserved."
 }
 
 harness_status() {
+  local state
+  state="$(harness_enablement_state)" || state="UNKNOWN"
+  case "$state" in OFF|ACTIVE|UNKNOWN) ;; *) state="UNKNOWN" ;; esac
   say "AIPS Global Harness status"
-  say "Harness: $([ -f "$OWNERSHIP_MANIFEST" ] && echo active || echo not-installed)"
+  say "Harness: $state"
   say "Bootstrap: $SYSTEM_DIR/harness/BOOTSTRAP.md"
+  if [ "$state" = "UNKNOWN" ]; then
+    warn "Harness enablement is unknown; review ownership records."
+    return 0
+  fi
+  if [ "$state" = "OFF" ]; then
+    say "Runtime integrations: disabled"
+    return 0
+  fi
   local id
   for id in $(harness_host_ids); do
     local state status strategy resource capability enforcement
@@ -280,10 +361,21 @@ harness_status() {
 }
 
 harness_doctor() {
-  local failed="false"
+  local failed="false" state
+  state="$(harness_enablement_state)" || state="UNKNOWN"
+  case "$state" in OFF|ACTIVE|UNKNOWN) ;; *) state="UNKNOWN" ;; esac
   say "AIPS Global Harness doctor"
   [ -f "$SYSTEM_DIR/harness/BOOTSTRAP.md" ] && say "bootstrap: OK" || { warn "bootstrap missing"; failed="true"; }
-  [ -f "$OWNERSHIP_MANIFEST" ] && say "ownership manifest: OK" || { warn "ownership manifest missing (run aips harness install)"; failed="true"; }
+  say "Harness: $state"
+  if [ "$state" = "OFF" ]; then
+    [ "$failed" = "false" ]
+    return
+  fi
+  if [ "$state" = "UNKNOWN" ]; then
+    warn "Harness enablement is UNKNOWN; review preserved ownership records."
+    return 1
+  fi
+  say "ownership manifest: OK"
 
   local id status capability
   for id in $(harness_host_ids); do

@@ -12,6 +12,10 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+Native `git -C <path> push` validation follows the explicit target worktree, including its candidate SHA and scan evidence; invalid or dynamic target paths remain blocked.
+
+Publication parser changes preserve exact-candidate binding: upstream branch shorthand is accepted only for the checked-out branch and is normalized to the observed full HEAD SHA/ref. The regular scan, authorization and required-check boundaries still apply.
+
 Changes to local creative workflow contracts must update Scenario 236 and the user, technology, architecture, security, and orchestration references selected by the documentation-impact rules.
 
 OpenCode adapter、Harness 或 Scenario 235 變更須依 placement contract 將新增內容放在各 canonical H2；只確認檔案清單完整不足以通過 base/head 預檢。
@@ -69,7 +73,7 @@ Shared CLI dispatch changes require creative/Harness documentation closure even 
 
 When Project Intelligence candidate behavior changes, preserve its read-only status and verify the documentation placement and synchronization closure.
 
-The creative authorization change updates the recursive character-artwork and Harness documentation closure; its exact candidate, changed-file digest and boundary evidence are bound by `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`.
+The creative authorization change updates the recursive character-artwork and Harness documentation closure; its exact candidate, changed-file digest and boundary evidence are bound by `docs/qa/CORE_CHANGE_TEST_MATRIX.yaml`.
 
 The candidate report measures direct paths, closure additions, rule fan-in and repeated requirements. Repeated requirements are retained unless their content is shown to be redundant.
 
@@ -161,6 +165,8 @@ A Large/Core Change that materially changes a documented architecture flow but l
 
 ## Self-improvement / Constitution / publish approval
 
+Git Publish Approval binds the immutable candidate commit and target ref. Uncommitted files are reported separately and are not pushed with that commit; the exact-candidate Integration Gate still requires reproducible validation inputs.
+
 Changes to this system first pass `orchestration/SYSTEM_SELF_IMPROVEMENT.md`.
 
 If Constitution semantics are affected, the Constitutional Change Gate must complete before implementation. Material system changes also require Core Change Approval.
@@ -202,7 +208,7 @@ When the publication guard changes, keep every newly allowed command form paired
 
 The 0.83.0 candidate records shared Required Checks policy evidence and bounded Claude Code publication diagnostics.
 
-The dev-friction integration adds `aips publish ship`, the protected-path guard, person-only `aips profile` switches, worktree Intelligence seeding and AIPS-owned ComfyUI job interrupt; each is covered by its own Core Change evidence in `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml` and none grants publication or write authority.
+The dev-friction integration adds `aips publish ship`, the protected-path guard, person-only `aips profile` switches, worktree Intelligence seeding and AIPS-owned ComfyUI job interrupt; each is covered by its own Core Change evidence in `docs/qa/CORE_CHANGE_TEST_MATRIX.yaml` and none grants publication or write authority.
 
 Plan29 #6 is validated as an exact Core Change candidate with its own matrix and required repository check.
 
@@ -306,6 +312,8 @@ When product-delivery behavior changes, review together:
 
 ### Harness / Runtime adapters
 
+The CLI installation lifecycle does not register a Runtime adapter. The Harness lifecycle evidence covers explicit registration, fail-closed `UNKNOWN` classification, refresh only for verified `ACTIVE` ownership, and uninstall preservation of unrecognized local files.
+
 When Harness behavior changes, review together:
 
 - harness/BOOTSTRAP + HARNESS_PROTOCOL + ADAPTER_CONTRACT;
@@ -364,7 +372,7 @@ For creative authorization changes, derive regression cases from the adapter, po
 
 創作 runtime 變更驗證 user-only 授權、Context envelope、設定欄位與版本競爭、取消／換任務、媒材拒絕、損壞圖片及 provenance。真實推論與人工品質驗收需分開回報，不能由 fake engine PASS 代替。
 
-Core adapter changes bind lifecycle, security-boundary, documentation-closure, and exact-candidate Gate evidence in `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`.
+Core adapter changes bind lifecycle, security-boundary, documentation-closure, and exact-candidate Gate evidence in `docs/qa/CORE_CHANGE_TEST_MATRIX.yaml`.
 
 Risk-adaptive traversal changes use AST-extracted direct Python calls with bounded caller/consumer depth; unresolved dynamic dispatch and repository-wide partial graph coverage remain visible in evidence.
 
@@ -432,7 +440,7 @@ When durable run state changes, review together:
 - PROJECT_IDENTITY + RUN_RESUME;
 - RUN_CHECKPOINT + workspace STATE;
 - aips_identity.py + run_state.py + bin/aips run/identity routing;
-- ATTACHED / EPHEMERAL storage and legacy migration;
+- external user-state storage and read-only legacy migration;
 - revision / branch / dirty workspace fingerprint behavior;
 - EVENTS.jsonl redaction / no-transcript contract;
 - resume/identity scenarios and executable lifecycle evidence;
@@ -599,7 +607,7 @@ The dynamic ComfyUI lifecycle is included in Scenario 268 and the Large/Core Cha
 
 Scenario 236 lifecycle checks cover profile registry loading, bounded sampler validation, exact local component inventory, rejection of unreviewed topology families, FLUX 3 Klein `TextGenerate` schema/final-payload validation, and ordered multi-reference binding and hash checks. These synthetic checks do not claim Apple Silicon MPS inference or VAE output acceptance.
 
-Scenario 044 lifecycle evidence covers repository-local excludes for attached AIPS state and detach archives while preserving the project `.gitignore`.
+Scenario 044 lifecycle evidence proves attach/detach and preflight leave project files and Git metadata unchanged while preserving legacy `.ai/` data.
 
 Scenario 267 verifies READY+STALE local L2 writes together with the independent guard denials; the Core Change Matrix binds that evidence to the exact candidate.
 
@@ -695,7 +703,7 @@ Post-merge 的本地 `main` 與 managed installation 同步位於 `scripts/publi
 
 Scenario 204 的 module-extraction lifecycle 核對既有 facade 與 temporal current-mode 契約，讓內部拆分維持可回歸驗證。
 
-Selective Validation remains in `FULL_RUN_SHADOW` until an exact-artifact cohort covers at least 30 days, at least 30 unique pull requests, zero false-negative skips, conservative full-validation fallbacks, and deterministic full-run sampling. Each validation run retains one combined observation for 90 days. The daily Validation Observation Collector installs PyYAML from `constraints/tested.txt` before reading completed `validate.yml` runs with read-only Actions access, deduplicates reruns to the latest record per pull request, and calls `scripts/validation_graduation.py`; missing dependencies or missing, expired, cancelled, mismatched, or failed-attribution evidence blocks graduation. When the workflow run omits its pull request association, the collector resolves the exact head SHA through the read-only commit-to-pull-requests API and accepts only a unique PR in the same repository. If a full validation fails without a validator-specific failure record, all predicted skips are conservatively treated as failed. The evaluator reports validator-level run precision, skip precision, recall, and false-negative rate with their confusion counts; a `null` rate means its denominator is zero and is not evidence of zero risk. The evaluator reports `READY_FOR_HUMAN_REVIEW` only; a Human must separately decide whether to enable selective execution. The collector never changes which checks run. The 2026-10-11 one-day sample is `NOT_READY`: 19 workflow runs had complete artifact history, but only three unique PRs and three valid shadow records were available; ten records were incomplete or malformed. It contains 192 validator decisions, no observed failures, run precision 0, and undefined recall, skip precision, and false-negative rate. This is an initial descriptive sample, not graduation evidence. Its aggregate is recorded in `.aips/review/PLAN29_VALIDATION_SHADOW_EVIDENCE.yaml`. The collector job has a provisional 15-minute timeout: the available timing sample contains only two runs at about 31 seconds, too few for a reliable P95. Reassess the bound as more timing evidence accumulates. The scheduled and manual collector runs have no concurrency group because replacing a pending run could discard evidence.
+Selective Validation remains in `FULL_RUN_SHADOW` until an exact-artifact cohort covers at least 30 days, at least 30 unique pull requests, zero false-negative skips, conservative full-validation fallbacks, and deterministic full-run sampling. Each validation run retains one combined observation for 90 days. The daily Validation Observation Collector installs PyYAML from `constraints/tested.txt` before reading completed `validate.yml` runs with read-only Actions access, deduplicates reruns to the latest record per pull request, and calls `scripts/validation_graduation.py`; missing dependencies or missing, expired, cancelled, mismatched, or failed-attribution evidence blocks graduation. When the workflow run omits its pull request association, the collector resolves the exact head SHA through the read-only commit-to-pull-requests API and accepts only a unique PR in the same repository. If a full validation fails without a validator-specific failure record, all predicted skips are conservatively treated as failed. The evaluator reports validator-level run precision, skip precision, recall, and false-negative rate with their confusion counts; a `null` rate means its denominator is zero and is not evidence of zero risk. The evaluator reports `READY_FOR_HUMAN_REVIEW` only; a Human must separately decide whether to enable selective execution. The collector never changes which checks run. The 2026-10-11 one-day sample is `NOT_READY`: 19 workflow runs had complete artifact history, but only three unique PRs and three valid shadow records were available; ten records were incomplete or malformed. It contains 192 validator decisions, no observed failures, run precision 0, and undefined recall, skip precision, and false-negative rate. This is an initial descriptive sample, not graduation evidence. Its aggregate is recorded in `docs/history/aips-review/PLAN29_VALIDATION_SHADOW_EVIDENCE.yaml`. The collector job has a provisional 15-minute timeout: the available timing sample contains only two runs at about 31 seconds, too few for a reliable P95. Reassess the bound as more timing evidence accumulates. The scheduled and manual collector runs have no concurrency group because replacing a pending run could discard evidence.
 
 `scripts/validation_taxonomy.py` checks that `config/validation-scope.yaml` and `config/validation-graduation.yaml` declare the same unique full-validation classes and path prefixes. Missing, malformed, duplicate, or divergent declarations fail closed; this audit is read-only and never enables selective execution.
 
@@ -779,11 +787,13 @@ When deterministic scheduling or merge-candidate validation changes, review toge
 - Scenario 135–136 lifecycle evidence and coverage registry;
 - Human Architecture Overview / User Guide / Technology Guide.
 
-Large/Core candidate 使用唯一 canonical `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`；版本化矩陣可保留作歷史，但不能取代 CI 實際讀取路徑。
+Large/Core candidate 使用唯一 canonical `docs/qa/CORE_CHANGE_TEST_MATRIX.yaml`；版本化矩陣可保留作歷史，但不能取代 CI 實際讀取路徑。
 
 Do not let the Scheduler make semantic scope decisions, and do not let Integration Gate PASS create merge/release authority.
 
 ## Branch lifecycle hygiene
+
+Branch lifecycle checks bind cleanup proposals to observed refs and exact repository identity; user branches and committed work remain untouched without explicit authorization.
 
 Branch cleanup inventory is read-only by default; a proposed exact-SHA candidate never authorizes deletion without separate Human approval.
 
@@ -791,6 +801,8 @@ Use `config/branch-lifecycle.yaml` and `scripts/branch_hygiene.py` before cleanu
 
 
 ## Repository Health / Architecture Drift consistency
+
+The capability registry is the authority for supported surfaces; generated architecture projections must pass `python scripts/capability_registry.py check` before release.
 
 The capability registry records the candidate module and its lifecycle/contract evidence; generated projections must be regenerated and checked from that registry.
 
@@ -863,6 +875,8 @@ Plan21 Phase 0 recorded a clean `origin/main` full-validation baseline at 165,75
 
 
 ## Controlled branch cleanup
+
+Cleanup remains proposal-first and retains branches that contain committed work; automated maintenance only reports stale refs until a Human approves the exact deletion set.
 
 發布恢復使用 `aips publish prepare` 重新觀察目前候選與 live GitHub 狀態；既有 OPEN PR 不再建立，CLOSED/歧義 PR 停止，MERGED 必須驗證 exact PR head 與 merge commit 已納入 live base。觀察只由呼叫者選擇保存，不儲存 prompt、body 內容或憑證。
 

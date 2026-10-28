@@ -39,6 +39,8 @@ v0.14 新增 Scenario 111–115，全部都有直接 executable evidence：2 個
 
 ## Execution Isolation Conformance
 
+Scenario 275 preserves the same isolation boundary: project governance preferences stay outside the repository and cannot grant runtime execution authority.
+
 Synthetic Qwen Edit Plus reference tests remain separate from independent review and real model quality; local ComfyUI still uses the existing loopback and staged-byte verification boundaries.
 
 Evolution Radar quarterly scheduling is covered by Scenario 155: the workflow waits until day 3 after monthly reports, and missing monthly evidence stays `INCOMPLETE_INPUT` rather than becoming a zero-yield claim.
@@ -221,6 +223,8 @@ Automated     49.6%
 
 ## v0.16.2 Install / Preflight Evidence Maturity
 
+Harness 安裝生命週期另由 `tests/evidence/install_preflight_lifecycle.py` 與 `tests/test_harness_enablement.py` 驗證：AIPS CLI 安裝預設不註冊 Runtime adapter；明確安裝後才為 `ACTIVE`，有效停用標記為 `OFF`，無法驗證的狀態為 `UNKNOWN`。卸載保留 Harness ownership 目錄與其中未辨識資料。
+
 以完整隔離 fixture 實際執行 AIPS CLI，而不是只檢查 shell 文字：
 
 ~~~text
@@ -241,8 +245,8 @@ temporary AIPS Git repo
 - 更新後會重新進入 updated CLI；
 - EPHEMERAL project 不會被 preflight 自動 Attach；
 - target product repository 不會被自動 pull；
-- ATTACHED project 的 exact system version / commit provenance 會刷新；
-- attach / status / detach / restore / uninstall lifecycle；
+- attach/bootstrap 只建立或匯入 external state，不寫入專案；
+- attach / status / detach / uninstall 的 idempotent external-state lifecycle；
 - default uninstall 保留 Project `.ai/`、External Intelligence、system repo 與 venv；
 - explicit `--remove-cache --remove-venv` 才移除對應 AIPS-owned state；
 - regular file / foreign symlink CLI collision 不會被覆寫；
@@ -1491,6 +1495,8 @@ Plan19 extends the allowlist with optional runtime-observed token usage, provena
 
 ## Scenario 182 — Deterministic Execution Ownership
 
+Run ownership and resume evidence are bound to the external project identity; governance mode does not bypass scheduler ownership checks.
+
 The shared path/hash extraction preserves scheduler and run projection facade outputs; it does not change ownership, locking or resume behavior.
 
 Lifecycle evidence covers scheduler-serialized ownership claims, active worktree/isolation binding, overlapping boundary rejection, heartbeat expiry, explicit dirty recovery, rename-aware diff reconciliation, out-of-scope blocking and read-only ownership projection. Task Graph v1 and legacy run records remain compatible; unverified runtime enforcement remains `ADVISORY`.
@@ -1592,7 +1598,7 @@ Browser-dependent render validators follow the same exact-plan boundary: `needs_
 
 Current inventory after Scenario 201: 34 deterministic + 111 lifecycle + 54 agent_eval = 199 automated; 2 manual; 201 total; 0 uncovered.
 
-Plan21 Phase 0 adds `tests/evidence/plan21_contract_baseline.py` to the required repository validation runner. It checks raw and `sha256:` canonical digest vectors, current CLI stdout/stderr and exit contracts, and caller-specific glob behavior. `.aips/review/PLAN21_VALIDATION_TIMING_BASELINE.yaml` records the one-run `origin/main` baseline (230 scenarios, 86 timing entries, 165,754 ms); it is observational evidence and does not establish a trend or alter the scenario inventory.
+Plan21 Phase 0 adds `tests/evidence/plan21_contract_baseline.py` to the required repository validation runner. It checks raw and `sha256:` canonical digest vectors, current CLI stdout/stderr and exit contracts, and caller-specific glob behavior. `docs/history/aips-review/PLAN21_VALIDATION_TIMING_BASELINE.yaml` records the one-run `origin/main` baseline (230 scenarios, 86 timing entries, 165,754 ms); it is observational evidence and does not establish a trend or alter the scenario inventory.
 
 ## Scenarios 202–209 — Plan13 current and provenance evidence
 
@@ -1649,6 +1655,8 @@ The monthly evaluator deterministically samples up to 20 signal fingerprints and
 驗證 deterministic pre-analysis 對候選排除原因與計數的可重現性，且不改變人工決策權。
 
 ## Scenario 220 — Parallel advisory fast feedback
+
+Validation-observation evidence reports only completed exact-candidate outcomes; advisory fast feedback remains separate from required repository and publication checks.
 
 Validation Observation 新增相同候選的完整耗時量測與依 Change Class 分組的 P50／P95。重跑不當作新的 PR；歷史紀錄不完整時不授予 selective execution，完整驗證與 required repository check 維持。
 
@@ -1765,7 +1773,7 @@ The additive `aips publish diagnose --diagnostic-id` route preserves the existin
 
 Scenario 233 retains public CLI argument and error compatibility; the structured Creative and Runtime errors added in Scenario 262 do not change its command surface.
 
-Scenario 044 lifecycle evidence also verifies attach-time repository-local Git excludes for AIPS `.ai/` state and detach archives, including idempotence, nested repositories, preservation of existing rules, unchanged `.gitignore`, and non-Git projects.
+Scenario 044 verifies attach/detach and preflight leave project files and Git metadata unchanged, preserve legacy `.ai/` sources, and keep external Intelligence available for Git and non-Git projects.
 
 The publication Doctor command keeps its structured JSON status and safe reason-code contract while policy visibility now distinguishes permission-hidden state.
 
@@ -1868,6 +1876,8 @@ The cross-profile quality evidence extension is covered by Scenario 258; this cr
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+The Skill Explorer remains an explicit capability-selection surface; optional project governance does not auto-install or activate Skills.
+
 Creative ComfyUI workflow support does not add a Skill or change Skill catalog, installation, or routing behavior.
 
 OpenCode Context guard runs before Skill execution and leaves the catalog, installation and routing behavior unchanged.
@@ -1950,7 +1960,7 @@ Scenario 269 changes no Skill discovery or installation behavior; its lifecycle 
 
 ## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance
 
-Scenario 044 lifecycle evidence verifies attach-time local Git excludes for `.ai/` and detach archives, including nested paths, rule preservation, unchanged `.gitignore`, and non-Git projects.
+Scenario 044 verifies no-write attach/detach behavior, external Intelligence persistence and preservation of legacy `.ai/` data.
 
 Scenario 267's direct-write lifecycle complements diagnostics: stale READY freshness remains visible while independent native guard denials remain covered.
 
@@ -1985,7 +1995,7 @@ Scenario 097's publication command lifecycle also covers substitution position, 
 
 Scenario 240 adds the publication-mode contract while retaining these diagnostics as read-only and non-authorizing. Its current acceptance includes `feat/` branches, safe staged-content failure codes, and exact-head `--auto` only after non-empty required checks pass. Scenario 240 also covers real M4A structure validation, metadata secret scanning, spoof rejection and the 8 MiB limit while preserving existing media-format behavior.
 
-Recovery Plan 延伸既有 reason code／next action，標示順序、相依與 derived-state-write 授權需求。診斷不執行計畫，UNKNOWN 狀態先提供唯讀檢查，EPHEMERAL 不自動轉為 ATTACHED。
+Recovery Plan 延伸既有 reason code／next action，標示順序、相依與 derived-state-write 授權需求。診斷不執行計畫，UNKNOWN 狀態先提供唯讀檢查；Project Intelligence 與 run state 一律維持外部儲存。
 
 Scenario 239 adds a separate read-only relationship-candidate lifecycle; diagnostics and candidate reports both leave Project Intelligence canonical state unchanged.
 
@@ -2012,6 +2022,12 @@ Declared behavior dependencies select potentially stale Eval cases for review. T
 Current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md).
 
 ## Scenario 260 — Publication diagnostics and Doctor
+
+A literal `git -C <path> push` resolves the actual target worktree before candidate and scan checks; invocation cwd does not substitute for the explicit target, and invalid/dynamic paths fail closed.
+
+Native Git publication also accepts `git push -u/--set-upstream origin <current-branch>`; the guard resolves it to the observed full HEAD SHA and full branch ref. Bare branch names, `HEAD`, and other branches remain blocked, and diagnosis grants no authority.
+
+Publication lifecycle evidence covers a dirty selected worktree with an immutable candidate: planning and `publish ship` remain bound to the committed SHA, preserve local files, and do not classify that state as an AIPS publication blocker. Remote errors and repository protection evidence remain independently enforced.
 
 Scenario 261 covers structured JSON errors from failed `prepare` and `diagnose` calls, with safe recovery guidance and no implied retry or publication authority.
 
@@ -2067,6 +2083,8 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 
 ## Scenario 262 — ComfyUI Resource Authorization and Diagnostics
 
+Resource profiles and grants remain independently validated; optional project modes do not authorize ComfyUI endpoints or submissions.
+
 Scenario 236 adds the Qwen Image Edit Plus per-port mapping under the same fixed loopback destination and existing resource authorization boundary.
 
 Scenario 236 now exercises Base and Distilled on the same reviewed Klein topology and ordered one-to-eight local reference bindings. Resource grants, fixed loopback destinations and diagnostics remain unchanged; staged references are hash-checked before submission.
@@ -2093,6 +2111,8 @@ Scenario 268 verifies opt-in local API workflow import, scan and inspection; bou
 
 ## Scenario 263 — Commit Safety Diagnostics
 
+Moving legacy governance records to an external backup does not alter staged-content scanning or permit skipped safety checks.
+
 The candidate scanner recognizes only the approved generated-password and parameterized SQL expression shapes as non-literal values. High-entropy literal assignments remain detectable; JSON text is bounded at 8,000,000 bytes and other text at 2,000,000 bytes, with oversized inputs blocked. The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; there is no extension-wide exemption, and the 2,000,000-byte text limit remains unchanged. The same exact relative paths are excluded in any repository using the shared policy.
 
 The candidate/history publication scanner separately classifies policy, Git-object and file-read failures; Scenario 261 verifies those failures remain blocked without exposing paths or exception text.
@@ -2110,6 +2130,8 @@ Scenario 267 keeps this creative Git workspace denial unchanged; the advisory ap
 The lifecycle verifies default Git destination rejection, explicit exact-root opt-in, hash revalidation, create-only writes, and unchanged Git index bytes. The source remains a non-Git EPHEMERAL workspace; import does not stage or commit.
 
 ## Scenario 266 — Content Safety Injection Context and Recovery
+
+Project governance settings are treated as untrusted data; content-safety findings and publication approval remain separate decisions.
 
 A CLI JSON error response contains only allowlisted diagnostics; scan failures continue to block publication and never produce successful scan evidence.
 
@@ -2138,3 +2160,7 @@ Scenario 269 refreshes only the CLI help golden vectors for `aips intelligence g
 Scenario 272 covers the profile switch mechanism: default-strict loading, fail-closed diagnostics, a TTY and typed-phrase gate for `aips profile set`, and agent-write denial; no relaxation is enabled.
 
 Scenario 274 covers the profile-gated relaxations `claude_coauthor_trailer` (exact Claude co-author trailer in the final trailer block of the publication gate PII scan) and `post_merge_refresh` (one detached `aips intelligence refresh` per store per HEAD); both default to off.
+
+## Scenario 275 — Optional Project Governance Modes
+
+Scenario 275 verifies the default `off`, private external repository-identity storage, explicit `enforce` scopes, advisory-only observe/assist Hook responses, fail-closed corrupt configuration, and the precedence of global runtime/high-assurance policy. Project settings do not grant or deny native Host permission or weaken GitHub protections.

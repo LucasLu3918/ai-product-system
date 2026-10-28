@@ -61,15 +61,26 @@ Plan
 
 Existing Project mutation 前會解析 nearest instructions、Project Intelligence、Change Boundary 與 Impact Graph。沒有 `.ai/` 仍可使用 EPHEMERAL mode，Reusable Intelligence 存在 AIPS external cache。
 
-需要 project-local persistent state：
+明確初始化外部 Project Intelligence（不建立專案內 AIPS 檔案）：
 
 ~~~bash
 aips attach /path/to/project
 ~~~
 
-Detach 會先同步可重用 Intelligence，再封存 project-local workspace；不直接刪除使用者累積資料。
+AIPS 安裝後不會自動接管專案 Hook。使用 `aips project mode show` 檢查目前模式，或明確啟用：
+
+~~~sh
+aips project mode set assist --project /path/to/project
+aips project mode set enforce --project /path/to/project --scope git_push,gh_pr_merge
+~~~
+
+缺少設定時為 `off`；`observe` 與 `assist` 不會因 AIPS 專案層治理阻擋或替 Host 放行。硬內容安全掃描在所有模式都會執行，安全 findings 不會降級成提醒。`enforce` 只套用明列動作，且設定存在使用者層 XDG 目錄，不會寫入專案。`aips status <project>` 會同時顯示獨立的 optional governance mode。
+
+所有新 Intelligence、checkpoint 與 Change Impact 草稿都保存在使用者層。`aips detach` 是相容入口，不會搬移或刪除資料；停用 optional governance 請使用 `aips project mode set off --project <path>`。既有 `.ai/` 會保留為唯讀 legacy 資料。
 
 ## Creative Direction、Style 與 Brand
+
+ComfyUI workflow 的資源授權依明確 profile 與 grant 驗證；模型探索只使用固定 loopback API，診斷不會自動提交工作。
 
 OpenCode 的 Context 上限也適用於本機 Creative 工作；超限時維持 fail-closed，不投遞 Context 或支援的原生檔案寫入，修復後再重試。
 
@@ -219,6 +230,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
+安裝 AIPS CLI 不會註冊 Runtime adapter；`aips harness status` 初始回報 `OFF`。需要個人整合時才執行 `aips harness install`。更新只刷新可驗證的啟用記錄；`UNKNOWN` 會保留原狀。`aips harness uninstall` 移除可驗證的外部整合並保留本機 ownership／額外資料，標記 `OFF`。
+
 Creative ComfyUI workflows use the separate AIPS Creative execution contract; Qwen reference binding does not expand Host adapter permissions.
 
 OpenCode 顯示 `context_compaction_over_budget` 時，先以 `aips intelligence context --runtime opencode --project "$PWD" --prompt "<task>" --full --explain --format json` 檢視，再執行 `aips intelligence refresh-plan --project "$PWD"`。僅更新受影響的 Intelligence 主題後重試；修復前支援的 native file writes 維持拒絕。診斷不包含 prompt 或 section 內容，且不涵蓋一般 Shell/MCP 寫入。
@@ -326,7 +339,7 @@ The `creative workflows` CLI is a separate workflow utility and does not add or 
 Model profile registry 是 Creative runtime 設定，不會安裝 Skills，也不改變 Skill routing。
 本次新增的 Distilled profile 與一至八張動態參考圖只擴充既有 Creative runtime 資料契約，不新增 Skill、Role、catalog 項目或安裝路由。
 
-Skill integration remains independent of project attachment: `aips attach` is explicit, and its local `.git/info/exclude` rules keep AIPS state out of ordinary staging without changing shared Skill installation behavior.
+Skill installation remains independent of project state. `aips attach` only initializes or imports external user state; it does not change project files, Git configuration, hooks or ignore rules.
 
 Scenario 267 changes no Skill discovery or installation behavior; its lifecycle exercises Project Intelligence freshness and the OpenCode direct-write guard.
 
@@ -359,7 +372,7 @@ Skills and portable commands can direct users to the core `aips publish doctor` 
 
 使用 <a href="./skill-catalog.html">Skill Explorer</a> 依名稱、用途或分類搜尋 49 個目前可用的 AIPS Skills，並複製提示範例。Explorer 與 `aips skills list --include-upstream` 也列出 Matt Pocock 上游 38 項 vendored Skills、來源摘要、路由處置與安裝資格；31 項可安裝，7 項同名技能使用 AIPS canonical 版本。`disposition` 描述與 AIPS 的整合關係，使用者仍可自行決定是否安裝上游副本。`$grill-with-docs` 是獨立明確呼叫 Skill，不會由一般規劃或寫文件需求自動觸發。Writing Fragments、Beats、Shape 維持明確要求才使用。
 
-終端機可執行 `aips skills list` 查看繁中分組清單；以 `--capability <id>`、`--trigger <trigger>` 篩選，`--include-upstream` 加入上游 38 項、路由處置、安裝資格與本地來源路徑，`--locale en` 切換英文，`--group-by category|status|source` 切換分組，`--format json` 輸出機器可讀資料。此命令只讀取 Skill 中繼資料，不會修改 Skill 或索引。
+終端機可執行 `aips skills list` 查看繁中分組清單；CLI 可獨立於 Runtime adapter 啟用狀態使用。以 `--capability <id>`、`--trigger <trigger>` 篩選，`--include-upstream` 加入上游 38 項、路由處置、安裝資格與本地來源路徑，`--locale en` 切換英文，`--group-by category|status|source` 切換分組，`--format json` 輸出機器可讀資料。此命令只讀取 Skill 中繼資料，不會修改 Skill 或索引。
 
 將 AIPS Skills 安裝為 Host 原生 Skills，可使用 `aips skills install <skill-id> --host codex|claude|gemini`。Codex 與 Gemini 共用 `~/.agents/skills`；Claude Code 使用 `~/.claude/skills`。加入 `--scope workspace --project <path>` 可改裝在指定專案；以 `aips skills status` 檢查紀錄，以 `aips skills uninstall <skill-id> --host <host>` 移除。安裝紀錄位於 AIPS XDG config 下的 `skills/ownership.json`，記錄 Host、路徑及逐檔摘要。重複安裝會更新同一份 AIPS-owned 投影，不會覆寫無主控記錄的原生 Skill。卸載只刪除摘要仍吻合的檔案；修改檔案與額外資源會保留。
 
@@ -404,6 +417,8 @@ Architecture trade-off、Threat Model、視覺方向等主觀專業判斷不應�
 
 ## Deterministic Scheduler
 
+Scheduler 依明確 task graph 與 ownership 狀態執行；缺少可驗證的 task owner 或 resume 證據時，應停止並回報原因。
+
 The Scheduler does not choose ComfyUI node mappings; Scenario 236 verifies Qwen reference binding separately from task ordering and resume state.
 
 Creative 執行仍由既有 executor 明確呼叫；FLUX 3 Klein 的 schema 預檢只驗證最終 payload，不會建立排程工作或重送失敗工作。
@@ -431,6 +446,8 @@ PR 驗證會把 Gate 與 Repository Health 報告放在 CI runner 的暫存位�
 Installation entrypoint workflow 保留既有 pull request 路徑與平台檢查，並以近期 job P95 加安全倍數設定明確逾時；逾時會作為該 job 的失敗呈現，不改變 required check 或 Human 核准權限。
 
 ## Execution Isolation 與 Runtime Resource
+
+平行工作透過獨立 worktree 與 runtime resource 配額隔離；隔離狀態可觀測，但不會擴大專案或 Host 權限。
 
 Qwen Edit Plus references remain project-staged, hash-verified, and submitted only through the existing local loopback ComfyUI boundary.
 
@@ -657,6 +674,8 @@ ComfyUI 工作恢復的 lifecycle fixture 只驗證 queue 讀取、確切 ID 刪
 
 ## Logging、Observability 與 Operations
 
+Run dashboard 只投影外部持久化的 run state 與事件；不得把執行紀錄寫入專案目錄或暴露原始敏感輸出。
+
 創作可靠性 Core candidate 保留完整 Gate、媒材拒絕及取消授權回歸。損壞 PNG fixture 必須失敗；合成測試不能替代真實模型與人工品質驗收。
 
 Context diagnostics 只記錄 route categories、protocol IDs/paths 與解析狀態，不保存原始 prompt 或私有 reasoning。
@@ -703,6 +722,8 @@ The dashboard is an observation surface. It shows workflow state, gate, last act
 
 ## Checkpoint / Resume
 
+Checkpoint 與 resume state 儲存在 AIPS 使用者狀態目錄，並以專案身分命名空間隔離；附加或解除專案不會清除使用者資料。
+
 For Creative `generate-set`, the job result records each Bundle independently; reruns skip only completed outputs whose saved Bundle, output and provenance hashes still match.
 
 Run projection fingerprints preserve their existing facade and canonical digest bytes after helper consolidation; run state and resume authority remain governed by the existing contracts.
@@ -715,7 +736,9 @@ Standalone and shadow dependency-review artifacts retain exact base/head, run ID
 
 ## Project Intelligence
 
-在 Git worktree 內執行 `aips attach` 或 `aips detach` 時，AIPS 會將 `.ai/` 和 `.ai.detached-*` 寫入 repository-local `.git/info/exclude`，一般 `git add` 不會把這些本機工作區加入提交。既有 exclude 規則會保留，專案 `.gitignore` 不會變更；這項規則不會解除已追蹤檔案的追蹤，也不阻擋明確的 force-add。
+`aips attach`、`aips detach` 與 preflight 不會寫入 `.ai/`、`.aips/`、`.git/info/exclude`、Git hooks 或專案設定。若既有 `.ai/` 含有 Intelligence，明確執行 attach/bootstrap 會驗證後複製到外部 user state，保留原始內容供審核及回復。
+
+遷移舊 repo 資料時，先執行 `aips migrate-state --project <path> --dry-run` 檢視 Git-listed、未追蹤與 ignored 路徑；`possible_durable_knowledge` 是保守提示，仍需逐項審核。確認備份目的地位於 repo 外後，`--apply --backup-to <absolute-path> --confirm-repository-id <exact-id>` 會先產生私密、checksum 驗證的備份，再只從 Git index 解除 `.ai/`、`.aips/` 追蹤，保留工作目錄內容。若需回復 index，使用命令回報的 `git restore --staged -- .ai .aips`；備份不會自動刪除。
 
 
 診斷的 Recovery Plan 按既有狀態提供檢查、補主題、finalize 或 refresh 順序。每步都標示操作種類與所需授權；計畫供檢視，不會自動執行或改變 Project Mode。
@@ -742,6 +765,12 @@ Just-in-Time Retrieval 只帶入本次任務相關的 code、symbols、tests、h
 Retrieval index persistence is an internal, rebuildable cache boundary in `scripts/retrieval_storage.py`; existing commands and imports continue through the `retrieval_intelligence.py` compatibility facade.
 
 ## Git Publication 與 Release
+
+使用 `git -C <path> push` 時，`<path>` 以執行命令時的 cwd 為基準解析；AIPS 將候選 SHA、ref 與掃描綁定到該目標工作樹。無效、缺漏或動態路徑會在候選檢查前拒絕。
+
+原生推送可使用完整候選 SHA 與完整分支 ref，或 `git push -u/--set-upstream origin <目前分支>`。分支縮寫只接受所選工作樹目前分支，並正規化為已觀測的完整 HEAD SHA/ref；裸分支名稱、`HEAD` 或其他分支仍拒絕。語法支援不代表授權，掃描、遠端政策與 Human approval 仍照常執行。
+
+一般 personal publication 只推送已提交的 candidate SHA/ref。本機未提交修改會保留並顯示為工作樹診斷，不會被自動加入候選，也不會單獨阻擋該 commit；遠端授權、完整內容掃描與 GitHub 保護仍適用。
 
 The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; all other WebM paths and near-matches remain subject to strict candidate scanning.
 
@@ -799,13 +828,13 @@ Personal Mode 的逐次合併確認和 High-Assurance Mode 的外部 signed gran
 
 TTF、OTF、WOFF 與 WOFF2 字型也可通過有界 metadata 掃描；AIPS 會核對檔案簽章、格式、副檔名及解壓大小，並掃描字型名稱與廠商欄位。缺少解析套件、格式偽裝、損毀、超出上限或 metadata 命中 Secret／PII／Injection 規則時，commit 與發布都會阻擋。字型輸入上限為 8 MiB、宣告解壓上限為 32 MiB。
 
-發布前使用 `aips publish prepare --worktree <candidate-root> --title <title> --body-file <file>`；原生工具必須使用輸出的 `cwd` 與精確 `argv`。成功完成完整候選／歷史 Secret Scan 後，Prepare 會在 private user cache 寫入 30 分鐘有效的掃描 evidence，精確綁定 repo/worktree、base/head、operation、remote、full target ref、remote OID、diff、scanner 與 policy。Hook 每次仍重驗 Git／遠端／目標；缺少、過期、毀損或不相符 evidence 會拒絕並要求重新 Prepare。此 evidence 不授權推送，完整候選／歷史掃描仍由 Prepare 和 final Integration Gate 執行。`--expected-fingerprint` 可拒絕舊觀察，`--host-denied` 只回報 Host 拒絕，`--auto-merge` 只規劃 GitHub `--auto`，要求非空且全部通過的 required checks，並保留原生 Human 授權。每次續行重新查詢遠端分支與 PR；PLANNED 不是授權，也不是完整 Integration Gate PASS。個人模式接受帶 `-u`／`--set-upstream` 的 push，但仍要求精確 candidate SHA、唯一 origin 與完整同名工程 branch ref。
+發布前使用 `aips publish prepare --worktree <candidate-root> --title <title> --body-file <file>`；原生工具必須使用輸出的 `cwd` 與精確 `argv`。成功完成完整候選／歷史 Secret Scan 後，Prepare 會在 private user cache 寫入 30 分鐘有效的掃描 evidence，精確綁定 repo/worktree、base/head、operation、remote、full target ref、remote OID、diff、scanner 與 policy。Hook 每次仍重驗 Git／遠端／目標；缺少、過期、毀損或不相符 evidence 會拒絕並要求重新 Prepare。此 evidence 不授權推送，完整候選／歷史掃描仍由 Prepare 和 final Integration Gate 執行。`--expected-fingerprint` 可拒絕舊觀察，`--host-denied` 只回報 Host 拒絕，`--auto-merge` 只規劃 GitHub `--auto`，要求非空且全部通過的 required checks，並保留原生 Human 授權。每次續行重新查詢遠端分支與 PR；PLANNED 不是授權，也不是完整 Integration Gate PASS。個人模式可使用明確完整 SHA/ref，或帶 `-u`／`--set-upstream` 的目前工程分支縮寫；後者會綁定至已觀測的完整 HEAD SHA 與 full branch ref，並仍須通過唯一 origin、掃描與既有授權檢查。
 
 Prepare 與 `aips publish diagnose` 會並列候選驗證、授權與執行狀態。`PLANNED` 代表只完成規劃；`AWAITING_AUTHORITY` 代表需要 Human grant；Hook 的 `AUTHORIZED` 只代表 AIPS Hook 放行，Host 仍可能拒絕且指令尚未執行；`EXECUTED` 只能由實際執行結果確認。`next_step: PUSH`、掃描通過或觀測指紋都不會授予權限。診斷包含安全的 worktree ID、候選 SHA、完整 target ref、publication mode 與 AIPS 版本／revision，僅供核對環境，不作為授權憑證。未知錯誤會回報 `INTERNAL_DIAGNOSTIC_GAP`；已知分支目標不一致會回報 `PUSH_TARGET_BRANCH_MISMATCH`，並提供繁中排除步驟。
 
 Diagnostic ID 只有在使用者已設定既有 `AIPS_GOVERNANCE_AUDIT_LEDGER` 時，才會寫入 allowlist 欄位並可用 `aips publish diagnose --diagnostic-id <UUID> --format json` 查詢。查詢會驗證 hash chain；未設定時顯示 `NOT_CONFIGURED`，不會自動建立新 ledger。Trace 寫入失敗不會改變 Hook 的允許／拒絕決定，也不輸出原始指令或例外內容。
 
-`aips publish diagnose` 對 pipe、多重命令、Shell 包裝語法與 `git push -u` 維持拒絕，並在既有 `COMMAND_FORM_UNSUPPORTED` 下提供 `detail_code` 與安全修正指引。Claude Code 的 `PostToolUseFailure:Bash` 另外回報已開始執行的原生工具失敗階段、固定錯誤分類及可解析的 exit code；原始 Host 錯誤與命令不會進診斷，Hook 不會重試或授權。PreToolUse 拒絕仍標示 `NOT_EXECUTED`。
+`aips publish diagnose` 對 pipe、多重命令與 Shell 包裝語法維持拒絕；`git push -u/--set-upstream origin <目前分支>` 只在分支符合目前工程 branch policy 時接受，並以唯讀方式正規化至目前候選 SHA/ref。裸分支、`HEAD` 或其他分支仍拒絕。診斷會在既有穩定錯誤碼下提供 `detail_code` 與安全修正指引，不會授權推送。Claude Code 的 `PostToolUseFailure:Bash` 另外回報已開始執行的原生工具失敗階段、固定錯誤分類及可解析的 exit code；原始 Host 錯誤與命令不會進診斷，Hook 不會重試或授權。PreToolUse 拒絕仍標示 `NOT_EXECUTED`。
 
 `branch-hygiene.yml` 的報告會依 branch SHA、目前 main、local checkout 與 PR 狀態列出 `KEEP`、`SUPERSEDED`、`REBASE_REQUIRED` 或 `CLEANUP_CANDIDATE`。這些分類供維護者檢視，不會自動 merge、rebase、關閉 PR 或刪除 branch；清理仍須逐筆核准 exact manifest。
 
@@ -880,7 +909,7 @@ local implementation
 
 Agent、MCP、CI workflow 或 external analyzer 不能因為具有執行能力就自行取得上述 authority。
 
-提交前可執行 `aips publish preview --base origin/main --change-class <standard|large|core>`，預覽已提交、暫存、未暫存及未追蹤檔案的文件閉包與矩陣綁定；必須先處理 `pending` 項目。`aips publish matrix-sync --base origin/main` 只更新 canonical Core Matrix 的 base/hash，更新後仍需重新檢視範圍與證據，再把矩陣標記為 READY。發布前再以 `aips publish preflight --base origin/main --head HEAD --change-class <standard|large|core> --output <report>` 執行與 CI 相同的 exact-candidate resolver。Large/Core PR 必須同步套用對應 label，並使用 `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`。受保護 `main` 由 `publish plan` 直接規劃 Pull Request，不先嘗試直推。
+提交前可執行 `aips publish preview --base origin/main --change-class <standard|large|core>`，預覽已提交、暫存、未暫存及未追蹤檔案的文件閉包與矩陣綁定；必須先處理 `pending` 項目。`aips publish matrix-sync --base origin/main` 只更新 canonical Core Matrix 的 base/hash，更新後仍需重新檢視範圍與證據，再把矩陣標記為 READY。發布前再以 `aips publish preflight --base origin/main --head HEAD --change-class <standard|large|core> --output <report>` 執行與 CI 相同的 exact-candidate resolver。Large/Core PR 必須同步套用對應 label，並使用 `docs/qa/CORE_CHANGE_TEST_MATRIX.yaml`。受保護 `main` 由 `publish plan` 直接規劃 Pull Request，不先嘗試直推。
 
 若用 GitHub Connector／API 建立 PR 分支，先確認 `aips publish environment` 可執行完整驗證；文件範圍確定後重新執行 `publish preview`。本地候選提交與 preflight 通過後，執行 `python scripts/publication_transfer.py prepare --base <base-sha> --repository <owner/name>`，核對 `origin` 與預期目的地。建立遠端 blob 與 tree 後，將 GitHub 回傳的 `repository`、`base_sha`、`tree_sha` 及逐檔 `blobs` SHA 寫入倉庫外的暫存 JSON，再執行同腳本的 `verify --base <base-sha> --repository <owner/name> --receipt <receipt.json>`。只有 `READY_TO_PUBLISH` 才能建立遠端 commit／branch；若主分支已移動，先重建候選並重驗。`publish plan` 的 `gh` 認證狀態不代表 Connector 的認證狀態，Connector 連線需在發佈工具側另行確認。
 
@@ -989,7 +1018,7 @@ Commit, pull request and release content is scanned before durable/public public
 
 The commit guard accepts quoted-delimiter heredoc messages, literal `git add` commands joined by `&&`, `-a`/`-am` and `--amend`, and scans worktree content the commit would include; secret, PII and ambiguous injection (`REVIEW`) findings still block at commit (Scenario 169).
 
-守衛現在放行唯讀指令與 Claude Code 標準的 commit 寫法（引號定界符 heredoc、`git add … && git commit`、`-a`、`--amend`），即將加入 commit 的內容仍會被掃描。只有未追蹤檔時不再出現 `WORKTREE_DIRTY`；已追蹤檔有未提交修改時仍會阻擋發布。
+守衛現在放行唯讀指令與 Claude Code 標準的 commit 寫法（引號定界符 heredoc、`git add … && git commit`、`-a`、`--amend`），即將加入 commit 的內容仍會被掃描。`publish ship` 只推送已提交候選；tracked 未提交修改與 untracked 檔案留在本機並顯示為診斷資訊，不會單獨阻擋該候選。
 
 含 Git 遠端字串（例如 scp 寫法的 `git` 服務帳號）的檔案不再因 `CONTENT_PII_BLOCKED` 被擋（規則 `pii.email.v2`）；其他 email、個人帳號的遠端與相似字元仍會阻擋，不需要也不允許用 `chr(64)` 等寫法繞過。
 

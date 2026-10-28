@@ -11,6 +11,8 @@ Expected:
 - stop for explicit approval on a MAJOR version change;
 - re-run using the updated CLI after a successful pull;
 - validate the updated system;
-- if the target project is already ATTACHED, refresh exact system version + commit in `.ai/SYSTEM.yaml`;
-- if the target project has no `.ai/`, keep it EPHEMERAL and do not auto-attach or create project-local AIPS state;
+- never write AIPS version provenance into the target project; keep all mutable state external;
+- keep it EPHEMERAL when the target has no external AIPS state;
+- do not auto-attach the target project during preflight;
+- preserve any pre-existing `.ai/` data without updating or deleting it;
 - do not automatically pull the target project's Git repository.

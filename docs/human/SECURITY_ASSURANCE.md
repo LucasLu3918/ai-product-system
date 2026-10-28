@@ -12,6 +12,8 @@ The creative executor confines writes to a declared non-Git EPHEMERAL output dir
 
 The OpenCode native guard is a narrow runtime check, not an operating-system sandbox. Claims remain ADVISORY until direct permission-hook execution is verified; MCP/custom tools and other processes remain outside its boundary.
 
+Per-project governance `off`, `observe`, and `assist` cannot bypass the independent runtime policy, protected AIPS path checks, hard content safety findings, or native GitHub protections. `assist` may downgrade optional project-governance failures to user-visible advice only; secret and other hard content-safety findings still deny.
+
 
 ~~~text
 Product / Feature
@@ -220,6 +222,8 @@ Review actual:
 - tests and failure paths.
 
 ## Release Security Gate
+
+Project-state migration requires a verified external backup and exact candidate scan; moving files never bypasses publication checks or review authority.
 
 Local JSON diagnostics from `prepare` or `diagnose` do not satisfy publication validation, scan evidence, or merge requirements; rerun the read-only checks after correcting the reported cause.
 
@@ -473,6 +477,8 @@ SAL 2+ default registration requires an independently retained anchor. SAL 4 req
 The retention helper never deletes evidence or grants compaction authority. Expiry only creates a Human-review action and a minimal digest record.
 ## Runtime Content Safety Boundary
 
+治理設定、專案內容與執行輸出皆視為資料；內容掃描與診斷不會授予 commit、push 或 Host 操作權限。
+
 The error serializer excludes raw exception text, paths, commands, and credentials; scan-evidence denials remain fail-closed.
 
 Claude Code quoted-heredoc (`<<'EOF'`) or single-quoted publication text is literal data that content safety still scans; real Shell expansion stays denied, and each denial names the supported recipe (Scenario 261).
@@ -523,6 +529,14 @@ Scenario 269 refreshes only the CLI help golden vectors for `aips intelligence g
 
 ## Runtime Policy Enforcement
 
+Per-project governance mode defaults to `off` and is stored outside the repository. `observe` and `assist` may add safe local context but never issue a Host allow/deny decision. `enforce` requires an explicit allowlisted action scope; only a failed check for an in-scope action blocks. The global runtime policy and administrator high-assurance trust root are evaluated independently before project-mode relaxation, and native GitHub protections remain authoritative.
+
+For `git -C <path> push`, validation resolves the literal path from invocation cwd and binds candidate, target ref and scanning to that worktree; unavailable or dynamic targets fail closed.
+
+For native pushes, AIPS accepts an explicit full candidate SHA/ref or upstream shorthand naming only the checked-out branch. It normalizes the shorthand to the observed full HEAD SHA and full ref; branch-name ambiguity, `HEAD`, and other branches remain blocked, with scanning and Human authority unchanged.
+
+Optional Harness registration is classified from a bounded, regular ownership record and a system identity marker. Symlinks, malformed records, foreign system identities, and unreadable state remain `UNKNOWN`; refresh does not rewrite them. Uninstall removes only verified external integrations and marks the local Harness `OFF` while preserving unknown local files.
+
 Dynamic ComfyUI reference injection remains limited to trusted built-in encoder nodes, project-staged files with matching source hashes, loopback-only requests, and one explicit submission. Edit Plus adds only bounded ordered input mapping.
 
 FLUX 3 Klein profile sampler bounds and dynamic reference counts do not create runtime actions or Resource Authorization grants. Loopback-only access, core-node schema, file-size limits, ordered slots and source-to-staged hash checks remain enforced before submission.
@@ -552,6 +566,8 @@ Commit and publication scanning treats `.m4a` as structured audio: the scanner v
 OpenCode native acceptance is bounded evidence, not a process sandbox. Arbitrary Shell process effects, MCP/custom-tool effects and out-of-process writes remain UNSUPPORTED; Hook success does not grant authority over those paths.
 
 ### Git publication: 個人模式與高保證模式
+
+個人發布會綁定已提交的 candidate SHA/ref。工作樹的 staged、modified、deleted 或 untracked 狀態只作診斷，未提交內容不會進入候選推送；完整候選／歷史秘密掃描、遠端身分、原生授權與 GitHub 保護仍照常執行。
 
 預設的 `personal` 模式適用於個人快速開發。當 `/etc/aips/publication-authority.yaml` 不存在時，Agent 在完成既有候選／秘密掃描與明確命令檢查後，可推送至自己的工程分支並建立或更新指向遠端預設分支的 PR；使用者明確指定 local-only／不發布時則不推送。任務明確要求合併且符合下方條件時，可逐次以支援的原生確認流程合併 PR。此模式接受一般個人帳號下 Agent 使用現有 GitHub 權限發布，不提供外部簽章隔離保證。
 

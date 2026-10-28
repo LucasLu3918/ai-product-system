@@ -25,6 +25,7 @@ from aips_identity import (
     config_home,
     project_root,
     repository_identity,
+    state_home,
     workspace_snapshot,
 )
 from run_state import _freshness, load_yaml, safe_text
@@ -72,11 +73,12 @@ def _workspace_catalog(root: Path) -> dict[str, Path | None]:
 
     # EPHEMERAL runs live outside the repository. Only inspect directories that
     # are namespaced by this repository identity; never walk arbitrary config.
-    projects = config_home() / "projects"
-    if projects.is_dir():
-        prefix = repo_id + "-"
-        for candidate in projects.iterdir():
-            if candidate.is_dir() and candidate.name.startswith(prefix):
+    projects = {config_home() / "projects", state_home() / "projects"}
+    for project_store in projects:
+        if not project_store.is_dir():
+            continue
+        for candidate in project_store.iterdir():
+            if candidate.is_dir() and candidate.name.startswith(repo_id + "-"):
                 catalog.setdefault(candidate.name, None)
     return catalog
 
@@ -88,7 +90,7 @@ def _run_candidates(root: Path, catalog: dict[str, Path | None]) -> Iterable[tup
             run_root = workspace_root / ".ai" / "runs"
             mode = "ATTACHED"
         else:
-            run_root = config_home() / "projects" / workspace_id / "runs"
+            run_root = state_home() / "projects" / workspace_id / "runs"
             mode = "EPHEMERAL"
         if not run_root.is_dir():
             continue

@@ -113,6 +113,7 @@ def codex_path_fallback_contract() -> None:
             env=env,
             capture_output=True,
             text=True,
+            check=False,
         )
         require(installed.returncode == 0, f"Codex path fallback install failed: {installed.stdout} {installed.stderr}")
 
@@ -209,7 +210,17 @@ def harness_contract() -> None:
         require(settings_doc.get("permissions") == {"allow": ["Read"]}, "Claude permissions changed on uninstall")
         require(settings_doc.get("hooks", {}).get("PreToolUse") == [user_hook], "unrelated Claude hook not preserved")
         require("UserPromptSubmit" not in settings_doc.get("hooks", {}), "AIPS Claude prompt hook not removed")
-        require(not harness_home.exists(), "successful harness uninstall must remove AIPS ownership state")
+        require(harness_home.exists(), "successful harness uninstall must preserve the ownership directory")
+        require((harness_home / "disabled").is_file(), "successful harness uninstall must persist OFF state")
+        status = subprocess.run(
+            ["bash", str(CLI), "harness", "status"],
+            env=env,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        require(status.returncode == 0 and "Harness: OFF" in status.stdout, "uninstalled Harness must report OFF")
+        require("AUTOMATIC" not in status.stdout, "OFF status must not display stale adapter state")
 
 
 def main() -> int:

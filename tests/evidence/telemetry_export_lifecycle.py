@@ -20,6 +20,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from observed_stage import observed_stage
 from run_state import append_event as append_run_event
+from run_state import run_store
 from telemetry_export import _endpoint_allowed, export
 from telemetry_projection import build_projection
 from telemetry_record import record
@@ -64,7 +65,7 @@ def marker(root: Path, run_id: str, kind: str, action: str, operation_id: str, n
 
 
 def make_run(root: Path, run_id: str) -> Path:
-    run_dir = root / ".ai" / "runs" / run_id
+    run_dir, _mode = run_store(root, run_id)
     run_dir.mkdir(parents=True)
     (run_dir / "CHECKPOINT.yaml").write_text(yaml.safe_dump({"version": 3, "run_id": run_id, "status": "COMPLETE"}), encoding="utf-8")
     return run_dir
@@ -73,7 +74,9 @@ def make_run(root: Path, run_id: str) -> Path:
 def main() -> int:
     with tempfile.TemporaryDirectory(prefix="aips-telemetry-test-") as tmp:
         root = Path(tmp)
-        (root / ".ai").mkdir()
+        os.environ["XDG_CONFIG_HOME"] = str(root / "config")
+        os.environ["XDG_STATE_HOME"] = str(root / "state")
+        os.environ["XDG_CACHE_HOME"] = str(root / "cache")
         run_id = "run-otel-test"
         run_dir = make_run(root, run_id)
 
@@ -208,6 +211,7 @@ def main() -> int:
             server.shutdown()
             server.server_close()
             thread.join(timeout=2)
+        assert not (root / ".ai").exists(), "telemetry lifecycle must not create project-local AIPS state"
 
     print("telemetry-export lifecycle: PASS")
     return 0

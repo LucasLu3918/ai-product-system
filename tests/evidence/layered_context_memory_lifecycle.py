@@ -9,6 +9,7 @@ import subprocess
 import json
 import hashlib
 import math
+import os
 import sqlite3
 from unittest.mock import patch
 
@@ -32,6 +33,7 @@ def require(test: bool, message: str) -> None:
 with tempfile.TemporaryDirectory() as directory:
     root = Path(directory) / "repo"
     root.mkdir()
+    os.environ["XDG_STATE_HOME"] = str(root.parent / "state")
     (root / "AGENTS.md").write_text("# authoritative source\n", encoding="utf-8")
     subprocess.run(["git", "init", "-q", str(root)], check=True)
     subprocess.run(["git", "-C", str(root), "config", "user.name", "AIPS Evidence"], check=True)

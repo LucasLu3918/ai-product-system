@@ -113,7 +113,7 @@ checks:
       - orchestration/CORE_CHANGE_TESTING.md
       - templates/automation/VALIDATION_PROFILE.yaml
       - templates/review/INTEGRATION_GATE_REPORT.yaml
-      - .aips/review/CORE_CHANGE_TEST_MATRIX.yaml
+      - docs/qa/CORE_CHANGE_TEST_MATRIX.yaml
       - config/integration-gate.yaml
       - .github/workflows/validate.yml
       - tests/evidence/integration_gate_lifecycle.py

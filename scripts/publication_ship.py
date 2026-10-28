@@ -117,11 +117,14 @@ def _observe(cwd: Path, request: dict[str, Any]) -> dict[str, Any]:
     push_argv = ['git', 'push', 'origin', head + ':' + head_ref]
     base = authority._personal_base(root, 'git_push', push_argv)
     push_scope = authority.action(root, 'git_push', push_argv, base, personal=True)
+    worktree_state = authority.worktree_dirty_details(root)
     pr_argv = ['gh', 'pr', 'create', '--repo', repo, '--head', branch, '--base', default_branch,
                '--title', title, '--body-file', str(body)]
     return {'root': root, 'head': head, 'branch': branch, 'head_ref': head_ref, 'repo': repo,
             'default_branch': default_branch, 'base': base, 'push_argv': push_argv, 'pr_argv': pr_argv,
-            'push_scope': push_scope, 'body': body, 'body_digest': _digest_file(body)}
+            'push_scope': push_scope, 'body': body, 'body_digest': _digest_file(body),
+            'worktree_status': worktree_state['status'],
+            'worktree_dirty_path_count': worktree_state.get('path_count', 0)}
 
 
 def _ensure_scan(observed: dict[str, Any], policy: dict[str, Any], policy_hash: str) -> str:
@@ -194,6 +197,8 @@ def run(cwd: Path, request: dict[str, Any]) -> dict[str, Any]:
                                    'ASSURANCE_MODE_BLOCKED', phase='authority_validation')
         observed = _observe(cwd, request)
         root, head, branch = observed['root'], observed['head'], observed['branch']
+        result['worktree'] = {'status': observed['worktree_status'],
+                              'dirty_path_count': observed['worktree_dirty_path_count']}
         policy, policy_hash = _load_policy()
         phase = 'content_scan'
         scan = _ensure_scan(observed, policy, policy_hash)

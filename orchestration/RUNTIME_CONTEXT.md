@@ -27,6 +27,8 @@ Managed AIPS CLI runtimes require Python >=3.12. An explicit `AIPS_PYTHON` is au
 
 ## Context contract
 
+Repository identity, optional governance mode and run persistence resolve through external user state; Context resolution does not initialize or mutate the target repository.
+
 Publication Doctor output and automatic Hook recovery omit credentials and raw GitHub response bodies; context diagnostics carry only bounded safe fields.
 
 A native denial may carry a bounded diagnostic identifier, stable reason, phase, category, retry classification and next step; intercepted commands and credential-bearing provider data are excluded.

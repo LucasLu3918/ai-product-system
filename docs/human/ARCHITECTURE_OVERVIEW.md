@@ -1,11 +1,15 @@
 # 系統架構總覽
 
+CLI 安裝與 Runtime adapter 啟用分開：`aips harness install` 是明確啟用入口；更新與 preflight 只刷新可驗證的既有啟用紀錄。不明紀錄會保留並警示；狀態觀察與 adapter 刷新尚無共同跨程序鎖，並行停用仍未驗證。per-repository 治理模式仍未由此切片實作。
+
 
 AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前架構**；版本歷史放 CHANGELOG，Scenario 證據歷史放 Conformance。
 
 ![AI Product System 架構總覽](assets/system-overview.svg)
 
 ## Runtime 與接入層
+
+每個 repository 可選擇 `off`、`observe`、`assist` 或 `enforce`。設定放在使用者的 XDG AIPS 目錄並以 opaque repository ID 對應；缺少設定就是 `off`。Observe 與 assist 只提供建議，不授予或拒絕 Host 權限；enforce 必須明列要套用的動作。獨立 runtime policy、管理者 high-assurance 信任根與 GitHub branch protection 不受專案模式影響。
 
 Creative executor 在唯一一次 ComfyUI `/prompt` 前，使用本機 `/object_info/TextGenerate` 驗證固定 FLUX 3 Klein payload；此預檢不會代替節點執行或模型推論。
 
@@ -76,7 +80,7 @@ Runtime hook 另有 best-effort 的 protected-path guard：代理不得寫入已
 
 Retrieval relations are disposable lexical candidates. Relation-extraction behavior is versioned with the index schema so a schema change triggers full re-extraction, including unchanged files; raw source may be parsed in memory for syntax-sensitive identifiers while persisted index content remains redacted.
 
-ATTACHED 仍須使用者明確執行 `aips attach`。在 Git worktree 中，AIPS 以 repository-local `.git/info/exclude` 排除 `.ai/` 與 `.ai.detached-*`，不修改共用的專案 `.gitignore`；既有追蹤狀態不會被改寫。
+所有新 AIPS 狀態都存於 repository 外。`aips attach` 明確初始化或匯入外部 Intelligence，不建立 `.ai/`，也不修改 Git 設定、hooks 或 ignore；既有 `.ai/` 只作保留的 legacy 資料。
 
 Turn Context preserves freshness and emits task-scoped targeted refresh guidance only when task-relevant topics are affected. READY+STALE freshness is advisory for a confined local L2 source write; UNKNOWN and non-READY states remain blocking.
 
@@ -153,9 +157,11 @@ repository_id
 └─ AIPS worktree       → workspace_id C
 ~~~
 
-EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才使用 project-local .ai/。
+Project Intelligence、runs 與 Change Impact 一律使用 AIPS external user state；`off` / `observe` / `assist` / `enforce` 是獨立的可選治理模式。
 
 ## Creative Workflow
+
+Creative grants and workspaces remain separate from project governance state; neither project mode nor diagnostics authorize generation or asset publication.
 
 Qwen Image Edit 2511 maps ordered project-local references to the built-in encoder ports `image1`–`image3`; Qwen Image 2.1 keeps its existing object-map input. Both use the same loopback-only ComfyUI request boundary. See Scenario 236 and `orchestration/CREATIVE_DIRECTION.md`.
 
@@ -290,6 +296,8 @@ Phase 4 在這條實作流程加入可選的 OpenAPI client generator adapter：
 Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行報告與目前 Profile、契約、工具、輸入、產物、Git 歷史及 Phase 3 provenance 交叉核對；舊 Profile 不受影響。共用 Widgets 參考專案執行本機 HTTP 服務與產生的 client，驗證工作流程及該案例行為。各真實產品的契約、測試和證據仍留在產品專案。
 
 ## Deterministic Execution
+
+Deterministic execution 將 task ownership、checkpoint、resume 與外部 run state 綁定至已驗證的專案身分；隔離及失敗診斷不改變 Host 或 repository 權限。
 
 Dynamic ComfyUI reference counts and FLUX sampler profiles remain executor preflight inputs; they introduce no scheduler, checkpoint or resume state.
 
@@ -429,6 +437,12 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 
 ## Security 與 Governance
 
+Optional project governance mode 是本機外部設定；預設 `off`，專案設定不得覆蓋全域 runtime 或高保證政策。
+
+A literal `git -C <path> push` binds candidate identity and scanning to the explicit target worktree, even when the invocation cwd differs; invalid or dynamic paths fail before candidate inspection.
+
+For native Git publication, `-u` / `--set-upstream` may name only the selected worktree’s current branch; AIPS binds that shorthand to its observed full HEAD SHA and full ref before the existing scan and authorization checks.
+
 The Qwen Edit Plus mapping does not add node classes, endpoints, or authority: it remains within the reviewed core-node policy and verifies staged reference bytes before the single ComfyUI submission.
 
 When `aips publish prepare` or `diagnose` fails locally in JSON mode, the CLI returns a redacted, stable diagnostic; the response grants no publication authority and text-mode behavior remains compatible.
@@ -556,6 +570,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 
 ## Maintenance governance
+
+Native publication uses the committed candidate SHA/ref; local staged, modified or untracked files remain outside that candidate and do not independently block a push. Candidate scanning and remote policy checks are unchanged.
 
 Publication recovery is an explicit read-only observation step. Scenario 260/261 and the Core Change Matrix keep Hook latency, timeout redaction and publication authority independently verifiable.
 

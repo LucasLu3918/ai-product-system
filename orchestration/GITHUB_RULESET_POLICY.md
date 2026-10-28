@@ -48,6 +48,8 @@ For an effective branch-policy observation, verify branch existence and query `G
 
 ## Transition procedure
 
+Per-project AIPS governance preferences are private local inputs and do not create, change or satisfy GitHub rulesets, branch protection, required checks or merge authority.
+
 Core creative changes use the existing exact-candidate required checks and human publication gates; they do not create or alter a repository ruleset.
 
 Readiness and branch inventory remain report-only. A clean status or recommendation does not authorize branch deletion, release/tag creation, unrelated PR merge or ruleset mutation; protected operations follow the exact Human-approved candidate path.

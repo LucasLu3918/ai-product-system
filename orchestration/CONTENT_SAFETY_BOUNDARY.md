@@ -12,6 +12,8 @@ Imported ComfyUI API workflows remain untrusted project content. Dynamic executi
 
 ## Contract
 
+Working-tree cleanliness is not a content-safety substitute: the scanner continues to inspect the exact committed candidate and applicable history, while unrelated working files remain outside the candidate and are not silently added.
+
 Static AVIF EXIF/XMP metadata uses the existing media registry and strict scanner under an 8 MiB input and 1 MiB metadata limit; unknown or animated structures fail closed without decoding image payload as text.
 
 Commit Hook and read-only `aips safety diagnose commit` call the same staged-candidate implementation. Commit scans always use strict ignore-marker behavior. Supported PNG, JPEG, WebP, M4A, MP3, TTF, OTF, WOFF and WOFF2 metadata is bounded and format-aware; font signatures and declared decompressed sizes are checked before fontTools parsing. FontTools/Brotli absence, malformed or spoofed fonts, unsupported binaries and incomplete scans fail closed with redacted structured diagnostics. Git blob sizes are checked before staged contents are loaded. This is a content decision, not publication authority.
@@ -71,6 +73,10 @@ Quoted-heredoc or single-quoted publication text reaches the same `github_pr` si
 Pure dependency update documentation exemption (Scenario 221): `pure_dependency_update` in `scripts/dependency_impact.py` returns `PURE_DEPENDENCY_UPDATE` only when every changed file is an allowlisted dependency manifest (`.github/workflows/*.yml`, root `requirements*.txt`, `constraints/*.txt`) modified in place and every changed line pair is either a full-SHA pinned `uses:` reference for the same action with a non-decreasing version comment, or an exact `name==version` pin with a strictly higher version. Documentation Impact, Documentation Placement and Documentation Sync then suppress documentation requirements only and report each dependency's classification, risk and `human_review_required`; any other line or file, downgrade, unpinned reference, planned path, size-limit overflow or predicate failure keeps the full rules. Secret scanning, content safety, the Core Change Test Matrix, the Integration Gate, required checks and Human merge approval are unchanged, and `automatic_merge_authorized` stays false.
 
 ## Security invariants
+
+A literal `git -C <path> push` is scanned against the resolved target worktree; no fallback to caller cwd or another checkout is permitted, and unbound paths fail closed.
+
+Publication push normalization accepts the current branch shorthand only with an explicit upstream flag and binds it to the observed full candidate SHA/ref. The candidate remains subject to the same final-tree and history scan; normalization creates no authorization.
 
 The publication Hook's short-lived scan evidence records a successful full Secret Scan but does not alter content-safety decisions or sink policy. Missing, stale, corrupt or mismatched evidence fails closed, and Prepare plus the final Integration Gate still scan the complete candidate and history.
 

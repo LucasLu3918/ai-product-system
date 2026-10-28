@@ -4,8 +4,11 @@ standalone_human_prefix: HUMAN_
 standalone_human_documents: []
 human_document_roots:
   - docs/history
+shared_document_roots:
+  - docs/qa
 shared_docs:
   - docs/ARCHITECTURE.md
+  - docs/qa/CORE_CHANGE_TEST_MATRIX.yaml
 repository_root_exceptions:
   - README.md
   - CHANGELOG.md

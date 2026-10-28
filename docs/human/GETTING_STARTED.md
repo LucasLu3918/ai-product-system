@@ -50,7 +50,7 @@ aips commands list
 
 ## 開始工作
 
-開啟平常使用的 Agent 或 IDE，直接描述你想完成的目標、限制條件與驗收方式。AIPS 會依 Runtime 可用能力提供任務相關脈絡；Agent 再依工作內容進行規劃、實作與驗證。
+安裝 CLI 不會自動啟用 Runtime adapter。需要將 AIPS 整合至支援的 Agent 時，先檢查 `aips harness status`，再明確執行 `aips harness install`。啟用後可開啟 Agent 或 IDE，描述目標、限制與驗收方式；可用能力取決於 Runtime 的實際支援。
 
 ~~~text
 需求與驗收方式
@@ -79,7 +79,7 @@ aips project check /path/to/project
 aips attach /path/to/project
 ~~~
 
-`attach` 仍須明確執行才會建立 `.ai/`。若目標位於 Git worktree，AIPS 會把 `.ai/` 與 `.ai.detached-*` 加入該 worktree 的 `.git/info/exclude`，保留在本機，不修改專案 `.gitignore`。這只忽略尚未追蹤的路徑；原本已追蹤的檔案不會因此解除追蹤。
+`attach` 只會在使用者層初始化或匯入外部 Intelligence；不建立 `.ai/`、不修改 Git metadata 或專案 `.gitignore`。既有 `.ai/` 內容維持不變。
 
 `aips system preflight /path/to/project` 會更新並驗證 AIPS system checkout。更新前先確認該專案的工作樹狀態與變更範圍。
 

@@ -165,7 +165,7 @@ PUBLICATION_DIAGNOSTICS = {
     'REQUIRED_CHECKS_POLICY_UNVERIFIED': ('Required-check configuration cannot be confirmed from the available evidence.', 'Run publish doctor; ask an administrator to verify branch protection visibility before retrying.', 'checks', 'UNAVAILABLE'),
     'HOST_MERGE_WITHOUT_REVIEW': ('Claude Code Auto Mode classified the request as Merge Without Review.', 'Use the normal interactive Host approval/review flow; do not rewrite commands to bypass the denial.', 'host', 'PERMISSION'),
     'HOST_READ_ONLY_DENIED': ('Claude Code denied a read-only publication diagnostic.', 'Run the same diagnostic in a trusted interactive environment or review exact permission rules; never infer merge approval.', 'host', 'PERMISSION'),
-    'PUSH_SOURCE_NOT_EXACT_SHA': ('Push source must equal the full candidate SHA.', 'Supported form: `git push origin <full-candidate-sha>:refs/heads/<current-branch>` (`-u` allowed) as emitted by `aips publish prepare`; a bare branch name or HEAD is not bound to the candidate.'),
+    'PUSH_SOURCE_NOT_EXACT_SHA': ('Push source must equal the full candidate SHA.', 'Supported forms: `git push origin <full-candidate-sha>:refs/heads/<current-branch>` or `git push -u origin <current-branch>` as emitted by `aips publish prepare`; a bare branch name without `-u` or `HEAD` is not bound to the candidate.'),
     'INVALID_TARGET_REF': ('An explicit full target ref is required.', 'Use refs/heads/<current-engineering-branch>.'),
     'WORKTREE_DIRTY': ('The selected worktree has uncommitted content.', 'Preserve development files; review delivery scope or use a separate clean candidate worktree.'),
     'CWD_MISMATCH': ('The current worktree differs from the planned candidate.', 'Set the native tool working directory to the planned worktree and re-observe.'),
@@ -260,7 +260,7 @@ PUBLICATION_DIAGNOSTICS = {
     'PR_BASE_MISMATCH': ('The PR does not target the live default branch.', 'Re-plan for the verified default branch; do not retarget a stale merge.'),
     'REQUIRED_CHECKS_INCOMPLETE': ('Required PR checks are missing, pending, or failing.', 'Wait for the exact candidate’s required aggregate to pass, then re-observe.'),
     'REQUIRED_CHECKS_UNAVAILABLE': ('Required PR check state could not be observed.', 'Check GitHub access and connectivity, then re-read checks; do not merge on unknown state.'),
-    'PUBLICATION_SCAN_EVIDENCE_REQUIRED': ('Fresh exact-candidate secret-scan evidence is missing or no longer valid.', 'For a push or PR of a clean candidate, run the single supported command `aips publish ship --title <title> --body-file <file> --base <default-branch>` from the candidate worktree. For a merge, run `aips publish prepare` and then the exact planned merge command within 30 minutes.'),
+    'PUBLICATION_SCAN_EVIDENCE_REQUIRED': ('Fresh exact-candidate secret-scan evidence is missing or no longer valid.', 'For a push or PR of a committed candidate, run the single supported command `aips publish ship --title <title> --body-file <file> --base <default-branch>` from the candidate worktree. For a merge, run `aips publish prepare` and then the exact planned merge command within 30 minutes.'),
     'SHIP_PUSH_FAILED': ('The exact candidate push did not reach the remote.', 'No PR was created. Re-run the same `aips publish ship` command; it re-observes the remote and pushes only when the remote tip is not already the candidate.', 'push_validation', 'INTERNAL'),
     'SHIP_PR_CREATE_FAILED': ('The candidate is on the remote but its PR create did not complete.', 'Re-run the same `aips publish ship` command; it skips the completed push and creates the PR only when no PR exists for this candidate.', 'pr_create', 'INTERNAL'),
     'HOOK_DEADLINE_EXCEEDED': ('The publication Hook reached its eight-second execution deadline.', 'No publication was authorized. Resolve the observed phase, then run one fresh read-only diagnosis or Prepare before retrying.'),
@@ -312,7 +312,7 @@ PUBLICATION_DIAGNOSTICS_ZH = {
     'SECRET_SCAN_GIT_OBJECT_MISSING': ('秘密掃描需要的 Git 物件目前無法讀取。', '在此工作樹還原或取得候選歷史，再重新驗證。'),
     'SECRET_SCAN_FILE_UNREADABLE': ('秘密掃描器無法完整檢查候選檔案。', '修復候選內容的讀取或 UTF-8 編碼問題，再重新驗證。'),
     'SECRET_SCAN_POLICY_UNAVAILABLE': ('無法讀取必要的秘密掃描政策。', '恢復儲存庫秘密掃描政策的讀取權限，再重新驗證。'),
-    'PUBLICATION_SCAN_EVIDENCE_REQUIRED': ('目前候選缺少未過期的秘密掃描證據。', '對乾淨候選，從候選工作樹執行唯一支援的指令 `aips publish ship --title <標題> --body-file <檔案> --base <預設分支>`；它只掃描一次並執行精確 push 與建立 PR。合併請先執行 `aips publish prepare`，並在 30 分鐘內執行它規劃的精確 merge 指令。'),
+    'PUBLICATION_SCAN_EVIDENCE_REQUIRED': ('目前候選缺少未過期的秘密掃描證據。', '對已提交候選，從候選工作樹執行唯一支援的指令 `aips publish ship --title <標題> --body-file <檔案> --base <預設分支>`；它只掃描一次並執行精確 push 與建立 PR。合併請先執行 `aips publish prepare`，並在 30 分鐘內執行它規劃的精確 merge 指令。'),
     'SHIP_PUSH_FAILED': ('候選推送未到達遠端。', '尚未建立 PR。重新執行同一個 `aips publish ship` 指令；它會重新觀測遠端，只有遠端尚未指向候選時才推送。'),
     'SHIP_PR_CREATE_FAILED': ('候選已在遠端，但建立 PR 未完成。', '重新執行同一個 `aips publish ship` 指令；它會略過已完成的推送，且只有此候選尚無 PR 時才建立。'),
     'HOOK_DEADLINE_EXCEEDED': ('發布 Hook 超過八秒執行期限，已拒絕操作。', '確認診斷中的安全階段；完成該階段後再執行一次唯讀診斷或 Prepare。'),
@@ -320,7 +320,7 @@ PUBLICATION_DIAGNOSTICS_ZH = {
     'INTERNAL_DIAGNOSTIC_GAP': ('AIPS 無法安全分類這項內部發布錯誤。', '保留診斷 ID 與錯誤類型，修正本機 AIPS 診斷映射後再重試。'),
     'PUSH_TARGET_BRANCH_MISMATCH': ('推送目標分支與目前工程分支不一致。', '確認選用的工作樹與完整目標 ref，再重新執行唯讀發布診斷。'),
     'BRANCH_NOT_ALLOWLISTED': ('目前分支不符合允許的工程分支規則。', '在核准的工程分支上重新規劃；不要推送至受保護分支。'),
-    'PUSH_SOURCE_NOT_EXACT_SHA': ('推送來源不是目前候選的完整 SHA。', '支援格式：`git push origin <完整候選 SHA>:refs/heads/<目前分支>`（可加 `-u`），即 `aips publish prepare` 輸出的指令；只寫分支名稱或 HEAD 無法綁定候選。'),
+    'PUSH_SOURCE_NOT_EXACT_SHA': ('推送來源不是目前候選的完整 SHA。', '支援格式：`git push origin <完整候選 SHA>:refs/heads/<目前分支>`，或 `git push -u origin <目前分支>`；只寫分支名稱但未加 `-u`，或使用 HEAD，無法綁定候選。'),
     'PR_METADATA_INCOMPLETE': ('PR 中繼資料不完整或有歧義。', "支援格式：`gh pr create --repo <owner/repo> --head <目前分支> --base <預設分支> --title <標題> --body-file <檔案>`（或一個字面 --body，可用加引號的 `<<'EOF'` heredoc），即 `aips publish prepare` 輸出的指令。"),
     'PUBLICATION_INPUT_UNBOUND': ('發布輸入無法綁定到受檢查的操作。', "改用字面值輸入：加引號的 `<<'EOF'` heredoc、單引號字串或 `-F`／`--body-file` 檔案；不可使用變數、反引號或未加引號的 heredoc。"),
     'INVALID_TARGET_REF': ('推送目標 ref 格式不完整或無效。', '使用 refs/heads/<工程分支名稱>，並重新執行唯讀診斷。'),
@@ -694,7 +694,10 @@ def validate_action_form(operation: str, argv: list[str], *, literal_marked: boo
         'gh_pr_merge': ['gh', 'pr', 'merge'],
         'gh_release_create': ['gh', 'release', 'create'],
     }
-    if operation not in expected or not argv or argv[:len(expected[operation])] != expected[operation]:
+    git_c_push = (operation == 'git_push' and argv[:2] == ['git', '-C']
+                  and len(argv) >= 4 and argv[3] == 'push')
+    if (operation not in expected or not argv or
+            not git_c_push and argv[:len(expected[operation])] != expected[operation]):
         raise PublicationError('use a supported standalone literal publication command',
                                'COMMAND_FORM_UNSUPPORTED', phase='command_validation')
     if any('\0' in word or not literal_marked and ('$' in word or '`' in word) for word in argv):
@@ -703,11 +706,38 @@ def validate_action_form(operation: str, argv: list[str], *, literal_marked: boo
                                detail_code='PUBLICATION_ARGUMENT_DYNAMIC')
 
 
+def resolve_git_push_target(cwd: Path, argv: list[str]) -> tuple[Path, list[str]]:
+    """Resolve one literal `git -C <path> push` to its actual target directory and argv."""
+    if argv[:2] != ['git', '-C']:
+        return Path(cwd).resolve(), argv
+    if len(argv) < 4 or argv[3] != 'push':
+        raise PublicationError('only git -C <path> push is supported for publication',
+                               'COMMAND_FORM_UNSUPPORTED', phase='command_validation')
+    raw_path = argv[2]
+    if not raw_path or '\0' in raw_path or '$' in raw_path or '`' in raw_path:
+        raise PublicationError('git -C target must be one literal path',
+                               'COMMAND_FORM_UNSUPPORTED', phase='command_validation',
+                               detail_code='PUBLICATION_ARGUMENT_DYNAMIC')
+    target = Path(raw_path)
+    if not target.is_absolute():
+        target = Path(cwd) / target
+    try:
+        target = target.resolve(strict=True)
+        if not target.is_dir():
+            raise OSError('target is not a directory')
+    except OSError as exc:
+        raise PublicationError('explicit git -C target is unavailable', 'CWD_MISMATCH',
+                               phase='worktree_validation') from exc
+    return target, ['git', 'push', *argv[4:]]
+
+
 def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: bool = False,
            literal_marked: bool = False) -> dict[str, Any]:
     """Observe a supported standalone literal command; implicit/multi-target pushes deny."""
     validate_action_form(operation, argv, literal_marked=literal_marked)
-    root = Path(git(cwd, 'rev-parse', '--show-toplevel')).resolve()
+    invocation_cwd = Path(cwd).resolve()
+    target_cwd, action_argv = resolve_git_push_target(invocation_cwd, argv) if operation == 'git_push' else (invocation_cwd, argv)
+    root = Path(git(target_cwd, 'rev-parse', '--show-toplevel')).resolve()
     head = git(root, 'rev-parse', 'HEAD^{commit}')
     if not re.fullmatch(r'[0-9a-f]{40,64}', base):
         raise PublicationError('explicit base commit SHA required', reason_code='BASE_SHA_INVALID')
@@ -715,9 +745,6 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
         git(root, 'merge-base', '--is-ancestor', base, head)
     except PublicationError as exc:
         raise PublicationError('base is not a candidate ancestor', 'BASE_NOT_ANCESTOR') from exc
-    if worktree_dirty_details(root)['status'] == 'DIRTY':
-        raise PublicationError('publication requires a clean worktree', 'WORKTREE_DIRTY',
-                               context={'worktree': root, 'candidate_sha': head}, phase='candidate_validation')
     diff = subprocess.run(['git', 'diff', '--binary', base, head, '--'], cwd=root, capture_output=True, timeout=15, check=False)
     files = subprocess.run(['git', 'diff', '--name-only', '-z', base, head, '--'], cwd=root, capture_output=True, timeout=15, check=False)
     if diff.returncode or files.returncode:
@@ -729,15 +756,18 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
         'diff_digest': 'sha256:' + hashlib.sha256(diff.stdout).hexdigest(),
         'operations': [operation], 'argv': argv,
     }
+    if operation == 'git_push' and action_argv != argv:
+        result['normalized_argv'] = action_argv
+        result['target_worktree_id'] = result['worktree_id']
     if not result['branch']:
         raise PublicationError('publication requires an explicit feature branch', reason_code='BRANCH_NOT_ALLOWLISTED')
     remote = 'origin'
     force = False
     delete = False
     if operation == 'git_push':
-        if argv[:2] != ['git', 'push']:
+        if action_argv[:2] != ['git', 'push']:
             raise PublicationError('use a standalone git push without wrappers/global options', 'COMMAND_FORM_UNSUPPORTED')
-        args = argv[2:]
+        args = action_argv[2:]
         flags = []
         while args and args[0].startswith('-'):
             flag, args = args[0], args[1:]
@@ -756,6 +786,22 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
         delete = '--delete' in flags or spec.startswith(':')
         if '--delete' in flags:
             source, target = None, _ref(root, spec)
+        elif ':' not in spec and any(flag in {'-u', '--set-upstream'} for flag in flags):
+            # Git's upstream shorthand resolves a branch name through local refs/config.
+            # Restrict it to the selected worktree's checked-out branch and bind it to
+            # the immutable HEAD already observed above.
+            if spec == 'HEAD':
+                raise PublicationError('push source must be exact current candidate SHA',
+                                       'PUSH_SOURCE_NOT_EXACT_SHA')
+            branch_ref = 'refs/heads/' + spec
+            target = _ref(root, branch_ref)
+            if target != 'refs/heads/' + result['branch']:
+                raise PublicationError('upstream shorthand must name the current branch',
+                                       'PUSH_TARGET_BRANCH_MISMATCH', phase='push_validation',
+                                       context={'candidate_sha': head, 'worktree_id': result['worktree_id'],
+                                                'target_ref': target, 'mode': 'personal' if personal else 'high_assurance'})
+            source = head
+            spec = source + ':' + target
         else:
             if spec.count(':') != 1:
                 raise PublicationError('explicit source SHA:full-ref required', 'PUSH_SOURCE_NOT_EXACT_SHA')
@@ -974,8 +1020,10 @@ def validate_personal_action(cwd: Path, operation: str, argv: list[str], *,
     validate_action_form(operation, argv, literal_marked=literal_marked)
     if operation not in PERSONAL_PUBLICATION_OPERATIONS:
         raise PublicationError('operation is unavailable in personal publication mode', reason_code='ASSURANCE_MODE_BLOCKED')
-    root = Path(git(cwd, 'rev-parse', '--show-toplevel')).resolve()
-    base = _personal_base(root, operation, argv)
+    invocation_cwd = Path(cwd).resolve()
+    target_cwd, normalized_argv = resolve_git_push_target(invocation_cwd, argv) if operation == 'git_push' else (invocation_cwd, argv)
+    root = Path(git(target_cwd, 'rev-parse', '--show-toplevel')).resolve()
+    base = _personal_base(root, operation, normalized_argv)
     from check_secret_leakage import DEFAULT_POLICY, load_policy, scan_candidate
     try:
         policy, policy_hash = load_policy(DEFAULT_POLICY)
@@ -991,7 +1039,11 @@ def validate_personal_action(cwd: Path, operation: str, argv: list[str], *,
         raise PublicationError('mandatory candidate secret-scan policy is invalid',
             safe['reason_code'], phase=safe['phase'],
             context={'error_class': safe['error_class'], 'component': safe['component']}) from exc
-    validated_scope = action(root, operation, argv, base, personal=True, literal_marked=literal_marked)
+    validated_scope = action(root, operation, normalized_argv, base, personal=True, literal_marked=literal_marked)
+    if argv != normalized_argv:
+        validated_scope['argv'] = argv
+        validated_scope['normalized_argv'] = normalized_argv
+        validated_scope['target_worktree_id'] = identity(root)['worktree_id']
     if require_scan_evidence:
         try:
             from publication_scan_evidence import valid as scan_evidence_valid

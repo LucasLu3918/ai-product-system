@@ -11,6 +11,8 @@ Retrieval relation candidates are built by a small standard-library module behin
 
 ## Runtime & Integration
 
+CLI installation does not automatically register Runtime adapters. Harness state is classified as `OFF`, `ACTIVE`, or `UNKNOWN`; refresh is allowed only for verified `ACTIVE` ownership. Explicit uninstall removes verifiable external integrations, records `OFF`, and preserves local ownership plus unrecognized files.
+
 OpenCode checks direct native-write targets against Project Intelligence readiness, freshness, instruction authority and project-root confinement; READY+STALE freshness is advisory for local L2 source writes only.
 
 Scenario 266 findings remain untrusted content and do not grant Runtime Context or action authority.
@@ -53,9 +55,11 @@ Role、Skill、Protocol 與 Project evidence 只在 task relevant 時載入，�
 
 Canonical AIPS Skills 可從 MCP Resource 按需載入，也可由 `aips skills install` 投影成 Codex、Claude Code、Gemini CLI 原生 Skills；Portable Commands 可用同一 ownership manifest 提供 Host 原生命令入口。安裝記錄 Host、scope、來源與逐檔 SHA-256；重複安裝不建立副本，移除只刪除仍吻合摘要的 AIPS-owned 檔案。投影契約與 lifecycle 測試驗證目錄、格式及所有權，不宣稱已驗證各 Host 實際載入。
 
+`aips skills list` reads canonical Skill metadata and remains available independently of Runtime adapter enablement; it does not install Skills or write project state.
+
 ## Project Understanding
 
-The project lifecycle keeps `.ai/` opt-in and records `.ai/` plus `.ai.detached-*` in the target Git worktree's local `info/exclude`. This leaves shared `.gitignore` files untouched; ignore rules do not untrack paths already in the index.
+The project lifecycle stores all new AIPS state outside the repository. Attach/detach do not change Git config, hooks, `info/exclude` or `.gitignore`; legacy `.ai/` data remains unchanged.
 
 Turn Context retains Project Intelligence freshness and refresh guidance. A READY but STALE result is advisory for confined local L2 source writes; UNKNOWN or non-READY state remains fail-closed.
 
@@ -101,6 +105,10 @@ Local hybrid retrieval 組合 lexical、symbols、structural relation、tests、
 Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEMENTATION_APPROVED` 進入核准範圍；實作後對帳 actual diff 與 declared impact，只有完整記錄 reconciliation evidence 才能標記 `READY`。
 
 ## Execution
+
+The publication path resolves literal `git -C <path> push` to its actual target worktree before candidate validation, so caller cwd cannot redirect candidate identity.
+
+Publication parsing supports exact SHA refspecs and `-u` / `--set-upstream` with the current branch name. Shorthand resolves to the already observed full HEAD SHA/ref and continues through the same candidate scan, approval and remote policy.
 
 OpenCode 原生檔案寫入先確認精簡 Context 在 12,000 bytes 內；若無法壓縮至上限，Context 保持不可用，原生寫入在 manifest policy 前拒絕。
 
@@ -315,7 +323,7 @@ Unclassified publication failures map to `INTERNAL_DIAGNOSTIC_GAP` with a safe e
 
 The read-only `aips publish doctor` uses the shared structured GitHub API observer, distinguishes candidate/source and target policy branches, and reports bounded sanitized response metadata. `governance_guard` returns safe diagnostic identifiers and fields in Claude Code PreToolUse denials.
 
-Git publication 使用 bashlex shell AST 與 cryptography Ed25519。預設 personal mode 以共用 Hook 驗證內容、乾淨候選、工程分支與明確操作；一般 PR merge 要求 Claude 原生 `ask` 或 Gemini interactive `ask_user`、精確 head SHA、預設 base 與 passing required checks。明確 task-authorized 的 `gh pr merge --auto` 經相同候選驗證後可由 Claude 啟用 GitHub auto-merge，不再要求第二次 Claude 確認；Gemini 仍要求 `ask_user`，GitHub 仍套用 checks 與 repository policy。Gemini policy 涵蓋 default/autoEdit/yolo；Codex hook 維持 ADVISORY 且不能保證攔截直接 merge。安裝固定的 root-owned trust config 會啟用 high-assurance mode，並要求外部 HTTPS issuer 與 transactional single-use ledger。fixture 簽章只驗證高保證協定。Git push 的 server lease 與 GH head pin/base preexecution observation 分別記錄於 scope。
+Git publication 使用 bashlex shell AST 與 cryptography Ed25519。預設 personal mode 以共用 Hook 驗證內容、已提交的精確候選、工程分支與明確操作；未提交工作樹內容只作診斷，不是一般 push 的通用阻擋條件。一般 PR merge 要求 Claude 原生 `ask` 或 Gemini interactive `ask_user`、精確 head SHA、預設 base 與 passing required checks。明確 task-authorized 的 `gh pr merge --auto` 經相同候選驗證後可由 Claude 啟用 GitHub auto-merge，不再要求第二次 Claude 確認；Gemini 仍要求 `ask_user`，GitHub 仍套用 checks 與 repository policy。Gemini policy 涵蓋 default/autoEdit/yolo；Codex hook 維持 ADVISORY 且不能保證攔截直接 merge。安裝固定的 root-owned trust config 會啟用 high-assurance mode，並要求外部 HTTPS issuer 與 transactional single-use ledger。fixture 簽章只驗證高保證協定。Git push 的 server lease 與 GH head pin/base preexecution observation 分別記錄於 scope。
 
 `feat/` is an accepted engineering branch prefix. `--auto-merge` requests GitHub auto-merge only after AIPS confirms a non-empty passing required-check set; exact head binding and native Human authorization remain required.
 
@@ -375,7 +383,7 @@ The `creative workflows scan|import|inspect` routes are an explicit CLI contract
 Creative lifecycle evidence includes fixed ComfyUI model profile families, local component inventory checks and rejection of unreviewed topology families.
 
 
-Scenario 044 verifies the attach/detach ignore contract; it does not alter Skill Explorer routing or native Skill installation behavior.
+Scenario 044 verifies external-state and no-project-write contracts; it does not alter Skill Explorer routing or native Skill installation behavior.
 
 Scenario 097/260 cover the strict opt-in Required Checks behavior and read-only Doctor contract; AIPS enforcement is controlled by `AIPS_ENFORCE_REQUIRED_CHECKS=1`.
 
@@ -631,6 +639,8 @@ Planning Package 可用 EARS 結構表達適合的功能需求，並以 optional
 Implementation Resolution 先釐清 REST/OpenAPI authority，再依既有專案證據或新專案的 Human-confirmed 選型建立 Implementation Profile。Go、PHP、Python、.NET 語言 Profile 提供穩定基線，專案規則與工具鏈仍優先。結構驗證器只檢查欄位、來源和 ownership 衝突，不判斷架構或技術建議是否正確；未取得驗證證據時回報 `UNVERIFIED`。
 
 ## Evolution & Maintenance
+
+Core behavior changes are recorded under the single `Unreleased` changelog heading with compatibility notes before they are considered for a release.
 
 Publication timeout and Hook recovery changes stay bound to Scenario 260/261, documentation placement closure and the exact-candidate Core Matrix.
 

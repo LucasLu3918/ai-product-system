@@ -14,6 +14,8 @@ It does not infer intent, discover permissions from prose, or grant protected pu
 
 ## Contract
 
+Publication resource binding resolves literal `git -C <path>` from invocation cwd and binds authorization checks to the resulting target worktree and candidate; dynamic or missing paths are denied.
+
 ComfyUI creative reference bindings remain constrained by the existing local-project resource scope. Qwen Image Edit Plus maps no more than three contiguous staged references and does not widen the authorization grant.
 
 Publication scan evidence is not a Resource Authorization grant: it describes one successful scanner result and cannot authorize a Git operation or expand a declared resource scope.
@@ -77,6 +79,8 @@ The evaluator is fail-closed:
 Protected operations such as publication, administration and destructive deletion are intentionally outside this profile. They continue through normal Governance / Approval Binding / Git Publish / safety challenge paths.
 
 ## Enforcement truth
+
+Resource authorization is checked at the consuming runtime boundary; a valid profile or diagnostic report alone does not execute a workflow or confer broader host permission.
 
 Shared publication guard 的非預期授權例外會拒絕操作，輸出只包含 allowlist 例外類別與診斷 ID；這不改變任何資源 grant。
 Commit Content Safety is a separate content boundary, not a Resource Authorization profile or grant. Plan41 adds only read-only diagnostics and preserves all existing Human Authority, Required Checks and Git Publish Approval decisions.

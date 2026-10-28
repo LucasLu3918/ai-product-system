@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 import check_secret_leakage as secret_scanner
 import governance_guard as guard
+import project_governance_mode
 import publication_authority as auth
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
@@ -63,6 +64,7 @@ class PublicationTest(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.path = Path(self.temp.name)
+        os.environ['XDG_CONFIG_HOME'] = str(self.path / 'config')
         self.repo, self.remote = self.path / 'repo', self.path / 'remote.git'
         self.repo.mkdir()
         self.run_git(self.repo, 'init', '-b', 'main')
@@ -81,6 +83,10 @@ class PublicationTest(unittest.TestCase):
         self.run_git(self.repo, 'add', 'file.txt')
         self.run_git(self.repo, 'commit', '-m', 'candidate')
         self.head = self.run_git(self.repo, 'rev-parse', 'HEAD')
+        project_governance_mode.set_mode(
+            self.repo, 'enforce',
+            ['gh_pr_create', 'gh_pr_merge', 'gh_release_create', 'git_commit', 'git_push', 'git_tag', 'publish_ship'],
+        )
         self.argv = ['git', 'push', '--force-with-lease=refs/heads/feature:', 'origin', self.head + ':refs/heads/feature']
         self.issuer = Issuer(self.path / 'grants.sqlite', Ed25519PrivateKey.generate(), 'fixture')
         self.authority = LocalAuthority(self.issuer)
@@ -108,6 +114,10 @@ class PublicationTest(unittest.TestCase):
             self.verify(consume=True)
         with self.assertRaises(auth.PublicationError):
             self.verify()
+
+    def test_uncommitted_worktree_state_is_not_part_of_publication_approval_scope(self):
+        (self.repo / 'local-note.txt').write_text('not part of the approved candidate\n')
+        self.verify()
 
     def test_dirty_worktree_details_are_grouped_and_diagnostics_are_versioned(self):
         (self.repo / 'file.txt').write_text('staged content\n')
@@ -192,6 +202,19 @@ class PublicationTest(unittest.TestCase):
         long_upstream = auth.validate_personal_action(
             self.repo, 'git_push', ['git', 'push', '--set-upstream', 'origin', self.head + ':refs/heads/codex/test'])
         self.assertEqual(long_upstream['target_ref'], observed['target_ref'])
+        shorthand = auth.validate_personal_action(
+            self.repo, 'git_push', ['git', 'push', '-u', 'origin', 'codex/test'])
+        self.assertEqual(shorthand['target_ref'], observed['target_ref'])
+        self.assertEqual(shorthand['candidate_commit'], observed['candidate_commit'])
+        self.assertEqual(shorthand['source_commit'], self.head)
+        self.assertEqual(shorthand['refspec'], self.head + ':refs/heads/codex/test')
+        long_shorthand = auth.validate_personal_action(
+            self.repo, 'git_push', ['git', 'push', '--set-upstream', 'origin', 'codex/test'])
+        self.assertEqual(long_shorthand['target_ref'], observed['target_ref'])
+        self.assertEqual(long_shorthand['candidate_commit'], observed['candidate_commit'])
+        with self.assertRaises(auth.PublicationError) as bare_branch:
+            auth.validate_personal_action(self.repo, 'git_push', ['git', 'push', 'origin', 'codex/test'])
+        self.assertEqual(bare_branch.exception.reason_code, 'PUSH_SOURCE_NOT_EXACT_SHA')
         with patch('publication_scan_evidence.valid', return_value=False), \
                 self.assertRaises(auth.PublicationError) as missing_scan:
             auth.validate_personal_action(self.repo, 'git_push', command,
@@ -202,6 +225,10 @@ class PublicationTest(unittest.TestCase):
         feat_command = ['git', 'push', 'origin', self.head + ':refs/heads/feat/checked-prefix']
         feat_observed = auth.validate_personal_action(self.repo, 'git_push', feat_command)
         self.assertEqual(feat_observed['target_ref'], 'refs/heads/feat/checked-prefix')
+        with self.assertRaises(auth.PublicationError) as wrong_shorthand:
+            auth.validate_personal_action(
+                self.repo, 'git_push', ['git', 'push', '-u', 'origin', 'codex/test'])
+        self.assertEqual(wrong_shorthand.exception.reason_code, 'PUSH_TARGET_BRANCH_MISMATCH')
 
         self.run_git(self.repo, 'remote', 'add', 'exfil', str(self.remote))
         with self.assertRaisesRegex(auth.PublicationError, 'verified single origin'):
@@ -359,15 +386,36 @@ class PublicationTest(unittest.TestCase):
         with self.assertRaisesRegex(auth.PublicationError, 'secret scan blocked'):
             auth.validate_personal_action(self.repo, 'git_push', command)
 
-    def test_unsupported_command_form_is_rejected_before_candidate_or_secret_scan(self):
-        command = ['git', '-C', str(self.repo), 'push', 'origin',
-                   self.head + ':refs/heads/codex/test']
-        with patch('publication_authority.git', side_effect=AssertionError('candidate inspected')), \
-                patch('check_secret_leakage.scan_candidate', side_effect=AssertionError('scanner called')) as scan, \
-                self.assertRaises(auth.PublicationError) as caught:
-            auth.validate_personal_action(self.repo, 'git_push', command)
-        self.assertEqual(caught.exception.reason_code, 'COMMAND_FORM_UNSUPPORTED')
-        scan.assert_not_called()
+    def test_git_c_push_binds_explicit_target_worktree(self):
+        self.run_git(self.repo, 'switch', '-c', 'codex/git-c-target')
+        head = self.run_git(self.repo, 'rev-parse', 'HEAD')
+        command = ['git', '-C', 'repo', 'push', 'origin',
+                   head + ':refs/heads/codex/git-c-target']
+        observed = auth.validate_personal_action(self.path, 'git_push', command)
+        self.assertEqual(observed['candidate_commit'], head)
+        self.assertEqual(observed['target_ref'], 'refs/heads/codex/git-c-target')
+        self.assertEqual(observed['target_worktree_id'], auth.identity(self.repo)['worktree_id'])
+        binding = guard._hook_binding(
+            self.path, 'git -C repo push origin ' + head + ':refs/heads/codex/git-c-target', 'personal')
+        self.assertEqual(binding['candidate_sha'], head)
+        self.assertEqual(binding['target_ref'], 'refs/heads/codex/git-c-target')
+        self.assertEqual(binding['worktree_id'], observed['target_worktree_id'])
+
+    def test_git_c_invalid_or_dynamic_path_fails_before_candidate_or_secret_scan(self):
+        for command in [
+            ['git', '-C', 'missing-repository', 'push', 'origin',
+             self.head + ':refs/heads/codex/test'],
+            ['git', '-C', '\0shell-expansion:$TARGET', 'push', 'origin',
+             self.head + ':refs/heads/codex/test'],
+        ]:
+            with self.subTest(command=command), \
+                    patch('publication_authority.git', side_effect=AssertionError('candidate inspected')), \
+                    patch('check_secret_leakage.scan_candidate', side_effect=AssertionError('scanner called')) as scan, \
+                    self.assertRaises(auth.PublicationError) as caught:
+                auth.validate_personal_action(self.path, 'git_push', command, literal_marked=True)
+            self.assertIn(caught.exception.reason_code,
+                          {'CWD_MISMATCH', 'COMMAND_FORM_UNSUPPORTED', 'PUBLICATION_ARGUMENT_DYNAMIC'})
+            scan.assert_not_called()
 
     def test_secret_scanner_failure_has_stable_redacted_publication_diagnostic(self):
         raw = 'private token https://secret.invalid/value'
@@ -500,10 +548,9 @@ class PublicationTest(unittest.TestCase):
             self.verify(cwd=self.path / 'other')
         self.assertIsNone(auth.approval_location(self.path / 'other'))
 
-    def test_candidate_dirty_and_implicit_extra_tags(self):
+    def test_candidate_dirty_is_accepted_but_implicit_extra_tags_are_rejected(self):
         (self.repo / 'file.txt').write_text('changed again')
-        with self.assertRaises(auth.PublicationError):
-            self.verify()
+        self.verify()
 
         self.run_git(self.repo, 'restore', 'file.txt')
         self.run_git(self.repo, 'config', 'push.followTags', 'true')
@@ -912,6 +959,10 @@ class PublicationTest(unittest.TestCase):
         self.run_git(self.repo, 'fetch', 'origin', 'main')
         self.run_git(self.repo, 'switch', '-c', 'claude/hook-pr')
         self.run_git(self.repo, 'remote', 'set-url', 'origin', 'https://github.com/owner/project.git')
+        project_governance_mode.set_mode(
+            self.repo, 'enforce',
+            ['gh_pr_create', 'gh_pr_merge', 'gh_release_create', 'git_commit', 'git_push', 'git_tag', 'publish_ship'],
+        )
         prefix = 'gh pr create --repo owner/project --head claude/hook-pr --base main --title "fix: probe" --body '
         body = "## Summary\n- keeps `code`, $HOME and don't literal\n\nGenerated with Claude Code"
         heredoc = prefix + '"$(cat <<\'EOF\'\n' + body + '\nEOF\n)"'
@@ -958,11 +1009,10 @@ class PublicationTest(unittest.TestCase):
     def test_claude_hook_denials_name_the_supported_publication_recipe(self):
         import json
         self.run_git(self.repo, 'fetch', 'origin', 'main')
-        self.run_git(self.repo, 'switch', '-c', 'claude/hook-recipe')
+        self.run_git(self.repo, 'switch', '-c', 'codex/hook-recipe')
         cases = {
-            'git push -u origin claude/hook-recipe': ('PUSH_SOURCE_NOT_EXACT_SHA', None, ':refs/heads/<current-branch>'),
             'git push -u origin HEAD': ('PUSH_SOURCE_NOT_EXACT_SHA', None, ':refs/heads/<current-branch>'),
-            f'git push -u origin {self.head}:refs/heads/claude/hook-recipe && gh pr create --title t --body b':
+            f'git push -u origin {self.head}:refs/heads/codex/hook-recipe && gh pr create --title t --body b':
                 ('COMMAND_FORM_UNSUPPORTED', 'MULTI_COMMAND_UNSUPPORTED', 'one exact publication command per Bash call'),
             'gh pr create --title "fix: probe" --body "$BODY"':
                 ('COMMAND_FORM_UNSUPPORTED', 'PUBLICATION_ARGUMENT_DYNAMIC', "<<'EOF'"),
@@ -985,6 +1035,15 @@ class PublicationTest(unittest.TestCase):
                 self.assertTrue(context['detail_zh'] and context['next_step_zh'])
                 self.assertNotIn('hook-recipe', proc.stdout)
                 self.assertNotIn('$BODY', proc.stdout)
+
+        payload = {'cwd': str(self.repo), 'tool_input': {'command': 'git push -u origin codex/hook-recipe'}}
+        proc = subprocess.run([sys.executable, str(ROOT / 'scripts/governance_guard.py'), 'hook', '--runtime', 'claude-code'],
+                              input=json.dumps(payload), text=True, capture_output=True, check=False)
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        response = json.loads(proc.stdout)['hookSpecificOutput']
+        self.assertNotIn('PUSH_SOURCE_NOT_EXACT_SHA', response['permissionDecisionReason'])
+        self.assertNotIn('PUSH_TARGET_BRANCH_MISMATCH', response['permissionDecisionReason'])
+        self.assertIn('authorization_status', response['additionalContext'])
 
 
 class ShellTest(unittest.TestCase):
@@ -1073,12 +1132,14 @@ class GuardFalseDenialTest(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.repo = Path(self.temp.name)
+        os.environ['XDG_CONFIG_HOME'] = str(self.repo.parent / (self.repo.name + '-config'))
         for args in (['init', '-q', '-b', 'main'], ['config', 'user.name', 'Fixture'],
                      ['config', 'user.email', 'fixture' + '@' + 'users.noreply.github.com']):
             self.git(*args)
         (self.repo / 'file.txt').write_text('initial\n')
         self.git('add', 'file.txt')
         self.git('commit', '-qm', 'base')
+        project_governance_mode.set_mode(self.repo, 'enforce', ['git_commit'])
         corpus = (ROOT / 'tests/fixtures/content-safety/corpus.json').read_text(encoding='utf-8')
         import json
         self.ambiguous = bytes.fromhex(json.loads(corpus)['ambiguous_hex']).decode('utf-8')

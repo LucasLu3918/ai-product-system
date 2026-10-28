@@ -56,6 +56,8 @@ External Agent/provider credentials 永遠是 optional enhancement；缺少 cred
 
 ## Effectiveness Feedback
 
+Effectiveness evidence stays advisory and external to repository project state; it cannot grant implementation, publication or merge authority.
+
 Scenario 266 tracks versioned runtime injection classification and added-line publication scanning; its deterministic corpus and exact-candidate checks are safety evidence, not Evolution Radar effectiveness or adoption evidence.
 
 Publication release evidence remains candidate-bound; retryable Doctor observations are diagnostic input and do not count as a passing Gate.
@@ -146,7 +148,7 @@ Task ownership leases and dashboard projections are operational coordination evi
 
 Runtime evidence changes preserve provenance: evaluation results state whether they match the current system, and operational spans reflect measured stage boundaries. Historical unbound results remain historical signals and cannot claim current effectiveness.
 
-Plan19 的 2026-09 月報快照（`.aips/review/PLAN19_EVOLUTION_EFFECTIVENESS.yaml`）觀測到 100 筆 raw／unique signals、0 shortlist；100 筆仍為 `ANALYSIS_PENDING`，4 份 weekly Issue 缺少 pre-analysis，留下 5 個 source review flags。資料覆蓋不完整，這份報告不支持調整來源分數或權重。
+Plan19 的 2026-09 月報快照（`docs/history/aips-review/PLAN19_EVOLUTION_EFFECTIVENESS.yaml`）觀測到 100 筆 raw／unique signals、0 shortlist；100 筆仍為 `ANALYSIS_PENDING`，4 份 weekly Issue 缺少 pre-analysis，留下 5 個 source review flags。資料覆蓋不完整，這份報告不支持調整來源分數或權重。
 
 GitHub Actions workflows 使用固定 Ubuntu 24.04 runner；Node runtime 相容性依賴各 action 的官方版本支援，artifact action 使用完整 SHA pin 並需在升級時重新驗證。
 

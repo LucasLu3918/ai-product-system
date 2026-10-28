@@ -119,7 +119,10 @@ Each retained section maps to its existing anchor. Human versioned baselines rem
 | [## Scenario 263 — Commit Safety Diagnostics](CONFORMANCE.md#scenario-263-commit-safety-diagnostics) | Current Human guidance |
 | [## Scenario 264 — Hash-bound Creative Git Asset Import](CONFORMANCE.md#scenario-264-hash-bound-creative-git-asset-import) | Current Human guidance |
 | [## Scenario 266 — Content Safety Injection Context and Recovery](CONFORMANCE.md#scenario-266-content-safety-injection-context-and-recovery) | Current Human guidance |
+| [## Scenario 275 — Optional Project Governance Modes](CONFORMANCE.md#scenario-275-optional-project-governance-modes) | Current Human guidance |
 | [# Scenario Conformance](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-conformance) | Normative rule |
+| [## Scenario 275 — Optional Project Governance Modes](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-275-optional-project-governance-modes) | Normative rule |
+| [## Scenario 044 — External AIPS State Lifecycle](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-044-external-aips-state-lifecycle) | Normative rule |
 | [## Purpose](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#purpose) | Normative rule |
 | [## Registry](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#registry) | Normative rule |
 | [## Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-231-advisory-security-inventory-and-secret-scanner-shadow) | Normative rule |

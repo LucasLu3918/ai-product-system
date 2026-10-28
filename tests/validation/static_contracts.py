@@ -602,8 +602,8 @@ if len(root_user_guide) > 1200 or "docs/human/USER_GUIDE.md" not in root_user_gu
 svg = (ROOT / "docs/human/assets/system-overview.svg").read_text(encoding="utf-8") if (ROOT / "docs/human/assets/system-overview.svg").exists() else ""
 if "<svg" not in svg or "AI Product System" not in svg:
     errors.append("Human architecture SVG is missing or invalid")
-if "EPHEMERAL" not in svg or "ATTACHED" not in svg or "Turn-Aware Harness" not in svg:
-    errors.append("System overview SVG must reflect Turn-Aware Harness and EPHEMERAL/ATTACHED architecture")
+if "EXTERNAL" not in svg or "LEGACY" not in svg or "Turn-Aware Harness" not in svg:
+    errors.append("System overview SVG must reflect Turn-Aware Harness and external/legacy project-state architecture")
 
 harness_svg = (ROOT / "docs/human/assets/harness-overview.svg").read_text(encoding="utf-8") if (ROOT / "docs/human/assets/harness-overview.svg").exists() else ""
 if "<svg" not in harness_svg or "Turn-Aware" not in harness_svg:
@@ -685,10 +685,10 @@ if "lessons" not in lessons:
     errors.append("LESSONS.yaml missing lessons list")
 
 lifecycle_svg = (ROOT / "docs/human/assets/system-lifecycle.svg").read_text(encoding="utf-8") if (ROOT / "docs/human/assets/system-lifecycle.svg").exists() else ""
-if "<svg" not in lifecycle_svg or "Installation, Harness &amp; Intelligence Lifecycle" not in lifecycle_svg:
+if "<svg" not in lifecycle_svg or "AIPS Installation, Harness &amp; External Project State" not in lifecycle_svg:
     errors.append("System lifecycle SVG is missing or invalid")
-if "EPHEMERAL" not in lifecycle_svg or "ATTACHED" not in lifecycle_svg or "managed adapters" not in lifecycle_svg:
-    errors.append("System lifecycle SVG must reflect Harness adapters and EPHEMERAL/ATTACHED Intelligence modes")
+if "EXTERNAL" not in lifecycle_svg or "LEGACY" not in lifecycle_svg or "managed adapters" not in lifecycle_svg:
+    errors.append("System lifecycle SVG must reflect Harness adapters and external/legacy Intelligence modes")
 
 from .cli_source import cli_implementation
 
@@ -731,26 +731,16 @@ with tempfile.TemporaryDirectory() as tmp:
     cli = ROOT / "bin/aips"
 
     attach = subprocess.run(["bash", str(cli), "attach", str(project)], capture_output=True, text=True, check=False)
-    if attach.returncode != 0 or not (project / ".ai").is_dir():
-        errors.append(f"aips attach lifecycle test failed: {attach.stdout.strip()} {attach.stderr.strip()}")
+    if attach.returncode != 0 or (project / ".ai").exists():
+        errors.append(f"aips attach must use external state: {attach.stdout.strip()} {attach.stderr.strip()}")
     else:
         status = subprocess.run(["bash", str(cli), "status", str(project)], capture_output=True, text=True, check=False)
-        if status.returncode != 0 or "Project attached: yes" not in status.stdout:
-            errors.append(f"aips status attached test failed: {status.stdout.strip()} {status.stderr.strip()}")
+        if status.returncode != 0 or "Project mode: EXTERNAL" not in status.stdout:
+            errors.append(f"aips status external-state test failed: {status.stdout.strip()} {status.stderr.strip()}")
 
         detach = subprocess.run(["bash", str(cli), "detach", str(project)], capture_output=True, text=True, check=False)
-        archives = sorted(project.glob(".ai.detached-*"))
-        if detach.returncode != 0 or (project / ".ai").exists() or len(archives) != 1:
-            errors.append(f"aips detach lifecycle test failed: {detach.stdout.strip()} {detach.stderr.strip()}")
-        else:
-            blocked_attach = subprocess.run(["bash", str(cli), "attach", str(project)], capture_output=True, text=True, check=False)
-            if blocked_attach.returncode == 0:
-                errors.append("aips attach should stop when detached workspace exists")
-
-            archives[0].rename(project / ".ai")
-            reattach = subprocess.run(["bash", str(cli), "attach", str(project)], capture_output=True, text=True, check=False)
-            if reattach.returncode != 0 or not (project / ".ai").is_dir():
-                errors.append(f"aips reattach lifecycle test failed: {reattach.stdout.strip()} {reattach.stderr.strip()}")
+        if detach.returncode != 0 or (project / ".ai").exists():
+            errors.append(f"aips detach must not create project state: {detach.stdout.strip()} {detach.stderr.strip()}")
 
 
 quality_profile = load_yaml(ROOT / "templates/quality/QUALITY_PROFILE.yaml") or {}
@@ -792,8 +782,8 @@ for key in ("project_intelligence", "project_knowledge_compat", "quality", "visu
         errors.append(f"MANIFEST.yaml missing required top-level key: {key}")
 
 
-if "Project mode: EPHEMERAL (no .ai workspace created)." not in cli_text:
-    errors.append("bin/aips preflight must support EPHEMERAL mode without implicit attach")
+if "Project mode: EXTERNAL (no project-local AIPS state created)." not in cli_text:
+    errors.append("bin/aips preflight must report external state without implicit project writes")
 if "refresh_harness_if_installed" not in cli_text:
     errors.append("bin/aips must refresh/migrate Harness after installed-system updates")
 if 'die "CLI path already exists and is not an AIPS symlink' not in cli_text:

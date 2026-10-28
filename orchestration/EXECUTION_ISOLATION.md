@@ -43,14 +43,16 @@ The local ComfyUI workflow adapter is a loopback resource boundary, not an OS pr
 
 ## Worktree ownership
 
+A publication command with literal `git -C <path>` resolves that target from invocation cwd and binds candidate validation to its actual Git worktree; invalid paths do not fall back to the caller checkout.
+
 
 AIPS-created worktrees live outside the project source tree:
 
-`~/.config/aips/worktrees/<repository-id>/<isolation-id>/`
+`~/.local/state/aips/worktrees/<repository-id>/<isolation-id>/`
 
 Ownership records live at:
 
-`~/.config/aips/isolation/<repository-id>/<isolation-id>.yaml`
+`~/.local/state/aips/isolation/<repository-id>/<isolation-id>.yaml`
 
 Each record binds repository_id, workspace identity, isolation id, Change Boundary, branch, path and base revision.
 
@@ -396,7 +398,7 @@ scheduled task
 
 The v0.51 contract supports TCP ports only.
 
-- leases live under the external AIPS config root at `runtime/<repository-id>/ports.yaml`, never in project source;
+- leases live under the external AIPS state root at `runtime/<repository-id>/ports.yaml`, never in project source;
 - allocation is serialized by an atomic directory lock so concurrent AIPS processes cannot commit the same lease;
 - candidate order is deterministic from repository/isolation/resource identity, while actual allocation also respects current host availability;
 - `preferred` is a hint, not a guaranteed port;

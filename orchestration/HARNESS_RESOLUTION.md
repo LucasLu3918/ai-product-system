@@ -24,18 +24,18 @@ Do not use Turn Context to perform repository-wide scans.
 
 ## Project modes
 
-### EPHEMERAL
+### EXTERNAL (default)
 
-- no project-local `.ai/` is created;
+- no AIPS files or Git metadata are written into the project;
 - current tasks may use AIPS normally;
-- reusable Project Intelligence may persist externally under `~/.config/aips/projects/<project-id>/intelligence/`;
+- Project Intelligence, runs and Change Impact persist under user-level AIPS state;
 - project source remains unchanged.
 
-### ATTACHED
+### LEGACY `.ai/`
 
-- explicit `aips attach`;
-- persistent workspace lives in project `.ai/`;
-- canonical Project Intelligence lives in `.ai/intelligence/`.
+- existing project `.ai/` content remains user-owned and is preserved;
+- explicit migration copies validated reusable Intelligence to external state;
+- new writes never target `.ai/`; migration does not delete the source.
 
 ## Runtime capability
 

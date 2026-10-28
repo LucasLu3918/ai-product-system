@@ -1,5 +1,13 @@
 # Scenario Conformance
 
+## Scenario 275 — Optional Project Governance Modes
+
+Scenario 275 covers optional per-project governance modes with `off` as the default. Its evidence is scoped to the local configuration and supported native Hook paths; repository-wide Impact Graph coverage remains partial, and Host enforcement still depends on verified native capability.
+
+## Scenario 044 — External AIPS State Lifecycle
+
+`aips attach`, `aips detach` and preflight do not create project-local `.ai/`, `.aips/`, Git excludes, hooks or settings. Existing `.ai/intelligence` imports by validated copy and preserves its source. Run and Change Impact state use the external user-state store. Evidence: `tests/evidence/install_preflight_lifecycle.py`, `tests/evidence/project_intelligence_lifecycle.py`, and `tests/evidence/identity_resume_isolation.py`.
+
 
 The Agent-facing rules in this document are normative. The generated Human current view and section-anchor history crosswalk live in `docs/human/CONFORMANCE_CURRENT.md` and `docs/human/CONFORMANCE_HISTORY_INDEX.md`; `tests/scenario_coverage.yaml` remains the canonical coverage data.
 
@@ -45,6 +53,8 @@ OpenCode integration retains system preflight and existing-host lifecycle checks
 `aips project check <path>` reports attachment mode and Project Intelligence freshness without mutation; freshness problems remain informational and only an invalid path fails. `aips system preflight <path>` delegates to the existing update and repository-validation lifecycle. The legacy `aips preflight` route remains supported.
 
 ## Scenario 233 — Public CLI Help and Error Contracts
+
+Harness lifecycle regression evidence additionally covers default-OFF CLI installation, explicit adapter registration, fail-closed unknown ownership, and uninstall preservation of local state. See `tests/evidence/install_preflight_lifecycle.py` and `tests/test_harness_enablement.py`; these checks do not assert per-project governance modes.
 
 The separate `creative workflows` routes preserve the Skills CLI surface and are covered by Scenario 268.
 
@@ -124,6 +134,10 @@ Every entry must:
 No orphan registry entries are allowed.
 
 ## Release behavior
+
+Conformance covers literal `git -C <path> push` from a different invocation cwd and confirms candidate, scan and diagnostics use the resolved target worktree.
+
+Native push conformance includes `-u` / `--set-upstream` shorthand for the checked-out branch only; validation binds it to the observed full HEAD SHA/ref and retains the existing scan and authority boundaries.
 
 Repository validation runs the conformance checker. Missing/duplicate/unknown entries fail validation. `uncovered` is release-blocking under the current registry policy. `manual` is allowed but remains visible as automation debt.
 
@@ -850,6 +864,8 @@ Current automated inventory: 27 deterministic + 100 lifecycle + 54 agent_eval = 
 
 ## Scenario 182 — Deterministic Execution Ownership
 
+Ownership claims and checkpoints remain bound to the exact task/run record; the optional repository governance mode does not change scheduler enforcement.
+
 Lifecycle evidence covers scheduler-serialized task claims, active AIPS worktree binding, lease heartbeat/stale/recovery states, actual Git-diff reconciliation, out-of-scope blocking and read-only owner projection. Legacy Task Graph v1 and checkpoints remain valid; current Resource Authorization enforcement stays `ADVISORY`.
 
 The shared deterministic helper extraction keeps caller facades and digest/path/glob contracts stable; its lifecycle evidence does not claim complete repository caller/consumer graph coverage.
@@ -926,6 +942,8 @@ The central validator registry lifecycle also verifies exact-plan browser select
 Scenario 218 uses deterministic monthly fingerprint sampling and complete Human relevance/actionability labels. It reports shortlist precision/recall and source-level yield; empty, uncertain or incomplete cohorts remain `NOT_READY`, and results grant no source-policy mutation authority.
 
 ## Scenario 220 — Parallel advisory fast feedback
+
+Advisory runs remain read-only with respect to the primary worktree; dashboard evidence uses isolated runtime resources and external durable state.
 
 Validation Observation 新增相同候選的完整耗時量測與依 Change Class 分組的 P50／P95。重跑不當作新的 PR；歷史紀錄不完整時不授予 selective execution，完整驗證與 required repository check 維持。
 
@@ -1100,6 +1118,8 @@ The branch lifecycle report classifies remote branches using current exact-SHA P
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+Skill catalog selection is explicit and remains independent of per-project governance preferences.
+
 Creative ComfyUI workflow changes do not add Skills, Skill Explorer routes, or installation permissions.
 
 OpenCode Context readiness is checked before Skill content is projected; the guard preserves the pinned inventory and does not add installation or routing behavior.
@@ -1115,8 +1135,6 @@ FLUX 3 Klein `TextGenerate` preflight remains in the Creative executor; its sche
 Dynamic Creative workflow utilities do not add or modify Skills catalog entries or explorer behavior.
 
 ComfyUI model profiles are Creative runtime data and do not add Skills, alter Skill Explorer inventory, or affect Skill routing. Base/Distilled sampler declarations and dynamic reference bindings remain inside the existing Creative contract.
-
-Scenario 044 separately covers AIPS project-local state lifecycle; it does not change upstream Skill inventory or installation behavior.
 
 Scenario 267 changes no Skill catalog or installation behavior; it adds a separate lifecycle contract for Project Intelligence freshness and native write decisions.
 
@@ -1157,6 +1175,8 @@ Scenario 269 changes no Skill catalog or installation behavior; it adds task-sco
 
 ## Scenario 260 — Publication diagnostics and Doctor
 
+Publication lifecycle regression evidence covers a dirty selected worktree with a fixed candidate SHA: the plan and push remain commit-bound, local files are preserved, and dirty status is not an AIPS-only publication blocker. GitHub policy, required checks and content scanning remain unchanged.
+
 Scenario 263 is separate from publication Doctor and cannot satisfy PR merge checks or approval.
 
 Plan40 verifies explicit publication reason codes, safe common Prepare/Hook bindings, independent lifecycle states, and optional verified Diagnostic ID lookup; all remain non-authorizing observations.
@@ -1164,6 +1184,8 @@ Plan40 verifies explicit publication reason codes, safe common Prepare/Hook bind
 Scenario 260 verifies the read-only `aips publish doctor`, Required Checks classification, literal merge diagnosis without execution or grant consumption, sanitized error output, and consistent runtime guidance. Missing/permission-limited policy evidence remains blocking; no repository policy mutation or merge bypass is introduced. Scenario 261 adds grouped dirty-path evidence and phase attribution through push, PR, checks, and exact-head merged recovery; diagnostics remain non-authorizing. Scenario 233 covers upstream Skill inventory and filtering without changing the canonical-only listing default.
 
 ## Scenario 262 — ComfyUI Resource Authorization and Diagnostics
+
+Resource profile validity remains separate from project governance mode and does not authorize endpoint access by itself.
 
 Scenario 236 adds bounded Qwen Image Edit Plus per-port reference mapping while retaining the Scenario 262 fixed loopback and Resource Authorization boundary.
 
@@ -1181,6 +1203,8 @@ Scenario 262 locks stage-specific default-deny Profile diagnostics, kind/selecto
 
 ## Scenario 268 — Model-agnostic ComfyUI Workflows
 
+Workflow validation remains bounded and explicit; an optional governance mode does not trigger automatic submission or model inference.
+
 The Qwen Image Edit Plus extension maps up to three ordered references to built-in `image1`–`image3` inputs, preserves the Qwen Image 2.1 object map, and introduces no topology family or endpoint.
 
 Scenario 268 covers opt-in model-agnostic local ComfyUI API workflows: bounded schema and graph parsing, runtime core-node trust classification, installed loader model validation, explicit bindings, safe create-only output, project-confined no-overwrite import and uncertain-submit no-retry recovery. The loopback lifecycle is synthetic; real model inference and visual quality remain UNVERIFIED. Scenario 271 extends this topology work with audited template data, a generic validator, pre-refactor equivalence for every registered profile, and the user-local profile draft and approve gate.
@@ -1188,6 +1212,8 @@ Scenario 268 covers opt-in model-agnostic local ComfyUI API workflows: bounded s
 The creative profile registry supports FLUX Klein Base and Distilled through the shared audited topology with validated profile-specific sampler settings. Dynamic ComfyUI edits accept one to eight ordered, explicitly bound local references and verify every staged file against its source hash. MFLUX FLUX.1 remains single-reference; FLUX.2/Qwen edit uses the bounded `--image-paths` option.
 
 ## Scenario 263 — Commit Safety Diagnostics
+
+External governance state migration leaves staged-content scanning and native commit diagnostics enabled.
 
 The only WebM exceptions are the three exact repository-relative Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; near-matches and all other WebM files retain strict scanning, and the 2,000,000-byte text limit is unchanged.
 
@@ -1213,6 +1239,8 @@ Scenario 267 separately verifies that the creative Git write denial stays in for
 tests/evidence/opencode_integration_lifecycle.py verifies the AIPS creative import candidate and CLI flow, source/candidate hash checks, no overwrite or path escape, explicit Git-root opt-in, and unchanged Git index bytes. It uses synthetic local assets and does not stage or commit.
 
 ## Scenario 266 — Content Safety Injection Context and Recovery
+
+Project governance configuration is untrusted input and cannot alter content-safety policy or publication authority.
 
 CLI error serialization is not scan evidence; content-safety and complete candidate/history scans remain fail-closed.
 

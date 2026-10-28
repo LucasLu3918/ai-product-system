@@ -2,7 +2,7 @@
 
 ## Given
 
-- AIPS supports EPHEMERAL and ATTACHED Projects with optional Project Intelligence.
+- AIPS stores Project Intelligence externally for every project; optional governance mode remains separate.
 - Existing users may invoke the top-level `aips preflight` command from scripts.
 
 ## When

@@ -330,7 +330,7 @@ def main() -> int:
         ))
     assert preview["preview"] is True
     assert preview["candidate"]["changed_files"] == [
-        ".aips/review/CORE_CHANGE_TEST_MATRIX.yaml", "bin/aips", "untracked-note.md"
+        "bin/aips", "docs/qa/CORE_CHANGE_TEST_MATRIX.yaml", "untracked-note.md"
     ]
     assert preview["matrix"]["required"] is True
     assert preview["content_safety"]["status"] == "PASS" and preview["git_identity"]["status"] == "PASS"
@@ -640,7 +640,7 @@ def main() -> int:
 
     with tempfile.TemporaryDirectory() as td:
         root = Path(td)
-        matrix_path = root / ".aips" / "review" / "CORE_CHANGE_TEST_MATRIX.yaml"
+        matrix_path = root / "docs" / "qa" / "CORE_CHANGE_TEST_MATRIX.yaml"
         matrix_path.parent.mkdir(parents=True)
         matrix_path.write_text(
             "version: 1\ncandidate:\n  base_sha: old\n  changed_files_hash: old\nactual_diff_reconciled: true\nblockers: []\nstatus: READY\n",
@@ -651,7 +651,7 @@ def main() -> int:
         ), patch.object(publish, "worktree_changed_files", return_value=["src/feature.py"]):
             synced = publish.sync_matrix_binding("main", "HEAD", matrix_path)
         bound = yaml.safe_load(matrix_path.read_text(encoding="utf-8"))
-        assert synced["changed_files"] == [".aips/review/CORE_CHANGE_TEST_MATRIX.yaml", "src/feature.py"]
+        assert synced["changed_files"] == ["docs/qa/CORE_CHANGE_TEST_MATRIX.yaml", "src/feature.py"]
         assert bound["candidate"]["base_sha"] == "base-sha"
         assert bound["candidate"]["changed_files_hash"] == publish.canonical_hash(synced["changed_files"])
         assert bound["status"] == "DRAFT"

@@ -189,10 +189,14 @@ surfaces:
   - config/governance-audit-retention.yaml
   - templates/governance/AUDIT_CATALOG_ENTRY.yaml
   - core/GOVERNANCE.md
+  - scripts/project_governance_mode.py
+  - tests/test_project_governance_modes.py
+  - tests/scenarios/275-optional-project-governance-modes.md
   - orchestration/GOVERNANCE_AUDIT.md
   - orchestration/RUNTIME_POLICY_ENFORCEMENT.md
   - orchestration/DETERMINISTIC_AUTOMATION.md
   - docs/human/SECURITY_ASSURANCE.md
+  - docs/human/USER_GUIDE.md
   - orchestration/SECRET_HANDLING.md
   - scripts/external_credential_guard.py
   - config/external-credentials.yaml
@@ -207,6 +211,8 @@ surfaces:
   validation_paths:
   - tests/evidence/governance_command_guard.py
   - tests/evidence/repository_governance_snapshot_lifecycle.py
+  - tests/test_project_governance_modes.py
+  - tests/evidence/project_intelligence_lifecycle.py
   - tests/test_runtime_policy.py
   - tests/evidence/runtime_policy_lifecycle.py
   - tests/evidence/governance_audit_lifecycle.py
@@ -305,7 +311,7 @@ surfaces:
   - scripts/telemetry_projection.py
   - config/telemetry-export.yaml
   - scripts/evolution_radar_rollup.py
-  - .aips/review/PLAN19_EVOLUTION_EFFECTIVENESS.yaml
+  - docs/history/aips-review/PLAN19_EVOLUTION_EFFECTIVENESS.yaml
   canonical_docs:
   - orchestration/EVOLUTION_RADAR.md
   - orchestration/AGENT_ANOMALY_EVALUATION.md

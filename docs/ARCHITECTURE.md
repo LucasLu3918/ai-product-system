@@ -4,9 +4,27 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ## Runtime flow
 
+Native publication validates an immutable committed candidate SHA/ref. Dirty working-tree state is reported separately and is not pushed with that commit.
+
+CLI installation does not enable Runtime adapters. An explicit `aips harness install` registers them; update and preflight refresh only when existing enablement records are verifiable. Unknown records are preserved and reported. Install, refresh and disable use a shared per-user cross-process lock. Per-repository modes are separately opt-in and stored in user-level configuration.
+
+An absent project mode record resolves to `off`. `aips project mode set` writes only under `$XDG_CONFIG_HOME/aips/projects/` (default `~/.config/aips/projects/`), keyed by the opaque repository identity. `observe` and `assist` provide advisory context without changing host permission; `enforce` requires an explicit allowlisted action scope. Hard content safety scans still run in every mode and cannot be downgraded to advisory. `off` skips only optional project-level governance. Runtime policy, protected AIPS installation paths, global administrator high-assurance publication authority, and GitHub branch protections remain independent.
+
+~~~mermaid
+flowchart LR
+    User[User opt-in] --> CLI[aips project mode]
+    CLI --> Config[Private user config keyed by repository ID]
+    Config --> Hook[Native AIPS Hook]
+    Hook -->|off: no project policy| Native[Host permission and native Git]
+    Hook -->|observe / assist: advisory only| Native
+    Hook -->|enforce: explicit action scope| Native
+    Admin[Global runtime and high-assurance trust roots] --> Hook
+    GitHub[GitHub protections and required checks] --> Native
+~~~
+
 Claude Code publication PreToolUse uses a bounded eight-second decision path. Each push still checks the exact candidate, full target ref, remote tip and current authority; a fresh, 30-minute private Secret Scan record can avoid only the duplicate Hook scan and never authorizes execution.
 
-Project-local AIPS state is opt-in through `aips attach`. In Git worktrees, attach/detach maintain anchored `.ai/` and `.ai.detached-*` entries in repository-local `info/exclude`; non-Git projects need no Git metadata, and project `.gitignore` remains untouched.
+All new AIPS project state is stored outside the repository. `aips attach` initializes or imports external Intelligence; attach, detach and preflight never create `.ai/` or modify project files, Git configuration, hooks or ignore rules. Existing `.ai/` data remains preserved legacy input.
 
 OpenCode direct local L2 writes use the Project Intelligence readiness and instruction checks; READY freshness that is STALE remains visible but is not a standalone denial for a confined source target. UNKNOWN, non-READY and independent guard conditions remain blocking.
 
@@ -327,6 +345,10 @@ flowchart LR
 The alias candidate is deterministic and transparent. It is not an embedding provider and does not change `semantic.status=NOT_CONFIGURED`. The committed Trial follows the FAIL → KEEP branch: required regressions and no synonym-recall improvement produce recommendation `HOLD`. Normal Turn Context retrieval therefore does not enable the alias lane.
 
 ## Maintenance and publication evidence
+
+The literal `git -C <path> push` form resolves its target relative to invocation cwd and binds candidate inspection and scanning to that actual worktree; missing or dynamic paths fail closed.
+
+Native Git push parsing accepts an exact candidate SHA to the current full branch ref, or `-u` / `--set-upstream` with the current branch name; the latter is normalized to the already observed HEAD SHA and full ref. This syntax support grants no publication authority and does not bypass candidate scanning.
 
 Doctor keeps Required Checks permission failures visible as unknown. They become Doctor blockers only with `AIPS_ENFORCE_REQUIRED_CHECKS=1`; strict merge validation continues to block unknown policy evidence, while GitHub native rules remain active.
 
@@ -908,7 +930,9 @@ Project Diagnostics reports read-only next actions and recovery pointers; it doe
 
 ~~~mermaid
 flowchart TD
-    INSTALL[aips install] --> DET[Detect Runtimes]
+    INSTALL[aips install] --> CLI[CLI installed without Runtime adapters]
+    CLI --> ENABLE[Explicit aips harness install]
+    ENABLE --> DET[Detect Runtimes]
     DET --> C[Codex Managed Block / CONTEXT_ALWAYS]
     DET --> CL[Claude Hook + Managed Block]
     DET --> G[Gemini Extension + BeforeAgent]
@@ -917,17 +941,13 @@ flowchart TD
     C --> USE[Normal Agent Use]
     CL --> USE
     G --> USE
-    USE --> PM{Project .ai exists?}
-    PM -->|no| E[EPHEMERAL]
-    PM -->|yes| A[ATTACHED]
-    E --> EC[External Intelligence Cache]
-    EC --> AT[aips attach]
-    AT --> MIG[Validated migrate to .ai/intelligence]
-    MIG --> A
-    A --> DT[aips detach]
-    DT --> SYNC[Sync Intelligence to External Cache]
-    SYNC --> ARC[Archive .ai]
-    ARC --> E
+    USE --> EX[External user-state store]
+    EX --> PI[Project Intelligence / Runs / Change Impact]
+    USE --> AT[aips attach / bootstrap]
+    AT --> EX
+    LEG[Legacy .ai/intelligence] -->|validated copy; source preserved| EX
+    USE --> DT[aips detach compatibility alias]
+    DT --> KEEP[No project or Git metadata changes]
     USE --> UN[aips uninstall]
     UN --> KEEP[Remove AIPS integrations; preserve user data + Intelligence]
     KEEP --> RC{--remove-cache?}
@@ -1246,6 +1266,8 @@ flowchart LR
 Worktree state and runtime resource state share the existing Execution Isolation ownership boundary but have independent lifecycles. The Scheduler validates and propagates requests; `execution_isolation.py` performs atomic lease allocation. The registry is external AIPS state, not project source. Clean workspace removal releases leases, while dirty workspace preservation does not prevent an explicit runtime release.
 
 ## Deterministic task execution ownership
+
+Run state and checkpoints are keyed by the verified external project identity; scheduler ownership is rechecked on resume and never inferred from conversation history.
 
 Plan21 shared deterministic helpers preserve scheduler and Integration Gate facade outputs while centralizing canonical bytes and path/glob rules; golden lifecycle evidence is compatibility evidence, not a complete caller graph.
 

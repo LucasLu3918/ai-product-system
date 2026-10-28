@@ -20,6 +20,8 @@ The owned `plugins/aips-opencode.ts` projection is installed only for a positive
 
 ## Readiness and enforcement boundary
 
+Per-project governance preferences remain in private external state; OpenCode native Context/Hook evidence is evaluated separately and is not implied by a repository mode value.
+
 Qwen Image Edit Plus workflow support is enforced by the AIPS Creative ComfyUI contract and does not establish OpenCode adapter acceptance or alter this adapter’s compatibility claims.
 
 The native write guard treats READY+STALE Project Intelligence as advisory for a confined local L2 source target. UNKNOWN, non-READY, instruction conflicts and path escapes remain denied; external actions retain the Human approval boundary.

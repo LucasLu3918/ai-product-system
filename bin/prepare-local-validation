@@ -182,7 +182,7 @@ def main() -> int:
             str(python), str(ROOT / "scripts/publish_preflight.py"), "run",
             "--base", args.base, "--head", args.head,
             "--change-class", args.change_class, "--labels", args.labels,
-            "--matrix", str(ROOT / ".aips/review/CORE_CHANGE_TEST_MATRIX.yaml"),
+            "--matrix", str(ROOT / "docs/qa/CORE_CHANGE_TEST_MATRIX.yaml"),
             "--offline", "--output", str(output),
         ]
         if args.base_tip:

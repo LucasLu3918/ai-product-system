@@ -10,7 +10,7 @@ from typing import Any
 
 import yaml
 
-from aips_identity import config_home, repository_identity
+from aips_identity import repository_identity, state_home
 
 
 REGISTRY = Path(__file__).resolve().parents[1] / "config" / "sandbox-providers.yaml"
@@ -23,7 +23,7 @@ def registry_digest(path: Path | None = None) -> str:
 
 def verification_path(root: Path) -> Path:
     repo_id = repository_identity(root)["repository_id"]
-    return config_home() / "sandbox-providers" / repo_id / "verification.json"
+    return state_home() / "sandbox-providers" / repo_id / "verification.json"
 
 
 def _fresh_record(root: Path, provider: str, cfg: dict[str, Any]) -> tuple[bool, str, dict[str, Any] | None]:

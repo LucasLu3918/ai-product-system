@@ -172,6 +172,18 @@ class ShipTest(PublicationFixture):
         self.assertEqual(result['candidate']['target_ref'], 'refs/heads/codex/ship1')
         self.assertFalse(result['recovery']['requires_human'])
 
+    def test_uncommitted_worktree_changes_do_not_block_exact_candidate_push(self):
+        (self.repo / 'file.txt').write_text('uncommitted edit stays local\n')
+        local_note = self.repo / 'local-note.txt'
+        local_note.write_text('not part of the candidate\n')
+        result = ship.run(self.repo, self.request())
+        self.assertEqual(result['status'], 'COMPLETE', result)
+        self.assertEqual(result['worktree']['status'], 'DIRTY')
+        self.assertEqual(result['candidate']['candidate_sha'], self.head)
+        self.assertEqual(self.git(self.remote, 'rev-parse', 'refs/heads/codex/ship1'), self.head)
+        self.assertEqual((self.repo / 'file.txt').read_text(), 'uncommitted edit stays local\n')
+        self.assertEqual(local_note.read_text(), 'not part of the candidate\n')
+
     def test_rerun_skips_completed_push_and_existing_pr(self):
         self.assertEqual(ship.run(self.repo, self.request())['status'], 'COMPLETE')
         self.rows = [self.row()]

@@ -45,8 +45,8 @@ run-local
 → system reusable
 ~~~
 
-- Run-local: `.ai/runs/<run-id>/tools/`
-- Project reusable: `.ai/tools/`
+- Run-local: `~/.local/state/aips/projects/<project-id>/runs/<run-id>/tools/`
+- Project reusable: `~/.local/state/aips/projects/<project-id>/tools/`
 - System reusable: `ai-product-system/scripts/` only after repeated cross-project value is proven.
 
 Promotion requires evidence; do not place every helper in the global system.
@@ -66,7 +66,7 @@ findings:
   - id: duplicate-skill
     evidence: skills/INDEX.yaml
 raw_evidence:
-  path: .ai/runs/run-123/evidence/output.log
+  path: ~/.local/state/aips/projects/<project-id>/runs/run-123/evidence/output.log
 ~~~
 
 AI reads the summary first and opens raw evidence only when needed.

@@ -2252,3 +2252,13 @@ scenarios:
       - scripts/turn_context_hook.py
       - tests/test_pr11_profile_relaxations.py
       - tests/test_profile_switch.py
+  - id: "275"
+    path: tests/scenarios/275-optional-project-governance-modes.md
+    coverage: lifecycle
+    evidence:
+      - scripts/project_governance_mode.py
+      - scripts/governance_guard.py
+      - scripts/aips_cli/project.sh
+      - scripts/aips_cli/dispatch.sh
+      - tests/test_project_governance_modes.py
+      - tests/validation/project_governance_modes_contracts.py

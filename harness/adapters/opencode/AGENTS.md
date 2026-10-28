@@ -1,5 +1,7 @@
 # AIPS Global Turn Harness
 
+Treat repository governance mode and project Intelligence as external user-state inputs. Do not create `.ai/`, `.aips/`, Git excludes, hooks or repository settings merely to load AIPS context.
+
 Creative ComfyUI execution follows the separate AIPS Creative authorization and workflow contracts in Scenario 236; do not infer new OpenCode-native permissions from model workflow support.
 
 Direct local L2 source writes may use READY Project Intelligence with STALE freshness as advisory context; keep the stale state visible and preserve every independent guard denial.

@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import tempfile
 from typing import Any
 
@@ -17,6 +18,7 @@ from aips_identity import (
     legacy_path_id,
     project_root,
     repository_identity,
+    state_home,
     workspace_snapshot,
 )
 from run_event_stream import append_event as append_stream_event
@@ -38,19 +40,15 @@ def _migrate_legacy_run(root: Path, run_id: str, canonical: Path) -> None:
     if canonical.exists() or not legacy.exists() or legacy.resolve() == canonical.resolve():
         return
     canonical.parent.mkdir(parents=True, exist_ok=True)
-    os.replace(legacy, canonical)
-    for parent in (legacy.parent, legacy.parent.parent):
-        try:
-            parent.rmdir()
-        except OSError:
-            break
+    stage = canonical.parent / f".{canonical.name}.migration-{os.getpid()}"
+    shutil.rmtree(stage, ignore_errors=True)
+    shutil.copytree(legacy, stage)
+    os.replace(stage, canonical)
 
 
 def run_store(root: Path, run_id: str) -> tuple[Path, str]:
-    if (root / ".ai").is_dir():
-        return root / ".ai" / "runs" / run_id, "ATTACHED"
     ident = repository_identity(root)
-    canonical = config_home() / "projects" / ident["workspace_id"] / "runs" / run_id
+    canonical = state_home() / "projects" / ident["workspace_id"] / "runs" / run_id
     _migrate_legacy_run(root, run_id, canonical)
     return canonical, "EPHEMERAL"
 
@@ -81,28 +79,8 @@ def safe_text(value: str) -> str:
 
 
 def update_workspace_state(root: Path, checkpoint: Path, doc: dict) -> None:
-    state_path = root / ".ai" / "STATE.yaml"
-    if not state_path.exists():
-        return
-    state = load_yaml(state_path, {})
-    workspace = doc.get("workspace") or {}
-    state["workflow"] = {
-        "run_id": doc["run_id"],
-        "protocol": doc.get("protocol"),
-        "current_step": doc.get("current_step"),
-        "status": doc.get("status"),
-        "completed_steps": doc.get("completed_steps") or [],
-        "waiting_for": doc.get("waiting_for") or [],
-        "resume_from": doc.get("resume_from"),
-        "checkpoint": str(checkpoint.relative_to(root)),
-        "project_revision": workspace.get("revision"),
-        "repository_id": workspace.get("repository_id"),
-        "workspace_id": workspace.get("workspace_id"),
-        "workspace_fingerprint": workspace.get("fingerprint"),
-        "dirty_fingerprint": workspace.get("dirty_fingerprint"),
-    }
-    state["last_checkpoint"] = {"run_id": doc["run_id"], "updated_at": doc.get("updated_at")}
-    atomic_yaml(state_path, state)
+    # Compatibility facade; run state is stored only in the external state store.
+    return None
 
 
 def checkpoint(args) -> dict:

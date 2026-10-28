@@ -26,6 +26,10 @@ When a shared module-extraction lifecycle gains another facade, retain identity 
 
 ## Impact-derived Test Matrix
 
+For `git -C` support, test caller cwd differing from target, relative and absolute paths, subdirectory targets, and missing/dynamic-path rejection before candidate inspection or scan.
+
+For publication parser changes, cover `-u` and `--set-upstream` current-branch shorthand, full SHA refspecs, and denials for bare branch names, `HEAD`, wrong branches, and unsupported options; verify diagnostics stay read-only and no authority is granted.
+
 Publication diagnostics matrices must separately cover candidate/source identity, target policy evidence, status/error provenance, safe Hook payloads and recovery retryability; attach each result to the exact base/head before the complete Integration Gate.
 
 Creative repair Core candidates cover fresh same-session recreation grants, negation/read-only intent, native prompt replay/concurrency, per-criterion evidence, source/hash drift, versioned lineage and comparisons, shared deadlines and finite/repeated-defect stops. Synthetic tests do not satisfy real local image/vision accuracy or exact-host acceptance.
@@ -53,7 +57,7 @@ For Turn Context, run-event, retrieval, Agent Eval freshness, observed-stage tel
 
 For fixed-system-context or protocol-routing changes, verify every supported task route, compact and hook manifest compatibility, missing-source fail-closed behavior, the fixed-core byte ceiling, and the measured reduction against the base fixed layer. Keep `SYSTEM.md` compatibility pointers and canonical protocol ownership in the same candidate.
 
-Before implementation, start from `templates/review/CORE_CHANGE_TEST_MATRIX.yaml` and maintain the active candidate at `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`.
+Before implementation, start from `templates/review/CORE_CHANGE_TEST_MATRIX.yaml` and maintain the active candidate at `docs/qa/CORE_CHANGE_TEST_MATRIX.yaml`.
 
 For validation-workflow action pins, the matrix records upstream commit provenance, the unchanged runtime/cache contract, exact-candidate workflow CI and the mandatory secret scan.
 
@@ -102,6 +106,8 @@ A Large/Core Change is not complete when:
 - required security/secret handling evidence is missing.
 
 ## Evidence
+
+For native publication changes, include a dirty-worktree fixture that proves the immutable candidate SHA/ref and scan binding stay stable while local staged/modified/untracked content is preserved. Keep Integration Gate's separate reproducible-candidate requirement explicit.
 
 Validation Shadow graduation evidence names the confusion-count and null-rate cases, exact-SHA unique-PR fallback, and unchanged full-run Gate. A completed `NOT_READY` cohort remains distinct from collector failure.
 
