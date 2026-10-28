@@ -61,15 +61,26 @@ Plan
 
 Existing Project mutation 前會解析 nearest instructions、Project Intelligence、Change Boundary 與 Impact Graph。沒有 `.ai/` 仍可使用 EPHEMERAL mode，Reusable Intelligence 存在 AIPS external cache。
 
-需要 project-local persistent state：
+明確初始化外部 Project Intelligence（不建立專案內 AIPS 檔案）：
 
 ~~~bash
 aips attach /path/to/project
 ~~~
 
-Detach 會先同步可重用 Intelligence，再封存 project-local workspace；不直接刪除使用者累積資料。
+AIPS 安裝後不會自動接管專案 Hook。使用 `aips project mode show` 檢查目前模式，或明確啟用：
+
+~~~sh
+aips project mode set assist --project /path/to/project
+aips project mode set enforce --project /path/to/project --scope git_push,gh_pr_merge
+~~~
+
+缺少設定時為 `off`；`observe` 與 `assist` 不會因 AIPS 專案層治理阻擋或替 Host 放行。硬內容安全掃描在所有模式都會執行，安全 findings 不會降級成提醒。`enforce` 只套用明列動作，且設定存在使用者層 XDG 目錄，不會寫入專案。`aips status <project>` 會同時顯示獨立的 optional governance mode。
+
+所有新 Intelligence、checkpoint 與 Change Impact 草稿都保存在使用者層。`aips detach` 是相容入口，不會搬移或刪除資料；停用 optional governance 請使用 `aips project mode set off --project <path>`。既有 `.ai/` 會保留為唯讀 legacy 資料。
 
 ## Creative Direction、Style 與 Brand
+
+ComfyUI workflow 的資源授權依明確 profile 與 grant 驗證；模型探索只使用固定 loopback API，診斷不會自動提交工作。
 
 OpenCode 的 Context 上限也適用於本機 Creative 工作；超限時維持 fail-closed，不投遞 Context 或支援的原生檔案寫入，修復後再重試。
 
@@ -328,7 +339,7 @@ The `creative workflows` CLI is a separate workflow utility and does not add or 
 Model profile registry 是 Creative runtime 設定，不會安裝 Skills，也不改變 Skill routing。
 本次新增的 Distilled profile 與一至八張動態參考圖只擴充既有 Creative runtime 資料契約，不新增 Skill、Role、catalog 項目或安裝路由。
 
-Skill integration remains independent of project attachment: `aips attach` is explicit, and its local `.git/info/exclude` rules keep AIPS state out of ordinary staging without changing shared Skill installation behavior.
+Skill installation remains independent of project state. `aips attach` only initializes or imports external user state; it does not change project files, Git configuration, hooks or ignore rules.
 
 Scenario 267 changes no Skill discovery or installation behavior; its lifecycle exercises Project Intelligence freshness and the OpenCode direct-write guard.
 
@@ -406,6 +417,8 @@ Architecture trade-off、Threat Model、視覺方向等主觀專業判斷不應�
 
 ## Deterministic Scheduler
 
+Scheduler 依明確 task graph 與 ownership 狀態執行；缺少可驗證的 task owner 或 resume 證據時，應停止並回報原因。
+
 The Scheduler does not choose ComfyUI node mappings; Scenario 236 verifies Qwen reference binding separately from task ordering and resume state.
 
 Creative 執行仍由既有 executor 明確呼叫；FLUX 3 Klein 的 schema 預檢只驗證最終 payload，不會建立排程工作或重送失敗工作。
@@ -433,6 +446,8 @@ PR 驗證會把 Gate 與 Repository Health 報告放在 CI runner 的暫存位�
 Installation entrypoint workflow 保留既有 pull request 路徑與平台檢查，並以近期 job P95 加安全倍數設定明確逾時；逾時會作為該 job 的失敗呈現，不改變 required check 或 Human 核准權限。
 
 ## Execution Isolation 與 Runtime Resource
+
+平行工作透過獨立 worktree 與 runtime resource 配額隔離；隔離狀態可觀測，但不會擴大專案或 Host 權限。
 
 Qwen Edit Plus references remain project-staged, hash-verified, and submitted only through the existing local loopback ComfyUI boundary.
 
@@ -659,6 +674,8 @@ ComfyUI 工作恢復的 lifecycle fixture 只驗證 queue 讀取、確切 ID 刪
 
 ## Logging、Observability 與 Operations
 
+Run dashboard 只投影外部持久化的 run state 與事件；不得把執行紀錄寫入專案目錄或暴露原始敏感輸出。
+
 創作可靠性 Core candidate 保留完整 Gate、媒材拒絕及取消授權回歸。損壞 PNG fixture 必須失敗；合成測試不能替代真實模型與人工品質驗收。
 
 Context diagnostics 只記錄 route categories、protocol IDs/paths 與解析狀態，不保存原始 prompt 或私有 reasoning。
@@ -705,6 +722,8 @@ The dashboard is an observation surface. It shows workflow state, gate, last act
 
 ## Checkpoint / Resume
 
+Checkpoint 與 resume state 儲存在 AIPS 使用者狀態目錄，並以專案身分命名空間隔離；附加或解除專案不會清除使用者資料。
+
 For Creative `generate-set`, the job result records each Bundle independently; reruns skip only completed outputs whose saved Bundle, output and provenance hashes still match.
 
 Run projection fingerprints preserve their existing facade and canonical digest bytes after helper consolidation; run state and resume authority remain governed by the existing contracts.
@@ -717,7 +736,9 @@ Standalone and shadow dependency-review artifacts retain exact base/head, run ID
 
 ## Project Intelligence
 
-在 Git worktree 內執行 `aips attach` 或 `aips detach` 時，AIPS 會將 `.ai/` 和 `.ai.detached-*` 寫入 repository-local `.git/info/exclude`，一般 `git add` 不會把這些本機工作區加入提交。既有 exclude 規則會保留，專案 `.gitignore` 不會變更；這項規則不會解除已追蹤檔案的追蹤，也不阻擋明確的 force-add。
+`aips attach`、`aips detach` 與 preflight 不會寫入 `.ai/`、`.aips/`、`.git/info/exclude`、Git hooks 或專案設定。若既有 `.ai/` 含有 Intelligence，明確執行 attach/bootstrap 會驗證後複製到外部 user state，保留原始內容供審核及回復。
+
+遷移舊 repo 資料時，先執行 `aips migrate-state --project <path> --dry-run` 檢視 Git-listed、未追蹤與 ignored 路徑；`possible_durable_knowledge` 是保守提示，仍需逐項審核。確認備份目的地位於 repo 外後，`--apply --backup-to <absolute-path> --confirm-repository-id <exact-id>` 會先產生私密、checksum 驗證的備份，再只從 Git index 解除 `.ai/`、`.aips/` 追蹤，保留工作目錄內容。若需回復 index，使用命令回報的 `git restore --staged -- .ai .aips`；備份不會自動刪除。
 
 
 診斷的 Recovery Plan 按既有狀態提供檢查、補主題、finalize 或 refresh 順序。每步都標示操作種類與所需授權；計畫供檢視，不會自動執行或改變 Project Mode。
@@ -888,7 +909,7 @@ local implementation
 
 Agent、MCP、CI workflow 或 external analyzer 不能因為具有執行能力就自行取得上述 authority。
 
-提交前可執行 `aips publish preview --base origin/main --change-class <standard|large|core>`，預覽已提交、暫存、未暫存及未追蹤檔案的文件閉包與矩陣綁定；必須先處理 `pending` 項目。`aips publish matrix-sync --base origin/main` 只更新 canonical Core Matrix 的 base/hash，更新後仍需重新檢視範圍與證據，再把矩陣標記為 READY。發布前再以 `aips publish preflight --base origin/main --head HEAD --change-class <standard|large|core> --output <report>` 執行與 CI 相同的 exact-candidate resolver。Large/Core PR 必須同步套用對應 label，並使用 `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`。受保護 `main` 由 `publish plan` 直接規劃 Pull Request，不先嘗試直推。
+提交前可執行 `aips publish preview --base origin/main --change-class <standard|large|core>`，預覽已提交、暫存、未暫存及未追蹤檔案的文件閉包與矩陣綁定；必須先處理 `pending` 項目。`aips publish matrix-sync --base origin/main` 只更新 canonical Core Matrix 的 base/hash，更新後仍需重新檢視範圍與證據，再把矩陣標記為 READY。發布前再以 `aips publish preflight --base origin/main --head HEAD --change-class <standard|large|core> --output <report>` 執行與 CI 相同的 exact-candidate resolver。Large/Core PR 必須同步套用對應 label，並使用 `docs/qa/CORE_CHANGE_TEST_MATRIX.yaml`。受保護 `main` 由 `publish plan` 直接規劃 Pull Request，不先嘗試直推。
 
 若用 GitHub Connector／API 建立 PR 分支，先確認 `aips publish environment` 可執行完整驗證；文件範圍確定後重新執行 `publish preview`。本地候選提交與 preflight 通過後，執行 `python scripts/publication_transfer.py prepare --base <base-sha> --repository <owner/name>`，核對 `origin` 與預期目的地。建立遠端 blob 與 tree 後，將 GitHub 回傳的 `repository`、`base_sha`、`tree_sha` 及逐檔 `blobs` SHA 寫入倉庫外的暫存 JSON，再執行同腳本的 `verify --base <base-sha> --repository <owner/name> --receipt <receipt.json>`。只有 `READY_TO_PUBLISH` 才能建立遠端 commit／branch；若主分支已移動，先重建候選並重驗。`publish plan` 的 `gh` 認證狀態不代表 Connector 的認證狀態，Connector 連線需在發佈工具側另行確認。
 

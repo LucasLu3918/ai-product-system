@@ -49,6 +49,8 @@ logger = logging.getLogger(__name__)
 HOOK_DEADLINE_SECONDS = 8.0
 _HOOK_STARTED_AT: float | None = None
 _HOOK_PHASE = "input_validation"
+_PROJECT_GOVERNANCE_MODE: str | None = None
+_GLOBAL_HIGH_ASSURANCE = False
 READ_ONLY_GIT_ENV = {**os.environ, "GIT_OPTIONAL_LOCKS": "0"}
 SET_LIKE_KEYS = {"files", "boundaries", "operations"}
 ASSIGNMENT_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*=")
@@ -903,8 +905,16 @@ def _protected_path_diagnostic(reason: str) -> dict[str, Any]:
     }
 
 
-def deny_hook_input(runtime: str, reason: str, diagnostic: dict[str, Any] | None = None) -> int:
+def deny_hook_input(
+    runtime: str,
+    reason: str,
+    diagnostic: dict[str, Any] | None = None,
+    *,
+    force_block: bool = False,
+) -> int:
     """Return the runtime's normal deny envelope without echoing input data."""
+    if _PROJECT_GOVERNANCE_MODE == "assist" and not force_block:
+        return emit_mode_advisory(runtime, "assist", "would_block", reason, diagnostic)
     reason_messages = {
         "UNSUPPORTED_SHELL_SYNTAX": "AIPS cannot safely parse this shell syntax; simplify the command and retry.",
         "UNSUPPORTED_HEREDOC": "AIPS cannot safely inspect this heredoc form; use a quoted heredoc or a separate command.",
@@ -979,8 +989,51 @@ def deny_hook_input(runtime: str, reason: str, diagnostic: dict[str, Any] | None
     return 0
 
 
+def emit_mode_advisory(
+    runtime: str,
+    mode: str,
+    outcome: str,
+    reason: str | None = None,
+    diagnostic: dict[str, Any] | None = None,
+    operations: list[str] | None = None,
+) -> int:
+    """Add local advisory context without granting or denying host permission."""
+    reason_code = None
+    if diagnostic and isinstance(diagnostic.get("reason_code"), str):
+        reason_code = diagnostic["reason_code"]
+    elif reason and re.fullmatch(r"[A-Z][A-Z0-9_]{2,80}", reason):
+        reason_code = reason
+    safe = {
+        "mode": mode,
+        "outcome": outcome,
+        "operations": sorted(set(operations or [])),
+        "reason_code": reason_code,
+        "authorized": False,
+        "executed": False,
+        "host_decision": "NOT_EVALUATED",
+    }
+    recommendation = diagnostic.get("next_step") if diagnostic else None
+    if isinstance(recommendation, str):
+        safe["recommendation"] = recommendation[:300]
+    message = "AIPS " + mode + " advisory: " + json.dumps(safe, ensure_ascii=False, separators=(",", ":"))
+    if runtime == "claude-code":
+        output = {"hookSpecificOutput": {
+            "hookEventName": "PreToolUse",
+            "additionalContext": message + "; native host permission and platform rules remain in control.",
+        }}
+    elif runtime == "gemini-cli":
+        # Gemini displays this user-only message without changing tool permission.
+        output = {"systemMessage": message + "; native host permission and platform rules remain in control."}
+    else:
+        output = {}
+    print(json.dumps(output))
+    return 0
+
+
 def _hook_impl(runtime: str) -> int:
-    global _HOOK_PHASE
+    global _HOOK_PHASE, _PROJECT_GOVERNANCE_MODE, _GLOBAL_HIGH_ASSURANCE
+    _PROJECT_GOVERNANCE_MODE = None
+    _GLOBAL_HIGH_ASSURANCE = False
     _HOOK_PHASE = "input_validation"
     mode = 'unknown'
     try:
@@ -1102,6 +1155,27 @@ def _hook_impl(runtime: str) -> int:
         _HOOK_PHASE = "command_classification"
         operations = operations_for(command, Path(str(payload.get("cwd") or os.getcwd())).resolve())
     except Exception as exc:
+        try:
+            from project_governance_mode import resolve as resolve_project_mode
+            from publication_authority import publication_mode
+
+            fallback_mode = resolve_project_mode(Path(str(payload.get("cwd") or os.getcwd())).resolve())
+            optional_mode = fallback_mode.get("mode")
+            if optional_mode in {"off", "observe", "assist"}:
+                global_mode = publication_mode()
+                if global_mode != "high_assurance":
+                    _PROJECT_GOVERNANCE_MODE = str(optional_mode)
+                    if optional_mode == "off":
+                        print("{}")
+                        return 0
+                    reason_code = getattr(exc, "reason_code", "COMMAND_FORM_UNSUPPORTED")
+                    if optional_mode == "observe":
+                        return emit_mode_advisory(runtime, "observe", "observed_unclassified", reason=reason_code)
+                    return deny_hook_input(runtime, reason_code)
+                _GLOBAL_HIGH_ASSURANCE = True
+                _PROJECT_GOVERNANCE_MODE = "enforce"
+        except Exception as policy_exc:  # noqa: BLE001 - uncertain global authority keeps the legacy denial.
+            logger.warning("Optional mode resolution on an unclassified command failed: %s", type(policy_exc).__name__)
         from publication_commands import CommandError
         if isinstance(exc, CommandError):
             if exc.reason_code == "UNSUPPORTED_SHELL_SYNTAX":
@@ -1117,6 +1191,36 @@ def _hook_impl(runtime: str) -> int:
         return 0
 
     cwd = Path(str(payload.get("cwd") or os.getcwd())).resolve()
+    try:
+        from project_governance_mode import resolve as resolve_project_mode
+
+        project_mode = resolve_project_mode(cwd)
+    except Exception as exc:  # noqa: BLE001 - an unreadable mode record cannot select a weaker policy.
+        logger.warning("Project mode configuration could not be resolved: %s", type(exc).__name__)
+        return deny_hook_input(runtime, "PROJECT_MODE_CONFIG_INVALID")
+    mode = str(project_mode.get("mode") or "")
+    enforce_scope = set(project_mode.get("enforce_scope") or [])
+    global_mode = "personal"
+    if any(operation in CONTENT_SENSITIVE for operation in operations):
+        try:
+            from publication_authority import publication_mode
+
+            global_mode = publication_mode()
+        except Exception as exc:  # noqa: BLE001 - an unreadable trust root must not weaken enforcement.
+            logger.warning("Global publication authority could not be resolved: %s", type(exc).__name__)
+            return deny_hook_input(runtime, "AUTHORITY_CONFIG_INVALID")
+        if global_mode == "high_assurance":
+            _GLOBAL_HIGH_ASSURANCE = True
+            mode = "enforce"
+            enforce_scope = set(CONTENT_SENSITIVE)
+    if mode not in {"off", "observe", "assist", "enforce"}:
+        return deny_hook_input(runtime, "PROJECT_MODE_CONFIG_INVALID")
+    outside_enforce_scope = (
+        mode == "enforce"
+        and not _GLOBAL_HIGH_ASSURANCE
+        and not set(operations).intersection(enforce_scope)
+    )
+    _PROJECT_GOVERNANCE_MODE = mode
     for operation in operations:
         if operation in CONTENT_SENSITIVE:
             _HOOK_PHASE = "content_safety"
@@ -1132,17 +1236,24 @@ def _hook_impl(runtime: str) -> int:
             try:
                 safety = commit_safety(cwd, command) if operation == 'git_commit' else safe_emit(sink=sink, payload={"command": command})
             except PublicationError as exc:
-                return deny_hook_input(runtime, exc.reason_code, exc.diagnostic())
+                return deny_hook_input(runtime, exc.reason_code, exc.diagnostic(), force_block=True)
             except OSError as exc:
                 reason = "STAGED_CONTENT_UNAVAILABLE" if exc.errno in {errno.ENOENT, errno.EACCES, errno.EPERM} else "CONTENT_INSPECTION_UNAVAILABLE"
-                return deny_hook_input(runtime, reason)
+                return deny_hook_input(runtime, reason, force_block=True)
             except (ValueError, TypeError, KeyError, IndexError, AttributeError, ImportError, subprocess.TimeoutExpired):
-                return deny_hook_input(runtime, "CONTENT_INSPECTION_UNAVAILABLE")
+                return deny_hook_input(runtime, "CONTENT_INSPECTION_UNAVAILABLE", force_block=True)
             if safety["decision"] == "BLOCK":
                 reason = safety.get('reason_code') or 'CONTENT_SAFETY_BLOCKED'
                 diagnostic = PublicationError('', reason, phase=safety.get('phase') or 'content_scan').diagnostic()
                 diagnostic.update({key: safety[key] for key in ('diagnostic_id', 'source', 'category', 'retryable', 'findings') if key in safety})
-                return deny_hook_input(runtime, reason, diagnostic)
+                return deny_hook_input(runtime, reason, diagnostic, force_block=True)
+    if mode == "off" and not _GLOBAL_HIGH_ASSURANCE:
+        print("{}")
+        return 0
+    if mode == "observe":
+        return emit_mode_advisory(runtime, mode, "observed", operations=operations)
+    if outside_enforce_scope:
+        return emit_mode_advisory(runtime, "enforce", "outside_enforce_scope", operations=operations)
     ok = False
     hook_diagnostic = None
     reason = "no active AIPS Approval Record"
@@ -1163,8 +1274,8 @@ def _hook_impl(runtime: str) -> int:
                 publication_mode,
                 validate_personal_action,
             )
-            mode = publication_mode()
-            if mode == 'personal':
+            publication_authority_mode = global_mode
+            if publication_authority_mode == 'personal':
                 from publication_commands import command_form_detail, shell_commands
                 # Marked words let quoted literal `$`/backticks (for example a quoted heredoc PR
                 # body) through while every real expansion still carries a NUL marker and denies.
@@ -1229,7 +1340,7 @@ def _hook_impl(runtime: str) -> int:
                 diagnostic = PublicationError(
                     'unclassified publication authorization failure', 'INTERNAL_DIAGNOSTIC_GAP',
                     context={'error_class': type(exc).__name__}, phase=_HOOK_PHASE).diagnostic()
-            binding = _hook_binding(cwd, command, mode)
+            binding = _hook_binding(cwd, command, global_mode)
             if binding:
                 diagnostic['binding'] = binding
             hook_diagnostic = diagnostic
@@ -1251,7 +1362,15 @@ def _hook_impl(runtime: str) -> int:
             0, int((time.monotonic() - (_HOOK_STARTED_AT or time.monotonic())) * 1000))
         _HOOK_PHASE = "diagnostic_recording"
         hook_diagnostic['trace_status'] = _record_publication_diagnostic(hook_diagnostic, runtime)
-    success_binding = ship_binding or (_hook_binding(cwd, command, mode) if ok and approval_operations else None)
+    success_binding = ship_binding or (_hook_binding(cwd, command, global_mode) if ok and approval_operations else None)
+    if _PROJECT_GOVERNANCE_MODE == "assist":
+        return emit_mode_advisory(
+            runtime,
+            "assist",
+            "would_block" if hook_diagnostic else "checks_passed",
+            diagnostic=hook_diagnostic,
+            operations=operations,
+        )
     if runtime == "claude-code":
         claude_auto_merge = bool(merge_confirmation and merge_confirmation.get('auto_merge'))
         print(json.dumps({"hookSpecificOutput": {

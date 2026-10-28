@@ -61,6 +61,14 @@ commands:
     optional_dependencies: []
     validation_bindings: [tests/evidence/project_diagnostics_lifecycle.py]
     documentation_bindings: [docs/human/PROJECT_INTELLIGENCE.md, docs/human/INSTALLATION.md, docs/human/SYSTEM_REFERENCE.md]
+  - id: project-mode
+    command: aips project mode
+    surfaces: [governance-security]
+    platforms: [linux, macos, windows-wsl]
+    runtime_requirement: Python ">=3.12"
+    optional_dependencies: []
+    validation_bindings: [tests/test_project_governance_modes.py, tests/evidence/project_intelligence_lifecycle.py]
+    documentation_bindings: [docs/human/USER_GUIDE.md, docs/human/SECURITY_ASSURANCE.md, docs/human/CONFORMANCE.md]
   - id: system-preflight
     command: aips system preflight
     surfaces: [runtime-context]

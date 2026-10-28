@@ -12,10 +12,6 @@ OpenTelemetry export sources are mapped to the observability/run-state topics an
 
 ## Purpose
 
-For the optional Harness lifecycle, keep explicit registration, OFF/ACTIVE/UNKNOWN status, verified-ACTIVE-only refresh, and preservation of unrecognized local state synchronized across Human installation/runtime guides and their lifecycle evidence. Do not imply per-project observe/assist/enforce modes.
-
-Map shared runtime cache and package-install diagnostics into existing canonical publication and installation topics. Preserve the current topic structure and verify the recursive documentation closure with the final candidate.
-
 Keep Human-facing and Agent-facing documentation synchronized with behavior-bearing AIPS changes.
 
 Documentation completeness is part of implementation completeness. A change is not complete merely because code and tests pass while affected guidance, terminology or architecture descriptions remain stale.
@@ -225,6 +221,10 @@ Documentation sync path normalization (Scenario 221): `documentation_sync.evalua
 
 ## Human documentation placement
 
+For the optional Harness lifecycle, keep explicit registration, OFF/ACTIVE/UNKNOWN status, verified-ACTIVE-only refresh, and preservation of unrecognized local state synchronized across Human installation/runtime guides and their lifecycle evidence. Do not imply per-project observe/assist/enforce modes.
+
+Map shared runtime cache and package-install diagnostics into existing canonical publication and installation topics. Preserve the current topic structure and verify the recursive documentation closure with the final candidate.
+
 The Qwen Image Edit Plus mapping is cross-linked through Scenario 236, Creative Direction, and the user, technology, architecture, and security guides; updates must preserve the same bounded local-workflow contract.
 
 OpenCode Context overflow diagnostics stay aligned across the Human Harness, Installation, User and Technology guides, this Agent-facing map, the Harness protocol, the OpenCode adapter instructions/compatibility report, and Scenario 235. Keep the 12,000-byte cap, fail-closed native file behavior, privacy-bounded section sizes and unsupported Shell/MCP effects consistent.
@@ -240,7 +240,7 @@ For Z-Image Turbo, synchronize the generate-only MFLUX command and single regist
 ComfyUI registry and fixed workflow additions map to Creative Direction, Technology Guide, Scenario 236 and this placement contract; data-only profiles may reuse an audited topology with bounded profile settings and automatic live-schema/component validation, but cannot introduce topology families. Dynamic ComfyUI edit documentation describes one-to-eight ordered local references with per-file staged-byte verification. Topology template changes map to Creative Direction, Technology Guide, Scenario 271 and the Core Change test matrix.
 
 
-Project attach/detach behavior is synchronized across Existing Project guidance, Architecture/Technology and Scenario 044: `.ai/` remains opt-in, local `info/exclude` protects untracked workspace and archive paths, and `.gitignore` remains unchanged.
+Project attach/detach behavior is synchronized across Existing Project guidance, Architecture/Technology and Scenario 044: all new AIPS state stays external, legacy `.ai/` remains unchanged, and no project Git metadata is written.
 
 Scenario 267 定義 READY+STALE 時本機 L2 advisory 寫入的生命週期契約；Harness、Project Intelligence 與 OpenCode adapter 文件須對齊此邊界。
 

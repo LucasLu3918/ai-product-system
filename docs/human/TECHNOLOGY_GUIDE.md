@@ -59,7 +59,7 @@ Canonical AIPS Skills 可從 MCP Resource 按需載入，也可由 `aips skills 
 
 ## Project Understanding
 
-The project lifecycle keeps `.ai/` opt-in and records `.ai/` plus `.ai.detached-*` in the target Git worktree's local `info/exclude`. This leaves shared `.gitignore` files untouched; ignore rules do not untrack paths already in the index.
+The project lifecycle stores all new AIPS state outside the repository. Attach/detach do not change Git config, hooks, `info/exclude` or `.gitignore`; legacy `.ai/` data remains unchanged.
 
 Turn Context retains Project Intelligence freshness and refresh guidance. A READY but STALE result is advisory for confined local L2 source writes; UNKNOWN or non-READY state remains fail-closed.
 
@@ -383,7 +383,7 @@ The `creative workflows scan|import|inspect` routes are an explicit CLI contract
 Creative lifecycle evidence includes fixed ComfyUI model profile families, local component inventory checks and rejection of unreviewed topology families.
 
 
-Scenario 044 verifies the attach/detach ignore contract; it does not alter Skill Explorer routing or native Skill installation behavior.
+Scenario 044 verifies external-state and no-project-write contracts; it does not alter Skill Explorer routing or native Skill installation behavior.
 
 Scenario 097/260 cover the strict opt-in Required Checks behavior and read-only Doctor contract; AIPS enforcement is controlled by `AIPS_ENFORCE_REQUIRED_CHECKS=1`.
 

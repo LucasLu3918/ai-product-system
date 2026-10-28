@@ -80,6 +80,8 @@ Protected operations such as publication, administration and destructive deletio
 
 ## Enforcement truth
 
+Resource authorization is checked at the consuming runtime boundary; a valid profile or diagnostic report alone does not execute a workflow or confer broader host permission.
+
 Shared publication guard 的非預期授權例外會拒絕操作，輸出只包含 allowlist 例外類別與診斷 ID；這不改變任何資源 grant。
 Commit Content Safety is a separate content boundary, not a Resource Authorization profile or grant. Plan41 adds only read-only diagnostics and preserves all existing Human Authority, Required Checks and Git Publish Approval decisions.
 Scenario 266 further records versioned injection signals and exact expiring exceptions in that content boundary; neither changes Resource grants, Human approval, or publication decisions.

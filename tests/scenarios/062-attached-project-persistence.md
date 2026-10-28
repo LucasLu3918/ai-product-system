@@ -1,10 +1,11 @@
-# Scenario 062 — Attached Project Enables Persistence
+# Scenario 062 — Explicit Project State Uses External Persistence
 
 User explicitly runs `aips attach`.
 
 Expected:
-- project mode becomes ATTACHED;
-- `.ai` state/manifest/system provenance are available;
-- Project Intelligence persists under `.ai/intelligence/` according to policy;
-- existing External Project Intelligence is validated/migrated when applicable;
-- uninstalling the Global Harness does not remove the project `.ai` workspace.
+- Project Intelligence is initialized in external user state;
+- project root, Git config, hooks and ignore files remain unchanged;
+- existing legacy `.ai` content is copied only when needed and remains byte-identical;
+- legacy `.ai/intelligence/` remains in place after validated external copy;
+- new run and Change Impact state remain outside the repository;
+- uninstalling the Global Harness preserves external state and legacy project data.

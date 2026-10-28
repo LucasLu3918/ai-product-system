@@ -36,7 +36,9 @@ class InventoryTest(unittest.TestCase):
         rows = {row['path']: row for row in data['files']}
         normal = rows['.aips/human decision\nname.md']
         self.assertEqual(normal['sha256'], hashlib.sha256(b'Keep this decision\n').hexdigest())
-        self.assertEqual(normal['classification'], 'review_required')
+        self.assertEqual(normal['classification'], 'possible_durable_knowledge')
+        review = migration_state_inventory.inspect_path(self.root, '.aips/review/history.md')
+        self.assertEqual(review['classification'], 'possible_durable_knowledge')
         self.assertEqual(rows['.aips/outside']['kind'], 'symlink')
         self.assertIsNone(rows['.aips/outside']['sha256'])
         self.assertEqual(before, subprocess.check_output(['git', '-C', str(self.root), 'status', '--porcelain=v1', '-z']))
@@ -114,6 +116,78 @@ class InventoryTest(unittest.TestCase):
         self.assertNotEqual(refused.returncode, 0)
         accepted = subprocess.run(command + ['--dry-run'], capture_output=True, text=True, check=True)
         self.assertEqual(len(json.loads(accepted.stdout)['files']), 2)
+
+    def test_external_backup_is_private_verified_and_does_not_mutate_project(self):
+        (self.root / '.aips' / 'outside').unlink()
+        subprocess.run(['git', '-C', str(self.root), 'rm', '--cached', '--quiet', '--', '.aips/outside'], check=True)
+        before = subprocess.check_output(['git', '-C', str(self.root), 'status', '--porcelain=v1', '-z'])
+        destination = self.root.parent / f'external-backup-{self.root.name}'
+
+        result = migration_state_inventory.backup(self.root, destination)
+
+        self.assertEqual(result['status'], 'BACKUP_VERIFIED')
+        self.assertEqual(result['file_count'], 1)
+        self.assertEqual(destination.stat().st_mode & 0o777, 0o700)
+        manifest = json.loads((destination / 'manifest.json').read_text())
+        row = manifest['files'][0]
+        self.assertEqual(row['path'], '.aips/human decision\nname.md')
+        backed_up = destination / 'files' / row['path']
+        self.assertEqual(hashlib.sha256(backed_up.read_bytes()).hexdigest(), row['sha256'])
+        self.assertEqual(backed_up.stat().st_mode & 0o777, 0o600)
+        self.assertEqual((destination / 'manifest.json').stat().st_mode & 0o777, 0o600)
+        self.assertEqual(before, subprocess.check_output(['git', '-C', str(self.root), 'status', '--porcelain=v1', '-z']))
+
+    def test_backup_rejects_in_repo_destination_existing_path_and_unreadable_entries(self):
+        with self.assertRaises(ValueError):
+            migration_state_inventory.backup(self.root, self.root / 'backup')
+        existing = self.root.parent / f'existing-backup-{self.root.name}'
+        existing.mkdir()
+        with self.assertRaises(ValueError):
+            migration_state_inventory.backup(self.root, existing)
+        unsafe = self.root.parent / f'unsafe-backup-{self.root.name}'
+        with self.assertRaises(ValueError):
+            migration_state_inventory.backup(self.root, unsafe)
+        self.assertFalse(unsafe.exists())
+
+    def test_cli_can_create_a_verified_external_backup(self):
+        (self.root / '.aips' / 'outside').unlink()
+        subprocess.run(['git', '-C', str(self.root), 'rm', '--cached', '--quiet', '--', '.aips/outside'], check=True)
+        destination = self.root.parent / f'cli-backup-{self.root.name}'
+        result = subprocess.run(
+            [str(CLI), 'migrate-state', '--project', str(self.root), '--backup-to', str(destination)],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+
+        data = json.loads(result.stdout)
+        self.assertEqual(data['status'], 'BACKUP_VERIFIED')
+        self.assertEqual(data['file_count'], 1)
+
+    def test_apply_requires_exact_identity_backup_and_preserves_worktree_data(self):
+        outside = self.root / '.aips' / 'outside'
+        outside.unlink()
+        subprocess.run(['git', '-C', str(self.root), 'rm', '--cached', '--quiet', '--', '.aips/outside'], check=True)
+        repo_id = migration_state_inventory.repository_identity(self.root)['repository_id']
+        destination = self.root.parent / f'apply-backup-{self.root.name}'
+        with self.assertRaisesRegex(ValueError, 'confirmation must exactly match'):
+            migration_state_inventory.apply_migration(self.root, destination, 'wrong')
+        self.assertFalse(destination.exists())
+
+        result = migration_state_inventory.apply_migration(self.root, destination, repo_id)
+
+        self.assertEqual(result['status'], 'MIGRATION_APPLIED')
+        self.assertEqual(result['untracked_from_index'], ['.aips/human decision\nname.md'])
+        self.assertTrue(result['working_tree_files_preserved'])
+        self.assertTrue((self.root / '.aips' / 'human decision\nname.md').is_file())
+        self.assertEqual(
+            subprocess.check_output(['git', '-C', str(self.root), 'ls-files', '-z', '--', '.ai', '.aips']),
+            b'',
+        )
+        self.assertEqual(
+            hashlib.sha256((destination / 'files' / '.aips' / 'human decision\nname.md').read_bytes()).hexdigest(),
+            hashlib.sha256(b'Keep this decision\n').hexdigest(),
+        )
 
     def test_non_repository_fails_without_creating_files(self):
         with tempfile.TemporaryDirectory() as directory:

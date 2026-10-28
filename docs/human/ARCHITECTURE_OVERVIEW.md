@@ -9,6 +9,8 @@ AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前�
 
 ## Runtime 與接入層
 
+每個 repository 可選擇 `off`、`observe`、`assist` 或 `enforce`。設定放在使用者的 XDG AIPS 目錄並以 opaque repository ID 對應；缺少設定就是 `off`。Observe 與 assist 只提供建議，不授予或拒絕 Host 權限；enforce 必須明列要套用的動作。獨立 runtime policy、管理者 high-assurance 信任根與 GitHub branch protection 不受專案模式影響。
+
 Creative executor 在唯一一次 ComfyUI `/prompt` 前，使用本機 `/object_info/TextGenerate` 驗證固定 FLUX 3 Klein payload；此預檢不會代替節點執行或模型推論。
 
 Scenario 266 findings remain untrusted content and do not grant Runtime Context or action authority.
@@ -78,7 +80,7 @@ Runtime hook 另有 best-effort 的 protected-path guard：代理不得寫入已
 
 Retrieval relations are disposable lexical candidates. Relation-extraction behavior is versioned with the index schema so a schema change triggers full re-extraction, including unchanged files; raw source may be parsed in memory for syntax-sensitive identifiers while persisted index content remains redacted.
 
-ATTACHED 仍須使用者明確執行 `aips attach`。在 Git worktree 中，AIPS 以 repository-local `.git/info/exclude` 排除 `.ai/` 與 `.ai.detached-*`，不修改共用的專案 `.gitignore`；既有追蹤狀態不會被改寫。
+所有新 AIPS 狀態都存於 repository 外。`aips attach` 明確初始化或匯入外部 Intelligence，不建立 `.ai/`，也不修改 Git 設定、hooks 或 ignore；既有 `.ai/` 只作保留的 legacy 資料。
 
 Turn Context preserves freshness and emits task-scoped targeted refresh guidance only when task-relevant topics are affected. READY+STALE freshness is advisory for a confined local L2 source write; UNKNOWN and non-READY states remain blocking.
 
@@ -155,9 +157,11 @@ repository_id
 └─ AIPS worktree       → workspace_id C
 ~~~
 
-EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才使用 project-local .ai/。
+Project Intelligence、runs 與 Change Impact 一律使用 AIPS external user state；`off` / `observe` / `assist` / `enforce` 是獨立的可選治理模式。
 
 ## Creative Workflow
+
+Creative grants and workspaces remain separate from project governance state; neither project mode nor diagnostics authorize generation or asset publication.
 
 Qwen Image Edit 2511 maps ordered project-local references to the built-in encoder ports `image1`–`image3`; Qwen Image 2.1 keeps its existing object-map input. Both use the same loopback-only ComfyUI request boundary. See Scenario 236 and `orchestration/CREATIVE_DIRECTION.md`.
 
@@ -292,6 +296,8 @@ Phase 4 在這條實作流程加入可選的 OpenAPI client generator adapter：
 Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行報告與目前 Profile、契約、工具、輸入、產物、Git 歷史及 Phase 3 provenance 交叉核對；舊 Profile 不受影響。共用 Widgets 參考專案執行本機 HTTP 服務與產生的 client，驗證工作流程及該案例行為。各真實產品的契約、測試和證據仍留在產品專案。
 
 ## Deterministic Execution
+
+Deterministic execution 將 task ownership、checkpoint、resume 與外部 run state 綁定至已驗證的專案身分；隔離及失敗診斷不改變 Host 或 repository 權限。
 
 Dynamic ComfyUI reference counts and FLUX sampler profiles remain executor preflight inputs; they introduce no scheduler, checkpoint or resume state.
 
@@ -430,6 +436,8 @@ Dependabot commit 的機器人 noreply author 與最後一行精確的 `Signed-o
 Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
 ## Security 與 Governance
+
+Optional project governance mode 是本機外部設定；預設 `off`，專案設定不得覆蓋全域 runtime 或高保證政策。
 
 A literal `git -C <path> push` binds candidate identity and scanning to the explicit target worktree, even when the invocation cwd differs; invalid or dynamic paths fail before candidate inspection.
 

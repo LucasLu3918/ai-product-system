@@ -10,7 +10,7 @@ Runtime Context 統一解析驗證 Python 與 cache/config 路徑；它將 Playw
 
 Creative workflow execution is an AIPS product capability, separate from Host adapter permissions. Qwen Image Edit Plus uses the local ComfyUI contract in Scenario 236 and does not expand Harness runtime authority.
 
-Project-local Harness state remains opt-in. `aips attach` and `aips detach` add anchored `.ai/` and `.ai.detached-*` patterns to Git's local `info/exclude`, so this per-clone AIPS state does not alter shared project ignore rules.
+Project-local Harness state is not created. `aips attach` initializes or imports external user state; attach, detach and preflight do not modify repository files, Git config, hooks or local excludes.
 
 Commit-time media checks inspect supported AVIF metadata through the existing content-safety path; they do not broaden native runtime interception.
 
@@ -64,7 +64,7 @@ Qwen ComfyUI workflow support adds no Host adapter or native permission. It rema
 
 Claude Code receives a structured, redacted JSON diagnostic when local `prepare` or `diagnose` preflight fails; this does not authorize a retry, and unsupported shell wrappers remain denied.
 
-Native adapter discovery does not create project-local `.ai/`; explicit attach/detach keeps that AIPS state in the target Git worktree's local excludes.
+Native adapter discovery and explicit attach/detach keep all AIPS state outside the target project. Legacy `.ai/` remains user-owned and unchanged.
 
 Content-safety controls remain separate from skill discovery, installation, and author trust decisions.
 

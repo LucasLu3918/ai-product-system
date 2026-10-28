@@ -12,6 +12,8 @@ The creative executor confines writes to a declared non-Git EPHEMERAL output dir
 
 The OpenCode native guard is a narrow runtime check, not an operating-system sandbox. Claims remain ADVISORY until direct permission-hook execution is verified; MCP/custom tools and other processes remain outside its boundary.
 
+Per-project governance `off`, `observe`, and `assist` cannot bypass the independent runtime policy, protected AIPS path checks, hard content safety findings, or native GitHub protections. `assist` may downgrade optional project-governance failures to user-visible advice only; secret and other hard content-safety findings still deny.
+
 
 ~~~text
 Product / Feature
@@ -220,6 +222,8 @@ Review actual:
 - tests and failure paths.
 
 ## Release Security Gate
+
+Project-state migration requires a verified external backup and exact candidate scan; moving files never bypasses publication checks or review authority.
 
 Local JSON diagnostics from `prepare` or `diagnose` do not satisfy publication validation, scan evidence, or merge requirements; rerun the read-only checks after correcting the reported cause.
 
@@ -473,6 +477,8 @@ SAL 2+ default registration requires an independently retained anchor. SAL 4 req
 The retention helper never deletes evidence or grants compaction authority. Expiry only creates a Human-review action and a minimal digest record.
 ## Runtime Content Safety Boundary
 
+治理設定、專案內容與執行輸出皆視為資料；內容掃描與診斷不會授予 commit、push 或 Host 操作權限。
+
 The error serializer excludes raw exception text, paths, commands, and credentials; scan-evidence denials remain fail-closed.
 
 Claude Code quoted-heredoc (`<<'EOF'`) or single-quoted publication text is literal data that content safety still scans; real Shell expansion stays denied, and each denial names the supported recipe (Scenario 261).
@@ -522,6 +528,8 @@ Publication preflight `git_identity` accepts the GitHub App bot noreply form (`<
 Scenario 269 refreshes only the CLI help golden vectors for `aips intelligence gc`; content-safety detection, sink policy and commit scanning are unchanged.
 
 ## Runtime Policy Enforcement
+
+Per-project governance mode defaults to `off` and is stored outside the repository. `observe` and `assist` may add safe local context but never issue a Host allow/deny decision. `enforce` requires an explicit allowlisted action scope; only a failed check for an in-scope action blocks. The global runtime policy and administrator high-assurance trust root are evaluated independently before project-mode relaxation, and native GitHub protections remain authoritative.
 
 For `git -C <path> push`, validation resolves the literal path from invocation cwd and binds candidate, target ref and scanning to that worktree; unavailable or dynamic targets fail closed.
 

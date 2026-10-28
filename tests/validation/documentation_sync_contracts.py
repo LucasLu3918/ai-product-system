@@ -72,7 +72,7 @@ if script.exists():
                 errors.append(f'Documentation sync must enforce .github/** triggers: missing "{expected}"')
         if docs_sync.evaluate_changes(['./' + path for path in complete], config):
             errors.append('Documentation sync must strip a single leading ./ prefix')
-        dot_dir = docs_sync.evaluate_changes(['.aips/review/x.md', '.github/workflows/docs-site.yml'], config)
+        dot_dir = docs_sync.evaluate_changes(['docs/history/aips-review/x.md', '.github/workflows/docs-site.yml'], config)
         if not any('rule documentation-platform requires' in item for item in dot_dir):
             errors.append('Documentation sync must keep the leading dot of hidden directories')
         base = os.environ.get('AIPS_DOCS_DIFF_BASE', '').strip()

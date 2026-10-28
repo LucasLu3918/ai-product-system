@@ -149,13 +149,14 @@ def preflight_and_project_lifecycle() -> None:
         dirty.write_text("dirty\n", encoding="utf-8")
         dirty_result = cli(system, ["preflight", str(project)], env)
         require(dirty_result.returncode == 0 and "skipping the automatic update" in dirty_result.stderr,
-                "Preflight must skip the update and continue for dirty system worktree")
+                "Preflight must skip the update and continue for dirty system worktree: "
+                + dirty_result.stdout + dirty_result.stderr)
         require(dirty.exists() and dirty.read_text(encoding="utf-8") == "dirty\n", "Degraded preflight must keep local changes")
         dirty.unlink()
 
         project_check = cli(system, ["project", "check", str(project)], env)
         require(project_check.returncode == 0, f"project check failed for valid EPHEMERAL project: {project_check.stdout} {project_check.stderr}")
-        require("Project mode: EPHEMERAL" in project_check.stdout, "project check must report EPHEMERAL without attaching")
+        require("Project mode: EXTERNAL" in project_check.stdout, "project check must report external state")
         require("Project Intelligence freshness:" in project_check.stdout, "project check must report freshness or UNKNOWN")
         require(not (project / ".ai").exists(), "project check must not create a workspace")
         invalid_project_check = cli(system, ["project", "check", str(base / "missing-project")], env)
@@ -163,7 +164,7 @@ def preflight_and_project_lifecycle() -> None:
 
         first = cli(system, ["preflight", str(project)], env)
         require(first.returncode == 0, f"clean main preflight failed: {first.stdout} {first.stderr}")
-        require("Project mode: EPHEMERAL" in first.stdout, "Preflight must report EPHEMERAL without .ai")
+        require("Project mode: EXTERNAL" in first.stdout, "Preflight must report external state without .ai")
         require(not (project / ".ai").exists(), "Preflight must not auto-attach an EPHEMERAL project")
         require(not (system / ".venv").exists(), "Plain source preflight must not create a managed virtual environment")
         require(marker.exists(), "Preflight must validate the system")
@@ -179,46 +180,40 @@ def preflight_and_project_lifecycle() -> None:
             exclude_file = project / exclude_file
         exclude_file.parent.mkdir(parents=True, exist_ok=True)
         exclude_file.write_text("# preserve this local rule\nkeep-local-data.tmp\n", encoding="utf-8")
+        exclude_before = exclude_file.read_bytes()
         gitignore_before = (project / ".gitignore").read_bytes() if (project / ".gitignore").exists() else None
 
         attached = cli(system, ["attach", str(project)], env)
-        require(attached.returncode == 0 and (project / ".ai").is_dir(), f"attach failed: {attached.stdout} {attached.stderr}")
-        exclude_text = exclude_file.read_text(encoding="utf-8")
-        require("# preserve this local rule\nkeep-local-data.tmp\n" in exclude_text, "Attach must preserve existing local Git exclude entries")
-        require("/.ai/\n" in exclude_text and "/.ai.detached-*/\n" in exclude_text, "Attach must exclude the root AIPS workspace and detached archives")
-        require(git(project, "check-ignore", "--quiet", "--no-index", ".ai/STATE.yaml", check=False).returncode == 0,
-                "AIPS workspace files must be ignored by normal Git staging")
-        require(not gitignore_before and not (project / ".gitignore").exists(), "Attach must not create or modify the project .gitignore")
-        require(not git(project, "status", "--short", check=False).stdout.strip(), "AIPS-local state must not appear in Git status after attach")
+        require(attached.returncode == 0 and not (project / ".ai").exists(), f"attach must use external state: {attached.stdout} {attached.stderr}")
+        require(exclude_file.read_bytes() == exclude_before, "Attach must not change Git info/exclude")
+        require((project / ".gitignore").read_bytes() == gitignore_before if gitignore_before is not None else not (project / ".gitignore").exists(),
+                "Attach must not create or modify the project .gitignore")
+        require(not git(project, "status", "--short", check=False).stdout.strip(), "External AIPS state must not appear in Git status after attach")
 
-        exclude_length = len(exclude_text)
         repeated_attach = cli(system, ["attach", str(project)], env)
         require(repeated_attach.returncode == 0, f"repeated attach failed: {repeated_attach.stdout} {repeated_attach.stderr}")
-        repeated_exclude = exclude_file.read_text(encoding="utf-8")
-        require(len(repeated_exclude) == exclude_length, "Repeated attach must not duplicate local Git exclude rules")
+        require(exclude_file.read_bytes() == exclude_before and not (project / ".ai").exists(),
+                "Repeated attach must leave the repository unchanged")
 
         nested_project = project / "nested"
         nested_attached = cli(system, ["attach", str(nested_project)], env)
-        require(nested_attached.returncode == 0 and (nested_project / ".ai").is_dir(),
+        require(nested_attached.returncode == 0 and not (nested_project / ".ai").exists(),
                 f"attach to a nested project failed: {nested_attached.stdout} {nested_attached.stderr}")
-        nested_exclude = exclude_file.read_text(encoding="utf-8")
-        require("/nested/.ai/\n" in nested_exclude and "/nested/.ai.detached-*/\n" in nested_exclude,
-                "Nested project excludes must be anchored to the project path")
-        require(git(project, "check-ignore", "--quiet", "--no-index", "nested/.ai/STATE.yaml", check=False).returncode == 0,
-                "Nested AIPS workspace files must be ignored")
+        require(exclude_file.read_bytes() == exclude_before, "Nested attach must not change parent Git excludes")
 
         non_git_project = base / "non-git-project"
         non_git_project.mkdir()
         non_git_attach = cli(system, ["attach", str(non_git_project)], env)
-        require(non_git_attach.returncode == 0 and (non_git_project / ".ai").is_dir(),
+        require(non_git_attach.returncode == 0 and not (non_git_project / ".ai").exists(),
                 f"attach to a non-Git project failed: {non_git_attach.stdout} {non_git_attach.stderr}")
         require(not (non_git_project / ".git").exists() and not (non_git_project / ".gitignore").exists(),
                 "Non-Git attach must not create Git metadata")
 
         status = cli(system, ["status", str(project)], env)
-        require(status.returncode == 0 and "Project attached: yes" in status.stdout and "Project mode: ATTACHED" in status.stdout, "status must report attached provenance")
+        require(status.returncode == 0 and "Project mode: EXTERNAL" in status.stdout and "External Project Intelligence: resolvable" in status.stdout,
+                "status must report external project state")
         attached_check = cli(system, ["project", "check", str(project)], env)
-        require(attached_check.returncode == 0 and "Project mode: ATTACHED" in attached_check.stdout, "project check must report attached mode")
+        require(attached_check.returncode == 0 and "Project mode: EXTERNAL" in attached_check.stdout, "project check must report external mode")
 
         old_version = (system / "VERSION").read_text(encoding="utf-8").strip()
         upgraded_version = next_patch(old_version)
@@ -238,27 +233,17 @@ def preflight_and_project_lifecycle() -> None:
         require("UPDATED_CLI_MARKER" in upgraded.stdout, "Preflight must re-enter the updated CLI after pull")
         require((system / "VERSION").read_text(encoding="utf-8").strip() == upgraded_version, "Preflight did not fast-forward system version")
         require(git(system, "rev-parse", "HEAD").stdout.strip() == remote_sha, "Preflight did not fast-forward to remote main")
-        snapshot = yaml.safe_load((project / ".ai" / "SYSTEM.yaml").read_text(encoding="utf-8")) or {}
-        system_snapshot = snapshot.get("system") or {}
-        require(str(system_snapshot.get("version")) == upgraded_version, "Attached preflight did not refresh exact system version")
-        require(str(system_snapshot.get("commit")) == remote_sha, "Attached preflight did not refresh exact system commit")
-        require(git(project, "rev-parse", "HEAD").stdout.strip() == product_head, "Attached preflight pulled target product repository")
+        require(not (project / ".ai").exists(), "Preflight must not write AIPS provenance into the project")
+        require(git(project, "rev-parse", "HEAD").stdout.strip() == product_head, "Preflight pulled target product repository")
 
         detached = cli(system, ["detach", str(project)], env)
         require(detached.returncode == 0 and not (project / ".ai").exists(), f"detach failed: {detached.stdout} {detached.stderr}")
-        archives = sorted(project.glob(".ai.detached-*"))
-        require(len(archives) == 1, "Detach must preserve exactly one archived workspace")
-        archived_state = archives[0].relative_to(project) / "STATE.yaml"
-        require(git(project, "check-ignore", "--quiet", "--no-index", str(archived_state), check=False).returncode == 0,
-                "Detached AIPS workspace archives must remain ignored")
+        require(not list(project.glob(".ai.detached-*")), "Detach must not create project-local archives")
+        require(exclude_file.read_bytes() == exclude_before, "Detach must not change Git info/exclude")
         require((project / "app.txt").read_text(encoding="utf-8") == product_text, "Detach modified product source")
 
-        blocked_attach = cli(system, ["attach", str(project)], env)
-        require(blocked_attach.returncode != 0 and "detached AI workspace already exists" in blocked_attach.stderr, "Attach must stop when a detached workspace exists")
-
-        archives[0].rename(project / ".ai")
         restored = cli(system, ["attach", str(project)], env)
-        require(restored.returncode == 0 and (project / ".ai").exists(), "Documented detached-workspace restore must allow attach")
+        require(restored.returncode == 0 and not (project / ".ai").exists(), "Repeated external attach must remain repository-independent")
 
         bin_home = Path(env["AIPS_BIN_HOME"])
         bin_home.mkdir(parents=True, exist_ok=True)
@@ -270,6 +255,10 @@ def preflight_and_project_lifecycle() -> None:
         external = config_home / "projects" / "preserve-me"
         external.mkdir(parents=True, exist_ok=True)
         (external / "data.txt").write_text("preserve\n", encoding="utf-8")
+        legacy_project_state = project / ".ai"
+        legacy_project_state.mkdir(parents=True, exist_ok=True)
+        legacy_sentinel = legacy_project_state / "legacy-user-data.txt"
+        legacy_sentinel.write_text("preserve legacy project data\n", encoding="utf-8")
         venv = system / ".venv"
         venv.mkdir()
         (venv / "preserve.txt").write_text("preserve\n", encoding="utf-8")
@@ -277,7 +266,8 @@ def preflight_and_project_lifecycle() -> None:
         uninstalled = cli(system, ["uninstall"], env)
         require(uninstalled.returncode == 0, f"default uninstall failed: {uninstalled.stdout} {uninstalled.stderr}")
         require(not cli_link.exists(), "Default uninstall must remove AIPS-owned CLI symlink")
-        require((project / ".ai").exists(), "Default uninstall must preserve project .ai workspace")
+        require(legacy_sentinel.read_text(encoding="utf-8") == "preserve legacy project data\n",
+                "Default uninstall must preserve existing project .ai user data")
         require((external / "data.txt").exists(), "Default uninstall must preserve External Project Intelligence")
         require((venv / "preserve.txt").exists(), "Default uninstall must preserve system venv")
         require(system.exists() and (system / ".git").exists(), "Uninstall must preserve AIPS repository")

@@ -32,7 +32,7 @@ The change alters the mandatory publication security scanner and the bound scan 
 - `tests/scenarios/176-mandatory-candidate-secret-scanning.md`
 - `docs/ARCHITECTURE.md`, `docs/human/ARCHITECTURE_OVERVIEW.md`, `docs/human/CONFORMANCE.md`, `docs/human/INSTALLATION.md`, `docs/human/PROJECT_INTELLIGENCE.md`, `docs/human/TECHNOLOGY_GUIDE.md`, `docs/human/USER_GUIDE.md`
 - `docs/human/SECURITY_ASSURANCE.md`, `docs/human/MAINTENANCE.md`, `orchestration/CONFORMANCE.md`, `orchestration/CONTENT_SAFETY_BOUNDARY.md`
-- Exact-candidate `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml` and required change-impact evidence.
+- Exact-candidate `docs/qa/CORE_CHANGE_TEST_MATRIX.yaml` and required change-impact evidence.
 
 ## Impact
 

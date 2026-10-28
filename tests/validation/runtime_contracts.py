@@ -360,17 +360,17 @@ with tempfile.TemporaryDirectory() as tmp:
             errors.append("Project Intelligence writer lock must block a second writer")
         lock.unlink()
 
-        # Attach migrates External -> local, Detach syncs local -> External.
+        # Attach and detach retain external state and never create project files.
         cli = ROOT / "bin/aips"
         attach = subprocess.run(["bash", str(cli), "attach", str(project)], env=env, capture_output=True, text=True)
-        if attach.returncode != 0 or not (project / ".ai" / "intelligence" / "PROJECT_INTELLIGENCE.yaml").exists():
-            errors.append(f"Attach did not migrate External Intelligence: {attach.stdout.strip()} {attach.stderr.strip()}")
+        if attach.returncode != 0 or (project / ".ai").exists():
+            errors.append(f"Attach must retain external state without creating .ai: {attach.stdout.strip()} {attach.stderr.strip()}")
         else:
             detach = subprocess.run(["bash", str(cli), "detach", str(project)], env=env, capture_output=True, text=True)
             status_after_detach = subprocess.run([sys.executable, str(pi), "status", "--project", str(project), "--format", "json"], env=env, capture_output=True, text=True)
             detached_data = json.loads(status_after_detach.stdout)
-            if detach.returncode != 0 or detached_data.get("mode") != "EPHEMERAL" or not detached_data.get("exists"):
-                errors.append("Detach must sync local Intelligence back to External Cache")
+            if detach.returncode != 0 or detached_data.get("mode") != "EPHEMERAL" or not detached_data.get("exists") or (project / ".ai").exists():
+                errors.append("Detach must preserve external Intelligence without project-local writes")
 
 # Managed composition must preserve user-owned content and unrelated Claude settings.
 with tempfile.TemporaryDirectory() as tmp:

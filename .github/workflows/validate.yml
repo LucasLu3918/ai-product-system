@@ -191,7 +191,7 @@ jobs:
             --base "$AIPS_GATE_BASE" \
             --head "$AIPS_GATE_HEAD" \
             --profile config/integration-gate.yaml \
-            --matrix .aips/review/CORE_CHANGE_TEST_MATRIX.yaml \
+            --matrix docs/qa/CORE_CHANGE_TEST_MATRIX.yaml \
             --change-class "${{ steps.change_class.outputs.value }}" \
             --labels "$PR_LABELS" \
             --offline \

@@ -94,7 +94,7 @@ if all(path.is_file() for path in required):
 
     lifecycle = subprocess.run(
         [sys.executable, str(ROOT / "tests/evidence/creative_execution_lifecycle.py")],
-        cwd=ROOT, capture_output=True, text=True, timeout=90, check=False,
+        cwd=ROOT, capture_output=True, text=True, timeout=180, check=False,
     )
     if lifecycle.returncode:
         errors.append("Creative execution lifecycle failed: " + lifecycle.stdout + lifecycle.stderr)

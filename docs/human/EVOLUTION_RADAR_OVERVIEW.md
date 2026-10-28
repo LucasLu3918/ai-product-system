@@ -34,6 +34,8 @@ Trial 通過只表示證據可供審查。正式 `ADOPT` 必須由人類另行�
 
 ## Effectiveness Feedback
 
+Evaluation control data stays outside indexed product sources so expected answers cannot contaminate retrieval measurements; optimization decisions remain Human-reviewed.
+
 每月可依 deterministic fingerprint 抽樣供人工標註，離線評估 shortlist precision／recall、可採取建議比例與來源關聯性。輸入不完整時維持 `NOT_READY`；分析只會提出檢視政策的建議，不會自動調整來源權重或候選清單。
 
 每月與每季摘要會呈現蒐集、shortlist、semantic analysis、actionable 建議、Trial、PASS 與 ADOPT 的流程指標，也會標示重複或失敗資料。統計只提示人類檢視。缺少分析、歷史資料不完整或 evidence archive 無法驗證時，都會明確保留為未完成／待檢視。

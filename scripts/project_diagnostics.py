@@ -295,7 +295,7 @@ def diagnose(project: Path, runtime: str) -> dict[str, Any]:
         "schema_version": 1,
         "status": overall,
         "read_only": True,
-        "project": {"mode": "ATTACHED" if (project / ".ai").is_dir() else "EPHEMERAL"},
+        "project": {"mode": "EPHEMERAL"},
         "runtime": runtime,
         "checks": checks,
         "recovery_plan": recovery_plan(checks),

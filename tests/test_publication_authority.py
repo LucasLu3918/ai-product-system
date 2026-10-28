@@ -18,6 +18,7 @@ sys.path.insert(0, str(ROOT / 'scripts'))
 import check_secret_leakage as secret_scanner
 import governance_guard as guard
 import publication_authority as auth
+import project_governance_mode
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 
@@ -63,6 +64,7 @@ class PublicationTest(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.path = Path(self.temp.name)
+        os.environ['XDG_CONFIG_HOME'] = str(self.path / 'config')
         self.repo, self.remote = self.path / 'repo', self.path / 'remote.git'
         self.repo.mkdir()
         self.run_git(self.repo, 'init', '-b', 'main')
@@ -81,6 +83,10 @@ class PublicationTest(unittest.TestCase):
         self.run_git(self.repo, 'add', 'file.txt')
         self.run_git(self.repo, 'commit', '-m', 'candidate')
         self.head = self.run_git(self.repo, 'rev-parse', 'HEAD')
+        project_governance_mode.set_mode(
+            self.repo, 'enforce',
+            ['gh_pr_create', 'gh_pr_merge', 'gh_release_create', 'git_commit', 'git_push', 'git_tag', 'publish_ship'],
+        )
         self.argv = ['git', 'push', '--force-with-lease=refs/heads/feature:', 'origin', self.head + ':refs/heads/feature']
         self.issuer = Issuer(self.path / 'grants.sqlite', Ed25519PrivateKey.generate(), 'fixture')
         self.authority = LocalAuthority(self.issuer)
@@ -953,6 +959,10 @@ class PublicationTest(unittest.TestCase):
         self.run_git(self.repo, 'fetch', 'origin', 'main')
         self.run_git(self.repo, 'switch', '-c', 'claude/hook-pr')
         self.run_git(self.repo, 'remote', 'set-url', 'origin', 'https://github.com/owner/project.git')
+        project_governance_mode.set_mode(
+            self.repo, 'enforce',
+            ['gh_pr_create', 'gh_pr_merge', 'gh_release_create', 'git_commit', 'git_push', 'git_tag', 'publish_ship'],
+        )
         prefix = 'gh pr create --repo owner/project --head claude/hook-pr --base main --title "fix: probe" --body '
         body = "## Summary\n- keeps `code`, $HOME and don't literal\n\nGenerated with Claude Code"
         heredoc = prefix + '"$(cat <<\'EOF\'\n' + body + '\nEOF\n)"'
@@ -1122,12 +1132,14 @@ class GuardFalseDenialTest(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.repo = Path(self.temp.name)
+        os.environ['XDG_CONFIG_HOME'] = str(self.repo.parent / (self.repo.name + '-config'))
         for args in (['init', '-q', '-b', 'main'], ['config', 'user.name', 'Fixture'],
                      ['config', 'user.email', 'fixture' + '@' + 'users.noreply.github.com']):
             self.git(*args)
         (self.repo / 'file.txt').write_text('initial\n')
         self.git('add', 'file.txt')
         self.git('commit', '-qm', 'base')
+        project_governance_mode.set_mode(self.repo, 'enforce', ['git_commit'])
         corpus = (ROOT / 'tests/fixtures/content-safety/corpus.json').read_text(encoding='utf-8')
         import json
         self.ambiguous = bytes.fromhex(json.loads(corpus)['ambiguous_hex']).decode('utf-8')

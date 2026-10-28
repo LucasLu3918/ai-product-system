@@ -22,7 +22,7 @@ from review_packet import ReviewPacketError, build_packet
 SHA = "a" * 40
 HASH = "sha256:" + "b" * 64
 
-active_matrix = yaml.safe_load((ROOT / ".aips/review/CORE_CHANGE_TEST_MATRIX.yaml").read_text(encoding="utf-8"))
+active_matrix = yaml.safe_load((ROOT / "docs/qa/CORE_CHANGE_TEST_MATRIX.yaml").read_text(encoding="utf-8"))
 assert active_matrix["review_evidence"]["required"] is False, "independent-review enforcement must remain disabled by default"
 
 

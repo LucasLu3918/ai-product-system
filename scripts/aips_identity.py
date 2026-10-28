@@ -53,6 +53,11 @@ def config_home() -> Path:
     return Path(os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config"))).expanduser().resolve() / "aips"
 
 
+def state_home() -> Path:
+    """Return the private user-state root for mutable runs, reviews and audits."""
+    return Path(os.environ.get("XDG_STATE_HOME", str(Path.home() / ".local" / "state"))).expanduser().resolve() / "aips"
+
+
 def _resolved_git_path(root: Path, raw: str | None) -> str:
     if not raw:
         return ""

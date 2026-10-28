@@ -157,6 +157,8 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 
 ## Agent / machine canonical 文件
 
+Skill Explorer metadata and integration records are machine-canonical inputs; Human guidance describes their use without duplicating the registry.
+
 Local ComfyUI reference-binding behavior is specified in `orchestration/CREATIVE_DIRECTION.md` and verified by Scenario 236 in `docs/human/CONFORMANCE.md`; the user and technology guides summarize its supported model contracts.
 
 OpenCode Context 的 12,000-byte 上限、超限安全診斷及 native file deny 邊界，由 OpenCode adapter、Harness protocol 與 Scenario 235 維護；診斷不代表任意 Shell、MCP 或程式外寫入已受保護。
@@ -167,7 +169,7 @@ Claude Code 標準發布寫法的代理端正本是 `harness/adapters/claude-cod
 
 The fixed FLUX 3 Klein runtime-schema validator and its lifecycle evidence are maintained with `scripts/creative_execution.py`, `tests/evidence/creative_execution_lifecycle.py`, and Scenario 236; this does not add a character-artwork capability or alter its provenance flow.
 
-Scenario 267 and the active `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml` record the READY+STALE native-write policy and its retained denial cases.
+Scenario 267 and the active `docs/qa/CORE_CHANGE_TEST_MATRIX.yaml` record the READY+STALE native-write policy and its retained denial cases.
 
 Creative raster validation uses the shared AVIF metadata scanner in `scripts/creative_image_validation.py`; its format handling is not a Skill or new capability route.
 
@@ -348,7 +350,7 @@ Dependency Update risk classification 的使用方式位於 Maintenance 與 Tech
 
 Release history keeps Unreleased and the latest five full releases in CHANGELOG.md; older complete sections live in docs/history/changelog/ while every version heading remains at the root as a stable link. Finalized notes move under the heading matching VERSION before readiness; a version heading alone does not prove a stable tag exists. The report-only size audit remains WARN-only and never moves files; archive placement is a manual, lossless documentation decision. For Plan26 Phase 7, `VERSION` and the newest heading are `0.81.0`; the PR only finalizes metadata and does not publish a tag or release.
 
-Plan21 pre-hardening compatibility evidence is owned by `.aips/review/PLAN21_VALIDATION_TIMING_BASELINE.yaml` and `tests/evidence/plan21_contract_baseline.py`; the fixture and runner pin test contracts without becoming a runtime policy source.
+Plan21 pre-hardening compatibility evidence is owned by `docs/history/aips-review/PLAN21_VALIDATION_TIMING_BASELINE.yaml` and `tests/evidence/plan21_contract_baseline.py`; the fixture and runner pin test contracts without becoming a runtime policy source.
 
 `tests/validate_repository.py` documents the required CI evidence boundary: exact-candidate selection may skip optional OpenAPI lifecycle checks, while the required repository aggregate and Integration Gate continue to run. The selection variable is consumed by the runner and kept out of isolated lifecycle subprocesses.
 
@@ -388,7 +390,7 @@ Execution Isolation provider changes map to Architecture Overview and Security A
 
 **Plan19 architecture and runtime closure.**
 
-Plan19 machine-readable authorities are `config/capability-registry.yaml` and `config/eval-freshness.yaml`; generated compatibility views are `config/architecture-surfaces.yaml` and `references/evolution/CAPABILITY_MAP.yaml`. Branch and monthly effectiveness evidence lives under `.aips/review/` and remains report-only.
+Plan19 machine-readable authorities are `config/capability-registry.yaml` and `config/eval-freshness.yaml`; generated compatibility views are `config/architecture-surfaces.yaml` and `references/evolution/CAPABILITY_MAP.yaml`. Branch and monthly effectiveness evidence lives under `docs/history/aips-review/` and remains report-only.
 
 純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
 

@@ -17,7 +17,7 @@ decision:
     - references/evolution/**
     - orchestration/**
     - docs/human/**
-    - .aips/review/CORE_CHANGE_TEST_MATRIX.yaml
+    - docs/qa/CORE_CHANGE_TEST_MATRIX.yaml
   reason: The repository maintainer explicitly authorized implementing the recommended next step. The Trial is limited to one concrete runtime adapter and must remain opt-in, metadata-only, POST_EXECUTION, non-blocking, and non-remediating.
   human_override: false
   decided_by: repository maintainer LucasLu3918

@@ -165,8 +165,8 @@ def main() -> int:
         project_root = git_root(cwd) or cwd
 
     runtime = detect_runtime(args.runtime)
-    attached = (project_root / ".ai").is_dir()
-    state_path = project_root / ".ai" / "STATE.yaml"
+    attached = False
+    state_path = None
     intel = run_intelligence(system_dir, project_root)
 
     version_path = system_dir / "VERSION"
@@ -197,7 +197,7 @@ def main() -> int:
             "detected": True,
             "id": intel.get("project_id"),
             "root": str(project_root),
-            "mode": "ATTACHED" if attached else "EPHEMERAL",
+            "mode": "EPHEMERAL",
             "explicit": explicit,
         },
         "instructions": {

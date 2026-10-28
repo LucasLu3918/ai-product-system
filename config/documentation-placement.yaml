@@ -84,7 +84,7 @@ placement_rules:
     placements:
       docs/human/ARCHITECTURE_OVERVIEW.md: [Deterministic Execution]
       docs/human/SYSTEM_REFERENCE.md: [Public commands, Capability surfaces, Runtime support]
-      docs/human/MAINTENANCE.md: [Repository Health / Architecture Drift consistency]
+      docs/human/MAINTENANCE.md: [Repository Health / Architecture Drift consistency, Documentation Impact Gate, Self-improvement / Constitution / publish approval]
       docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
 
   - id: agent-eval-freshness
@@ -115,7 +115,7 @@ placement_rules:
   - id: branch-hygiene
     triggers: [config/branch-cleanup-manifest.yaml, scripts/branch_hygiene.py, orchestration/BRANCH_HYGIENE.md, .github/workflows/branch-hygiene.yml, tests/validation/branch_hygiene_contracts.py, tests/evidence/branch_hygiene_lifecycle.py]
     placements:
-      docs/human/MAINTENANCE.md: [Branch lifecycle hygiene, Controlled branch cleanup]
+      docs/human/MAINTENANCE.md: [Branch lifecycle hygiene, Controlled branch cleanup, Documentation Impact Gate, Self-improvement / Constitution / publish approval]
       docs/human/TECHNOLOGY_GUIDE.md: [Evolution & Maintenance]
 
   - id: system-facts
@@ -199,8 +199,8 @@ placement_rules:
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification, Security & Governance]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Runtime 與接入層, Planning 與 Product Delivery, Maintenance governance]
       docs/human/CONFORMANCE.md: [Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback, Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow, Scenario 232 — Project Check and System Preflight, Scenario 233 — Public CLI Help and Error Contracts]
-      orchestration/CONFORMANCE.md: [Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow, Scenario 232 — Project Check and System Preflight, Scenario 233 — Public CLI Help and Error Contracts]
-      orchestration/ORCHESTRATOR.md: [Minimal algorithm, System Update Preflight]
+      orchestration/CONFORMANCE.md: [Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow, Scenario 232 — Project Check and System Preflight, Scenario 233 — Public CLI Help and Error Contracts, Release behavior]
+      orchestration/ORCHESTRATOR.md: [Minimal algorithm, System Update Preflight, Git Publish Approval, Project Intelligence]
 
   - id: telemetry-export
     triggers: [config/telemetry-export.yaml, orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md, orchestration/TELEMETRY_EXPORT.md, orchestration/schemas/telemetry-export.yaml, orchestration/schemas/execution-profile.yaml, scripts/telemetry_export.py, scripts/telemetry_projection.py, scripts/telemetry_record.py, scripts/run_event_stream.py, scripts/observed_stage.py]
@@ -217,7 +217,7 @@ placement_rules:
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Security & Governance, Quality & Verification]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Deterministic Execution, Security 與 Governance, Maintenance governance]
       docs/human/SECURITY_ASSURANCE.md: [External sandbox execution, Runtime Policy Enforcement, Release Security Gate]
-      docs/human/MAINTENANCE.md: [Execution Isolation consistency, Validation architecture consistency]
+      docs/human/MAINTENANCE.md: [Documentation Impact Gate, Execution Isolation consistency, Validation architecture consistency]
       docs/human/CONFORMANCE.md: [Execution Isolation Conformance, Scenario 177 — Runtime Policy Enforcement, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback]
 
   - id: task-execution-ownership
@@ -234,7 +234,7 @@ placement_rules:
       orchestration/RUN_DASHBOARD.md: [Contract, CLI and local API, Failure and security behavior]
 
   - id: harness
-    triggers: [harness/**, scripts/harness_resolve.py, scripts/aips_cli/harness.sh, scripts/manage_runtime_adapter.py, scripts/opencode_skill_projection.py, scripts/opencode_native_guard.py, scripts/opencode_trace.py, scripts/creative_workspace_profile.py, scripts/creative_execution.py, scripts/creative_repair.py, tests/evidence/creative_repair_lifecycle.py, scripts/creative_trace.py, scripts/creative_quality_benchmark.py, templates/creative/QUALITY_BENCHMARK.json, scripts/turn_intent.py, scripts/project_intelligence.py, scripts/project_intelligence_discovery.py, scripts/mcp_server.py, scripts/portable_commands.py, templates/harness/**]
+    triggers: [harness/**, orchestration/HARNESS_RESOLUTION.md, scripts/harness_enablement.py, scripts/harness_resolve.py, scripts/aips_cli/harness.sh, scripts/manage_runtime_adapter.py, scripts/opencode_skill_projection.py, scripts/opencode_native_guard.py, scripts/opencode_trace.py, scripts/creative_workspace_profile.py, scripts/creative_execution.py, scripts/creative_repair.py, tests/evidence/creative_repair_lifecycle.py, scripts/creative_trace.py, scripts/creative_quality_benchmark.py, templates/creative/QUALITY_BENCHMARK.json, scripts/turn_intent.py, scripts/project_intelligence.py, scripts/project_intelligence_discovery.py, scripts/mcp_server.py, scripts/portable_commands.py, templates/harness/**]
     placements:
       docs/ARCHITECTURE.md: [Runtime flow, Installation and project lifecycle, End-to-end product delivery]
       docs/human/HARNESS.md: [Integration model, Native Runtime Adapters, MCP Interoperability, Portable Commands, Capability truth, Progressive disclosure, Ownership 與解除]
@@ -272,13 +272,13 @@ placement_rules:
       docs/human/USER_GUIDE.md: [Git Publication 與 Release]
 
   - id: project-intelligence
-    triggers: [scripts/project_intelligence.py, scripts/project_intelligence_seed.py, scripts/project_intelligence_discovery.py, scripts/project_intelligence_impact_graph.py, scripts/project_intelligence_storage.py, scripts/project_intelligence_promotion.py, scripts/project_intelligence_temporal.py, scripts/retrieval_intelligence.py, scripts/retrieval_query_terms.py, scripts/retrieval_relations.py, scripts/retrieval_storage.py, scripts/temporal_intelligence.py, scripts/turn_context_hook.py, scripts/turn_intent.py, scripts/git_paths.py, orchestration/PROJECT_INTELLIGENCE.md, orchestration/CHANGE_IMPACT.md, orchestration/TURN_HARNESS.md, templates/intelligence/**, tests/evidence/change_impact_resolution_lifecycle.py, tests/evidence/retrieval_relations_extraction_lifecycle.py, tests/evidence/project_intelligence_relation_candidates_lifecycle.py, tests/validation/change_impact_resolution_contracts.py, tests/validation/project_intelligence_candidates_contracts.py, tests/scenarios/179-evidence-backed-impact-unknown-dispositions.md, tests/scenarios/239-read-only-impact-relation-candidates.md]
+    triggers: [scripts/aips_identity.py, orchestration/PROJECT_IDENTITY.md, scripts/project_intelligence.py, scripts/project_intelligence_seed.py, scripts/project_intelligence_discovery.py, scripts/project_intelligence_impact_graph.py, scripts/project_intelligence_storage.py, scripts/project_intelligence_promotion.py, scripts/project_intelligence_temporal.py, scripts/retrieval_intelligence.py, scripts/retrieval_query_terms.py, scripts/retrieval_relations.py, scripts/retrieval_storage.py, scripts/temporal_intelligence.py, scripts/turn_context_hook.py, scripts/turn_intent.py, scripts/git_paths.py, orchestration/PROJECT_INTELLIGENCE.md, orchestration/CHANGE_IMPACT.md, orchestration/TURN_HARNESS.md, templates/intelligence/**, tests/evidence/change_impact_resolution_lifecycle.py, tests/evidence/retrieval_relations_extraction_lifecycle.py, tests/evidence/project_intelligence_relation_candidates_lifecycle.py, tests/validation/change_impact_resolution_contracts.py, tests/validation/project_intelligence_candidates_contracts.py, tests/scenarios/179-evidence-backed-impact-unknown-dispositions.md, tests/scenarios/239-read-only-impact-relation-candidates.md]
     placements:
       docs/human/PROJECT_INTELLIGENCE.md: [第一次 Existing Project, 不重複正式文件, 四份核心 Machine-readable 檔, 三軸狀態, Human Review HTML, Freshness, Attach / Detach, Change Impact, Preserve Valid Native Conventions, Sensitive Data, Monorepo, Retrieval Intelligence：即時按需檢索, Retrieval Quality Evaluation：先量測，再決定下一項技術, Structural Retrieval：已採用的跨檔關係檢索, Semantic Alias Expansion Candidate Trial：HOLD, Remote Embedding Retrieval Trial Readiness（Scenario 133）, Provider-Neutral Local-First Embedding Trial（Scenario 134）, Debug, Identity namespace, Runtime Content Safety Boundary]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Documentation Architecture, Deterministic Execution, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary, Maintenance governance]
       docs/human/TECHNOLOGY_GUIDE.md: [Project Understanding, Product Delivery, Execution, Quality & Verification, Runtime Content Safety Boundary]
       docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback, Scenario 235 — OpenCode Native Context and Action Guard, Scenario 236 — Local Creative Bundle Execution, Scenario 237 — Read-only Project Diagnostics and Recovery Guidance]
-      orchestration/PROJECT_INTELLIGENCE.md: [Existing-project automatic behavior, Retrieval relationships and impact traversal]
+      orchestration/PROJECT_INTELLIGENCE.md: [Storage, Existing-project automatic behavior, Retrieval Quality Evaluation, Retrieval relationships and impact traversal, Attach / detach migration]
 
   - id: repository-health
     triggers: [scripts/repository_health.py, config/architecture-surfaces.yaml, config/repository-health.yaml, orchestration/REPOSITORY_HEALTH.md]
@@ -294,13 +294,13 @@ placement_rules:
       docs/human/TECHNOLOGY_GUIDE.md: [Security & Governance, Execution, Quality & Verification, Runtime Content Safety Boundary, Security & Governance]
 
   - id: deterministic-execution
-    triggers: [scripts/aips_common/*.py, scripts/deterministic_scheduler.py, scripts/integration_gate.py, scripts/execution_isolation.py, scripts/run_state.py, scripts/visual_profile.py, .github/workflows/installation-entrypoints.yml, orchestration/INTEGRATION_GATE.md, orchestration/DETERMINISTIC_SCHEDULER.md, orchestration/ORCHESTRATOR.md]
+    triggers: [orchestration/DETERMINISTIC_AUTOMATION.md, scripts/aips_common/*.py, scripts/deterministic_scheduler.py, scripts/integration_gate.py, scripts/execution_isolation.py, scripts/run_state.py, scripts/visual_profile.py, .github/workflows/installation-entrypoints.yml, orchestration/INTEGRATION_GATE.md, orchestration/DETERMINISTIC_SCHEDULER.md, orchestration/ORCHESTRATOR.md]
     placements:
       docs/human/USER_GUIDE.md: [Deterministic Scheduler, Execution Isolation 與 Runtime Resource, Checkpoint / Resume, Quality 與 Review, Git Publication 與 Release, Runtime Content Safety Boundary, Logging、Observability 與 Operations, Project Intelligence]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Documentation Architecture, Deterministic Execution, Security 與 Governance, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary, Maintenance governance]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification, Runtime Content Safety Boundary, Security & Governance]
       orchestration/DETERMINISTIC_SCHEDULER.md: [CLI, Failure behavior, Read-only declaration and fail-closed boundary, Runtime Content Safety Boundary, Validation de-duplication boundary]
-      orchestration/ORCHESTRATOR.md: [Minimal algorithm, System Update Preflight, Risk-Proportional Security Assurance, Context expansion, Checkpoint and resume, Change-class handoff to Integration Gate, Runtime Content Safety Boundary, System Self-Improvement]
+      orchestration/ORCHESTRATOR.md: [Minimal algorithm, System Update Preflight, Risk-Proportional Security Assurance, Context expansion, Checkpoint and resume, Change-class handoff to Integration Gate, Runtime Content Safety Boundary, System Self-Improvement, Git Publish Approval, Project Intelligence]
 
   - id: content-safety
     triggers: [config/content-safety.yaml, config/content-safety-exceptions.yaml, config/integration-gate.yaml, scripts/content_safety.py, scripts/check_secret_leakage.py, scripts/governance_guard.py, scripts/media_metadata.py, scripts/font_metadata.py, scripts/safety_diagnostics.py, scripts/publication_authority.py, scripts/publish_preflight.py, requirements.txt, constraints/tested.txt, orchestration/CONTENT_SAFETY_BOUNDARY.md, tests/test_content_safety.py, tests/test_safety_diagnostics.py, tests/validation/scheduler_gate_contracts.py, tests/test_font_metadata.py, tests/validate_repository.py, tests/fixtures/plan21-contract-golden-vectors.yaml, tests/fixtures/content-safety/corpus.json, tests/scenarios/263-runtime-content-safety-commit-diagnostics.md, tests/scenarios/266-content-safety-injection-context.md]
@@ -327,11 +327,11 @@ placement_rules:
       docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Documentation Architecture, Deterministic Execution, Scenario Conformance 與 Agent Eval, Maintenance governance]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution]
       docs/human/USER_GUIDE.md: [Checkpoint / Resume, Logging、Observability 與 Operations, Project Intelligence]
-      orchestration/CONFORMANCE.md: [Runtime Content Safety Scenarios, Agent Eval admission, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership]
+      orchestration/CONFORMANCE.md: [Runtime Content Safety Scenarios, Agent Eval admission, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 220 — Parallel advisory fast feedback]
       orchestration/DETERMINISTIC_SCHEDULER.md: [CLI, Failure behavior, Read-only declaration and fail-closed boundary]
-      orchestration/EVOLUTION_RADAR.md: [Documentation consistency]
-      orchestration/EXECUTION_ISOLATION.md: [Parallel runtime resource isolation]
-      orchestration/ORCHESTRATOR.md: [Checkpoint and resume, Context expansion]
+      orchestration/EVOLUTION_RADAR.md: [Documentation consistency, Evolution Effectiveness feedback, Pipeline completeness and content value]
+      orchestration/EXECUTION_ISOLATION.md: [Worktree ownership, Parallel runtime resource isolation]
+      orchestration/ORCHESTRATOR.md: [Checkpoint and resume, Context expansion, Minimal algorithm, Git Publish Approval, Project Intelligence]
 
   - id: system-hardening
     triggers:
@@ -357,7 +357,7 @@ placement_rules:
       docs/human/DOCUMENTATION_SYNC.md: [Current-behavior placement contract]
       docs/human/EVOLUTION_RADAR.md: [Evidence Quality, Current Boundaries, Verification History]
       docs/human/EVOLUTION_RADAR_OVERVIEW.md: [Signal Collection, Effectiveness Feedback, Verification History]
-      orchestration/CHANGE_IMPACT.md: [Diff reconciliation]
+      orchestration/CHANGE_IMPACT.md: [Diff reconciliation, Persistence]
       orchestration/CORE_CHANGE_TESTING.md: [Impact-derived Test Matrix, Evidence]
       orchestration/CONFORMANCE.md: [Registry, Agent Eval admission, Scenario 235 — OpenCode Native Context and Action Guard]
       orchestration/DETERMINISTIC_SCHEDULER.md: [CLI, Failure behavior, Read-only declaration and fail-closed boundary]
@@ -370,7 +370,7 @@ placement_rules:
   - id: evolution
     triggers: [scripts/evolution_*.py, config/evolution-*.yaml, references/evolution/ISSUE_79_*.yaml, .github/workflows/evolution-*.yml, orchestration/EVOLUTION_RADAR.md]
     placements:
-      orchestration/EVOLUTION_RADAR.md: [Operating modes, Technology Intelligence Expansion, "Issue #79 observable-event integration Trial"]
+      orchestration/EVOLUTION_RADAR.md: [Operating modes, Technology Intelligence Expansion, "Issue #79 observable-event integration Trial", Evolution Effectiveness feedback, Pipeline completeness and content value]
       docs/human/EVOLUTION_RADAR.md: [Weekly Signal Scan, Evidence Quality, Deterministic Pre-analysis, Semantic Analysis, Human Decision Binding, Controlled Trial, Trial → ADOPT, Effectiveness Feedback, Current Boundaries]
       docs/human/EVOLUTION_RADAR_OVERVIEW.md: [Signal Collection, Deterministic Pre-analysis, Semantic Analysis, Human Decision, Controlled Trial, Trial → Adoption, Effectiveness Feedback]
       docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Execution, Quality & Verification, Evolution & Maintenance, Security & Governance]
@@ -463,7 +463,7 @@ placement_rules:
       docs/human/USER_GUIDE.md: [Roles、Skills 與重用]
       docs/human/HARNESS.md: [Native Runtime Adapters]
       docs/human/MAINTENANCE.md: [Validation architecture consistency]
-      docs/human/DOCUMENTATION_MAP.md: [文件角色]
+      docs/human/DOCUMENTATION_MAP.md: [文件角色, Agent / machine canonical 文件]
       docs/human/CONFORMANCE.md: [Scenario 259 — Matt Pocock Skill Integration and Explorer]
       docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
       orchestration/CONFORMANCE.md: [Scenario 259 — Matt Pocock Skill Integration and Explorer, Scenario 264 — Hash-bound Creative Git Asset Import]
@@ -633,7 +633,7 @@ placement_rules:
       orchestration/INTEGRATION_GATE.md: [Exact-candidate binding, GitHub required-check compatibility]
       orchestration/DOCUMENTATION_SYNC.md: [Human documentation placement, Maintenance reliability mapping]
       orchestration/ORCHESTRATOR.md: [Minimal algorithm, Context expansion, Change-class handoff to Integration Gate]
-      orchestration/CHANGE_IMPACT.md: [Diff reconciliation]
+      orchestration/CHANGE_IMPACT.md: [Diff reconciliation, Persistence]
       orchestration/PROJECT_INTELLIGENCE.md: [Retrieval relationships and impact traversal]
       orchestration/EXECUTION_ISOLATION.md: [Parallel runtime resource isolation]
 
@@ -703,7 +703,7 @@ placement_rules:
       docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
       docs/human/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback]
       orchestration/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback]
-      orchestration/INTEGRATION_GATE.md: [Exact-candidate binding, GitHub required-check compatibility]
+      orchestration/INTEGRATION_GATE.md: [Exact-candidate binding, GitHub required-check compatibility, Independent review evidence, PR base freshness, Content Safety Gate]
       orchestration/DETERMINISTIC_SCHEDULER.md: [Validation de-duplication boundary]
 
   - id: p16-evolution-human-evaluation
@@ -825,6 +825,7 @@ placement_rules:
       docs/human/HARNESS.md: [Integration model]
       docs/human/INSTALLATION.md: [Runtime integration]
       docs/human/PROJECT_INTELLIGENCE.md: [第一次 Existing Project]
+      docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Project Understanding, Quality & Verification]
       docs/human/SYSTEM_REFERENCE.md: [Public commands, Observation fields]
       docs/human/TECHNOLOGY_GUIDE.md: [Project Understanding]
       docs/human/USER_GUIDE.md: [Project Intelligence]
@@ -928,5 +929,75 @@ placement_rules:
       docs/human/SECURITY_ASSURANCE.md: [Runtime Policy Enforcement]
       docs/human/CONFORMANCE.md: [Scenario 262 — ComfyUI Resource Authorization and Diagnostics, Scenario 268 — Model-agnostic ComfyUI Workflows]
       orchestration/RESOURCE_AUTHORIZATION.md: [Contract, Enforcement truth, CLI]
-      orchestration/RUNTIME_POLICY_ENFORCEMENT.md: [Runtime Action Envelope, Policy and decisions]
+      orchestration/RUNTIME_POLICY_ENFORCEMENT.md: [Shell publication command inspection, Runtime Action Envelope, Policy and decisions]
       orchestration/CONFORMANCE.md: [Scenario 262 — ComfyUI Resource Authorization and Diagnostics, Scenario 268 — Model-agnostic ComfyUI Workflows]
+
+  - id: optional-project-governance-modes
+    triggers:
+      - scripts/project_governance_mode.py
+      - scripts/governance_guard.py
+      - scripts/aips_cli/project.sh
+      - scripts/aips_cli/dispatch.sh
+      - tests/test_project_governance_modes.py
+      - tests/validation/project_governance_modes_contracts.py
+      - tests/scenarios/275-optional-project-governance-modes.md
+      - tests/scenario_coverage.yaml
+      - tests/validation/registry.py
+    placements:
+      docs/ARCHITECTURE.md: [Runtime flow]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Runtime 與接入層, Security 與 Governance]
+      docs/human/USER_GUIDE.md: [Existing Project]
+      docs/human/INSTALLATION.md: [Runtime integration]
+      docs/human/SECURITY_ASSURANCE.md: [Runtime Policy Enforcement]
+      docs/human/CONFORMANCE.md: [Scenario 275 — Optional Project Governance Modes]
+      docs/human/MAINTENANCE.md: [Validation architecture consistency, Release checklist]
+      docs/human/DOCUMENTATION_MAP.md: [Agent / machine canonical 文件, 文件角色]
+      docs/human/HARNESS.md: [Integration model]
+      docs/human/PROJECT_INTELLIGENCE.md: [第一次 Existing Project]
+      docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Project Understanding, Quality & Verification]
+      orchestration/CONFORMANCE.md: [Scenario 275 — Optional Project Governance Modes]
+      orchestration/RUNTIME_POLICY_ENFORCEMENT.md: [Per-project optional governance modes]
+
+  - id: zero-coupling-external-project-state
+    triggers:
+      - scripts/aips_cli/project.sh
+      - scripts/aips_cli/maintenance.sh
+      - scripts/project_intelligence.py
+      - scripts/run_state.py
+      - scripts/harness_resolve.py
+      - scripts/project_diagnostics.py
+      - scripts/migration_state_inventory.py
+      - orchestration/DETERMINISTIC_AUTOMATION.md
+      - orchestration/HARNESS_RESOLUTION.md
+      - orchestration/PROJECT_IDENTITY.md
+      - scripts/aips_identity.py
+      - scripts/harness_enablement.py
+      - tests/evidence/install_preflight_lifecycle.py
+      - tests/evidence/project_intelligence_lifecycle.py
+      - tests/evidence/project_knowledge_migration_lifecycle.py
+      - tests/validation/runtime_contracts.py
+      - tests/validation/static_contracts.py
+      - tests/scenarios/011-update-preflight.md
+      - tests/scenarios/044-install-project-lifecycle.md
+      - tests/scenarios/062-attached-project-persistence.md
+      - tests/scenarios/101-run-checkpoint-persists-resume-state.md
+    placements:
+      docs/ARCHITECTURE.md: [Runtime flow, Installation and project lifecycle]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Project Identity 與 Persistence, Security 與 Governance, Maintenance governance]
+      docs/human/INSTALLATION.md: [Runtime integration, 常見問題與排查, 解除安裝, 會保留什麼]
+      docs/human/GETTING_STARTED.md: [Existing Project, 開始工作]
+      docs/human/HARNESS.md: [Integration model, Ownership 與解除]
+      docs/human/PROJECT_INTELLIGENCE.md: [第一次 Existing Project]
+      docs/human/USER_GUIDE.md: [Existing Project, Checkpoint / Resume, Git Publication 與 Release]
+      docs/human/SYSTEM_REFERENCE.md: [Public commands, Capability surfaces, Runtime support]
+      docs/human/MAINTENANCE.md: [Validation architecture consistency, Public repository / CI consistency]
+      docs/human/TECHNOLOGY_GUIDE.md: [Project Understanding, Quality & Verification]
+      docs/human/CONFORMANCE.md: [v0.16.2 Install / Preflight Evidence Maturity]
+      docs/human/DOCUMENTATION_SYNC.md: [文件角色, Deterministic protection]
+      docs/human/assets/system-lifecycle.svg: []
+      docs/human/assets/system-overview.svg: []
+      orchestration/HARNESS_RESOLUTION.md: [Project modes]
+      orchestration/ORCHESTRATOR.md: [Minimal algorithm, System Update Preflight]
+      orchestration/PROJECT_INTELLIGENCE.md: [Storage, Existing-project automatic behavior, Attach / detach migration]
+      orchestration/RUN_RESUME.md: [Storage, Resume]
+      orchestration/CONFORMANCE.md: [Scenario 044 — External AIPS State Lifecycle]

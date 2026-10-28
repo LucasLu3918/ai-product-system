@@ -1,7 +1,6 @@
 version: 1
 # Classification only. Validator selection and risk policy remain planner-owned.
 known_path_prefixes:
-  - .aips/
   - .github/
   - adapters/
   - bin/

@@ -397,9 +397,11 @@ A compatible external Agent may execute the bounded contract, but `external_exec
 
 ## Evolution Effectiveness feedback
 
+Evaluation fixtures remain outside indexed product sources; feedback determines which bounded optimization to review and never auto-adopts a candidate.
+
 The monthly effectiveness layer measures the observed value of the Technology Intelligence funnel without becoming a self-modifying source policy.
 
-The Plan19 read-only review snapshot in `.aips/review/PLAN19_EVOLUTION_EFFECTIVENESS.yaml` reports the 2026-09 cohort as 100 raw/unique signals and zero shortlist. All 100 remained `ANALYSIS_PENDING`; 4 source-bearing weekly Issues lacked pre-analysis, producing incomplete-coverage review flags. This evidence is insufficient to change source ranking or weights.
+The Plan19 read-only review snapshot in `docs/history/aips-review/PLAN19_EVOLUTION_EFFECTIVENESS.yaml` reports the 2026-09 cohort as 100 raw/unique signals and zero shortlist. All 100 remained `ANALYSIS_PENDING`; 4 source-bearing weekly Issues lacked pre-analysis, producing incomplete-coverage review flags. This evidence is insufficient to change source ranking or weights.
 
 It reads durable weekly Radar evidence plus embedded/pre-existing deterministic pre-analysis, semantic analysis, Human Decision, Trial handoff/result and Trial→ADOPT artifacts. The report is bound to the exact cohort month, repository revision, Issue manifest and deterministic input digest.
 

@@ -46,7 +46,7 @@ When a task requires client generation, resolve the canonical OpenAPI contract, 
 1. Resolve current runtime/project/turn context through the Global Harness when installed.
 2. If the request is unrelated to product/project/software work, continue normal conversation without heavy AIPS context.
 3. Before mutating a target project, run System Update Preflight (`aips system preflight <project>`); `aips preflight <project>` remains a compatibility alias.
-4. Resolve project mode and Intelligence store: ATTACHED uses `.ai/intelligence/`; EPHEMERAL may use external AIPS cache without writing into the repository.
+4. Resolve optional governance mode and external Intelligence store; all new mutable AIPS state stays outside the repository.
 5. If the target is AIPS itself, run System Self-Improvement Review and Constitution Impact Check.
 6. Detect large/core change and obtain Core Change Approval before implementation.
 7. Resolve requirement readiness and required external sources.
@@ -106,7 +106,7 @@ Use `aips system preflight <project>` (or the compatible `aips preflight <projec
 
 It updates the AI Product System only. Target-project source updates remain a separate user/project decision.
 
-Preflight does not attach an EPHEMERAL project. Only `aips attach` enables persistent `.ai/` state.
+Preflight and `aips attach` never create project-local AIPS state. Attach explicitly initializes or imports Intelligence into external user state.
 Publication Preflight lifecycle evidence isolates optional Python module probes from loopback/browser blocker checks, keeping host capability failures distinct from product validation results.
 
 ## Reproducible Planning Package
@@ -162,6 +162,8 @@ existing skill reuse → new narrow skill → new capability → new role
 Do not create a permanent/high-authority role without user approval.
 
 ## Context expansion
+
+Parallel advisory context uses the same declared run identity and preserves its read-only boundary when additional evidence is loaded.
 
 Creative quality loops reserve bounded attempts before execution and serialize each exact source with a deadline-aware lock. They preserve separate delivery, inference and repair counts; uncertainty, repeated defects or exhaustion stops further generation. Current native Human intent remains the only execution authority.
 
@@ -346,7 +348,7 @@ Use `orchestration/PROJECT_INTELLIGENCE.md` and `orchestration/CHANGE_IMPACT.md`
 
 Project Intelligence is the canonical existing-project reuse layer. Prefer SOURCE_REGISTRY pointers to authoritative instructions/docs, use IMPACT_GRAPH for dependency traversal, and preserve explicit human decisions in PROJECT_OVERRIDES.
 
-Initial bootstrap is read-only. EPHEMERAL projects may use external cache; ATTACHED projects use `.ai/intelligence/`. Do not full-rescan on every turn.
+Initial bootstrap writes only external user state. Legacy `.ai/` remains read-only and must not be treated as the active store. Do not full-rescan on every turn.
 
 `orchestration/PROJECT_KNOWLEDGE.md` exists only for v0.8 migration compatibility.
 
@@ -375,6 +377,8 @@ approved proposal/scope
 Do not infer machine-bound approval from vague context. Runtime guards are enforcement transport; architectural/security reasoning remains in orchestration/review.
 
 ## Checkpoint and resume
+
+Resumed work revalidates repository identity, HEAD and workspace fingerprint before restoring a checkpoint; a stale dashboard row is not execution authority.
 
 The read-only run projection retains canonical digest bytes through the shared helper; checkpoint state and resume authority remain unchanged.
 

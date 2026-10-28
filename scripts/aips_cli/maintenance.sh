@@ -99,13 +99,7 @@ preflight_after_update() {
 
   refresh_harness_if_installed
 
-  if [ -d "$project/.ai" ]; then
-    write_system_snapshot "$project"
-    say "Project mode: ATTACHED"
-  else
-    say "Project mode: EPHEMERAL (no .ai workspace created)."
-    say "Use 'aips attach \"$project\"' only when persistent AIPS state is desired."
-  fi
+  say "Project mode: EXTERNAL (no project-local AIPS state created)."
 
   validate_repo
   say "Update Preflight passed."

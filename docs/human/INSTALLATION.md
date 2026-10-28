@@ -73,6 +73,8 @@ aips mcp inspect
 
 ## Runtime integration
 
+AIPS does not enable repository governance when the CLI is installed. Check a project with `aips project mode show`; opt in with `aips project mode set observe` or `aips project mode set assist`. Select `enforce` only with an explicit action scope, for example `aips project mode set enforce --project /path/to/project --scope git_push,gh_pr_merge`. Settings live under the user XDG configuration, outside the project.
+
 The runtime resolves literal `git -C <path> push` against the command invocation cwd and validates the explicit target repository; it does not silently fall back to another checkout.
 
 When an installed runtime sees `git push -u/--set-upstream origin <current-branch>`, publication validation binds it to the selected worktree’s observed full HEAD SHA and full branch ref; install state does not grant publication authority.
@@ -91,7 +93,7 @@ ComfyUI model profiles 隨 AIPS registry 提供；FLUX 3 Klein Base/Distilled �
 
 Creative ComfyUI `dynamic_local` workflow support reuses the installed AIPS executor and Python dependencies. It does not install ComfyUI, custom nodes, model weights, or a remote service; the local ComfyUI API and selected model files must already be available. Workflow scan and preflight are read-only, while workflow import is an explicit project-confined create-only operation.
 
-一般專案不會自動建立 `.ai/`。只有明確執行 `aips attach <project>` 才會使用 project-local state；若專案位於 Git worktree，AIPS 會在本機 `info/exclude` 排除 `.ai/` 與 detach 封存目錄，不修改專案 `.gitignore`。
+一般專案不會建立 `.ai/` 或 `.aips/`。`aips attach <project>` 只會在使用者層初始化或匯入外部 Project Intelligence，不會修改專案檔案、Git config、hooks、`info/exclude` 或 `.gitignore`。既有 `.ai/` 資料會保留；驗證過的 Intelligence 以複製方式匯入，原始資料不刪除。
 
 OpenCode 原生直接寫入在 Project Intelligence 為 READY、但 freshness 為 STALE 時，可依既有 L2 advisory 邊界繼續；系統仍會明確顯示過期狀態。freshness 為 UNKNOWN、準備度不足、指示來源權限衝突未解或目標路徑越界時，仍維持原有停止條件。詳細 allow／deny 契約見 Scenario 267。
 

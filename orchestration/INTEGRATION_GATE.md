@@ -2,7 +2,7 @@
 
 Scenario 260/261 publication coverage requires immediate fail-closed Hook recovery, no inline Doctor invocation, and Prepare timeout diagnostics with stable redacted fields. The exact-candidate Gate preserves these contracts.
 
-Core candidate 另執行 `runtime-invariant-matrix`；Runtime Context 變更應使用 `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml` 描述邊界證據，並在遠端必要檢查通過後才合併。
+Core candidate 另執行 `runtime-invariant-matrix`；Runtime Context 變更應使用 `docs/qa/CORE_CHANGE_TEST_MATRIX.yaml` 描述邊界證據，並在遠端必要檢查通過後才合併。
 
 The shared `module_extraction_lifecycle.py` verifies compatibility facades for internal module splits; it does not weaken or replace the exact-candidate Gate.
 
@@ -25,6 +25,8 @@ Use before merge/publication of an integration candidate when deterministic vali
 The Gate is deterministic code. It has no Human approval, merge or release authority.
 
 ## Exact-candidate binding
+
+Candidate evidence binds the resolved base, head and complete changed-file digest; an unrelated working-tree change invalidates readiness and requires a new preview.
 
 Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
 
@@ -247,7 +249,7 @@ The Core Change Matrix may declare:
 ~~~yaml
 review_evidence:
   required: true
-  path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml
+  path: docs/history/aips-review/INDEPENDENT_REVIEW_EVIDENCE.yaml
 ~~~
 
 When required, the Gate validates structured evidence for review mode, distinct execution IDs, signed runtime isolation attestation, allowlisted packet classes, read-only authority, unresolved blocking findings, and exact base/head/changed-files binding. An explicit `--review-evidence` path may supply an ephemeral runtime artifact; the report stores its content hash and never copies its absolute path. No trusted runtime-attestation verifier is currently connected, so reports remain `UNVERIFIED` until one is integrated; status strings or an unsigned receipt cannot prove isolation.
@@ -258,7 +260,7 @@ When required, the Gate validates structured evidence for review mode, distinct 
 
 Task ownership reconciliation is local run evidence and does not alter candidate authority. The Gate still binds publication checks to the exact clean base/head diff; an owner lease never grants merge or publish permission.
 
-Local maintainers and GitHub Actions MUST enter the Gate through `scripts/publish_preflight.py` for publication candidates. The shared resolver binds the same base/head, PR-label change class, canonical `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`, `AIPS_DOCS_DIFF_BASE` and fast repository preflight before expensive lifecycle checks.
+Local maintainers and GitHub Actions MUST enter the Gate through `scripts/publish_preflight.py` for publication candidates. The shared resolver binds the same base/head, PR-label change class, canonical `docs/qa/CORE_CHANGE_TEST_MATRIX.yaml`, `AIPS_DOCS_DIFF_BASE` and fast repository preflight before expensive lifecycle checks.
 
 The `run` entrypoint prepends the selected `sys.executable` directory to child `PATH` for both phases, so nested `python3` commands resolve within the environment already checked by Publication Preflight.
 

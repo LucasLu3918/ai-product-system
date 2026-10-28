@@ -16,6 +16,7 @@ import governance_guard
 import publication_authority as authority
 import publication_diagnostics as diagnostics
 import repository_governance_snapshot as governance_snapshot
+import project_governance_mode
 
 
 class PublicationDiagnosticsTest(unittest.TestCase):
@@ -23,10 +24,20 @@ class PublicationDiagnosticsTest(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name).resolve()
+        self.config_temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.config_temp.cleanup)
+        self.state_temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.state_temp.cleanup)
+        os.environ['XDG_CONFIG_HOME'] = self.config_temp.name
+        os.environ['XDG_STATE_HOME'] = self.state_temp.name
         subprocess.run(["git", "init", "-b", "main"], cwd=self.root, check=True,
                        capture_output=True, text=True)
         subprocess.run(["git", "remote", "add", "origin", "https://github.com/fixture/repo.git"],
                        cwd=self.root, check=True, capture_output=True, text=True)
+        project_governance_mode.set_mode(
+            self.root, 'enforce',
+            ['gh_pr_create', 'gh_pr_merge', 'gh_release_create', 'git_commit', 'git_push', 'git_tag', 'publish_ship'],
+        )
 
     def test_doctor_reports_policy_and_checks_without_side_effects(self):
         (self.root / 'dirty-fixture.txt').write_text('local-only')
@@ -464,9 +475,12 @@ class PublicationDiagnosticsTest(unittest.TestCase):
 
         command = "gh pr merge 7 --repo fixture/repo --squash --match-head-commit " + "a" * 40
         calls = []
+        real_run = subprocess.run
         def run(argv, **kwargs):
-            calls.append(argv)
-            raise AssertionError("Doctor must not run inside the synchronous PreToolUse hook")
+            if Path(argv[0]).name == "gh":
+                calls.append(argv)
+                raise AssertionError("Doctor must not run inside the synchronous PreToolUse hook")
+            return real_run(argv, **kwargs)
 
         output = StringIO()
         with patch.object(governance_guard, "operations_for", return_value=["gh_pr_merge"]), \

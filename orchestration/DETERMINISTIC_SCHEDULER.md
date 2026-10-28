@@ -218,6 +218,8 @@ Dependabot repository preflight and action pin sync (Scenario 221): `scripts/rep
 
 ## Read-only declaration and fail-closed boundary
 
+Task ownership is validated against the run-state record before work is scheduled; unknown or conflicting owners fail closed and cannot be inferred from conversation history.
+
 Publication Prepare and diagnostic lookup are read-only observations; their lifecycle fields do not become scheduler grants or execution receipts. Only an independently observed completed native action may be reported as executed.
 
 The Claude publication Hook's one-shot Doctor observation does not create a scheduled task, retry a workflow or change execution ownership.
@@ -272,6 +274,8 @@ Execution IDs and runtime attestation are produced by the execution runtime and 
 
 - Release readiness also fails closed when `CHANGELOG.md` is unavailable or its canonical `## Unreleased` section is missing, duplicated, malformed, or non-empty; the check remains read-only.
 ## Validation de-duplication boundary
+
+Shared validation-path classification chooses the smallest safe toolchain, while every candidate still runs mandatory error aggregation and publication checks.
 
 Publication scan evidence is operation-specific and cannot be reused as Scheduler validation evidence. It is bound to one repository/worktree, candidate, push target, observed remote tip, diff, scanner and policy, and every Hook still performs live authority checks.
 

@@ -18,6 +18,7 @@ import publication_authority as auth
 import publication_diagnostics
 import publication_planning as planning
 import publish_preflight as preflight
+import project_governance_mode
 
 
 def scanner_fixture_assignment() -> str:
@@ -42,6 +43,8 @@ class PlanningTest(unittest.TestCase):
         self.addCleanup(temp.cleanup)
         self.root = Path(temp.name).resolve()
         os.environ['XDG_CACHE_HOME'] = str(self.root / 'cache')
+        os.environ['XDG_CONFIG_HOME'] = str(self.root / 'config')
+        os.environ['XDG_STATE_HOME'] = str(self.root / 'state')
         self.repo, self.remote = self.root / 'repo', self.root / 'remote.git'
         self.repo.mkdir()
         self.git(self.repo, 'init', '-b', 'main')
@@ -58,6 +61,10 @@ class PlanningTest(unittest.TestCase):
         (self.repo / 'file.txt').write_text('candidate\n')
         self.git(self.repo, 'commit', '-am', 'candidate')
         self.head = self.git(self.repo, 'rev-parse', 'HEAD')
+        project_governance_mode.set_mode(
+            self.repo, 'enforce',
+            ['gh_pr_create', 'gh_pr_merge', 'gh_release_create', 'git_commit', 'git_push', 'git_tag', 'publish_ship'],
+        )
         self.body = self.root / 'body.md'
         self.body.write_text('Candidate validation evidence.\n')
         self.rows = []

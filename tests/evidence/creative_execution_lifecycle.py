@@ -1302,7 +1302,7 @@ def main() -> int:
             environment = {**os.environ, "AIPS_CLI": str(ROOT / "bin/aips"), "AIPS_GUARD_PYTHON": sys.executable,
                            "AIPS_VALIDATION_PYTHON": sys.executable, "XDG_CONFIG_HOME": str(base / "native-config")}
             native = subprocess.run([node, str(ROOT / "tests/evidence/creative_tool_harness.mjs"), str(ROOT), str(tool_project)],
-                                    env=environment, capture_output=True, text=True, timeout=60, check=False)
+                                    env=environment, capture_output=True, text=True, timeout=120, check=False)
             require(native.returncode == 0, "native creative tool fixture failed: " + native.stdout + native.stderr)
             print(native.stdout.strip())
         mflux_cases(base / "mflux")

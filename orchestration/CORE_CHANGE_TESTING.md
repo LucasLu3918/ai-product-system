@@ -57,7 +57,7 @@ For Turn Context, run-event, retrieval, Agent Eval freshness, observed-stage tel
 
 For fixed-system-context or protocol-routing changes, verify every supported task route, compact and hook manifest compatibility, missing-source fail-closed behavior, the fixed-core byte ceiling, and the measured reduction against the base fixed layer. Keep `SYSTEM.md` compatibility pointers and canonical protocol ownership in the same candidate.
 
-Before implementation, start from `templates/review/CORE_CHANGE_TEST_MATRIX.yaml` and maintain the active candidate at `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`.
+Before implementation, start from `templates/review/CORE_CHANGE_TEST_MATRIX.yaml` and maintain the active candidate at `docs/qa/CORE_CHANGE_TEST_MATRIX.yaml`.
 
 For validation-workflow action pins, the matrix records upstream commit provenance, the unchanged runtime/cache contract, exact-candidate workflow CI and the mandatory secret scan.
 

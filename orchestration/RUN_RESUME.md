@@ -4,15 +4,7 @@ Use for substantial workflows that may span turns, sessions or runtime restarts.
 
 ## Storage
 
-ATTACHED:
-
-~~~text
-.ai/runs/<run-id>/
-├── CHECKPOINT.yaml
-└── EVENTS.jsonl
-~~~
-
-EPHEMERAL:
+All project modes:
 
 ~~~text
 ~/.config/aips/projects/<project-id>/runs/<run-id>/
@@ -20,7 +12,7 @@ EPHEMERAL:
 └── EVENTS.jsonl
 ~~~
 
-EPHEMERAL must not create project-local .ai state.
+Checkpoints and events always use the external user-state store. Legacy project-local `.ai/runs/` data is read only by explicit migration; new writes never target it.
 
 ## Checkpoint contract
 
@@ -46,6 +38,8 @@ Free-form raw prompt/model reasoning is prohibited.
 
 ## Resume
 
+Resume validates the external repository identity, revision and workspace fingerprint before reusing checkpoints; a mismatch requires refresh or revalidation.
+
 ~~~text
 load checkpoint
 → resolve canonical repository_id / workspace_id
@@ -55,7 +49,7 @@ load checkpoint
    └─ no  → STALE → report revision/branch/dirty/identity drift → refresh/revalidate affected evidence
 ~~~
 
-The fingerprint hashes product workspace state; AIPS-owned `.ai/` state is excluded so checkpoint writes do not invalidate themselves. Legacy v1 checkpoints fall back conservatively: a dirty workspace cannot be reported CURRENT solely because HEAD matches.
+The fingerprint hashes product workspace state; legacy `.ai/` state is excluded and checkpoint writes occur outside the repository. Legacy v1 checkpoints fall back conservatively: a dirty workspace cannot be reported CURRENT solely because HEAD matches.
 
 Resume status does not bypass Requirement, Change Impact, Approval, Security, Test, Review or Release gates.
 

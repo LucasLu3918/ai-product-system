@@ -8,7 +8,7 @@ Project Intelligence 是 AIPS 對既有專案建立的可重用理解層。
 
 ## 第一次 Existing Project
 
-Git worktree 內的 `.ai/` 仍須明確 attach 才會建立；attach/detach 只將 AIPS workspace 與 archive 加入該 worktree 的本機 `info/exclude`，不更動專案 `.gitignore`。
+Project Intelligence 一律存在外部 user state。既有 `.ai/` 會保持唯讀；明確 attach/bootstrap 可驗證後複製 legacy Intelligence 到外部，來源保留不變。
 
 診斷的 Recovery Plan 以既有 reason code 提供先後步驟及授權標記。bootstrap／finalize／refresh 是需要已批准任務範圍的衍生狀態操作；diagnose 本身仍不建立、附加或修復專案。
 
@@ -61,7 +61,7 @@ freshness: CURRENT | STALE | UNKNOWN
 
 ## Human Review HTML
 
-ATTACHED 位於 `.ai/intelligence/reviews/PROJECT_INTELLIGENCE_REVIEW.html`；EPHEMERAL 位於 AIPS External Cache。HTML self-contained、deterministic，只是 Review View。
+Review HTML 位於 AIPS External State；HTML self-contained、deterministic，只是 Review View。
 
 ## Freshness
 
@@ -87,7 +87,7 @@ Architecture 摘要、核准覆寫與時序文字在進入 Runtime Context 前�
 
 Skill frontmatter 為 routing source，INDEX 為 generated view；Intelligence 保留 source pointers，EPHEMERAL 仍使用 external cache。
 
-Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Detach 先 validated sync 回 External Cache，再封存 `.ai/`。
+Attach/bootstrap 將 legacy Intelligence 驗證後複製到 External State；來源 `.ai/` 不會被改寫或封存。
 
 ## Change Impact
 
@@ -259,7 +259,7 @@ Observed Latency
 
 其中 Static Topic baseline 是可重現的「v0.20-style」比較基準，不宣稱能逐字重建所有歷史 v0.20 Agent Turn。Benchmark 評的是「本次工程任務能否取得正確 repository evidence」，不是 Agent 整體任務品質。
 
-Suite 會明確列出每個案例的 expected source paths、可選的 history term、baseline topic files、Top-K、Token Budget 與門檻。Benchmark 控制資料應放在 indexed product source 之外，或 ATTACHED project 的 `.ai/` workspace，避免 expected answer 本身被 FTS 找回而污染評估。
+Suite 會明確列出每個案例的 expected source paths、可選的 history term、baseline topic files、Top-K、Token Budget 與門檻。Benchmark 控制資料應放在 indexed product source 之外，避免 expected answer 本身被 FTS 找回而污染評估。
 
 Case 另外分成：
 

@@ -83,10 +83,7 @@ Create a per-change artifact using `templates/intelligence/CHANGE_IMPACT.yaml`.
 Preferred locations:
 
 ~~~text
-ATTACHED:
-.ai/runs/<change-id>/CHANGE_IMPACT.yaml
-
-EPHEMERAL:
+All projects:
 ~/.config/aips/projects/<project-id>/changes/<change-id>.yaml
 ~~~
 
@@ -107,6 +104,8 @@ For retrieval-cache recovery, distinguish read-only access from stale-index refr
 When traversal validation reports `affected node lacks a final disposition`, inspect that node's callers and consumers and explicitly choose `reviewed_safe`, `requires_change` or `unknown`. Do not infer a disposition from the absence of a diff. `requires_change` must be included in the approved `target_paths`; high-risk `unknown` nodes remain blocking until the relationship is reviewed or the impact boundary is expanded. Rerun `aips intelligence impact-validate` after resolving each finding.
 
 ## Diff reconciliation
+
+Post-diff reconciliation binds the exact base/head, clean worktree, changed-path set and binary diff digest; external storage location does not weaken semantic impact review.
 
 Scenario 267 records the bounded stale-READY Turn Context and OpenCode consumer impact. Freshness remains observable, while independent readiness, protocol, authority and path boundaries are reconciled separately.
 

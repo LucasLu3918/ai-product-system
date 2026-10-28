@@ -11,6 +11,7 @@ import tempfile
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "scripts"))
 PI = ROOT / "scripts" / "project_intelligence.py"
 CLI = ROOT / "bin" / "aips"
 
@@ -193,29 +194,53 @@ def main() -> int:
 
         attach = run(["bash", str(CLI), "attach", str(project)], env=env)
         require(attach.returncode == 0, f"attach failed: {attach.stdout} {attach.stderr}")
-        require((project / ".ai" / "STATE.yaml").is_file(), "ATTACHED workspace state missing")
-        require((project / ".ai" / "MANIFEST.yaml").is_file(), "ATTACHED workspace manifest missing")
-        require((project / ".ai" / "SYSTEM.yaml").is_file(), "ATTACHED system provenance missing")
-        require(
-            (project / ".ai" / "intelligence" / "PROJECT_INTELLIGENCE.yaml").is_file(),
-            "attach must migrate External Intelligence to project-local Intelligence",
-        )
+        require(not (project / ".ai").exists(), "attach must not create project-local AIPS state")
+        require(store.is_dir(), "attach must keep Project Intelligence in external state")
 
         uninstall_attached = run(["bash", str(CLI), "uninstall"], env=env)
         require(uninstall_attached.returncode == 0, "uninstall after attach failed")
-        require((project / ".ai").is_dir(), "uninstall must preserve ATTACHED project workspace")
+        require(store.is_dir(), "uninstall must preserve external Project Intelligence")
 
         detach = run(["bash", str(CLI), "detach", str(project)], env=env)
         require(detach.returncode == 0, f"detach failed: {detach.stdout} {detach.stderr}")
-        require(not (project / ".ai").exists(), "detach must archive .ai workspace")
-        require(any(project.glob(".ai.detached-*")), "detach archive missing")
+        require(not (project / ".ai").exists(), "detach must not create or archive project-local AIPS state")
         status = run(
             [sys.executable, str(PI), "status", "--project", str(project), "--format", "json"],
             env=env,
         )
         status_doc = json.loads(status.stdout)
         require(status_doc.get("mode") == "EPHEMERAL", "detached project must return to EPHEMERAL mode")
-        require(status_doc.get("exists") is True, "detach must sync local Intelligence back to external cache")
+        require(status_doc.get("exists") is True, "detach must preserve external Intelligence")
+
+        legacy_project = base / "legacy-project"
+        legacy_project.mkdir()
+        git(legacy_project, "init", "-q")
+        git(legacy_project, "config", "user.email", "aips-test")
+        git(legacy_project, "config", "user.name", "AIPS Test")
+        legacy_store = legacy_project / ".ai" / "intelligence"
+        legacy_store.mkdir(parents=True)
+        legacy_file = legacy_store / "PROJECT_INTELLIGENCE.yaml"
+        legacy_file.write_text("version: 1\nlegacy: preserve-me\n", encoding="utf-8")
+        legacy_files_before = {p.relative_to(legacy_project): p.read_bytes() for p in (legacy_project / ".ai").rglob("*") if p.is_file()}
+        from aips_identity import repository_identity
+        legacy_id = repository_identity(legacy_project)["workspace_id"]
+        legacy_external = config / "aips" / "projects" / legacy_id / "intelligence"
+
+        imported = run(["bash", str(CLI), "attach", str(legacy_project)], env=env)
+        require(imported.returncode == 0, f"legacy attach import failed: {imported.stdout} {imported.stderr}")
+        require((legacy_external / "PROJECT_INTELLIGENCE.yaml").read_bytes() == legacy_files_before[Path(".ai/intelligence/PROJECT_INTELLIGENCE.yaml")],
+                "validated legacy Intelligence was not copied to external state")
+        legacy_files_after = {p.relative_to(legacy_project): p.read_bytes() for p in (legacy_project / ".ai").rglob("*") if p.is_file()}
+        require(legacy_files_after == legacy_files_before, "legacy source files changed during external migration")
+
+        legacy_file.write_text("version: 1\nlegacy: newer-local-copy\n", encoding="utf-8")
+        external_before_repeat = (legacy_external / "PROJECT_INTELLIGENCE.yaml").read_bytes()
+        repeated_import = run(["bash", str(CLI), "attach", str(legacy_project)], env=env)
+        require(repeated_import.returncode == 0, f"repeated legacy attach failed: {repeated_import.stdout} {repeated_import.stderr}")
+        require((legacy_external / "PROJECT_INTELLIGENCE.yaml").read_bytes() == external_before_repeat,
+                "repeated migration must not overwrite canonical external Intelligence")
+        require(legacy_file.read_text(encoding="utf-8") == "version: 1\nlegacy: newer-local-copy\n",
+                "repeated migration must preserve the local legacy source")
 
     print("project_intelligence_lifecycle evidence: PASS")
     return 0
