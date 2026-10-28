@@ -26,6 +26,8 @@ When a shared module-extraction lifecycle gains another facade, retain identity 
 
 ## Impact-derived Test Matrix
 
+For publication parser changes, cover `-u` and `--set-upstream` current-branch shorthand, full SHA refspecs, and denials for bare branch names, `HEAD`, wrong branches, and unsupported options; verify diagnostics stay read-only and no authority is granted.
+
 Publication diagnostics matrices must separately cover candidate/source identity, target policy evidence, status/error provenance, safe Hook payloads and recovery retryability; attach each result to the exact base/head before the complete Integration Gate.
 
 Creative repair Core candidates cover fresh same-session recreation grants, negation/read-only intent, native prompt replay/concurrency, per-criterion evidence, source/hash drift, versioned lineage and comparisons, shared deadlines and finite/repeated-defect stops. Synthetic tests do not satisfy real local image/vision accuracy or exact-host acceptance.

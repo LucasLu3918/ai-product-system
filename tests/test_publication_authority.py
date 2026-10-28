@@ -196,6 +196,19 @@ class PublicationTest(unittest.TestCase):
         long_upstream = auth.validate_personal_action(
             self.repo, 'git_push', ['git', 'push', '--set-upstream', 'origin', self.head + ':refs/heads/codex/test'])
         self.assertEqual(long_upstream['target_ref'], observed['target_ref'])
+        shorthand = auth.validate_personal_action(
+            self.repo, 'git_push', ['git', 'push', '-u', 'origin', 'codex/test'])
+        self.assertEqual(shorthand['target_ref'], observed['target_ref'])
+        self.assertEqual(shorthand['candidate_commit'], observed['candidate_commit'])
+        self.assertEqual(shorthand['source_commit'], self.head)
+        self.assertEqual(shorthand['refspec'], self.head + ':refs/heads/codex/test')
+        long_shorthand = auth.validate_personal_action(
+            self.repo, 'git_push', ['git', 'push', '--set-upstream', 'origin', 'codex/test'])
+        self.assertEqual(long_shorthand['target_ref'], observed['target_ref'])
+        self.assertEqual(long_shorthand['candidate_commit'], observed['candidate_commit'])
+        with self.assertRaises(auth.PublicationError) as bare_branch:
+            auth.validate_personal_action(self.repo, 'git_push', ['git', 'push', 'origin', 'codex/test'])
+        self.assertEqual(bare_branch.exception.reason_code, 'PUSH_SOURCE_NOT_EXACT_SHA')
         with patch('publication_scan_evidence.valid', return_value=False), \
                 self.assertRaises(auth.PublicationError) as missing_scan:
             auth.validate_personal_action(self.repo, 'git_push', command,
@@ -206,6 +219,10 @@ class PublicationTest(unittest.TestCase):
         feat_command = ['git', 'push', 'origin', self.head + ':refs/heads/feat/checked-prefix']
         feat_observed = auth.validate_personal_action(self.repo, 'git_push', feat_command)
         self.assertEqual(feat_observed['target_ref'], 'refs/heads/feat/checked-prefix')
+        with self.assertRaises(auth.PublicationError) as wrong_shorthand:
+            auth.validate_personal_action(
+                self.repo, 'git_push', ['git', 'push', '-u', 'origin', 'codex/test'])
+        self.assertEqual(wrong_shorthand.exception.reason_code, 'PUSH_TARGET_BRANCH_MISMATCH')
 
         self.run_git(self.repo, 'remote', 'add', 'exfil', str(self.remote))
         with self.assertRaisesRegex(auth.PublicationError, 'verified single origin'):
@@ -961,11 +978,10 @@ class PublicationTest(unittest.TestCase):
     def test_claude_hook_denials_name_the_supported_publication_recipe(self):
         import json
         self.run_git(self.repo, 'fetch', 'origin', 'main')
-        self.run_git(self.repo, 'switch', '-c', 'claude/hook-recipe')
+        self.run_git(self.repo, 'switch', '-c', 'codex/hook-recipe')
         cases = {
-            'git push -u origin claude/hook-recipe': ('PUSH_SOURCE_NOT_EXACT_SHA', None, ':refs/heads/<current-branch>'),
             'git push -u origin HEAD': ('PUSH_SOURCE_NOT_EXACT_SHA', None, ':refs/heads/<current-branch>'),
-            f'git push -u origin {self.head}:refs/heads/claude/hook-recipe && gh pr create --title t --body b':
+            f'git push -u origin {self.head}:refs/heads/codex/hook-recipe && gh pr create --title t --body b':
                 ('COMMAND_FORM_UNSUPPORTED', 'MULTI_COMMAND_UNSUPPORTED', 'one exact publication command per Bash call'),
             'gh pr create --title "fix: probe" --body "$BODY"':
                 ('COMMAND_FORM_UNSUPPORTED', 'PUBLICATION_ARGUMENT_DYNAMIC', "<<'EOF'"),
@@ -988,6 +1004,15 @@ class PublicationTest(unittest.TestCase):
                 self.assertTrue(context['detail_zh'] and context['next_step_zh'])
                 self.assertNotIn('hook-recipe', proc.stdout)
                 self.assertNotIn('$BODY', proc.stdout)
+
+        payload = {'cwd': str(self.repo), 'tool_input': {'command': 'git push -u origin codex/hook-recipe'}}
+        proc = subprocess.run([sys.executable, str(ROOT / 'scripts/governance_guard.py'), 'hook', '--runtime', 'claude-code'],
+                              input=json.dumps(payload), text=True, capture_output=True, check=False)
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        response = json.loads(proc.stdout)['hookSpecificOutput']
+        self.assertNotIn('PUSH_SOURCE_NOT_EXACT_SHA', response['permissionDecisionReason'])
+        self.assertNotIn('PUSH_TARGET_BRANCH_MISMATCH', response['permissionDecisionReason'])
+        self.assertIn('authorization_status', response['additionalContext'])
 
 
 class ShellTest(unittest.TestCase):

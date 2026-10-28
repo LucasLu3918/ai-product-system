@@ -165,7 +165,7 @@ PUBLICATION_DIAGNOSTICS = {
     'REQUIRED_CHECKS_POLICY_UNVERIFIED': ('Required-check configuration cannot be confirmed from the available evidence.', 'Run publish doctor; ask an administrator to verify branch protection visibility before retrying.', 'checks', 'UNAVAILABLE'),
     'HOST_MERGE_WITHOUT_REVIEW': ('Claude Code Auto Mode classified the request as Merge Without Review.', 'Use the normal interactive Host approval/review flow; do not rewrite commands to bypass the denial.', 'host', 'PERMISSION'),
     'HOST_READ_ONLY_DENIED': ('Claude Code denied a read-only publication diagnostic.', 'Run the same diagnostic in a trusted interactive environment or review exact permission rules; never infer merge approval.', 'host', 'PERMISSION'),
-    'PUSH_SOURCE_NOT_EXACT_SHA': ('Push source must equal the full candidate SHA.', 'Supported form: `git push origin <full-candidate-sha>:refs/heads/<current-branch>` (`-u` allowed) as emitted by `aips publish prepare`; a bare branch name or HEAD is not bound to the candidate.'),
+    'PUSH_SOURCE_NOT_EXACT_SHA': ('Push source must equal the full candidate SHA.', 'Supported forms: `git push origin <full-candidate-sha>:refs/heads/<current-branch>` or `git push -u origin <current-branch>` as emitted by `aips publish prepare`; a bare branch name without `-u` or `HEAD` is not bound to the candidate.'),
     'INVALID_TARGET_REF': ('An explicit full target ref is required.', 'Use refs/heads/<current-engineering-branch>.'),
     'WORKTREE_DIRTY': ('The selected worktree has uncommitted content.', 'Preserve development files; review delivery scope or use a separate clean candidate worktree.'),
     'CWD_MISMATCH': ('The current worktree differs from the planned candidate.', 'Set the native tool working directory to the planned worktree and re-observe.'),
@@ -320,7 +320,7 @@ PUBLICATION_DIAGNOSTICS_ZH = {
     'INTERNAL_DIAGNOSTIC_GAP': ('AIPS 無法安全分類這項內部發布錯誤。', '保留診斷 ID 與錯誤類型，修正本機 AIPS 診斷映射後再重試。'),
     'PUSH_TARGET_BRANCH_MISMATCH': ('推送目標分支與目前工程分支不一致。', '確認選用的工作樹與完整目標 ref，再重新執行唯讀發布診斷。'),
     'BRANCH_NOT_ALLOWLISTED': ('目前分支不符合允許的工程分支規則。', '在核准的工程分支上重新規劃；不要推送至受保護分支。'),
-    'PUSH_SOURCE_NOT_EXACT_SHA': ('推送來源不是目前候選的完整 SHA。', '支援格式：`git push origin <完整候選 SHA>:refs/heads/<目前分支>`（可加 `-u`），即 `aips publish prepare` 輸出的指令；只寫分支名稱或 HEAD 無法綁定候選。'),
+    'PUSH_SOURCE_NOT_EXACT_SHA': ('推送來源不是目前候選的完整 SHA。', '支援格式：`git push origin <完整候選 SHA>:refs/heads/<目前分支>`，或 `git push -u origin <目前分支>`；只寫分支名稱但未加 `-u`，或使用 HEAD，無法綁定候選。'),
     'PR_METADATA_INCOMPLETE': ('PR 中繼資料不完整或有歧義。', "支援格式：`gh pr create --repo <owner/repo> --head <目前分支> --base <預設分支> --title <標題> --body-file <檔案>`（或一個字面 --body，可用加引號的 `<<'EOF'` heredoc），即 `aips publish prepare` 輸出的指令。"),
     'PUBLICATION_INPUT_UNBOUND': ('發布輸入無法綁定到受檢查的操作。', "改用字面值輸入：加引號的 `<<'EOF'` heredoc、單引號字串或 `-F`／`--body-file` 檔案；不可使用變數、反引號或未加引號的 heredoc。"),
     'INVALID_TARGET_REF': ('推送目標 ref 格式不完整或無效。', '使用 refs/heads/<工程分支名稱>，並重新執行唯讀診斷。'),
@@ -753,6 +753,22 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
         delete = '--delete' in flags or spec.startswith(':')
         if '--delete' in flags:
             source, target = None, _ref(root, spec)
+        elif ':' not in spec and any(flag in {'-u', '--set-upstream'} for flag in flags):
+            # Git's upstream shorthand resolves a branch name through local refs/config.
+            # Restrict it to the selected worktree's checked-out branch and bind it to
+            # the immutable HEAD already observed above.
+            if spec == 'HEAD':
+                raise PublicationError('push source must be exact current candidate SHA',
+                                       'PUSH_SOURCE_NOT_EXACT_SHA')
+            branch_ref = 'refs/heads/' + spec
+            target = _ref(root, branch_ref)
+            if target != 'refs/heads/' + result['branch']:
+                raise PublicationError('upstream shorthand must name the current branch',
+                                       'PUSH_TARGET_BRANCH_MISMATCH', phase='push_validation',
+                                       context={'candidate_sha': head, 'worktree_id': result['worktree_id'],
+                                                'target_ref': target, 'mode': 'personal' if personal else 'high_assurance'})
+            source = head
+            spec = source + ':' + target
         else:
             if spec.count(':') != 1:
                 raise PublicationError('explicit source SHA:full-ref required', 'PUSH_SOURCE_NOT_EXACT_SHA')

@@ -745,6 +745,8 @@ Retrieval index persistence is an internal, rebuildable cache boundary in `scrip
 
 ## Git Publication 與 Release
 
+原生推送可使用完整候選 SHA 與完整分支 ref，或 `git push -u/--set-upstream origin <目前分支>`。分支縮寫只接受所選工作樹目前分支，並正規化為已觀測的完整 HEAD SHA/ref；裸分支名稱、`HEAD` 或其他分支仍拒絕。語法支援不代表授權，掃描、遠端政策與 Human approval 仍照常執行。
+
 一般 personal publication 只推送已提交的 candidate SHA/ref。本機未提交修改會保留並顯示為工作樹診斷，不會被自動加入候選，也不會單獨阻擋該 commit；遠端授權、完整內容掃描與 GitHub 保護仍適用。
 
 The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; all other WebM paths and near-matches remain subject to strict candidate scanning.
@@ -803,13 +805,13 @@ Personal Mode 的逐次合併確認和 High-Assurance Mode 的外部 signed gran
 
 TTF、OTF、WOFF 與 WOFF2 字型也可通過有界 metadata 掃描；AIPS 會核對檔案簽章、格式、副檔名及解壓大小，並掃描字型名稱與廠商欄位。缺少解析套件、格式偽裝、損毀、超出上限或 metadata 命中 Secret／PII／Injection 規則時，commit 與發布都會阻擋。字型輸入上限為 8 MiB、宣告解壓上限為 32 MiB。
 
-發布前使用 `aips publish prepare --worktree <candidate-root> --title <title> --body-file <file>`；原生工具必須使用輸出的 `cwd` 與精確 `argv`。成功完成完整候選／歷史 Secret Scan 後，Prepare 會在 private user cache 寫入 30 分鐘有效的掃描 evidence，精確綁定 repo/worktree、base/head、operation、remote、full target ref、remote OID、diff、scanner 與 policy。Hook 每次仍重驗 Git／遠端／目標；缺少、過期、毀損或不相符 evidence 會拒絕並要求重新 Prepare。此 evidence 不授權推送，完整候選／歷史掃描仍由 Prepare 和 final Integration Gate 執行。`--expected-fingerprint` 可拒絕舊觀察，`--host-denied` 只回報 Host 拒絕，`--auto-merge` 只規劃 GitHub `--auto`，要求非空且全部通過的 required checks，並保留原生 Human 授權。每次續行重新查詢遠端分支與 PR；PLANNED 不是授權，也不是完整 Integration Gate PASS。個人模式接受帶 `-u`／`--set-upstream` 的 push，但仍要求精確 candidate SHA、唯一 origin 與完整同名工程 branch ref。
+發布前使用 `aips publish prepare --worktree <candidate-root> --title <title> --body-file <file>`；原生工具必須使用輸出的 `cwd` 與精確 `argv`。成功完成完整候選／歷史 Secret Scan 後，Prepare 會在 private user cache 寫入 30 分鐘有效的掃描 evidence，精確綁定 repo/worktree、base/head、operation、remote、full target ref、remote OID、diff、scanner 與 policy。Hook 每次仍重驗 Git／遠端／目標；缺少、過期、毀損或不相符 evidence 會拒絕並要求重新 Prepare。此 evidence 不授權推送，完整候選／歷史掃描仍由 Prepare 和 final Integration Gate 執行。`--expected-fingerprint` 可拒絕舊觀察，`--host-denied` 只回報 Host 拒絕，`--auto-merge` 只規劃 GitHub `--auto`，要求非空且全部通過的 required checks，並保留原生 Human 授權。每次續行重新查詢遠端分支與 PR；PLANNED 不是授權，也不是完整 Integration Gate PASS。個人模式可使用明確完整 SHA/ref，或帶 `-u`／`--set-upstream` 的目前工程分支縮寫；後者會綁定至已觀測的完整 HEAD SHA 與 full branch ref，並仍須通過唯一 origin、掃描與既有授權檢查。
 
 Prepare 與 `aips publish diagnose` 會並列候選驗證、授權與執行狀態。`PLANNED` 代表只完成規劃；`AWAITING_AUTHORITY` 代表需要 Human grant；Hook 的 `AUTHORIZED` 只代表 AIPS Hook 放行，Host 仍可能拒絕且指令尚未執行；`EXECUTED` 只能由實際執行結果確認。`next_step: PUSH`、掃描通過或觀測指紋都不會授予權限。診斷包含安全的 worktree ID、候選 SHA、完整 target ref、publication mode 與 AIPS 版本／revision，僅供核對環境，不作為授權憑證。未知錯誤會回報 `INTERNAL_DIAGNOSTIC_GAP`；已知分支目標不一致會回報 `PUSH_TARGET_BRANCH_MISMATCH`，並提供繁中排除步驟。
 
 Diagnostic ID 只有在使用者已設定既有 `AIPS_GOVERNANCE_AUDIT_LEDGER` 時，才會寫入 allowlist 欄位並可用 `aips publish diagnose --diagnostic-id <UUID> --format json` 查詢。查詢會驗證 hash chain；未設定時顯示 `NOT_CONFIGURED`，不會自動建立新 ledger。Trace 寫入失敗不會改變 Hook 的允許／拒絕決定，也不輸出原始指令或例外內容。
 
-`aips publish diagnose` 對 pipe、多重命令、Shell 包裝語法與 `git push -u` 維持拒絕，並在既有 `COMMAND_FORM_UNSUPPORTED` 下提供 `detail_code` 與安全修正指引。Claude Code 的 `PostToolUseFailure:Bash` 另外回報已開始執行的原生工具失敗階段、固定錯誤分類及可解析的 exit code；原始 Host 錯誤與命令不會進診斷，Hook 不會重試或授權。PreToolUse 拒絕仍標示 `NOT_EXECUTED`。
+`aips publish diagnose` 對 pipe、多重命令與 Shell 包裝語法維持拒絕；`git push -u/--set-upstream origin <目前分支>` 只在分支符合目前工程 branch policy 時接受，並以唯讀方式正規化至目前候選 SHA/ref。裸分支、`HEAD` 或其他分支仍拒絕。診斷會在既有穩定錯誤碼下提供 `detail_code` 與安全修正指引，不會授權推送。Claude Code 的 `PostToolUseFailure:Bash` 另外回報已開始執行的原生工具失敗階段、固定錯誤分類及可解析的 exit code；原始 Host 錯誤與命令不會進診斷，Hook 不會重試或授權。PreToolUse 拒絕仍標示 `NOT_EXECUTED`。
 
 `branch-hygiene.yml` 的報告會依 branch SHA、目前 main、local checkout 與 PR 狀態列出 `KEEP`、`SUPERSEDED`、`REBASE_REQUIRED` 或 `CLEANUP_CANDIDATE`。這些分類供維護者檢視，不會自動 merge、rebase、關閉 PR 或刪除 branch；清理仍須逐筆核准 exact manifest。
 

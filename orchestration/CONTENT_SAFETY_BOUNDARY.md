@@ -74,6 +74,8 @@ Pure dependency update documentation exemption (Scenario 221): `pure_dependency_
 
 ## Security invariants
 
+Publication push normalization accepts the current branch shorthand only with an explicit upstream flag and binds it to the observed full candidate SHA/ref. The candidate remains subject to the same final-tree and history scan; normalization creates no authorization.
+
 The publication Hook's short-lived scan evidence records a successful full Secret Scan but does not alter content-safety decisions or sink policy. Missing, stale, corrupt or mismatched evidence fails closed, and Prepare plus the final Integration Gate still scan the complete candidate and history.
 
 Publication timeout diagnostics omit raw command and exception text. A Claude PreToolUse remote failure remains denied, and manual Doctor recovery is read-only and cannot grant publication authority.

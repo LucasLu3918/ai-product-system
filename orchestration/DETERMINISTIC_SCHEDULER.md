@@ -333,6 +333,8 @@ The Scheduler validates this structure and includes runtime requirements only fo
 Only `tcp` is supported in v0.51. Port IDs must be stable resource IDs, `preferred` is optional and non-authoritative, and `expose_as` accepts environment-variable names only.
 ## Runtime Content Safety Boundary
 
+Native push shorthand is normalized deterministically only when `-u` / `--set-upstream` names the selected worktree’s current branch; the observed full HEAD SHA and full target ref remain the candidate identity.
+
 Creative ComfyUI profile data selects only fixed, executor-reviewed workflow families and cannot define arbitrary graph operations. Profiles in the audited FLUX 3 Klein family provide bounded sampler values; dynamic edit reference bindings are ordered from `image_1` and capped at eight. Both remain subject to live schema, component inventory and staged-byte checks before the one authorized submission.
 
 AVIF metadata checks run inside the existing bounded content-safety path and do not change scheduler readiness, task ownership or execution authority.

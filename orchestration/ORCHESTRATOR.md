@@ -400,6 +400,8 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 
 ## Change-class handoff to Integration Gate
 
+For native Git pushes, the explicit upstream branch shorthand is accepted only for the current checked-out branch and is bound to the observed full HEAD SHA/ref; the Integration Gate still performs its complete candidate scan.
+
 When local publication preflight fails in JSON mode, use its stable redacted reason to repair and re-observe; the diagnostic itself grants neither retry nor merge authority.
 
 When a publication command is denied, follow the static recipe in `next_step`/`next_step_zh` instead of trying command variants; run one publication command per Bash call.

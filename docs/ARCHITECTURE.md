@@ -332,6 +332,8 @@ The alias candidate is deterministic and transparent. It is not an embedding pro
 
 ## Maintenance and publication evidence
 
+Native Git push parsing accepts an exact candidate SHA to the current full branch ref, or `-u` / `--set-upstream` with the current branch name; the latter is normalized to the already observed HEAD SHA and full ref. This syntax support grants no publication authority and does not bypass candidate scanning.
+
 Doctor keeps Required Checks permission failures visible as unknown. They become Doctor blockers only with `AIPS_ENFORCE_REQUIRED_CHECKS=1`; strict merge validation continues to block unknown policy evidence, while GitHub native rules remain active.
 
 Personal publication policy: AIPS independently enforces Required Checks only when `AIPS_ENFORCE_REQUIRED_CHECKS=1`; GitHub's native branch protection and rulesets remain the merge enforcement boundary.

@@ -435,6 +435,8 @@ Scenario 134 不改 production Retrieval / Turn Context。Local Trial PASS 也�
 Project Intelligence follows `orchestration/PROJECT_IDENTITY.md`. EPHEMERAL storage is workspace-scoped by canonical `workspace_id`; repository-wide writer coordination belongs to the isolation layer and uses `repository_id`.
 ## Runtime Content Safety Boundary
 
+Publication command normalization maps `-u` / `--set-upstream` plus the checked-out branch to the observed full HEAD SHA and full ref; the resulting candidate still passes the existing content scan and publication authority checks.
+
 JSON-mode publication errors expose only stable, allowlisted diagnostics; they neither serialize raw exception details nor replace the final candidate/history scan.
 
 Publication recipe diagnostics are static text; they never echo commands and do not replace the final candidate/history scan.

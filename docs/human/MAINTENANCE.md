@@ -12,6 +12,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+Publication parser changes preserve exact-candidate binding: upstream branch shorthand is accepted only for the checked-out branch and is normalized to the observed full HEAD SHA/ref. The regular scan, authorization and required-check boundaries still apply.
+
 Changes to local creative workflow contracts must update Scenario 236 and the user, technology, architecture, security, and orchestration references selected by the documentation-impact rules.
 
 OpenCode adapter、Harness 或 Scenario 235 變更須依 placement contract 將新增內容放在各 canonical H2；只確認檔案清單完整不足以通過 base/head 預檢。

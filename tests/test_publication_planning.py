@@ -303,6 +303,11 @@ class PlanningTest(unittest.TestCase):
             self.repo, 'git push -u origin ' + self.head + ':refs/heads/codex/plan30')
         self.assertEqual(upstream['status'], 'VALIDATED', upstream)
         self.assertFalse(upstream['authorized'])
+        shorthand = planning.diagnose(self.repo, 'git push -u origin codex/plan30')
+        self.assertEqual(shorthand['status'], 'VALIDATED', shorthand)
+        self.assertFalse(shorthand['authorized'])
+        self.assertEqual(shorthand['candidate']['candidate_sha'], self.head)
+        self.assertEqual(shorthand['candidate']['target_ref'], 'refs/heads/codex/plan30')
 
 
     def test_push_target_must_match_current_engineering_branch(self):

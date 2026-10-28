@@ -431,6 +431,8 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 
 ## Security 與 Governance
 
+For native Git publication, `-u` / `--set-upstream` may name only the selected worktree’s current branch; AIPS binds that shorthand to its observed full HEAD SHA and full ref before the existing scan and authorization checks.
+
 The Qwen Edit Plus mapping does not add node classes, endpoints, or authority: it remains within the reviewed core-node policy and verifies staged reference bytes before the single ComfyUI submission.
 
 When `aips publish prepare` or `diagnose` fails locally in JSON mode, the CLI returns a redacted, stable diagnostic; the response grants no publication authority and text-mode behavior remains compatible.

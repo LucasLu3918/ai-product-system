@@ -73,6 +73,8 @@ aips mcp inspect
 
 ## Runtime integration
 
+When an installed runtime sees `git push -u/--set-upstream origin <current-branch>`, publication validation binds it to the selected worktree’s observed full HEAD SHA and full branch ref; install state does not grant publication authority.
+
 Installing or updating the CLI does not impose a clean-worktree requirement on native Git publication. Runtime adapter enablement and publication policy remain separate; exact candidate and GitHub checks still apply.
 
 Qwen Image Edit 2511 workflow support uses an already configured local ComfyUI runtime and locally installed model weights; AIPS installation does not download models or enable cloud execution.
