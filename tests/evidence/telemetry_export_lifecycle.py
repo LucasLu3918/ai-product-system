@@ -19,7 +19,8 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from observed_stage import observed_stage
-from run_state import append_event as append_run_event, run_store
+from run_state import append_event as append_run_event
+from run_state import run_store
 from telemetry_export import _endpoint_allowed, export
 from telemetry_projection import build_projection
 from telemetry_record import record

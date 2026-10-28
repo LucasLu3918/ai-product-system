@@ -13,10 +13,10 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 import governance_audit
 import governance_guard
+import project_governance_mode
 import publication_authority as authority
 import publication_diagnostics as diagnostics
 import repository_governance_snapshot as governance_snapshot
-import project_governance_mode
 
 
 class PublicationDiagnosticsTest(unittest.TestCase):

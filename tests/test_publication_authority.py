@@ -17,8 +17,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 import check_secret_leakage as secret_scanner
 import governance_guard as guard
-import publication_authority as auth
 import project_governance_mode
+import publication_authority as auth
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 

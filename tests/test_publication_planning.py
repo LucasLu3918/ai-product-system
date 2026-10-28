@@ -14,11 +14,11 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 import governance_guard as guard
+import project_governance_mode
 import publication_authority as auth
 import publication_diagnostics
 import publication_planning as planning
 import publish_preflight as preflight
-import project_governance_mode
 
 
 def scanner_fixture_assignment() -> str:

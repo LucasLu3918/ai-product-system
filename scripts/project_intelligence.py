@@ -22,13 +22,13 @@ from aips_common import glob_matches as _aips_glob_matches
 from aips_identity import (
     config_home as canonical_config_home,
 )
-from aips_identity import state_home as canonical_state_home
 from aips_identity import (
     project_root as canonical_project_root,
 )
 from aips_identity import (
     repository_identity as canonical_repository_identity,
 )
+from aips_identity import state_home as canonical_state_home
 from content_safety import safe_emit as safe_context_emit
 from git_paths import GitPathsError, run_git_paths
 from observed_stage import observed_stage

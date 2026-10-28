@@ -101,9 +101,11 @@ def main() -> int:
 
             (root / "diagram.svg").write_text("<svg>updated</svg>\n", encoding="utf-8")
             diagram_rule = {"placement_rules": [{"id": "diagram", "triggers": ["a.py"], "placements": {"diagram.svg": []}}]}
-            with patch.object(documentation_placement, "changed_files", return_value=["a.py", "diagram.svg"]):
-                with patch.object(documentation_placement, "added_line_numbers_many", return_value={"diagram.svg": [1]}):
-                    assert not documentation_placement.placement_errors(diagram_rule, "base"), "file-level non-Markdown placement must not require H2 sections"
+            with (
+                patch.object(documentation_placement, "changed_files", return_value=["a.py", "diagram.svg"]),
+                patch.object(documentation_placement, "added_line_numbers_many", return_value={"diagram.svg": [1]}),
+            ):
+                assert not documentation_placement.placement_errors(diagram_rule, "base"), "file-level non-Markdown placement must not require H2 sections"
 
     checks = summarize_checks({"statusCheckRollup": [{"name": "repository", "workflowName": "validate", "startedAt": "1", "conclusion": "CANCELLED"}, {"name": "repository", "workflowName": "validate", "startedAt": "2", "conclusion": "SUCCESS"}]}, ["repository"])
     assert checks["status"] == "PASS" and checks["superseded_checks"][0]["status"] == "SUPERSEDED"
