@@ -1,30 +1,32 @@
 version: 1
 candidate:
-  base_sha: a46c65fe69d58f0b92662627f9360fa082caf05b
-  changed_files_hash: cbc473f6d36956425927e91eecc3e699cd1b2c8bf27b15719278dde76fc746b7
+  base_sha: 16a924c3e2129647fcd46111addb4e535a9044cc
+  changed_files_hash: 96a0dec2e56f65ca0552c91321a172ee89df91810defe9219cf960e07d569556
 change:
-  id: runtime-policy-exact-destination
-  summary: Match Runtime Policy destination conditions exactly and reject malformed conditions while preserving the independent Resource Authorization boundary.
+  id: retrieval-caller-path-filter
+  summary: Resolve lexical caller candidates to exact target paths before edge budgeting, with a separate fail-closed raw-candidate scan limit.
   boundary:
-    - Runtime Policy destination condition validation and exact host, port, method, and path matching
-    - Claude and Gemini native hook decisions for policy allow and deny cases
-    - ComfyUI Resource Authorization separation and canonical documentation/conformance
+    - Retrieval Intelligence impact traversal caller candidate selection and evidence reporting
+    - bounded caller-candidate exhaustion behavior and traversal contract
+    - Scenario 175, canonical Change Impact/Project Intelligence policy and documentation placements
 review_evidence:
   required: false
 matrix:
-  - boundary: Runtime Policy exact destination matching and fail-closed validation
-    reason: A policy allow must apply only to the supplied exact endpoint conditions; malformed conditions must not be ignored or broaden access.
+  - boundary: Exact caller target filtering and bounded candidate scan
+    reason: Unrelated same-name lexical callers must not consume the relevant-edge budget, while candidate exhaustion must remain explicitly incomplete and bounded.
     checks:
-      static_lint: {applicable: true, evidence: "Exact-candidate Integration Gate ruff-critical and ruff-debt-ratchet checks"}
-      unit: {applicable: true, evidence: "tests/test_runtime_policy.py"}
-      integration: {applicable: true, evidence: "tests/evidence/runtime_policy_lifecycle.py — Claude/Gemini hook lifecycle"}
-      contract: {applicable: true, evidence: "tests/validation/runtime_policy_contracts.py and repository validator"}
-      e2e: {applicable: true, evidence: "tests/evidence/runtime_policy_lifecycle.py — synthetic hook requests verify exact endpoint allow and mismatch denial"}
-      security: {applicable: true, evidence: "Runtime Policy unit, contract, native Hook lifecycle and mandatory candidate secret scan in exact-candidate Integration Gate"}
-      migration_recovery: {applicable: false, na_reason: "No persisted state, schema migration, or recovery behavior changes."}
-      cli_harness: {applicable: true, evidence: "tests/evidence/runtime_policy_lifecycle.py — managed Claude and Gemini native hook behavior"}
-      docs_schema: {applicable: true, evidence: "Publish preview documentation closure/placement plus tests/validate_repository.py and scenario conformance checks"}
+      static_lint: {applicable: true, evidence: "Ruff/compile checks for scripts/retrieval_intelligence.py and changed Python lifecycle/contract files"}
+      unit: {applicable: true, evidence: "tests/evidence/change_impact_traversal_lifecycle.py — exact-path filtering, caller candidate limit and exact edge limit cases"}
+      integration: {applicable: true, evidence: "tests/evidence/change_impact_traversal_lifecycle.py — bounded traversal lifecycle and truthful truncation for both scan and edge budgets"}
+      contract: {applicable: true, evidence: "tests/validation/change_impact_traversal_contracts.py — traversal defaults and caller candidate multiplier"}
+      e2e: {applicable: true, evidence: "AIPS impact-traverse on caller-only seed and original WebM scanner seed after implementation"}
+      security: {applicable: true, evidence: "Bounded SQL candidate scan, exact target resolution, fail-closed candidate overflow; mandatory candidate secret scan in Integration Gate"}
+      migration_recovery: {applicable: false, na_reason: "No persisted schema, index format, or recovery behavior changes."}
+      cli_harness: {applicable: true, evidence: "aips intelligence impact-traverse caller-direction output contract and stable facade"}
+      docs_schema: {applicable: true, evidence: "Scenario 175, repository validator, documentation placement closure, and YAML schema validation"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
-blockers: []
-status: READY
+blockers:
+  - Run the exact-candidate Integration Gate after the local commit; full repository validation and focused boundary checks pass.
+  - Re-run the original WebM scanner Change Impact against a current Retrieval Intelligence index; current index status is STALE and the active Context does not require index rebuilding.
+status: DRAFT

@@ -235,6 +235,8 @@ OpenCode shares the existing runtime resolver and CLI consumers. Traversal evide
 
 Shared path/glob wrappers preserve existing Project Intelligence matching behavior; bounded traversal continues to report unresolved edges and partial coverage rather than infer completeness.
 
+Python caller traversal filters lexical same-name candidates by resolved target path and line before applying the relevant-edge budget; other languages retain their existing lexical resolution behavior. It processes at most `min(max_edges × 10, 3,000)` raw caller rows, with at most one additional fetched sentinel reflected in the counter; candidate-budget exhaustion remains `TRUNCATED` and cannot support a completeness claim.
+
 Promotion eligibility and target-path constraints are extracted to a helper while retaining the facade entry point, Human approval and no-overwrite behavior.
 
 Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.

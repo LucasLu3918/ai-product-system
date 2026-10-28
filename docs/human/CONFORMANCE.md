@@ -1398,6 +1398,8 @@ Validation-only changes may record a bounded Impact Graph limitation when the re
 
 Lifecycle evidence exercises bounded lexical caller/reference indexing, canonical architecture graph traversal, risk-specific depth and history policy, cycle handling, dynamic-dispatch unknowns, stale/truncated evidence, changed versus unchanged affected paths, and READY evidence validation. Lexical relations remain explicitly inferred; the traversal does not claim compiler-level resolution.
 
+Python caller traversal filters same-name lexical rows by resolved exact target path and line before edge accounting; other languages retain their existing lexical behavior. It processes at most `min(max_edges × 10, 3,000)` raw candidates and may fetch one sentinel to detect overflow; the count includes that row. Candidate-cap exhaustion fails closed as `TRUNCATED/caller_candidate_limit`; lifecycle coverage includes irrelevant-row filtering and cap exhaustion.
+
 The publication lifecycle fixture isolates the Python module availability probe before asserting localhost and browser capability blockers, so environment setup does not alter the blocker contract.
 
 目前 Scenario inventory：

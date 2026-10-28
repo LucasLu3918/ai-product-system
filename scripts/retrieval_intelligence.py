@@ -45,6 +45,7 @@ STRUCTURAL_MAX_TEST_CHUNKS = 500
 IMPACT_MAX_DEPTH = 6
 IMPACT_MAX_NODES = 150
 IMPACT_MAX_EDGES = 300
+IMPACT_CALLER_CANDIDATE_MULTIPLIER = 10
 IMPACT_MAX_RELATIONS_PER_FILE = 5000
 CHUNK_LINES = 100
 CHUNK_OVERLAP = 20
@@ -594,9 +595,18 @@ def traverse_change_impact(
         "required_depth": {"callers": policy["required_depth"], **{direction: policy["required_depth"] for direction in requested_directions}},
         "reached_depth": {direction: 0 for direction in requested_directions},
         "max_depth": depth_limit,
-        "limits": {"nodes": max_nodes, "edges": max_edges, "depth": depth_limit},
+        "limits": {
+            "nodes": max_nodes,
+            "edges": max_edges,
+            "depth": depth_limit,
+            "caller_candidates": min(
+                max_edges * IMPACT_CALLER_CANDIDATE_MULTIPLIER,
+                IMPACT_MAX_EDGES * IMPACT_CALLER_CANDIDATE_MULTIPLIER,
+            ),
+        },
         "visited_nodes": 0,
         "visited_edges": 0,
+        "caller_candidates_scanned": 0,
         "truncated": False,
         "stop_reason": None,
         "nodes": [],
@@ -643,6 +653,71 @@ def traverse_change_impact(
     frontier: list[dict[str, Any]] = []
     edge_rows: list[dict[str, Any]] = []
     changed_set = set(changed_paths or [])
+
+    def caller_rows_for_target(current: dict[str, Any]) -> list[sqlite3.Row]:
+        """Bound raw rows with one overflow sentinel, then retain exact target paths."""
+        remaining = int(report["limits"]["caller_candidates"]) - int(report["caller_candidates_scanned"])
+        query_limit = max(0, remaining) + 1
+        rows = conn.execute(
+            "SELECT source_name, source_path, source_definition_line, target_name, source_line, relation "
+            "FROM relations WHERE target_name = ? AND relation = 'calls' LIMIT ?",
+            (current["symbol"], query_limit),
+        ).fetchall()
+        report["caller_candidates_scanned"] += len(rows)
+        overflow = len(rows) > remaining
+        if overflow:
+            report["truncated"] = True
+            report["stop_reason"] = "caller_candidate_limit"
+            rows = rows[:max(0, remaining)]
+
+        exact_rows: list[sqlite3.Row] = []
+        for row in rows:
+            source_path = str(row["source_path"])
+            if Path(source_path).suffix.lower() != ".py":
+                exact_rows.append(row)
+                continue
+            targets, target_error, external = _resolve_call_target(
+                root, conn, source_path, str(row["target_name"])
+            )
+            if external:
+                continue
+            if current.get("path") and targets:
+                exact_targets = [
+                    target for target in targets
+                    if str(target["path"]) == str(current["path"])
+                    and (not current.get("line") or int(target["line"]) == int(current["line"]))
+                ]
+                if not exact_targets:
+                    continue
+                targets = exact_targets
+                if len(exact_targets) == 1:
+                    # Exact path and, when available, definition line resolve
+                    # same-name declarations in unrelated modules safely.
+                    target_error = None
+                else:
+                    target_error = "ambiguous_consumer_target"
+            if target_error:
+                report["unresolved"].append({
+                    "kind": target_error,
+                    "symbol": str(row["target_name"]),
+                    "path": source_path,
+                    "candidate_count": len(targets),
+                    "line": int(row["source_line"]),
+                })
+                report["resolution"]["unresolved"].append(str(row["target_name"]))
+                continue
+            if not targets:
+                report["unresolved"].append({
+                    "kind": "unresolved_consumer_target",
+                    "symbol": str(row["target_name"]),
+                    "path": source_path,
+                    "line": int(row["source_line"]),
+                })
+                report["resolution"]["unresolved"].append(str(row["target_name"]))
+                continue
+            exact_rows.append(row)
+        return exact_rows
+
     try:
         for seed in seeds:
             name = str(seed.get("symbol") or seed.get("name") or "").strip()
@@ -690,11 +765,10 @@ def traverse_change_impact(
                 depth = int(current["depth"])
                 if depth >= depth_limit:
                     if direction == "callers":
-                        more = conn.execute(
-                            "SELECT source_name, source_path, source_definition_line FROM relations "
-                            "WHERE target_name = ? AND relation = 'calls' LIMIT ?",
-                            (current["symbol"], max_nodes + 1),
-                        ).fetchall()
+                        more = caller_rows_for_target(current)
+                        if report["truncated"] and report["stop_reason"] == "caller_candidate_limit":
+                            direction_frontier.clear()
+                            break
                         unseen = any(
                             (str(row["source_name"]), str(row["source_path"]), int(row["source_definition_line"])) not in visited
                             for row in more
@@ -721,12 +795,13 @@ def traverse_change_impact(
                         report["stop_reason"] = "max_depth"
                     continue
                 if direction == "callers":
-                    rows = conn.execute(
-                        "SELECT source_name, source_path, source_definition_line, target_name, source_line, relation "
-                        "FROM relations WHERE target_name = ? AND relation = 'calls' "
-                        "ORDER BY source_path, source_line LIMIT ?",
-                        (current["symbol"], max_edges - len(edge_rows) + 1),
-                    ).fetchall()
+                    rows = caller_rows_for_target(current)
+                    remaining_edges = max_edges - len(edge_rows)
+                    if len(rows) > remaining_edges:
+                        report["truncated"] = True
+                        if report["stop_reason"] != "caller_candidate_limit":
+                            report["stop_reason"] = "max_edges"
+                        rows = rows[:max(0, remaining_edges)]
                 else:
                     rows = conn.execute(
                         "SELECT source_name, source_path, source_definition_line, target_name, source_line, relation "
@@ -734,7 +809,7 @@ def traverse_change_impact(
                         "ORDER BY source_line LIMIT ?",
                         (current["symbol"], str(current.get("path") or ""), max_edges - len(edge_rows) + 1),
                     ).fetchall()
-                if len(rows) > max_edges - len(edge_rows):
+                if direction != "callers" and len(rows) > max_edges - len(edge_rows):
                     report["truncated"] = True
                     report["stop_reason"] = "max_edges"
                     rows = rows[: max(0, max_edges - len(edge_rows))]
@@ -822,7 +897,9 @@ def traverse_change_impact(
                     report["reached_depth"][direction] = max(report["reached_depth"][direction], depth + 1)
                     if len(edge_rows) >= max_edges or len(visited) >= max_nodes:
                         break
-                if report["truncated"] and report["stop_reason"] in {"max_edges", "max_nodes"}:
+                if report["truncated"] and report["stop_reason"] in {
+                    "max_edges", "max_nodes", "caller_candidate_limit",
+                }:
                     direction_frontier.clear()
                     break
 

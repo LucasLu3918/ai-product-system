@@ -11,8 +11,10 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from project_intelligence import validate_traversal_evidence
-from project_intelligence import traverse_architecture_impact_graph
+from project_intelligence import (
+    traverse_architecture_impact_graph,
+    validate_traversal_evidence,
+)
 from retrieval_intelligence import (
     index_repository,
     risk_adaptive_policy,
@@ -138,6 +140,108 @@ unknowns: []
         self.assertFalse(report["truncated"])
         self.assertEqual(report["status"], "COMPLETE")
         self.assertLessEqual(report["visited_nodes"], 3)
+
+    def test_same_name_callers_are_path_filtered_before_edge_budget(self) -> None:
+        self.write(
+            "src/scanner.py",
+            "def git():\n    return None\n\n"
+            "def scan_candidate():\n    return git()\n",
+        )
+        self.write("src/noise.py", "def git():\n    return None\n")
+        noise_calls = "from src.noise import git\n\n"
+        noise_calls += "\n".join(
+            f"def unrelated_{index}():\n    return git()"
+            for index in range(350)
+        )
+        self.write("src/noise_users.py", noise_calls + "\n")
+        self.write(
+            "src/target_user.py",
+            "from src.scanner import git\n\n"
+            "def publish_candidate():\n    return git()\n",
+        )
+        self.git("add", "-A")
+        self.git("-c", "user.name=AIPS Test", "-c", "user.email=" + chr(64) + "example.invalid", "commit", "-qm", "same-name caller fanout")
+        index_repository(self.repo, self.store, force=True)
+
+        report = traverse_change_impact(
+            self.repo,
+            self.store,
+            [{"symbol": "git", "path": "src/scanner.py"}],
+            "private_leaf",
+            directions=["callers"],
+            max_depth=2,
+            max_edges=300,
+        )
+
+        self.assertEqual(report["status"], "COMPLETE")
+        self.assertFalse(report["truncated"])
+        self.assertGreater(report["caller_candidates_scanned"], 300)
+        self.assertLessEqual(
+            report["caller_candidates_scanned"],
+            report["limits"]["caller_candidates"] + 1,
+        )
+        caller_paths = {
+            node.get("path") for node in report["nodes"] if node.get("kind") == "caller"
+        }
+        self.assertIn("src/target_user.py", caller_paths)
+        self.assertNotIn("src/noise_users.py", caller_paths)
+
+    def test_caller_candidate_scan_budget_overflow_fails_closed(self) -> None:
+        self.write("src/scanner.py", "def git():\n    return None\n")
+        self.write("src/noise.py", "def git():\n    return None\n")
+        noise_calls = "from src.noise import git\n\n"
+        noise_calls += "\n".join(
+            f"def unrelated_{index}():\n    return git()"
+            for index in range(20)
+        )
+        self.write("src/noise_users.py", noise_calls + "\n")
+        self.git("add", "-A")
+        self.git("-c", "user.name=AIPS Test", "-c", "user.email=" + chr(64) + "example.invalid", "commit", "-qm", "caller scan budget")
+        index_repository(self.repo, self.store, force=True)
+
+        report = traverse_change_impact(
+            self.repo,
+            self.store,
+            [{"symbol": "git", "path": "src/scanner.py"}],
+            "private_leaf",
+            directions=["callers"],
+            max_depth=2,
+            max_edges=1,
+        )
+
+        self.assertEqual(report["status"], "TRUNCATED")
+        self.assertTrue(report["truncated"])
+        self.assertEqual(report["stop_reason"], "caller_candidate_limit")
+        self.assertGreater(
+            report["caller_candidates_scanned"],
+            report["limits"]["caller_candidates"],
+        )
+
+    def test_exact_caller_edge_budget_overflow_fails_closed(self) -> None:
+        self.write("src/scanner.py", "def git():\n    return None\n")
+        callers = "from src.scanner import git\n\n"
+        callers += "\n".join(
+            f"def publish_{index}():\n    return git()"
+            for index in range(5)
+        )
+        self.write("src/publishers.py", callers + "\n")
+        self.git("add", "-A")
+        self.git("-c", "user.name=AIPS Test", "-c", "user.email=" + chr(64) + "example.invalid", "commit", "-qm", "exact caller edge budget")
+        index_repository(self.repo, self.store, force=True)
+
+        report = traverse_change_impact(
+            self.repo,
+            self.store,
+            [{"symbol": "git", "path": "src/scanner.py"}],
+            "private_leaf",
+            directions=["callers"],
+            max_depth=2,
+            max_edges=1,
+        )
+
+        self.assertEqual(report["status"], "TRUNCATED")
+        self.assertTrue(report["truncated"])
+        self.assertEqual(report["stop_reason"], "max_edges")
 
     def test_history_is_attached_only_for_policy_or_unresolved_cases(self) -> None:
         self.write("docs/change.md", "get_products response shape changed\n")

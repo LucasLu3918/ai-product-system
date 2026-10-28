@@ -100,6 +100,8 @@ Creative Impact Graph edges are currently incomplete; manually reviewed consumer
 
 高風險既有專案變更先以 Change Impact 遍歷明確的 caller、consumer 與資料／事件邊界；scoped coverage 不會提升為 repository-wide 完整性。
 
+Python lexical caller candidates are resolved to exact target paths and lines before edge budgeting; other languages retain lexical resolution. A separate bounded raw-candidate scan prevents unrelated same-name Python calls from causing false truncation; exhaustion remains explicitly incomplete.
+
 Project Diagnostics points to read-only inspection or a conditional recovery action without running it.
 
 

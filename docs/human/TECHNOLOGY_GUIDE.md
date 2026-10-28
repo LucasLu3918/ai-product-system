@@ -178,6 +178,8 @@ Approval CLI 在既有 dispatch 中提出 high-assurance exact-operation proposa
 
 Impact candidate extraction is bounded and read-only; its source references remain unreviewed and are not execution or approval evidence.
 
+For Python callers, Impact traversal resolves lexical candidates to exact target paths and lines before applying the relevant-edge budget; other languages retain lexical resolution. It processes at most `min(max_edges × 10, 3,000)` raw caller rows and may fetch one sentinel to detect overflow; exhaustion is reported as incomplete rather than silently dropping possible callers.
+
 The shared validation-path inventory classifies known roots and prefixes for both CI planners. Each planner keeps its own risk and validator-selection semantics; unknown or malformed paths continue to select full validation.
 
 The local Creative `generate-set` executor preflights configured Bundles one at a time, records per-item outcomes, and resumes only when prior output and provenance hashes still match. OpenCode V2 receives mutation authority from native prompt admission, not Context.

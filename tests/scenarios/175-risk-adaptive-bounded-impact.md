@@ -17,6 +17,8 @@ When an agent changes an existing project, it must discover likely callers and c
 - The feature adds no runtime role, governance gate, external service or mandatory parser dependency.
 - Python call candidates use AST direct names and explicitly imported module attributes; annotations, variables, arbitrary object methods, and builtins do not become call edges. Other supported languages retain lexical candidates.
 - Default hard bounds are six hops, 150 nodes and 300 edges; remaining unvisited relationships at a bound stay `TRUNCATED`.
+- Python caller candidates are resolved to the exact target path and line before consuming the relevant-edge budget, so unrelated same-name Python calls cannot create false truncation. At most `min(max_edges × 10, 3,000)` raw caller rows are processed; one additional sentinel row may be fetched to detect overflow, and the reported fetched-row counter includes it. Exhaustion reports `TRUNCATED/caller_candidate_limit` and cannot establish completeness. Other languages retain their existing lexical resolution behavior.
+- When exact resolved callers themselves exceed the remaining edge budget, traversal reports `TRUNCATED/max_edges` after filtering; it cannot return `COMPLETE` with omitted exact callers.
 
 ## Evidence
 
