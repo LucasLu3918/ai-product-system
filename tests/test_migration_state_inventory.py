@@ -8,7 +8,9 @@ import tempfile
 import unittest
 from pathlib import Path
 
-SCRIPT = Path(__file__).resolve().parents[1] / 'scripts/migration_state_inventory.py'
+ROOT = Path(__file__).resolve().parents[1]
+SCRIPT = ROOT / 'scripts/migration_state_inventory.py'
+CLI = ROOT / 'bin/aips'
 
 
 class InventoryTest(unittest.TestCase):
@@ -26,7 +28,7 @@ class InventoryTest(unittest.TestCase):
 
     def test_inventory_is_read_only_and_conservative(self):
         before = subprocess.check_output(['git', '-C', str(self.root), 'status', '--porcelain=v1', '-z'])
-        result = subprocess.run([sys.executable, str(SCRIPT), '--project', str(self.root)], capture_output=True, text=True, check=True)
+        result = subprocess.run([sys.executable, str(SCRIPT), '--project', str(self.root), '--dry-run'], capture_output=True, text=True, check=True)
         data = json.loads(result.stdout)
         rows = {row['path']: row for row in data['files']}
         normal = rows['.aips/human decision\nname.md']
@@ -44,22 +46,29 @@ class InventoryTest(unittest.TestCase):
         (nested / 'item').unlink()
         nested.rmdir()
         nested.symlink_to('/tmp', target_is_directory=True)
-        result = subprocess.run([sys.executable, str(SCRIPT), '--project', str(self.root)], capture_output=True, text=True, check=True)
+        result = subprocess.run([sys.executable, str(SCRIPT), '--project', str(self.root), '--dry-run'], capture_output=True, text=True, check=True)
         rows = {row['path']: row for row in json.loads(result.stdout)['files']}
         self.assertEqual(rows['.aips/nested/item']['kind'], 'symlink')
         self.assertIsNone(rows['.aips/nested/item']['sha256'])
 
     def test_deleted_tracked_file_is_reported_unknown(self):
         (self.root / '.aips' / 'human decision\nname.md').unlink()
-        result = subprocess.run([sys.executable, str(SCRIPT), '--project', str(self.root)], capture_output=True, text=True, check=True)
+        result = subprocess.run([sys.executable, str(SCRIPT), '--project', str(self.root), '--dry-run'], capture_output=True, text=True, check=True)
         rows = {row['path']: row for row in json.loads(result.stdout)['files']}
         self.assertEqual(rows['.aips/human decision\nname.md']['kind'], 'unavailable')
         self.assertIsNone(rows['.aips/human decision\nname.md']['sha256'])
 
+    def test_cli_requires_explicit_dry_run(self):
+        command = [str(CLI), 'migrate-state', '--project', str(self.root)]
+        refused = subprocess.run(command, capture_output=True, text=True)
+        self.assertNotEqual(refused.returncode, 0)
+        accepted = subprocess.run(command + ['--dry-run'], capture_output=True, text=True, check=True)
+        self.assertEqual(len(json.loads(accepted.stdout)['files']), 2)
+
     def test_non_repository_fails_without_creating_files(self):
         with tempfile.TemporaryDirectory() as directory:
             other = Path(directory)
-            result = subprocess.run([sys.executable, str(SCRIPT), '--project', str(other)], capture_output=True, text=True)
+            result = subprocess.run([sys.executable, str(SCRIPT), '--project', str(other), '--dry-run'], capture_output=True, text=True)
             self.assertNotEqual(result.returncode, 0)
             self.assertEqual(list(other.iterdir()), [])
 

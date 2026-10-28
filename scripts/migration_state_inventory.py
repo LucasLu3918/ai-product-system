@@ -75,6 +75,7 @@ def inventory(project: Path) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--project', type=Path, required=True)
+    parser.add_argument('--dry-run', action='store_true', required=True, help='inspect only; do not migrate')
     args = parser.parse_args()
     try:
         print(json.dumps(inventory(args.project), ensure_ascii=True, indent=2))

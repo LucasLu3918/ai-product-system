@@ -118,6 +118,10 @@ case "${1:-help}" in
       *) die "Unknown skills command: $sub. Run 'aips skills --help'." ;;
     esac
     ;;
+  migrate-state)
+    shift
+    "$(python_bin)" "$SYSTEM_DIR/scripts/migration_state_inventory.py" "$@"
+    ;;
   intelligence)
     sub="${2:-status}"
     shift 2 || true
