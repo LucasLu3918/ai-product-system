@@ -50,6 +50,15 @@ class InventoryTest(unittest.TestCase):
         self.assertEqual(rows['.aips/ignored.txt']['classification'], 'review_required')
         self.assertEqual(before, subprocess.check_output(['git', '-C', str(self.root), 'status', '--porcelain=v1', '-z']))
 
+    def test_entire_ignored_directory_is_enumerated(self):
+        (self.root / '.gitignore').write_text('/.ai/\n')
+        (self.root / '.ai' / 'runs').mkdir(parents=True)
+        (self.root / '.ai' / 'runs' / 'record.txt').write_text('human context')
+        result = subprocess.run([sys.executable, str(SCRIPT), '--project', str(self.root), '--dry-run'], capture_output=True, text=True, check=True)
+        rows = {row['path']: row for row in json.loads(result.stdout)['files']}
+        self.assertEqual(rows['.ai/runs/record.txt']['tracking'], 'ignored')
+        self.assertEqual(rows['.ai/runs/record.txt']['classification'], 'review_required')
+
     def test_missing_and_replaced_parent_stay_unavailable(self):
         nested = self.root / '.aips' / 'nested'
         nested.mkdir()
