@@ -57,6 +57,35 @@ def inspect_path(root: Path, name: str) -> dict:
     return row
 
 
+
+def tracked_ignore_status(root: Path, names: list[str]) -> dict[str, bool | None]:
+    result: dict[str, bool | None] = dict.fromkeys(names)
+    if not names:
+        return result
+    payload = b''.join(os.fsencode(name) + b'\0' for name in names)
+    try:
+        proc = subprocess.run(
+            ['git', '-C', str(root), 'check-ignore', '--no-index', '-v', '-z', '--non-matching', '--stdin'],
+            input=payload, capture_output=True, check=False,
+        )
+    except OSError:
+        return result
+    if proc.returncode not in (0, 1):
+        return result
+    parts = proc.stdout.split(b'\0')
+    if not parts or parts[-1] != b'' or (len(parts) - 1) != 4 * len(names):
+        return result
+    seen: set[str] = set()
+    for i in range(0, len(parts) - 1, 4):
+        source, _line, pattern, raw_name = parts[i:i + 4]
+        name = os.fsdecode(raw_name)
+        if name not in result or name in seen:
+            return dict.fromkeys(names)
+        seen.add(name)
+        result[name] = bool(source and pattern and not pattern.startswith(b'!'))
+    return result
+
+
 def inventory(project: Path) -> dict:
     root_result = subprocess.run(['git', '-C', str(project), 'rev-parse', '--show-toplevel'],
                                  capture_output=True, check=False)
@@ -77,10 +106,12 @@ def inventory(project: Path) -> dict:
         for raw in result.stdout.split(b'\0'):
             if raw:
                 entries.setdefault(os.fsdecode(raw), tracking)
+    ignored_tracked = tracked_ignore_status(root, [name for name, tracking in entries.items() if tracking == 'tracked'])
     files = []
     for name, tracking in sorted(entries.items()):
         row = inspect_path(root, name)
         row['tracking'] = tracking
+        row['tracked_and_ignored'] = ignored_tracked.get(name) if tracking == 'tracked' else False
         files.append(row)
     return {'version': 1, 'scope': 'Git-listed AIPS working-tree paths',
             'limitations': ['Empty directories and contents of nested repositories may not be listed.'],

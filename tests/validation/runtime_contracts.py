@@ -11,6 +11,14 @@ import yaml
 
 from .static_contracts import ROOT, errors, load_yaml, roles, scenarios, skills, version
 
+migration_inventory_test = ROOT / "tests/test_migration_state_inventory.py"
+if not migration_inventory_test.exists():
+    errors.append("Missing migration state inventory tests")
+else:
+    focused = subprocess.run([sys.executable, str(migration_inventory_test)], capture_output=True, text=True, check=False)
+    if focused.returncode != 0:
+        errors.append(f"Migration state inventory tests failed: {focused.stdout.strip()} {focused.stderr.strip()}")
+
 visual_profile_helper = ROOT / "scripts/visual_profile.py"
 visual_profile_evidence = ROOT / "tests/evidence/visual_profile_lifecycle.py"
 for required in (visual_profile_helper, visual_profile_evidence):
