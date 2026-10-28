@@ -70,6 +70,8 @@ The global administrator high-assurance publication trust root remains separate 
 
 `config/runtime-policy.yaml` defaults to `DENY`. External destinations must be explicitly allowlisted. Built-in SAL3/4 and confidential/restricted external actions require exact approval, `TOOL_GUARDED`, and a current verified sandbox egress receipt. The checked-in sandbox registry currently has no verified allowlist egress provider, so those actions resolve to `BLOCKED` even when a hook can intercept them. This is the truthful current capability.
 
+Policy rule conditions may bind `destination_host`, `destination_port`, `destination_method`, and `destination_path`; all supplied conditions are conjunctive exact matches. Hosts are case-insensitive, methods are compared case-insensitively and configured in uppercase, while ports and paths match exactly. Unknown condition keys or invalid condition values fail policy validation instead of being ignored. A project-local policy can therefore allow a single observed endpoint while retaining `default_effect: DENY`; Resource Authorization remains an independent preceding check.
+
 Decisions:
 
 - `ALLOW` — explicit policy and Resource Authorization allow the action, and every required capability is verified.

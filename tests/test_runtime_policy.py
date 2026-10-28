@@ -48,6 +48,83 @@ def main() -> int:
     require({"status", "phase", "reason_code", "source", "retryable", "trace_id", "recovery"} <= result.keys(),
             f"runtime result diagnostics are incomplete: {result}")
 
+    exact_condition = {
+        "destination_trust": ["internal"],
+        "destination_host": "127.0.0.1",
+        "destination_port": 8188,
+        "destination_method": "GET",
+        "destination_path": "/system_stats",
+    }
+    loopback_action = copy.deepcopy(action)
+    loopback_action["destination"].update({
+        "host": "127.0.0.1", "port": 8188, "method": "GET", "path": "/system_stats", "trust": "internal",
+    })
+    require(policy._matches(loopback_action, exact_condition, contains_secret=False),
+            "the exact loopback stats destination must match")
+    for key, value in (("destination_host", "127.0.0.2"), ("destination_port", 8189),
+                       ("destination_method", "POST"), ("destination_path", "/prompt")):
+        altered = copy.deepcopy(loopback_action)
+        destination_key = key.removeprefix("destination_")
+        altered["destination"][destination_key] = value
+        require(not policy._matches(altered, exact_condition, contains_secret=False),
+                f"exact destination rule must reject changed {destination_key}")
+    lowercase_method_action = copy.deepcopy(loopback_action)
+    lowercase_method_action["destination"]["method"] = "get"
+    require(policy._matches(lowercase_method_action, {"destination_method": "GET"}, contains_secret=False),
+            "observed HTTP methods should compare case-insensitively")
+    for invalid_condition in (
+        {"destination_port": True},
+        {"destination_port": 65536},
+        {"destination_method": "get"},
+        {"destination_host": "127.0.0.1/admin"},
+        {"unrecognized_condition": "ignored"},
+    ):
+        invalid_policy = {"version": 1, "default_effect": "DENY", "rules": [
+            {"id": "invalid", "effect": "ALLOW", "when": invalid_condition},
+        ]}
+        try:
+            policy.validate_policy(invalid_policy)
+        except policy.PolicyError:
+            pass
+        else:
+            raise AssertionError(f"invalid Runtime Policy condition must fail closed: {invalid_condition}")
+
+    runtime_policy = {
+        "version": 1,
+        "default_effect": "DENY",
+        "rules": [{"id": "exact-loopback-stats", "priority": 100,
+                   "when": exact_condition, "effect": "ALLOW"}],
+    }
+    broad_test_profile = {
+        "version": 1,
+        "default_effect": "DENY",
+        "subject": {"id": "runtime-policy-test"},
+        "grants": [{"id": "127.0.0.1", "kind": "external_service", "selector": "127.0.0.1",
+                    "operations": ["execute"],
+                    "constraints": {"change_boundary_required": False, "network_allowed": True,
+                                    "allowed_destinations": ["127.0.0.1", "127.0.0.2"],
+                                    "allowed_ports": [8188, 8189], "allowed_methods": ["GET", "POST"],
+                                    "allowed_paths": ["/**"]}}],
+        "authority": {"human_approval_granted": False, "merge_authorized": False,
+                      "release_authorized": False, "protected_operation_authorized": False},
+    }
+    with tempfile.TemporaryDirectory() as tmp:
+        project = Path(tmp)
+        profile_path = project / "profile.yaml"
+        profile_path.write_text(yaml.safe_dump(broad_test_profile, sort_keys=False))
+        runtime_action = copy.deepcopy(loopback_action)
+        runtime_action["resource"].update({"id": "127.0.0.1", "selector": "127.0.0.1"})
+        runtime_action["authorization"]["resource_profile"] = "profile.yaml"
+        accepted = policy.evaluate(runtime_action, runtime_policy, runtime_capability="TOOL_GUARDED",
+                                   project_root=project)
+        require(accepted["decision"] == "ALLOW", f"exact synthetic destination must allow: {accepted}")
+        for key, value in (("host", "127.0.0.2"), ("port", 8189), ("method", "POST"), ("path", "/prompt")):
+            altered = copy.deepcopy(runtime_action)
+            altered["destination"][key] = value
+            denied = policy.evaluate(altered, runtime_policy, runtime_capability="TOOL_GUARDED",
+                                     project_root=project)
+            require(denied["decision"] == "DENY", f"changed {key} must deny: {denied}")
+
     mismatches = copy.deepcopy(action)
     mismatches["resource"]["kind"] = "connector"
     denied_kind = policy.evaluate(mismatches, cfg, runtime_capability="TOOL_GUARDED")

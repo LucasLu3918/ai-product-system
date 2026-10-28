@@ -352,7 +352,7 @@ Malformed hook envelopes fail closed with the adapter-specific denial response. 
 
 可驗證 native Runtime hooks 可以在 protected operation 前檢查 approval binding；MCP-only 不宣稱攔截 Host native tools。
 
-Runtime Policy Enforcement uses a versioned action envelope and deny-by-default policy. Claude/Gemini hooks are `TOOL_GUARDED` only for normalized actions they receive; Codex remains `ADVISORY`, and high-risk external egress additionally requires a verified sandbox boundary.
+Runtime Policy Enforcement uses a versioned action envelope and deny-by-default policy. Rules can conjunctively match exact destination host, port, HTTP method and path; unknown condition keys or invalid values fail validation. Claude/Gemini hooks are `TOOL_GUARDED` only for normalized actions they receive; Codex remains `ADVISORY`, and high-risk external egress additionally requires a verified sandbox boundary.
 
 ### Governance Audit Evidence
 
