@@ -8,6 +8,8 @@ Project Intelligence 是 AIPS 對既有專案建立的可重用理解層。
 
 ## 第一次 Existing Project
 
+The Claude Runtime Policy change uses a reviewed direct caller/consumer scope; unresolved lexical matcher aliases remain accepted limitations, and global API/data/event/consumer coverage stays partial.
+
 EPHEMERAL Intelligence and run state remain in external user storage; candidate-bound publication scan evidence is kept in the private AIPS cache.
 
 Project Intelligence 一律存在外部 user state。既有 `.ai/` 會保持唯讀；明確 attach/bootstrap 可驗證後複製 legacy Intelligence 到外部，來源保留不變。
@@ -440,6 +442,8 @@ Scenario 134 不改 production Retrieval / Turn Context。Local Trial PASS 也�
 
 Project Intelligence follows `orchestration/PROJECT_IDENTITY.md`. EPHEMERAL storage is workspace-scoped by canonical `workspace_id`; repository-wide writer coordination belongs to the isolation layer and uses `repository_id`.
 ## Runtime Content Safety Boundary
+
+Change Impact evidence records only the reviewed direct boundary; unresolved lexical aliases remain explicit and do not upgrade global coverage.
 
 A literal `git -C <path> push` directs candidate and scan binding to the resolved target worktree; dynamic or unavailable paths fail closed before content is inspected.
 

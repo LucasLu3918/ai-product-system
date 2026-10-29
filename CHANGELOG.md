@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add redacted, project-relative Resource Authorization Profile diagnostics and field-level destination constraint differences; carry bounded details through Claude pre-tool denials while preserving default deny and native failure separation.
+
 - Filter lexical Change Impact callers by resolved target path and line before edge budgeting; separately cap raw candidate inspection and report exhaustion as truncated evidence.
 
 - Upgrade the disposable Retrieval relations index to schema v8 with a target-path index, additive migration and full rebuild; visit exact-path Python callers before unresolved candidates while retaining the hard 3,000 candidate cap and fail-closed overflow.

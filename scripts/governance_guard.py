@@ -24,6 +24,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(ROOT / "scripts"))
 
+from creative_errors import redact
 from publication_authority import PublicationError
 
 try:
@@ -1030,6 +1031,54 @@ def emit_mode_advisory(
     return 0
 
 
+def _safe_runtime_diagnostic_value(value: Any) -> Any:
+    if isinstance(value, str):
+        return redact(value)[:96]
+    if isinstance(value, bool) or value is None or isinstance(value, (int, float)):
+        return value
+    if isinstance(value, (list, tuple)):
+        return [_safe_runtime_diagnostic_value(item) for item in value[:3]]
+    return None
+
+
+def _runtime_policy_hook_details(decision: dict[str, Any]) -> str:
+    details: dict[str, Any] = {}
+    profile = decision.get("profile_resolution")
+    if isinstance(profile, dict):
+        path = profile.get("path")
+        if not isinstance(path, str) or PurePosixPath(path).is_absolute() or ".." in PurePosixPath(path).parts:
+            path = None
+        required_by = profile.get("required_by") if isinstance(profile.get("required_by"), dict) else {}
+        details["profile_resolution"] = {
+            "path": _safe_runtime_diagnostic_value(path),
+            "source_field": "authorization.resource_profile",
+            "required_by": {
+                key: _safe_runtime_diagnostic_value(required_by.get(key))
+                for key in ("resource_id", "action")
+                if required_by.get(key) is not None
+            },
+            "fallback_allowed": False,
+        }
+        details["fallback_allowed"] = False
+    authorization = decision.get("authorization")
+    diff = authorization.get("constraint_diff") if isinstance(authorization, dict) else None
+    if isinstance(diff, dict):
+        safe_diff = {}
+        for field in ("host", "port", "method", "path"):
+            item = diff.get(field)
+            if isinstance(item, dict):
+                safe_diff[field] = {
+                    key: _safe_runtime_diagnostic_value(item.get(key))
+                    for key in ("actual", "expected") if key in item
+                }
+        if safe_diff:
+            details["constraint_diff"] = safe_diff
+    if not details:
+        return ""
+    encoded = json.dumps(details, ensure_ascii=False, separators=(",", ":"))
+    return " AIPS diagnostic=" + encoded if len(encoded) <= 2048 else " AIPS diagnostic={\"details\":\"omitted_over_limit\"}"
+
+
 def _hook_impl(runtime: str) -> int:
     global _HOOK_PHASE, _PROJECT_GOVERNANCE_MODE, _GLOBAL_HIGH_ASSURANCE
     _PROJECT_GOVERNANCE_MODE = None
@@ -1122,7 +1171,8 @@ def _hook_impl(runtime: str) -> int:
             if decision.get("decision") != "ALLOW":
                 reason = ("AIPS runtime policy " + str(decision.get("decision")) + " ["
                           + str(decision.get("reason_code")) + "; trace=" + str(decision.get("trace_id")) + "]: "
-                          + str((decision.get("recovery") or {}).get("action") or "請檢查授權與安全限制。"))
+                          + str((decision.get("recovery") or {}).get("action") or "請檢查授權與安全限制。")
+                          + _runtime_policy_hook_details(decision))
                 if runtime == "claude-code":
                     print(json.dumps({"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny", "permissionDecisionReason": reason}}))
                 else:

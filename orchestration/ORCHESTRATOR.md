@@ -14,6 +14,8 @@ Installing the AIPS CLI does not register a Runtime adapter. Harness enablement,
 
 For ComfyUI actions, evaluate the declared resource and operation through Resource Authorization, then apply Runtime Policy destination conditions. Scheduling or a valid profile alone is not runtime authorization.
 
+When a coordinated change touches multiple files, inspect every target and replacement match before editing, then validate the complete diff. Programmatic batches must stage same-directory replacements and verify rollback if any per-file replacement fails; this is not a repository-wide transaction service.
+
 Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
 
 

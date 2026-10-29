@@ -33,6 +33,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+Runtime Policy diagnostics must stay synchronized across Resource Authorization, Claude adapter guidance, Security Assurance and Scenario 177; keep direct Change Impact scope distinct from global coverage.
+
 For Qwen Image Edit Plus reference mapping, keep the user and technology guides, Scenario 236, Creative Direction, and the candidate Core Change matrix aligned; preserve the Qwen Image 2.1 object-map contract and local execution boundary.
 
 OpenCode Harness／adapter 超限行為同步於 Harness guide、OpenCode Compatibility、Turn-Aware Global Harness、Agent adapter instructions 與 Scenario 235。超限仍 fail closed；只公開安全 byte counts／固定 section 名稱與 read-only recovery，不新增權限或 Host enforcement claim。
@@ -58,6 +60,8 @@ Plan47 adds versioned injection rules and scans added lines for injection while 
 WebM candidate scanning is a bounded EBML metadata pass shared by worktree, final-tree and commit-history scans. Keep the 32 MiB default, supported text-field coverage, fail-closed malformed/unsupported handling, payload exclusion and redacted findings consistent across Security Assurance, Technology Guide, Architecture, the Content Safety protocol and Scenario 263. The scan does not decode video or alter creative review or publication authority.
 
 Plan40 keeps reason-code mapping, candidate/runtime binding, diagnostic trace privacy, and separate planning/authorization/Host/execution states aligned across the User Guide, Maintenance, Claude and OpenCode adapter guidance, and Scenario 261. Diagnostic lookup reads only an explicitly configured, hash-chain-verified allowlisted event; it creates no ledger and grants no authority.
+
+Scenario 177 keeps Resource Authorization Profile source details, no-fallback recovery, redacted destination constraint differences, and the distinction between Claude pre-tool denial and observed native failure aligned across the Runtime Policy protocol, adapter guidance, Human security/runtime docs, and lifecycle tests.
 
 Resource Authorization/Profile and local ComfyUI diagnostics use the existing Runtime Resource and Creative topics. Their canonical source mapping, four bounded asset presets, Scenario 262 and static-only MPS evidence are synchronized through the plan39 placement rule. Opt-in model-agnostic workflows add bounded local schema/graph validation and explicit input bindings under Scenario 268; custom/API nodes and implicit resource choices remain denied, and synthetic evidence does not claim inference. The fixed FLUX 3 Klein `TextGenerate` live-schema and final-payload compatibility checks remain in the same Creative topic and Scenario 236; they do not claim MPS inference.
 

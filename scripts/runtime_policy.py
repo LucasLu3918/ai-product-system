@@ -140,6 +140,34 @@ def _result(decision: str, reason: str, *, reason_code: str, phase: str = "runti
             "reason": redact(reason), **fields}
 
 
+def _profile_resolution_diagnostics(action: dict[str, Any], project_root: Path,
+                                    profile_path: str | None) -> dict[str, Any]:
+    safe_path = None
+    if isinstance(profile_path, str) and profile_path.strip():
+        configured = Path(profile_path)
+        try:
+            project = project_root.resolve()
+            resolved = (configured if configured.is_absolute() else project / configured).resolve(strict=False)
+            safe_path = redact(resolved.relative_to(project).as_posix())
+        except (OSError, RuntimeError, ValueError):
+            pass
+    resource = action.get("resource") or {}
+    request = action.get("action") or {}
+    return {
+        "profile_resolution": {
+            "path": safe_path,
+            "source_field": "authorization.resource_profile",
+            "required_by": {
+                "resource_id": redact(str(resource.get("id") or "")),
+                "action": redact(str(request.get("operation") or "")),
+            },
+            "fallback_allowed": False,
+        },
+        "fallback_allowed": False,
+        "recovery_hint": "請修正受信任設定指向的專案內 Resource Authorization Profile，確認檔案存在且可讀後重新評估；不可改用未核准的替代 Profile。",
+    }
+
+
 def validate_policy(policy: dict[str, Any]) -> None:
     if policy.get("version") != 1:
         raise PolicyError("policy version must be 1")
@@ -301,18 +329,21 @@ def evaluate(action: dict[str, Any], policy: dict[str, Any], *, runtime_capabili
     digest = action_digest(action, project_root=project_root)
     current_policy_digest = policy_digest(policy, policy_bytes)
     profile_path = ((action.get("authorization") or {}).get("resource_profile"))
+    profile_diagnostics = _profile_resolution_diagnostics(action, project_root,
+                                                           profile_path if isinstance(profile_path, str) else None)
     if not isinstance(profile_path, str) or not profile_path.strip():
         return _result("BLOCKED", "Resource Authorization profile was not provided by the runtime configuration.",
                        reason_code="resource_profile_not_provided", phase="authorization.profile_resolution",
                        source="resource_authorization", recovery_action="CONFIGURE_TRUSTED_PROFILE",
-                       action_digest=digest)
+                       action_digest=digest, **profile_diagnostics)
     try:
-        profile_file = (project_root / profile_path).resolve(strict=True)
+        profile_file = (project_root / profile_path).resolve(strict=False)
         if not profile_file.is_relative_to(project_root.resolve()):
             return _result("BLOCKED", "Resource Authorization profile must remain inside the project.",
                            reason_code="resource_profile_outside_project", phase="authorization.profile_resolution",
                            source="resource_authorization", recovery_action="USE_PROJECT_PROFILE",
-                           action_digest=digest)
+                           action_digest=digest, **profile_diagnostics)
+        profile_file = profile_file.resolve(strict=True)
         profile = load_authorization_profile(profile_file)
         validate_authorization_profile(profile)
         auth_operation = "execute" if action["action"]["operation"] == "external_data_egress" else action["action"]["operation"]
@@ -328,20 +359,20 @@ def evaluate(action: dict[str, Any], policy: dict[str, Any], *, runtime_capabili
     except FileNotFoundError:
         return _result("BLOCKED", "Resource Authorization profile does not exist.", reason_code="resource_profile_missing",
                        phase="authorization.profile_resolution", source="resource_authorization",
-                       recovery_action="CHECK_PROFILE_PATH", action_digest=digest)
+                       recovery_action="CHECK_PROFILE_PATH", action_digest=digest, **profile_diagnostics)
     except PermissionError:
         return _result("BLOCKED", "Resource Authorization profile cannot be read.", reason_code="resource_profile_unreadable",
                        phase="authorization.profile_resolution", source="resource_authorization",
-                       recovery_action="CHECK_PROFILE_PERMISSIONS", action_digest=digest)
+                       recovery_action="CHECK_PROFILE_PERMISSIONS", action_digest=digest, **profile_diagnostics)
     except AuthorizationError as exc:
         return _result("BLOCKED", str(exc), reason_code=exc.reason_code,
                        phase="authorization.profile_validation", source="resource_authorization",
-                       recovery_action="CHECK_PROFILE_AND_RETRY", action_digest=digest)
+                       recovery_action="CHECK_PROFILE_AND_RETRY", action_digest=digest, **profile_diagnostics)
     except (OSError, yaml.YAMLError, PolicyError):
         return _result("BLOCKED", "Resource Authorization profile could not be safely loaded.",
                        reason_code="resource_profile_unreadable", phase="authorization.profile_resolution",
                        source="resource_authorization", recovery_action="CHECK_PROFILE_PATH_AND_PERMISSIONS",
-                       action_digest=digest)
+                       action_digest=digest, **profile_diagnostics)
     if auth["status"] != "ALLOW":
         return _result("DENY", "Resource Authorization denied action: " + auth["reason"],
                        reason_code=auth["reason"], phase="authorization.grant_match",

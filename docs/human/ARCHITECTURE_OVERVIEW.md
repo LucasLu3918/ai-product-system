@@ -163,6 +163,8 @@ Project Intelligence、runs 與 Change Impact 一律使用 AIPS external user st
 
 ## Creative Workflow
 
+Creative workflows use the same Resource Authorization boundary; safe diagnostics identify only the project-relative Profile source and the destination fields that failed.
+
 The publication scanner inspects bounded WebM metadata only; creative review still owns visual quality, provenance, and acceptance.
 
 Creative grants and workspaces remain separate from project governance state; neither project mode nor diagnostics authorize generation or asset publication.
@@ -442,6 +444,8 @@ Dependabot commit 的機器人 noreply author 與最後一行精確的 `Signed-o
 Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
 ## Security 與 Governance
+
+Runtime Policy and Resource Authorization remain deny-by-default. Claude PreToolUse can show bounded, redacted diagnostics but cannot grant access or claim that a denied tool ran.
 
 Optional project governance mode 是本機外部設定；預設 `off`，專案設定不得覆蓋全域 runtime 或高保證政策。
 
@@ -747,6 +751,8 @@ Docs build 與 Pages hosting 分開驗證：PR / main 都能證明 VitePress bui
 
 Documentation Placement 對 behavior-bearing source 採 fail-closed mapping：只要 source 落在 Technology Guide 的廣域同步 surface，就必須先命中 subsystem placement rule。這避免新功能以「文件最後補充說明」逃過 topic architecture。
 ## Runtime Content Safety Boundary
+
+Runtime diagnostics redact credential-like values and expose only project-relative Profile paths; they do not alter the deny-by-default authorization decision.
 
 This JSON fallback does not imply a successful scan or relax content-safety policy; publication remains fail-closed when candidate or history scanning cannot be completed.
 

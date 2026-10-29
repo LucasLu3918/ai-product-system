@@ -12,6 +12,7 @@ from typing import Any
 
 import yaml
 from aips_common import canonical_hash as _aips_canonical_hash
+from creative_errors import redact
 
 KINDS = {"repository_path", "workspace", "runtime_tool", "connector", "external_service"}
 OPERATIONS = {"read", "search", "create", "update", "execute"}
@@ -27,6 +28,48 @@ RECOVERY_ZH = {
     "redirect_not_allowed": "檢查目的地回應；Redirect 預設不允許。",
     "destination_constraint_mismatch": "核對目的地、Port、Method 與 Path 限制。",
 }
+
+
+def _safe_diagnostic_value(value: Any) -> Any:
+    if isinstance(value, str):
+        return redact(value)[:256]
+    if isinstance(value, bool) or value is None or isinstance(value, (int, float)):
+        return value
+    if isinstance(value, (list, tuple)):
+        return [_safe_diagnostic_value(item) for item in value[:20]]
+    return None
+
+
+def _destination_constraint_diff(constraints: dict[str, Any], *, destination: str | None,
+                                 port: int | None, method: str | None,
+                                 path: str | None) -> dict[str, dict[str, Any]]:
+    diff: dict[str, dict[str, Any]] = {}
+    allowed_destinations = constraints.get("allowed_destinations")
+    if allowed_destinations is not None and (
+        not isinstance(destination, str)
+        or destination.casefold() not in {str(item).casefold() for item in allowed_destinations}
+    ):
+        diff["host"] = {"actual": _safe_diagnostic_value(destination),
+                        "expected": _safe_diagnostic_value(allowed_destinations)}
+    allowed_ports = constraints.get("allowed_ports")
+    if allowed_ports is not None and (port is None or port not in allowed_ports):
+        diff["port"] = {"actual": _safe_diagnostic_value(port),
+                        "expected": _safe_diagnostic_value(allowed_ports)}
+    allowed_methods = constraints.get("allowed_methods")
+    if allowed_methods is not None and (
+        not isinstance(method, str)
+        or method.upper() not in {str(item).upper() for item in allowed_methods}
+    ):
+        diff["method"] = {"actual": _safe_diagnostic_value(method),
+                          "expected": _safe_diagnostic_value(allowed_methods)}
+    allowed_paths = constraints.get("allowed_paths")
+    if allowed_paths is not None and (
+        not isinstance(path, str)
+        or not any(fnmatch.fnmatchcase(path, item) for item in allowed_paths)
+    ):
+        diff["path"] = {"actual": _safe_diagnostic_value(path),
+                        "expected": _safe_diagnostic_value(allowed_paths)}
+    return diff
 
 
 class AuthorizationError(ValueError):
@@ -134,6 +177,7 @@ def decision(profile: dict[str, Any], resource_id: str, operation: str, change_b
     grant = next((g for g in profile["grants"] if g["id"] == resource_id), None)
     allowed = False
     reason = "resource_not_granted"
+    constraint_diff: dict[str, dict[str, Any]] = {}
     if grant is not None:
         constraints = grant.get("constraints") or {}
         target_selector = selector or (destination if resource_kind == "external_service" else resource_id)
@@ -149,7 +193,9 @@ def decision(profile: dict[str, Any], resource_id: str, operation: str, change_b
             reason = "network_not_allowed"
         elif redirected and constraints.get("redirects_allowed", False) is not True:
             reason = "redirect_not_allowed"
-        elif constraints.get("allowed_destinations") is not None and (not isinstance(destination, str) or destination.casefold() not in {item.casefold() for item in constraints["allowed_destinations"]}) or constraints.get("allowed_ports") is not None and (port is None or port not in constraints["allowed_ports"]) or constraints.get("allowed_methods") is not None and (not isinstance(method, str) or method.upper() not in {item.upper() for item in constraints["allowed_methods"]}) or constraints.get("allowed_paths") is not None and (not isinstance(path, str) or not any(fnmatch.fnmatchcase(path, item) for item in constraints["allowed_paths"])):
+        elif (constraint_diff := _destination_constraint_diff(
+            constraints, destination=destination, port=port, method=method, path=path,
+        )):
             reason = "destination_constraint_mismatch"
         else:
             allowed = True
@@ -173,6 +219,7 @@ def decision(profile: dict[str, Any], resource_id: str, operation: str, change_b
         "resource_kind": resource_kind,
         "selector": selector,
         "destination": destination,
+        **({"constraint_diff": constraint_diff} if constraint_diff else {}),
         "profile_fingerprint": canonical_hash(profile),
         "enforcement": {
             "mode": "PRE_EXECUTION_EVIDENCE",

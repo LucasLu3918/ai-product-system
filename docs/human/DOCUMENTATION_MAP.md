@@ -75,6 +75,8 @@ The Human User Guide describes publication recovery and retains the canonical Sk
 
 Resource Authorization 的 Human 操作與安全邊界見 User Guide、Security Assurance；Profile schema、Runtime enforcement、Creative loopback discovery 和 Scenario 262 的 canonical 實作對照見 orchestration references 與 Conformance。
 
+Profile resolution detail and destination `constraint_diff` are implemented by `scripts/runtime_policy.py` and `scripts/resource_authorization.py`; Claude's bounded denial presentation is documented in its adapter contract and verified by Scenario 177. The Project Intelligence scope is local to these direct callers/consumers and does not upgrade global coverage.
+
 Public CLI commands are documented under the owning user workflow and matching Scenario evidence. A shared dispatcher or Scenario registry does not make unrelated command domains part of that change.
 
 Skill 的使用者搜尋入口是 <a href="./skill-catalog.html">Skill Explorer</a>；49 個 canonical AIPS Skills 與 38 個 vendored 上游來源分開呈現，來源清單固定 commit 並記錄本地路徑與 SHA-256。Skill routing 的 canonical 定義仍在各 `SKILL.md` 與 Registry；Scenario 259 記錄自動路由、實驗／選用與 `$grill-with-docs` 明確呼叫邊界。
@@ -156,6 +158,8 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 `docs/human/PROJECT_INTELLIGENCE.md` 說明 READY+STALE 何時只是提示、何時需要 targeted refresh，以及 `aips intelligence gc` 的用法。
 
 ## Agent / machine canonical 文件
+
+Scenario 177 is the canonical lifecycle evidence for project-relative Profile diagnostics, destination `constraint_diff`, Claude pre-tool denial formatting and separate native tool failure reporting.
 
 Skill Explorer metadata and integration records are machine-canonical inputs; Human guidance describes their use without duplicating the registry.
 

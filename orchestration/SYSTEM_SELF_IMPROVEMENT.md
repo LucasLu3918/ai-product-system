@@ -84,6 +84,10 @@ A `LATER` candidate remains deferred. A `REJECT` candidate is recorded only when
 
 Do not implement an unapproved optimization merely because it is adjacent, convenient or beneficial. If including it would materially expand an already approved Change Boundary, update the review/proposal and obtain the applicable scope re-approval before proceeding.
 
+## Multi-file edit safety
+
+Before editing multiple files, read each current target version and verify unique match counts for every scripted replacement. Prefer one context-rich patch for a coherent change, then inspect the complete diff and run the affected checks. If a programmatic edit must write several files, capture each original byte state and stage each replacement beside its target; verify all preconditions before replacing any target. Replacements are atomic per file, not across the whole file set. If any replacement fails, restore every already-replaced file from its captured state and verify byte-for-byte restoration; stop and report explicitly if restoration cannot be confirmed. Do not add a general transaction engine for one-off edits.
+
 ## Required response before implementation
 
 Present a concise System Improvement Review:

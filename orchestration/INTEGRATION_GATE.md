@@ -36,6 +36,7 @@ Workflow action changes bind the canonical matrix to the live base SHA and exact
 
 
 Publication diagnostics changes require the Core Change Matrix to bind the exact source, tests, scenario and documentation file set before the local Gate runs.
+Runtime Policy diagnostics additionally require synthetic evidence for safe project-relative Profile details, exact redacted constraint differences, Claude denial shape and truthful separation from native failure events.
 Plan44's matrix separately verifies fail-closed command details, Claude native failure redaction and unchanged ALREADY_MERGED/Branch Hygiene recovery before publication.
 
 The policy branch observed by publication Doctor is the remote default target branch; the local candidate branch/SHA remain distinct and both must be re-observed before any separately authorized native action.

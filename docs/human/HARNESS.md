@@ -8,6 +8,8 @@ Runtime Context 統一解析驗證 Python 與 cache/config 路徑；它將 Playw
 
 ## Integration model
 
+Runtime Policy denial details are bounded and sanitized; they do not expand adapter coverage or imply that a denied tool started.
+
 Creative workflow execution is an AIPS product capability, separate from Host adapter permissions. Qwen Image Edit Plus uses the local ComfyUI contract in Scenario 236 and does not expand Harness runtime authority.
 
 Project-local Harness state is not created. `aips attach` initializes or imports external user state; attach, detach and preflight do not modify repository files, Git config, hooks or local excludes.
@@ -168,6 +170,8 @@ Codex PreToolUse 的 Plan19 probe 僅拒絕無害的本機合成命令；unsuppo
 原生 Skills 安裝在 `~/.claude/skills`，使用 `aips skills install <skill-id> --host claude`；Portable Command 使用 `aips commands install <command-id> --host claude`，並以 `/grill-me` 形式觸發。以 `aips skills status` 或 `aips commands status` 檢視 AIPS 所有權。
 
 Runtime Policy 可由 PreToolUse 對 hook 收到且可正規化的動作執行 deny-by-default 檢查；命令列分類不代表可攔截 child process 或網路 socket。
+
+Claude 的 Runtime Policy denial 可顯示受限的 Profile resolution 或 destination constraint JSON；Profile path 僅為專案相對路徑，credential 先遮罩。PreToolUse denial 不代表工具已啟動；native failure 仍由獨立 PostToolUseFailure 回報。
 
 ### Gemini CLI
 
