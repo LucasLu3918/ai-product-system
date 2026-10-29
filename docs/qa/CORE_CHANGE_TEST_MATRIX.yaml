@@ -55,6 +55,5 @@ matrix:
       docs_schema: {applicable: true, evidence: "Scenario 263, docs/ARCHITECTURE.md, Architecture Overview, Security Assurance, Technology Guide, Project Intelligence, Harness, Documentation Map/Sync, system lifecycle/overview diagrams, Human Conformance, Maintenance, Installation, User Guide and orchestration Conformance documentation"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
-blockers:
-  - Exact-candidate Core Integration Gate has not completed for the reconciled candidate; keep the matrix DRAFT until it passes.
-status: DRAFT
+blockers: []
+status: READY
