@@ -30,6 +30,8 @@ The managed Claude publication Hook has an eight-second internal deadline. Timeo
 The Claude/Gemini publication guard parses supported Bash input with the existing bounded AST parser. It recursively classifies command substitutions in arguments and in unquoted heredoc bodies without executing them. Quoted or escaped heredoc text stays literal. The parser locates Git and GitHub CLI subcommands after supported global options; dynamic executables, subcommands and Git context-option values remain denied. Unsupported syntax fails closed with a stable reason code and a short, sanitized recovery hint. This improves command classification only: protected publication still requires explicit literal arguments and the existing candidate, content-safety and approval checks.
 The Claude PostToolUseFailure event reports bounded evidence after a Bash command starts; it is not a policy decision, does not replay the command and excludes raw Host error text.
 
+Runtime Policy profile-resolution denials may show only a project-relative Profile path, its trusted source field, required resource/action, a no-fallback marker and a fixed repair hint. Destination denials may show only failed constraint fields through the shared redactor. Claude `PreToolUse` keeps its existing structured deny shape and may carry this bounded JSON as explanatory text; it never reports a tool as started or supplies retry authority.
+
 The Claude/Gemini publication guard denies only command forms that could commit or publish: read-only commands with a dynamic directory or repository option, a dynamic path to a literal non-Git executable, `gh api` GET requests, local `git lfs` subcommands and repository-defined read-only Git aliases pass, while dynamic git/gh/shell executables, dynamic `-c`/`--config-env`/`--exec-path` values, API writes, publishing LFS subcommands and aliases that expand to commit or publication still fail closed (Scenario 099). Aliases are resolved only for plain `git <alias>`, because any global option can change which configuration defines them; shell aliases are classified by their body. Every command-classification denial carries the same stable reason code in its text and diagnostic.
 
 Task write authorization is not a substitute for the Runtime Action PEP. `aips run owner` records the task's write set and truthful enforcement capability; `ADVISORY` must never be promoted to `TOOL_GUARDED` based on the presence of a lease alone.
@@ -65,6 +67,8 @@ Scenario 266 records added-line injection classification and safe recovery for t
 Publication diagnostics share safe failure classifications with native policy reporting but remain read-only. A diagnostic lookup or trace write cannot change a policy decision, create a grant, or claim the Host executed an action.
 
 ## Per-project optional governance modes
+
+Optional governance modes do not change the independent Runtime Policy or Resource Authorization default-deny decision and never authorize Profile fallback.
 
 The project mode layer is an opt-in AIPS policy after the independent runtime policy and protected-path checks. A missing project record is `off`. `observe` reports bounded local action metadata only; `assist` may report a failed AIPS check as advice; neither mode returns a Host allow/deny decision. `enforce` requires a validated non-empty action scope and may deny only a failed in-scope action. Passing AIPS checks never grant Host permission in project `assist` or `enforce` mode.
 

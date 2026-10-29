@@ -19,7 +19,7 @@ features:
   - title: 按需取得專案脈絡
     details: Project Intelligence 保存可追溯的專案知識；每次工作只讀取相關指示與證據。
   - title: 依風險驗證變更
-    details: Change Impact 追蹤呼叫端、使用端與資料邊界；Deterministic Gate 檢查明確規則。
+    details: Change Impact 追蹤呼叫端、使用端與資料邊界；Runtime Policy 提供遮罩後的拒絕診斷；Deterministic Gate 檢查明確規則。
   - title: 使用本機創意工具
     details: Creative 可明確使用已安裝的本機模型與經 schema 驗證的 ComfyUI 工作流；預檢不會啟動推論。
   - title: 重要決策由人掌握
@@ -75,6 +75,8 @@ features:
 </figure>
 
 ## 文件如何組織
+
+Runtime Policy 與 Resource Authorization 的診斷契約見 Security Assurance、Harness 與 Scenario 177；診斷只提供遮罩後證據，不改變權限。
 
 安裝 AIPS CLI 不會自動註冊 Runtime adapter。需要整合時，請依 [Installation](INSTALLATION.md) 明確安裝 Harness；停用狀態與卸載時本機資料保留方式見 [Harness](HARNESS.md) 與 [Conformance](CONFORMANCE.md)。
 

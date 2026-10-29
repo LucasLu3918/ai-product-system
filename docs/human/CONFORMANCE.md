@@ -1434,7 +1434,7 @@ Lifecycle evidence checks exact final-tree and `base..head` history scanning, in
 
 Runtime Policy 變更沿用 CI-Parity Publication Preflight：此情境的提交前預覽也涵蓋工作樹 H2 placement、Core Matrix 綁定修復提示、GitHub CLI 認證診斷與首次 PR 標籤；最終 PASS 仍須對同一已提交候選通過 Integration Gate。
 
-Lifecycle and deterministic evidence check deny-by-default policy evaluation, exact destination condition matching with fail-closed schema validation, exact action/policy-bound approvals, expiry and drift rejection, verified sandbox requirements, semantic signals that can only deny or escalate, and Claude/Gemini native hook responses. Direct shell-command classification does not claim to intercept scripts, child processes, SDKs or hidden sockets; Codex remains `ADVISORY`.
+Lifecycle and deterministic evidence check deny-by-default policy evaluation, exact destination condition matching with fail-closed schema validation, exact action/policy-bound approvals, expiry and drift rejection, verified sandbox requirements, semantic signals that can only deny or escalate, and Claude/Gemini native hook responses. Profile failures expose only sanitized project-relative resolution details; destination denials list only failing fields, with credentials redacted. PreToolUse stays `NOT_EXECUTED`, while Claude PostToolUseFailure reports only observed native failure evidence. Direct shell-command classification does not claim to intercept scripts, child processes, SDKs or hidden sockets; Codex remains `ADVISORY`.
 
 目前 Scenario inventory：
 
@@ -1865,6 +1865,8 @@ Plan36 publication diagnostics preserve this topic's existing behavior and autho
 
 ## Scenario 236 — Local Creative Bundle Execution
 
+Creative bundle actions use the same deny-by-default Resource Authorization contract; Scenario 177 covers the bounded diagnostics shared by runtime adapters.
+
 Qwen Image Edit Plus maps ordered identity/product references to separate `image1` and `image2` ports (up to `image3`), rejects gaps, wrong encoder input, and excess images, and preserves the Qwen Image 2.1 object-map contract. This is synthetic workflow evidence, not real model inference.
 
 FLUX 3 Klein lifecycle adds live `TextGenerate` Dynamic Combo schema and final payload checks before submission; unsupported options fail without posting, and the evidence does not establish Apple Silicon MPS inference.
@@ -1883,6 +1885,8 @@ The existing OpenCode integration lifecycle also verifies hash-bound asset impor
 The cross-profile quality evidence extension is covered by Scenario 258; this creative execution scenario continues to distinguish generated artifacts, image checks, Human review and user acceptance.
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
+
+Skill discovery and reuse do not grant Runtime Policy permissions; the action still requires its trusted Resource Authorization Profile.
 
 Skill Explorer evidence remains independent from publication content-safety checks and does not change skill admission.
 
@@ -2033,6 +2037,8 @@ Current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md)
 
 ## Scenario 260 — Publication diagnostics and Doctor
 
+Runtime Policy diagnostic details do not create publication authority; the protected publication path retains its Human approval and required-check gates.
+
 A literal `git -C <path> push` resolves the actual target worktree before candidate and scan checks; invocation cwd does not substitute for the explicit target, and invalid/dynamic paths fail closed.
 
 Native Git publication also accepts `git push -u/--set-upstream origin <current-branch>`; the guard resolves it to the observed full HEAD SHA and full branch ref. Bare branch names, `HEAD`, and other branches remain blocked, and diagnosis grants no authority.
@@ -2093,6 +2099,8 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 
 ## Scenario 262 — ComfyUI Resource Authorization and Diagnostics
 
+Profile resolution exposes only a project-relative path; destination mismatch reports only the failing fields, with secrets redacted and default deny preserved.
+
 Resource profiles and grants remain independently validated; optional project modes do not authorize ComfyUI endpoints or submissions.
 
 Runtime Policy destination conditions additionally require exact host, port, method, and path matches; invalid or unknown conditions fail closed without replacing Resource Authorization.
@@ -2123,6 +2131,8 @@ Scenario 268 verifies opt-in local API workflow import, scan and inspection; bou
 
 ## Scenario 263 — Commit Safety Diagnostics
 
+Content-safety findings and Runtime Policy diagnostics remain separate evidence; a diagnostic never grants permission to retry or publish.
+
 Moving legacy governance records to an external backup does not alter staged-content scanning or permit skipped safety checks.
 
 The candidate scanner recognizes only the approved generated-password and parameterized SQL expression shapes as non-literal values. High-entropy literal assignments remain detectable; JSON text is bounded at 8,000,000 bytes and other text at 2,000,000 bytes, with oversized inputs blocked. WebM has no path exceptions: bounded EBML parsing scans declared text metadata, skips media payloads, and blocks malformed or over-limit input under a 32 MiB default.
@@ -2137,11 +2147,15 @@ The native commit Hook and read-only `aips safety diagnose commit` use the same 
 
 ## Scenario 264 — Hash-bound Creative Git Asset Import
 
+The existing publication authority remains independent of Resource Authorization diagnostics and continues to require its exact candidate evidence.
+
 Scenario 267 keeps this creative Git workspace denial unchanged; the advisory applies only to ordinary local L2 source writes.
 
 The lifecycle verifies default Git destination rejection, explicit exact-root opt-in, hash revalidation, create-only writes, and unchanged Git index bytes. The source remains a non-Git EPHEMERAL workspace; import does not stage or commit.
 
 ## Scenario 266 — Content Safety Injection Context and Recovery
+
+Untrusted content remains non-authoritative; Runtime Policy diagnostics are bounded evidence and do not authorize an action or fallback.
 
 Project governance settings are treated as untrusted data; content-safety findings and publication approval remain separate decisions.
 
@@ -2174,5 +2188,7 @@ Scenario 272 covers the profile switch mechanism: default-strict loading, fail-c
 Scenario 274 covers the profile-gated relaxations `claude_coauthor_trailer` (exact Claude co-author trailer in the final trailer block of the publication gate PII scan) and `post_merge_refresh` (one detached `aips intelligence refresh` per store per HEAD); both default to off.
 
 ## Scenario 275 — Optional Project Governance Modes
+
+Optional governance modes do not alter Runtime Policy default deny or permit fallback when the trusted Profile is missing or invalid.
 
 Scenario 275 verifies the default `off`, private external repository-identity storage, explicit `enforce` scopes, advisory-only observe/assist Hook responses, fail-closed corrupt configuration, and the precedence of global runtime/high-assurance policy. Project settings do not grant or deny native Host permission or weaken GitHub protections.

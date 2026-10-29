@@ -108,6 +108,8 @@ High-risk Change Impact validates traversal before implementation approval. A ve
 
 ## Execution
 
+Creative tool actions retain Resource Authorization and Runtime Policy checks; profile paths remain project-relative in diagnostics and failed destination fields are redacted.
+
 The publication path resolves literal `git -C <path> push` to its actual target worktree before candidate validation, so caller cwd cannot redirect candidate identity.
 
 Publication parsing supports exact SHA refspecs and `-u` / `--set-upstream` with the current branch name. Shorthand resolves to the already observed full HEAD SHA/ref and continues through the same candidate scan, approval and remote policy.
@@ -358,6 +360,8 @@ Malformed hook envelopes fail closed with the adapter-specific denial response. 
 
 Runtime Policy Enforcement uses a versioned action envelope and deny-by-default policy. Rules can conjunctively match exact destination host, port, HTTP method and path; unknown condition keys or invalid values fail validation. Claude/Gemini hooks are `TOOL_GUARDED` only for normalized actions they receive; Codex remains `ADVISORY`, and high-risk external egress additionally requires a verified sandbox boundary.
 
+Profile-resolution failures report a sanitized project-relative source, required resource/action and no-fallback recovery hint. `constraint_diff` reports only failed destination fields after redaction. Claude PreToolUse forwards bounded detail without changing execution state; PostToolUseFailure remains separate evidence after a tool starts.
+
 ### Governance Audit Evidence
 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
@@ -365,6 +369,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 Content-safety detector changes are versioned (for example `pii.email.v2`) and bound to Scenario 266 with a fixed corpus; they never add a PII exception path.
 
 ## Quality & Verification
+
+Skill and governance-mode contracts remain advisory to authorization: neither grants access, and denied Runtime Policy actions stay denied.
 
 The lifecycle fixture covers Qwen Image Edit Plus ordered ports, the three-image limit, invalid-slot rejection, and unchanged Qwen Image 2.1 object-map injection; it does not claim real inference.
 

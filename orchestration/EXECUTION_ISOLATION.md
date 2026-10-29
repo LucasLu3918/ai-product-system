@@ -41,6 +41,8 @@ Regardless of workspace isolation mode, every Remote Git publication candidate m
 
 The local ComfyUI workflow adapter is a loopback resource boundary, not an OS process sandbox. Dynamic workflow JSON is size-bounded, project-confined and validated against the live local schema; dynamic edit binds one to eight ordered references and verifies every staged file hash. Fixed FLUX 3 Klein Base/Distilled execution also validates the live `TextGenerate` schema and final serialized payload before submission. Node allowlisting and explicit input bindings do not claim isolation of ComfyUI itself or its installed extensions, or prove MPS inference. Local ComfyUI profile drafts and approvals open no endpoint, download no weights and run no inference; approval requires an interactive terminal (Scenario 271).
 
+Runtime Policy diagnostics do not select a replacement Profile or enlarge an isolation boundary. A missing or out-of-project Profile stays blocked until its trusted project-relative setting is repaired.
+
 ## Worktree ownership
 
 A publication command with literal `git -C <path>` resolves that target from invocation cwd and binds candidate validation to its actual Git worktree; invalid paths do not fall back to the caller checkout.

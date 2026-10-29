@@ -8,6 +8,8 @@
 
 ## macOS / Linux
 
+A missing or invalid Resource Authorization Profile remains a deny; correct the trusted project-relative setting instead of relying on fallback or installing a global tool.
+
 The installed CLI returns stable, redacted JSON errors for local `prepare` and `diagnose` failures; this changes output format only and does not grant publication permission.
 
 The installed Claude Code adapter includes the standard publication recipe; Prepare scan evidence now lasts 30 minutes and still binds the exact candidate, operation, target and policy.
@@ -90,6 +92,8 @@ OpenCode managed V2 plugin 的 Context 上限為 12,000 bytes。若投影無法�
 Installing the Claude Code adapter adds the standard publication recipe to the managed `CLAUDE.md` block; it grants no publication permission.
 
 The managed Claude Code publication Hook has an eight-second hard deadline. For protected pushes, run `aips publish prepare` first so the full candidate/history scan can create the short-lived private evidence record; the Hook rechecks candidate and remote state on every invocation.
+
+Runtime Policy Profile failures keep default deny and may show a project-relative Profile path plus a bounded correction hint. Fix the trusted profile setting before retrying; AIPS never falls back to another Profile or installs global tools for this diagnosis.
 
 ComfyUI model profiles 隨 AIPS registry 提供；FLUX 3 Klein Base/Distilled 執行前會檢查本機 `TextGenerate` schema、元件清單與 profile sampler 設定。安裝與 discovery 不下載權重；schema 通過不代表 MPS 或實際推論相容。Dynamic ComfyUI edit 可接受一至八張有序、雜湊核對過的本機參考圖。
 

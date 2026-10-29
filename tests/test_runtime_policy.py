@@ -141,10 +141,48 @@ def main() -> int:
     missing = policy.evaluate(missing_profile, cfg, runtime_capability="TOOL_GUARDED")
     require(missing["decision"] == "BLOCKED" and missing["reason_code"] == "resource_profile_missing"
             and "/Users/" not in missing["reason"], f"missing profile must be distinct and redacted: {missing}")
+    require(missing.get("profile_resolution") == {
+        "path": "tests/fixtures/runtime_policy/missing-profile.yaml",
+        "source_field": "authorization.resource_profile",
+        "required_by": {"resource_id": "analytics-provider", "action": "external_data_egress"},
+        "fallback_allowed": False,
+    }, f"missing profile must identify the safe project-relative source and required action: {missing}")
+    require("fallback_allowed" in missing and missing["fallback_allowed"] is False
+            and isinstance(missing.get("recovery_hint"), str) and missing["recovery_hint"],
+            f"missing profile must give a bounded recovery hint and forbid fallback: {missing}")
+    with tempfile.TemporaryDirectory() as tmp:
+        outside_action = copy.deepcopy(action)
+        outside_action["authorization"]["resource_profile"] = "/Users/synthetic-private/profile.yaml"
+        outside = policy.evaluate(outside_action, cfg, runtime_capability="TOOL_GUARDED", project_root=Path(tmp))
+        require(outside["reason_code"] == "resource_profile_outside_project"
+                and outside.get("profile_resolution", {}).get("path") is None
+                and "/Users/synthetic-private" not in str(outside),
+                f"outside-project profile paths must not disclose absolute paths: {outside}")
+    with tempfile.TemporaryDirectory() as tmp:
+        project = Path(tmp)
+        absolute_action = copy.deepcopy(action)
+        absolute_action["authorization"]["resource_profile"] = str(project / "missing/profile.yaml")
+        observed = policy.evaluate(absolute_action, cfg, runtime_capability="TOOL_GUARDED", project_root=project)
+        require(observed["reason_code"] == "resource_profile_missing"
+                and observed.get("profile_resolution", {}).get("path") == "missing/profile.yaml",
+                f"an absolute in-project missing Profile must be reported as project-relative: {observed}")
+    with tempfile.TemporaryDirectory() as tmp:
+        project = Path(tmp)
+        (project / "malformed.yaml").write_text("grants: [not: valid", encoding="utf-8")
+        malformed_action = copy.deepcopy(action)
+        malformed_action["authorization"]["resource_profile"] = "malformed.yaml"
+        malformed = policy.evaluate(malformed_action, cfg, runtime_capability="TOOL_GUARDED", project_root=project)
+        require(malformed["reason_code"] == "resource_profile_format_invalid"
+                and malformed.get("profile_resolution", {}).get("path") == "malformed.yaml"
+                and malformed.get("fallback_allowed") is False,
+                f"malformed Profile diagnostics must stay bounded and fail closed: {malformed}")
     no_profile = copy.deepcopy(action)
     no_profile["authorization"]["resource_profile"] = None
     absent = policy.evaluate(no_profile, cfg, runtime_capability="TOOL_GUARDED")
-    require(absent["reason_code"] == "resource_profile_not_provided", f"absent profile must have its own reason: {absent}")
+    require(absent["reason_code"] == "resource_profile_not_provided"
+            and absent.get("profile_resolution", {}).get("path") is None
+            and absent.get("fallback_allowed") is False,
+            f"absent profile must have its own reason and no fallback: {absent}")
     explicit = copy.deepcopy(action)
     explicit["destination"].update({"port": 443, "method": "GET", "path": "/v1/events"})
     require(policy.evaluate(explicit, cfg, runtime_capability="TOOL_GUARDED")["decision"] == "ALLOW",
@@ -153,6 +191,16 @@ def main() -> int:
     wrong_port = policy.evaluate(explicit, cfg, runtime_capability="TOOL_GUARDED")
     require(wrong_port["decision"] == "DENY" and wrong_port["reason_code"] == "destination_constraint_mismatch",
             f"disallowed destination port must deny: {wrong_port}")
+    require(wrong_port.get("authorization", {}).get("constraint_diff") == {
+        "port": {"actual": 8443, "expected": [443]},
+    }, f"destination mismatch must report only the failed field and its effective constraint: {wrong_port}")
+    secret_path = copy.deepcopy(action)
+    secret_path["destination"]["path"] = "/private?token=synthetic-secret-value"
+    denied_secret_path = policy.evaluate(secret_path, cfg, runtime_capability="TOOL_GUARDED")
+    path_diff = denied_secret_path.get("authorization", {}).get("constraint_diff", {}).get("path", {})
+    require(path_diff == {"actual": "/private?token=[REDACTED]", "expected": ["/v1/**"]}
+            and "synthetic-secret-value" not in str(path_diff),
+            f"constraint differences must redact sensitive path values: {denied_secret_path}")
 
     changed = copy.deepcopy(action)
     changed["action"]["arguments"]["body"] += " changed"

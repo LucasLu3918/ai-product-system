@@ -1,58 +1,114 @@
 version: 1
 candidate:
-  base_sha: 16a924c3e2129647fcd46111addb4e535a9044cc
-  changed_files_hash: ff4a6845522823c36970d525129d04a1271c49ca084f00bce93c8807a6be010d
+  base_sha: 0eb7c6db0efc77e1fe2d9fffcca07913b63a7ced
+  changed_files_hash: 90ebd810549006a01ee29ae65b24ee74b1f9791fd78c0dff0eb3eabffe7c81e7
+
 change:
-  id: retrieval-target-path-index-v8
-  summary: Add exact target-path indexing and bounded directional Change Impact evidence, then scan WebM metadata in staged, worktree and publication-candidate content with fail-closed limits.
+  id: claude-runtime-diagnostics-optimization
+  summary: Add bounded, redacted Resource Authorization diagnostics and carry them through Claude pre-tool denials without changing authorization outcomes.
   boundary:
-    - Retrieval schema v8 migration, full rebuild and composite target-path index lifecycle
-    - Retrieval Intelligence impact traversal caller selection, exact path/line resolution and evidence reporting
-    - bounded caller-candidate exhaustion behavior and traversal contract, preserving the 3,000 hard cap
-    - Scenario 175, canonical Change Impact/Project Intelligence policy, Human project guidance, documentation placement and changelog
-    - Version 2 scoped directional Change Impact evidence with implementation-approval-time validation and digest-bound Human dispositions for bounded lexical unknowns
-    - WebM EBML metadata scanning across worktree, final tree and candidate history; exact-path exceptions removed, 32 MiB default input bound, malformed/unsupported inputs fail closed
-    - Redacted secret detection in declared WebM text fields while skipping media payloads, with resource and invalid-encoding checks
-    - Update Architecture diagrams with the WebM metadata-only candidate scan and external-state boundary; runtime topology remains unchanged
+    - Resource Authorization profile resolution and destination constraint diagnostics
+    - Runtime Policy result propagation and Claude Code PreToolUse failure-phase reporting
+    - Self-improvement multi-file editing guidance and related Human/Agent documentation
+    - Existing capability truth and ComfyUI environment-failure classification
+
 review_evidence:
   required: false
+
 matrix:
-  - boundary: Exact caller target filtering and bounded candidate scan
-    reason: Unrelated same-name lexical callers must not consume the relevant-edge budget, while candidate exhaustion must remain explicitly incomplete and bounded.
+  - boundary: Resource Authorization diagnostics
+    reason: Profile resolution and destination mismatch results now provide safe, actionable details while preserving default deny.
     checks:
-      static_lint: {applicable: true, evidence: "Ruff/compile checks for scripts/retrieval_storage.py, scripts/retrieval_intelligence.py and changed Python lifecycle/contract files"}
-      unit: {applicable: true, evidence: "tests/evidence/change_impact_traversal_lifecycle.py — exact target path before noise, unresolved candidate cap and exact edge budget"}
-      integration: {applicable: true, evidence: "tests/evidence/retrieval_intelligence_lifecycle.py — schema-v7 migration/rebuild, stale-edge removal, exact path persistence and indexed query plan; plus traversal lifecycle"}
-      contract: {applicable: true, evidence: "tests/validation/change_impact_traversal_contracts.py — traversal defaults, candidate multiplier and fixed 3,000 hard cap"}
-      e2e: {applicable: true, evidence: "AIPS impact-traverse on caller-only seed and original WebM scanner seed after rebuilding the v8 index"}
-      security: {applicable: true, evidence: "Only explicit local imports/re-exports and same-file definitions receive exact paths; ambiguous/unknown calls remain bounded and fail-closed; mandatory candidate secret scan in Integration Gate"}
-      migration_recovery: {applicable: true, evidence: "tests/evidence/retrieval_intelligence_lifecycle.py — additive schema-v7 migration followed by forced full rebuild and removal of stale relation edges"}
-      cli_harness: {applicable: true, evidence: "aips intelligence impact-traverse caller-direction output contract and stable facade"}
-      docs_schema: {applicable: true, evidence: "Scenario 175, Human Architecture Overview/Project Intelligence/Technology Guide/Conformance, documentation placement closure, repository validator, and YAML schema validation"}
-  - boundary: Directional scoped traversal bundle and reviewed unknown dispositions
-    reason: High-risk evidence must preserve independent caller/consumer reports and observed unknowns while allowing only exact, current, Human-approved safe limitations under strict per-report bounds.
+      static_lint:
+        applicable: true
+        evidence: "aips validate (PASS; full repository validation includes Python syntax/static contracts)"
+      unit:
+        applicable: true
+        evidence: ".venv/bin/python tests/test_runtime_policy.py (PASS: missing/outside/malformed profile, project-relative redaction, exact failed destination fields, no fallback)"
+      integration:
+        applicable: true
+        evidence: ".venv/bin/python tests/evidence/resource_authorization_lifecycle.py (PASS)"
+      contract:
+        applicable: true
+        evidence: ".venv/bin/python -m tests.validation.resource_authorization_contracts && .venv/bin/python -m tests.validation.runtime_policy_contracts (PASS)"
+      e2e:
+        applicable: false
+        na_reason: No product UI or end-user execution path changed; synthetic CLI and Hook lifecycle evidence cover the affected boundary.
+      security:
+        applicable: true
+        evidence: "Unit and lifecycle cases prove default-deny, failed-fields-only output, path confinement, and synthetic secret redaction."
+      migration_recovery:
+        applicable: false
+        na_reason: No persisted state, schema migration, or runtime data writes were added.
+      cli_harness:
+        applicable: true
+        evidence: ".venv/bin/python tests/evidence/runtime_policy_lifecycle.py (PASS: Claude PreToolUse emits bounded safe diagnostics and remains a denial)."
+      docs_schema:
+        applicable: true
+        evidence: "aips docs impact --base main --require-complete with 38 candidate paths: complete, closure 38/38, required_additions 0; aips validate PASS."
+
+  - boundary: Claude Hook execution-phase diagnostics
+    reason: Pre-tool denials carry safe Runtime Policy details; native PostToolUseFailure remains distinct and owns observed exit status.
     checks:
-      static_lint: {applicable: true, evidence: "Compile and static checks for scripts/project_intelligence.py and changed Python lifecycle/contract files"}
-      unit: {applicable: true, evidence: "tests/evidence/change_impact_traversal_lifecycle.py — exact report/finding digests, missing/duplicate/stale dispositions, direction/depth and truncation"}
-      integration: {applicable: true, evidence: "tests/validation/change_impact_resolution_contracts.py and `aips intelligence impact-validate` at IMPLEMENTATION_APPROVED/READY"}
-      contract: {applicable: true, evidence: "tests/validation/change_impact_traversal_contracts.py — preserved 150/300/6/3000 bounds and risk depths"}
-      e2e: {applicable: true, evidence: "Validate two scoped impact-traverse reports over identical seeds and scope; keep source report status intact"}
-      security: {applicable: true, evidence: "Reject truncated, stale, extra, duplicate, missing or unapproved findings; verify in-root current evidence hashes and human reviewer metadata; preserve global partial coverage"}
-      migration_recovery: {applicable: false, evidence: "No persistence/schema change in the scoped evidence contract"}
-      cli_harness: {applicable: true, evidence: "AIPS impact-validate fails closed before IMPLEMENTATION_APPROVED and preserves legacy single-report behavior"}
-      docs_schema: {applicable: true, evidence: "Change Impact template/protocol, Scenario 175, Human Project Intelligence/Technology Guide/Conformance, and repository validator"}
-  - boundary: Bounded WebM metadata secret scanning
-    reason: WebM metadata must receive the same strict secret checks as text while binary media payloads stay unparsed and malformed or oversized inputs fail closed.
+      static_lint:
+        applicable: true
+        evidence: "aips validate (PASS; full repository validation includes Python syntax/static contracts)"
+      unit:
+        applicable: true
+        evidence: ".venv/bin/python tests/test_runtime_policy.py (PASS)"
+      integration:
+        applicable: true
+        evidence: ".venv/bin/python tests/evidence/runtime_policy_lifecycle.py (PASS); .venv/bin/python -m tests.test_publication_diagnostics (23 tests PASS)."
+      contract:
+        applicable: true
+        evidence: "aips validate (PASS; runtime policy contracts and Scenario 177 included)."
+      e2e:
+        applicable: false
+        na_reason: Native Host acceptance depends on a separately configured Claude Code runtime; synthetic native Hook protocol lifecycle is deterministic and available locally.
+      security:
+        applicable: true
+        evidence: "Runtime Policy lifecycle asserts no absolute path, URL query token, execution status, or false tool-started claim leaks from a denial."
+      migration_recovery:
+        applicable: false
+        na_reason: No state migration or retry behavior changed.
+      cli_harness:
+        applicable: true
+        evidence: "Claude PreToolUse lifecycle plus existing PostToolUseFailure regression coverage."
+      docs_schema:
+        applicable: true
+        evidence: "aips docs impact closure complete; aips validate (PASS)."
+
+  - boundary: Agent multi-file edit procedure and existing capability guidance
+    reason: Documentation clarifies safe edit/rollback practice and existing capability limits without adding a generic transaction mechanism or runtime.
     checks:
-      static_lint: {applicable: true, evidence: "Python compile and repository static contracts for scripts/check_secret_leakage.py and affected evidence tests"}
-      unit: {applicable: true, evidence: "tests/test_secret_scan_baseline_compat.py — metadata and nested TagString detection, redaction, RFC 8794 NUL termination, malformed UTF-8, unknown-size Cluster boundary and 32 MiB limit"}
-      integration: {applicable: true, evidence: "tests/evidence/secret_safety.py — strict worktree scan detects WebM secrets and blocks malformed input"}
-      contract: {applicable: true, evidence: "tests/test_secret_scan_baseline_compat.py — configured WebM policy bound, no exact-path exemptions, and parser hard-cap validation"}
-      e2e: {applicable: true, evidence: "tests/evidence/secret_scan_publication_lifecycle.py — committed WebM secret detection and retention in candidate history; malformed candidate WebM blocks"}
-      security: {applicable: true, evidence: "Secret values redacted; byte, metadata, element-count and nesting bounds enforced; parser ignores media payload bytes and rejects malformed/unsupported structures"}
-      migration_recovery: {applicable: false, evidence: "No persistent scanner state or schema changes for WebM metadata parsing"}
-      cli_harness: {applicable: true, evidence: "Shared scanner entrypoint is used by strict worktree and publication-candidate modes"}
-      docs_schema: {applicable: true, evidence: "Scenario 263, docs/ARCHITECTURE.md, Architecture Overview, Security Assurance, Technology Guide, Project Intelligence, Harness, Documentation Map/Sync, system lifecycle/overview diagrams, Human Conformance, Maintenance, Installation, User Guide and orchestration Conformance documentation"}
+      static_lint:
+        applicable: true
+        evidence: "aips validate (PASS)."
+      unit:
+        applicable: false
+        na_reason: No executable behavior was added for this documentation-only boundary.
+      integration:
+        applicable: true
+        evidence: "aips validate (PASS); .venv/bin/python scripts/capability_registry.py check (45 capabilities, 10 surfaces PASS)."
+      contract:
+        applicable: true
+        evidence: "Existing Resource Authorization, Runtime Policy, OpenCode advisory, and creative preflight contracts run in full validation."
+      e2e:
+        applicable: false
+        na_reason: No new user-facing product flow or execution surface was added.
+      security:
+        applicable: true
+        evidence: "Review confirms default deny, no machine-wide installation, no expanded Hook claims, and preserved Human-only publication authority."
+      migration_recovery:
+        applicable: false
+        na_reason: No persistent data or configuration migration.
+      cli_harness:
+        applicable: true
+        evidence: "Full local Integration Gate exercises the existing Harness and creative preflight contracts."
+      docs_schema:
+        applicable: true
+        evidence: "aips docs impact closure complete (38/38, zero missing additions); aips validate (PASS)."
+
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []

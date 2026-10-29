@@ -2,6 +2,8 @@
 
 ## Scenario 275 — Optional Project Governance Modes
 
+Optional governance modes do not change Resource Authorization default-deny behavior or permit Profile fallback.
+
 Scenario 275 covers optional per-project governance modes with `off` as the default. Its evidence is scoped to the local configuration and supported native Hook paths; repository-wide Impact Graph coverage remains partial, and Host enforcement still depends on verified native capability.
 
 ## Scenario 044 — External AIPS State Lifecycle
@@ -1122,6 +1124,8 @@ The branch lifecycle report classifies remote branches using current exact-SHA P
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+Skill discovery does not grant Runtime Policy access; protected actions still require explicit Resource Authorization.
+
 Skill Explorer conformance remains separate from the shared exact-candidate publication scanner.
 
 Skill catalog selection is explicit and remains independent of per-project governance preferences.
@@ -1191,6 +1195,8 @@ Scenario 260 verifies the read-only `aips publish doctor`, Required Checks class
 
 ## Scenario 262 — ComfyUI Resource Authorization and Diagnostics
 
+Runtime Policy diagnostics expose only project-relative Profile details and failed destination fields; default deny and credential redaction remain in force.
+
 Resource profile validity remains separate from project governance mode and does not authorize endpoint access by itself.
 
 The Runtime Policy hook also matches every supplied destination host, port, method, and path condition exactly and denies invalid or unknown conditions; it does not grant Resource Authorization.
@@ -1221,6 +1227,8 @@ The creative profile registry supports FLUX Klein Base and Distilled through the
 
 ## Scenario 263 — Commit Safety Diagnostics
 
+Content-safety findings remain untrusted input and do not authorize a protected action or publication.
+
 External governance state migration leaves staged-content scanning and native commit diagnostics enabled.
 
 WebM has no path exceptions. The scanner uses bounded EBML parsing to inspect declared text metadata, skips media payloads, and blocks malformed/unsupported input or files above the configured 32 MiB default; ordinary text limits remain unchanged.
@@ -1247,6 +1255,8 @@ Scenario 267 separately verifies that the creative Git write denial stays in for
 tests/evidence/opencode_integration_lifecycle.py verifies the AIPS creative import candidate and CLI flow, source/candidate hash checks, no overwrite or path escape, explicit Git-root opt-in, and unchanged Git index bytes. It uses synthetic local assets and does not stage or commit.
 
 ## Scenario 266 — Content Safety Injection Context and Recovery
+
+Runtime Policy denial details are bounded evidence only and cannot authorize fallback or execution.
 
 Project governance configuration is untrusted input and cannot alter content-safety policy or publication authority.
 

@@ -84,6 +84,8 @@ The publication Hook's short-lived scan evidence records a successful full Secre
 
 Publication timeout diagnostics omit raw command and exception text. A Claude PreToolUse remote failure remains denied, and manual Doctor recovery is read-only and cannot grant publication authority.
 
+Runtime Policy constraint details pass through the shared redactor and contain only failing allowlisted destination fields. Content-safety diagnostics remain a separate boundary and never provide a Resource Authorization fallback.
+
 AIPS publication hook 對未預期授權例外 fail closed；回傳與 opt-in ledger 限定 allowlist 例外類別，不攜帶原始訊息或命令。
 Operational dashboard output follows the same sink-aware boundary: only a sanitized allowlist may cross into the localhost observation surface, with no prompts, reasoning, secrets or mutation authority.
 

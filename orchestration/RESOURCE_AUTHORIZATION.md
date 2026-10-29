@@ -90,7 +90,7 @@ Scenario 266 further records versioned injection signals and exact expiring exce
 
 Publication guard command classification is not a Resource Authorization decision and cannot create a grant.
 
-Resource Authorization emits `status`, `phase`, `reason_code`, `source`, `retryable`, `trace_id` and `recovery.action` alongside its decision evidence. Profile absence, missing/unreadable files, malformed YAML/schema, and grant-scope mismatches retain separate stable reason codes. Local filesystem paths and raw parser errors are not emitted.
+Resource Authorization emits `status`, `phase`, `reason_code`, `source`, `retryable`, `trace_id` and `recovery.action` alongside its decision evidence. Profile-resolution failures may include a sanitized project-relative path, source field, required resource/action, `fallback_allowed: false`, and a bounded repair hint; absolute paths and raw parser errors are never emitted. Destination constraint mismatches include only failing host/port/method/path fields with actual and effective expected values, passed through the shared redactor. These diagnostics do not alter default deny or widen a grant.
 
 `scripts/resource_authorization.py` produces **PRE_EXECUTION_EVIDENCE**. It does not claim that every runtime can mechanically intercept every tool call.
 

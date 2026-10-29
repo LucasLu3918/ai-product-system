@@ -12,6 +12,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+Runtime Policy diagnostics are documented in the canonical Resource Authorization, Claude adapter and Scenario 177 sections; global Change Impact coverage remains partial.
+
 Creative artwork documentation remains a separate placement surface; metadata scanning does not establish visual or provenance acceptance.
 
 Native `git -C <path> push` validation follows the explicit target worktree, including its candidate SHA and scan evidence; invalid or dynamic target paths remain blocked.
@@ -209,6 +211,8 @@ When the publication guard changes, keep every newly allowed command form paired
 
 
 The 0.83.0 candidate records shared Required Checks policy evidence and bounded Claude Code publication diagnostics.
+
+Runtime Policy diagnostic changes require a candidate-bound Core Change Matrix covering profile-path privacy, no-fallback behavior, exact destination differences, Claude denial output and separation from native post-tool failure evidence.
 
 The dev-friction integration adds `aips publish ship`, the protected-path guard, person-only `aips profile` switches, worktree Intelligence seeding and AIPS-owned ComfyUI job interrupt; each is covered by its own Core Change evidence in `docs/qa/CORE_CHANGE_TEST_MATRIX.yaml` and none grants publication or write authority.
 
@@ -595,6 +599,8 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 
 ## Validation architecture consistency
 
+The Core Change Matrix binds profile-path redaction, no-fallback behavior, exact destination differences and Claude pre-tool versus native post-tool evidence.
+
 The Skill Explorer lifecycle remains independently validated and is not evidence for Content Safety scanner behavior.
 
 Qwen Image Edit Plus changes use a candidate-bound Core Change matrix covering ordered-port behavior, rejection cases, retained Qwen 2.1 compatibility, loopback integration, secret scanning, and documentation closure.
@@ -903,6 +909,8 @@ Protected dispatch 會逐筆重新讀取 merged PR，確認 `merged_at`、head S
 
 
 ## Runtime Content Safety Boundary
+
+Diagnostic fields use allowlisted values and redaction; secret-scan failures remain fail-closed and are not treated as authorization evidence.
 
 A structured CLI error is not scan evidence; incomplete or failed candidate/history scans continue to block publication.
 

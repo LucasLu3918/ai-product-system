@@ -59,6 +59,8 @@ Plan
 
 ## Existing Project
 
+Optional project governance modes do not change Resource Authorization default-deny behavior or permit fallback to another Profile.
+
 Existing Project mutation 前會解析 nearest instructions、Project Intelligence、Change Boundary 與 Impact Graph。沒有 `.ai/` 仍可使用 EPHEMERAL mode，Reusable Intelligence 存在 AIPS external cache。
 
 明確初始化外部 Project Intelligence（不建立專案內 AIPS 檔案）：
@@ -79,6 +81,8 @@ aips project mode set enforce --project /path/to/project --scope git_push,gh_pr_
 所有新 Intelligence、checkpoint 與 Change Impact 草稿都保存在使用者層。`aips detach` 是相容入口，不會搬移或刪除資料；停用 optional governance 請使用 `aips project mode set off --project <path>`。既有 `.ai/` 會保留為唯讀 legacy 資料。
 
 ## Creative Direction、Style 與 Brand
+
+Creative tool actions remain subject to the same Resource Authorization Profile; a safe diagnostic explains a denial but does not approve or retry the action.
 
 Content scanning does not decode creative media or establish visual quality, license, provenance, or Human acceptance.
 
@@ -232,6 +236,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
+Claude PreToolUse may show bounded Runtime Policy diagnostics; a denial means the action was not authorized and does not mean the tool started.
+
 The shared publication scanner is an AIPS service boundary; it does not change native Runtime adapter capabilities.
 
 安裝 AIPS CLI 不會註冊 Runtime adapter；`aips harness status` 初始回報 `OFF`。需要個人整合時才執行 `aips harness install`。更新只刷新可驗證的啟用記錄；`UNKNOWN` 會保留原狀。`aips harness uninstall` 移除可驗證的外部整合並保留本機 ownership／額外資料，標記 `OFF`。
@@ -325,6 +331,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 Turn Context 只列出這一回合真正需要的準備步驟：READY+STALE 的 Intelligence 在任務相關主題未受影響時只是提示，不要求 refresh；唯讀或未選到主題的回合不會要求建立 Retrieval 索引。修改既有專案時仍須處理 Change Impact。
 
 ## Roles、Skills 與重用
+
+Roles and Skills describe work and do not grant runtime access; the trusted Resource Authorization Profile remains the authority for each protected action.
 
 The Matt Pocock Skill Explorer remains a separate discovery workflow and does not alter publication scanner policy.
 
@@ -456,6 +464,8 @@ Installation entrypoint workflow 保留既有 pull request 路徑與平台檢查
 平行工作透過獨立 worktree 與 runtime resource 配額隔離；隔離狀態可觀測，但不會擴大專案或 Host 權限。
 
 ComfyUI 操作須同時通過 Resource Authorization 與 Runtime Policy。Runtime Policy 可將目的地限制到精確 host、port、method 與 path；profile 缺漏或目的地不符時，應先修正受信任設定與授權範圍，不要重試被拒絕的請求。
+
+拒絕診斷會指出專案內 Profile 路徑與必要 resource/action，並明示不會 fallback；destination mismatch 會列出實際失敗的 host、port、method 或 path 及核准值。絕對路徑和 credential 會遮罩；診斷不授權重試。
 
 Qwen Edit Plus references remain project-staged, hash-verified, and submitted only through the existing local loopback ComfyUI boundary.
 
@@ -776,6 +786,8 @@ Retrieval index persistence is an internal, rebuildable cache boundary in `scrip
 
 ## Git Publication 與 Release
 
+Runtime Policy diagnostics do not grant Git publication, release or merge authority; those decisions remain behind the existing Human approval gate.
+
 使用 `git -C <path> push` 時，`<path>` 以執行命令時的 cwd 為基準解析；AIPS 將候選 SHA、ref 與掃描綁定到該目標工作樹。無效、缺漏或動態路徑會在候選檢查前拒絕。
 
 原生推送可使用完整候選 SHA 與完整分支 ref，或 `git push -u/--set-upstream origin <目前分支>`。分支縮寫只接受所選工作樹目前分支，並正規化為已觀測的完整 HEAD SHA/ref；裸分支名稱、`HEAD` 或其他分支仍拒絕。語法支援不代表授權，掃描、遠端政策與 Human approval 仍照常執行。
@@ -995,6 +1007,8 @@ Scenario / validation history
 
 Documentation Placement Contract 會檢查 heading hierarchy、version/scenario-style heading 與 changed-line placement。新增功能不得只在 current-behavior 文件尾端追加 `vX.Y` / Scenario 說明；若確實需要新 topic，必須同時把 canonical section 加入 placement contract。
 ## Runtime Content Safety Boundary
+
+Runtime diagnostics redact credential-like values and expose only project-relative Profile paths; they do not authorize retries or fallback.
 
 A structured publication error is not evidence of a successful content-safety or Secret Scan; incomplete scans continue to block publication.
 

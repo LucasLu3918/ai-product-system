@@ -223,6 +223,8 @@ Documentation sync path normalization (Scenario 221): `documentation_sync.evalua
 
 ## Human documentation placement
 
+Runtime Policy diagnostic updates belong in the canonical Runtime Policy, Resource Authorization, Claude adapter and Scenario 177 topics; do not imply repository-wide Impact Graph completeness.
+
 Skill Explorer guidance and WebM publication-scanner guidance retain distinct canonical placements; neither mapping grants approval or merges the topics.
 
 For the optional Harness lifecycle, keep explicit registration, OFF/ACTIVE/UNKNOWN status, verified-ACTIVE-only refresh, and preservation of unrecognized local state synchronized across Human installation/runtime guides and their lifecycle evidence. Do not imply per-project observe/assist/enforce modes.

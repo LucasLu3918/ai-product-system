@@ -32,7 +32,7 @@ For personal-mode PR merge, the Claude adapter must return native `ask` only aft
 
 ## Non-invasive invariant
 
-Runtime Hook denial recovery may surface stable reason/trace metadata, but an adapter must not convert diagnostics into authority or expose local Profile paths, credentials or provider response bodies.
+Runtime Hook denial recovery may surface stable reason/trace metadata and bounded Resource Authorization details. Profile paths are project-relative only; absolute local paths, credentials, commands and provider response bodies are excluded. An adapter must not convert diagnostics into authority or execution evidence.
 
 AIPS does not replace or delete user-owned Agent instructions, Skills, project source or unrelated runtime settings.
 
