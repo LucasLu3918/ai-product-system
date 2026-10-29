@@ -36,6 +36,18 @@ def run_scan(root: Path, *args: str) -> subprocess.CompletedProcess[str]:
     )
 
 
+def ebml_element(element_id: bytes, payload: bytes) -> bytes:
+    if len(payload) >= 127:
+        raise ValueError("test fixture supports only one-byte EBML sizes")
+    return element_id + bytes([0x80 | len(payload)]) + payload
+
+
+def webm_with_title(title: bytes) -> bytes:
+    header = ebml_element(b"\x1a\x45\xdf\xa3", ebml_element(b"\x42\x82", b"webm"))
+    info = ebml_element(b"\x15\x49\xa9\x66", ebml_element(b"\x7b\xa9", title))
+    return header + ebml_element(b"\x18\x53\x80\x67", info)
+
+
 def main() -> int:
     token = "ghp_" + ("A" * 40)
     with tempfile.TemporaryDirectory() as tmp:
@@ -71,14 +83,52 @@ def main() -> int:
         require(cleaned.returncode == 1, "removed token must remain blocked because it is in candidate history")
         require(token not in cleaned.stdout and token not in cleaned.stderr, "history scan exposed the token")
 
+        webm_token = "ghp_" + ("B" * 40)
+        webm_path = root / "evidence.webm"
+        webm_path.write_bytes(webm_with_title(("token=" + webm_token).encode("utf-8")))
+        git(root, "add", "evidence.webm")
+        git(root, "commit", "-qm", "add WebM metadata token")
+        webm_head = git(root, "rev-parse", "HEAD")
+        webm_scan = run_scan(root, "--publication-candidate", "--base", base, "--head", webm_head)
+        require(webm_scan.returncode == 1, "WebM metadata token must fail candidate publication scan")
+        require(webm_token not in webm_scan.stdout and webm_token not in webm_scan.stderr,
+                "candidate WebM scan exposed the token")
+        webm_doc = json.loads(webm_scan.stdout)
+        require(any(item.get("path") == "evidence.webm" and item.get("detector") == "github-token"
+                    and item.get("revision") for item in webm_doc.get("findings", [])),
+                "WebM history finding must identify the introducing commit")
+
+        webm_path.write_bytes(webm_with_title(b"safe title"))
+        git(root, "add", "evidence.webm")
+        git(root, "commit", "-qm", "remove WebM metadata token")
+        cleaned_webm_head = git(root, "rev-parse", "HEAD")
+        cleaned_webm_scan = run_scan(root, "--publication-candidate", "--base", base, "--head", cleaned_webm_head)
+        require(cleaned_webm_scan.returncode == 1, "removed WebM token must remain blocked by candidate history")
+        require(webm_token not in cleaned_webm_scan.stdout and webm_token not in cleaned_webm_scan.stderr,
+                "WebM history scan exposed the token")
+
+        webm_path.write_bytes(b"\x1a\x45\xdf\xa3\xff")
+        git(root, "add", "evidence.webm")
+        git(root, "commit", "-qm", "add malformed WebM")
+        malformed_webm_head = git(root, "rev-parse", "HEAD")
+        malformed_webm_scan = run_scan(root, "--publication-candidate", "--base", base, "--head", malformed_webm_head)
+        require(malformed_webm_scan.returncode == 2, "malformed WebM must block candidate publication")
+        malformed_doc = json.loads(malformed_webm_scan.stdout)
+        require(malformed_doc.get("status") == "BLOCKED", "malformed WebM must be reported as BLOCKED")
+        require(any("invalid or unsupported WebM" in item for item in malformed_doc.get("blockers", [])),
+                "malformed WebM candidate blocker was not reported")
+
         message_file = root / "docs" / "message-only.md"
         message_file.write_text("Safe file content.\n", encoding="utf-8")
         git(root, "add", "docs/message-only.md")
         git(root, "commit", "-qm", "synthetic commit message " + token)
         message_head = git(root, "rev-parse", "HEAD")
         message_scan = run_scan(root, "--publication-candidate", "--base", base, "--head", message_head)
-        require(message_scan.returncode == 1, "secret in candidate commit message must fail the history scan")
+        require(message_scan.returncode != 0, "secret in candidate commit message must fail the history scan")
         require(token not in message_scan.stdout and token not in message_scan.stderr, "commit-message scan exposed the token")
+        message_doc = json.loads(message_scan.stdout)
+        require(any(item.get("path") == "<commit-message>" and item.get("detector") == "github-token"
+                    for item in message_doc.get("findings", [])), "candidate commit-message secret finding is missing")
 
         ignored = root / "ignored.txt"
         ignored.write_text(f"TOKEN={token} # AIPS-SECRET-SCAN-IGNORE-LINE\n", encoding="utf-8")

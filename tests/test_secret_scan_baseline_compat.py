@@ -52,47 +52,121 @@ class SecretScanBaselineCompatibilityTests(unittest.TestCase):
             ["github-token", "private-key"],
         )
 
-    def test_only_three_exact_generated_webm_paths_are_excluded(self):
+    def test_no_webm_paths_are_excluded(self):
         policy, _ = scanner.load_policy(ROOT / "config/secret-scan.yaml")
-        expected = {
-            "docs/art/candidates/pixel-movement/gate1-runtime-evidence/videos/legacy-movement-and-farming.webm",
-            "docs/art/candidates/pixel-movement/gate1-runtime-evidence/videos/pixel16-movement-and-farming.webm",
-            "docs/art/candidates/pixel-movement/gate1-runtime-evidence/videos/pixel32-movement-and-farming.webm",
-        }
         exact_webm_exceptions = {
             path for path in policy["generated_paths"] if path.endswith(".webm")
         }
-        self.assertEqual(exact_webm_exceptions, expected)
+        self.assertEqual(exact_webm_exceptions, set())
         self.assertEqual(policy["limits"]["max_file_bytes"], 2_000_000)
-        for path in expected:
-            self.assertTrue(scanner.generated_path(path, policy), path)
+        self.assertEqual(policy["limits"]["max_webm_file_bytes"], 33_554_432)
         for path in (
+            "docs/art/candidates/pixel-movement/gate1-runtime-evidence/videos/legacy-movement-and-farming.webm",
+            "docs/art/candidates/pixel-movement/gate1-runtime-evidence/videos/pixel16-movement-and-farming.webm",
+            "docs/art/candidates/pixel-movement/gate1-runtime-evidence/videos/pixel32-movement-and-farming.webm",
             "docs/art/candidates/pixel-movement/gate1-runtime-evidence/videos/other.webm",
             "docs/art/candidates/pixel-movement/gate1-runtime-evidence/videos/legacy-movement-and-farming-copy.webm",
             "docs/art/candidates/pixel-movement/gate1-mapscene-ab/legacy-movement-and-farming.webm",
         ):
             self.assertFalse(scanner.generated_path(path, policy), path)
 
-    def test_exact_webm_paths_skip_large_payload_but_other_webm_stays_blocked(self):
+    @staticmethod
+    def ebml_element(element_id: bytes, payload: bytes) -> bytes:
+        if len(payload) >= 127:
+            raise ValueError("test fixture supports only one-byte EBML sizes")
+        return element_id + bytes([0x80 | len(payload)]) + payload
+
+    @classmethod
+    def minimal_webm(cls, title: bytes = b"safe title") -> bytes:
+        header = cls.ebml_element(b"\x1a\x45\xdf\xa3", cls.ebml_element(b"\x42\x82", b"webm"))
+        info = cls.ebml_element(b"\x15\x49\xa9\x66", cls.ebml_element(b"\x7b\xa9", title))
+        return header + cls.ebml_element(b"\x18\x53\x80\x67", info)
+
+    @classmethod
+    def webm_with_segment_children(cls, *elements: bytes) -> bytes:
+        header = cls.ebml_element(b"\x1a\x45\xdf\xa3", cls.ebml_element(b"\x42\x82", b"webm"))
+        return header + cls.ebml_element(b"\x18\x53\x80\x67", b"".join(elements))
+
+    def test_webm_metadata_is_scanned_and_secret_values_are_redacted(self):
         policy, _ = scanner.load_policy(ROOT / "config/secret-scan.yaml")
-        exact = "docs/art/candidates/pixel-movement/gate1-runtime-evidence/videos/legacy-movement-and-farming.webm"
-        other = "docs/art/candidates/pixel-movement/gate1-runtime-evidence/videos/other.webm"
+        token = "ghp_" + "A" * 40
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            exact_path = root / exact
-            exact_path.parent.mkdir(parents=True)
-            exact_path.write_bytes(b"\x00" * 2_000_001)
+            media = root / "evidence.webm"
+            media.write_bytes(self.minimal_webm(("token=" + token).encode()))
             findings, blockers = scanner.scan_worktree(root, policy, strict=True, paths=[])
-        self.assertEqual(findings, [])
+        self.assertEqual([item["detector"] for item in findings], ["github-token"])
+        self.assertEqual(findings[0]["path"], "evidence.webm")
         self.assertEqual(blockers, [])
+
+    def test_webm_tag_string_and_unknown_sized_cluster_are_scanned(self):
+        policy, _ = scanner.load_policy(ROOT / "config/secret-scan.yaml")
+        token = "ghp_" + "B" * 40
+        tag_string = self.ebml_element(b"\x44\x87", ("token=" + token).encode())
+        simple_tag = self.ebml_element(b"\x67\xc8", tag_string)
+        tag = self.ebml_element(b"\x73\x73", simple_tag)
+        tags = self.ebml_element(b"\x12\x54\xc3\x67", tag)
+        info = self.ebml_element(b"\x15\x49\xa9\x66", self.ebml_element(b"\x7b\xa9", b"safe"))
+        # An unknown-sized Cluster ends at the following Segment-level Info element.
+        cluster = b"\x1f\x43\xb6\x75\xff" + self.ebml_element(b"\xe7", b"\x00")
+        payload = self.webm_with_segment_children(tags + cluster + info)
+        findings: list[dict] = []
+        blocker = scanner.scan_webm(payload, "nested.webm", policy, findings)
+        self.assertIsNone(blocker)
+        self.assertEqual([item["detector"] for item in findings], ["github-token"])
+
+    def test_webm_invalid_utf8_metadata_fails_closed(self):
+        policy, _ = scanner.load_policy(ROOT / "config/secret-scan.yaml")
+        findings: list[dict] = []
+        payload = self.minimal_webm(b"\xff")
+        blocker = scanner.scan_webm(payload, "invalid-text.webm", policy, findings)
+        self.assertIn("invalid or unsupported WebM", blocker or "")
+        self.assertEqual(findings, [])
+
+    def test_webm_nul_termination_scans_value_and_ignores_padding(self):
+        policy, _ = scanner.load_policy(ROOT / "config/secret-scan.yaml")
+        token = "ghp_" + "G" * 40
+        findings: list[dict] = []
+        blocker = scanner.scan_webm(self.minimal_webm(b"safe title\x00" + b"\xff" * 4), "padded.webm", policy, findings)
+        self.assertIsNone(blocker)
+        self.assertEqual(findings, [])
+
+        blocker = scanner.scan_webm(self.minimal_webm(("token=" + token).encode() + b"\x00ignored"), "nul.webm", policy, findings)
+        self.assertIsNone(blocker)
+        self.assertEqual([item["detector"] for item in findings], ["github-token"])
+
+    def test_webm_malformed_metadata_fails_closed(self):
+        policy, _ = scanner.load_policy(ROOT / "config/secret-scan.yaml")
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            other_path = root / other
-            other_path.parent.mkdir(parents=True)
-            other_path.write_bytes(b"\x00" * 2_000_001)
+            (root / "broken.webm").write_bytes(b"\x1a\x45\xdf\xa3\xff")
             findings, blockers = scanner.scan_worktree(root, policy, strict=True, paths=[])
         self.assertEqual(findings, [])
-        self.assertEqual(blockers, [f"candidate file exceeds scan limit: {other}"])
+        self.assertEqual(len(blockers), 1)
+        self.assertIn("invalid or unsupported WebM", blockers[0])
+
+    def test_webm_over_configured_limit_fails_closed(self):
+        policy, _ = scanner.load_policy(ROOT / "config/secret-scan.yaml")
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            (root / "large.webm").write_bytes(b"x" * (policy["limits"]["max_webm_file_bytes"] + 1))
+            findings, blockers = scanner.scan_worktree(root, policy, strict=True, paths=[])
+        self.assertEqual(findings, [])
+        self.assertEqual(blockers, ["WebM exceeds 32 MiB publication limit: large.webm"])
+
+    def test_policy_rejects_webm_limit_above_parser_hard_cap(self):
+        policy = {
+            "version": 1,
+            "limits": {"max_file_bytes": 2_000_000, "max_webm_file_bytes": 33_554_433},
+            "generated_paths": [],
+            "lockfiles": {"path_patterns": [], "disabled_detectors": []},
+            "allowlist": [],
+        }
+        with tempfile.TemporaryDirectory() as temporary:
+            policy_path = Path(temporary) / "policy.yaml"
+            policy_path.write_text(scanner.yaml.safe_dump(policy), encoding="utf-8")
+            with self.assertRaises(scanner.ScanError):
+                scanner.load_policy(policy_path)
 
     def test_json_over_text_limit_is_scanned_with_json_limit(self):
         marker = "ghp_" + "A" * 40

@@ -54,6 +54,10 @@ from retrieval_intelligence import (
     DEFAULT_TOKEN_BUDGET as RETRIEVAL_DEFAULT_TOKEN_BUDGET,
 )
 from retrieval_intelligence import (
+    IMPACT_MAX_CALLER_CANDIDATES,
+    IMPACT_MAX_DEPTH,
+    IMPACT_MAX_EDGES,
+    IMPACT_MAX_NODES,
     SECRET_VALUE_PATTERNS,
     risk_adaptive_policy,
 )
@@ -1678,6 +1682,199 @@ def impact_candidates(
     )
 
 
+def _validate_directional_traversal_evidence(
+    doc: dict[str, Any], traversal: dict[str, Any], policy: dict[str, Any],
+) -> tuple[list[str], list[dict[str, Any]]]:
+    errors: list[str] = []
+    reports = traversal.get("reports")
+    required_directions = {"callers", "consumers"}
+    directions = traversal.get("directions")
+    if traversal.get("policy_version") != 2 or traversal.get("policy") != "risk-adaptive-bounded":
+        errors.append("directional traversal evidence has an unsupported policy version")
+    if traversal.get("mode") != "directional_reviewed_scope":
+        errors.append("directional traversal evidence has an unsupported mode")
+    scope_id = traversal.get("scope_id")
+    if not isinstance(scope_id, str) or not scope_id.strip():
+        errors.append("directional traversal requires an exact scope_id")
+    if (
+        not isinstance(directions, list)
+        or any(not isinstance(direction, str) for direction in directions)
+        or set(directions) != required_directions
+        or len(directions) != len(required_directions)
+    ):
+        errors.append("high-risk directional traversal must declare callers and consumers exactly once")
+    if not isinstance(reports, dict) or set(reports) != required_directions:
+        errors.append("directional traversal requires exactly one report for callers and consumers")
+        reports = reports if isinstance(reports, dict) else {}
+
+    expected_unknowns: dict[tuple[str, str], tuple[str, str]] = {}
+    expected_nodes: dict[tuple[str, str], tuple[str, dict[str, Any]]] = {}
+    report_nodes: list[dict[str, Any]] = []
+    common_seeds_digest: str | None = None
+    for direction in sorted(required_directions):
+        report = reports.get(direction)
+        label = f"traversal reports.{direction}"
+        if not isinstance(report, dict):
+            errors.append(f"{label} must be a traversal mapping")
+            continue
+        if report.get("policy_version") != 1 or report.get("policy") != "risk-adaptive-bounded":
+            errors.append(f"{label} has an unsupported source report policy")
+        if report.get("risk_class") != (doc.get("change") or {}).get("risk_class"):
+            errors.append(f"{label} risk_class does not match the approved change")
+        seeds_digest = _impact_evidence_digest(report.get("seeds"))
+        if not isinstance(report.get("seeds"), list) or not report.get("seeds"):
+            errors.append(f"{label} requires non-empty exact seed evidence")
+        elif common_seeds_digest is None:
+            common_seeds_digest = seeds_digest
+        elif seeds_digest != common_seeds_digest:
+            errors.append("directional traversal reports must use the same exact seeds")
+        report_directions = report.get("directions")
+        if report_directions != [direction]:
+            errors.append(f"{label} must contain only its named traversal direction")
+        if report.get("truncated") is not False:
+            errors.append("truncated directional traversal cannot establish scoped evidence")
+        if report.get("status") not in {"COMPLETE", "BOUNDED_WITH_UNKNOWNS"}:
+            errors.append(f"{label} is incomplete")
+        unresolved = report.get("unresolved")
+        if not isinstance(unresolved, list):
+            errors.append(f"{label} unresolved must be a list")
+            unresolved = []
+        expected_status = "BOUNDED_WITH_UNKNOWNS" if unresolved else "COMPLETE"
+        if report.get("status") != expected_status:
+            errors.append(f"{label} status does not match its unresolved findings")
+        try:
+            required_depth = int((report.get("required_depth") or {}).get(direction, -1))
+        except (TypeError, ValueError, AttributeError):
+            required_depth = -1
+        try:
+            reached_depth = int((report.get("reached_depth") or {}).get(direction, -1))
+        except (TypeError, ValueError, AttributeError):
+            reached_depth = -1
+        try:
+            max_depth = int(report.get("max_depth", -1))
+        except (TypeError, ValueError):
+            max_depth = -1
+        minimum_depth = int(policy.get("required_depth", 0))
+        if required_depth < minimum_depth or reached_depth < minimum_depth:
+            errors.append(f"{label} does not reach the risk policy minimum depth")
+        limits = report.get("limits") or {}
+        counters = {
+            "nodes": ("visited_nodes", IMPACT_MAX_NODES),
+            "edges": ("visited_edges", IMPACT_MAX_EDGES),
+            "depth": ("max_depth", IMPACT_MAX_DEPTH),
+            "caller_candidates": ("caller_candidates_scanned", IMPACT_MAX_CALLER_CANDIDATES),
+        }
+        for limit_name, (counter_name, absolute_cap) in counters.items():
+            try:
+                limit_value = int(limits.get(limit_name, -1))
+                counter_value = int(report.get(counter_name, -1))
+            except (TypeError, ValueError, AttributeError):
+                limit_value = counter_value = -1
+            if limit_value < 0 or limit_value > absolute_cap or counter_value < 0 or counter_value > limit_value:
+                limit_label = {
+                    "nodes": "node", "edges": "edge", "depth": "depth",
+                    "caller_candidates": "caller candidate",
+                }[limit_name]
+                errors.append(f"{label} {counter_name} exceeds the approved {limit_label} limit")
+        try:
+            depth_limit = int(limits.get("depth", -1))
+        except (TypeError, ValueError, AttributeError):
+            depth_limit = -1
+        graph = report.get("architecture_graph") or {}
+        if not isinstance(graph, dict):
+            graph = {}
+        if max_depth < reached_depth or depth_limit < 0 or max_depth > depth_limit:
+            errors.append(f"{label} reached depth exceeds its recorded depth budget")
+        scope_ids = graph.get("coverage_scope_ids")
+        if graph.get("status") != "COMPLETE" or not isinstance(scope_ids, list) or scope_id not in scope_ids:
+            errors.append(f"{label} lacks complete evidence for the exact scope_id")
+        report_digest = _impact_evidence_digest(report)
+        if not report_digest:
+            errors.append(f"{label} cannot be fingerprinted")
+        for unresolved_item in unresolved:
+            fingerprint = _impact_evidence_digest(unresolved_item)
+            if fingerprint:
+                key = (direction, fingerprint)
+                if key in expected_unknowns:
+                    errors.append(f"{label} contains a duplicate unresolved fingerprint")
+                expected_unknowns[key] = (str(report_digest or ""), "")
+        if isinstance(report.get("nodes"), list):
+            for node in report["nodes"]:
+                if not isinstance(node, dict) or node.get("kind") == "seed":
+                    continue
+                node_digest = _impact_evidence_digest(node)
+                if not node_digest:
+                    errors.append(f"{label} contains a node that cannot be fingerprinted")
+                    continue
+                key = (direction, node_digest)
+                if key in expected_nodes:
+                    errors.append(f"{label} contains a duplicate affected-node fingerprint")
+                else:
+                    expected_nodes[key] = (str(report_digest or ""), node)
+
+    reviewed: set[tuple[str, str]] = set()
+    for index, unknown in enumerate(doc.get("unknowns") or []):
+        if not isinstance(unknown, dict) or "traversal_review" not in unknown:
+            continue
+        review = unknown.get("traversal_review") or {}
+        if not isinstance(review, dict):
+            errors.append(f"unknowns[{index}] traversal_review must be a mapping")
+            continue
+        direction = review.get("direction")
+        fingerprint = review.get("unresolved_sha256")
+        key = (str(direction), str(fingerprint))
+        expected = expected_unknowns.get(key)
+        if expected is None:
+            errors.append(f"unknowns[{index}] traversal review does not match an exact unresolved record")
+            continue
+        if key in reviewed:
+            errors.append(f"unknowns[{index}] duplicates a reviewed unresolved disposition")
+            continue
+        reviewed.add(key)
+        if review.get("report_sha256") != expected[0]:
+            errors.append(f"unknowns[{index}] traversal report SHA-256 is stale")
+        if review.get("disposition") != "reviewed_safe" or str(unknown.get("disposition") or "").upper() != "ACCEPTED_LIMITATION":
+            errors.append(f"unknowns[{index}] must use a human-approved reviewed_safe ACCEPTED_LIMITATION")
+        human_review = unknown.get("review") or {}
+        if not isinstance(human_review, dict):
+            human_review = {}
+        if str(human_review.get("status") or "").upper() != "APPROVED" or str(human_review.get("reviewer") or "").lower() != "human":
+            errors.append(f"unknowns[{index}] traversal disposition requires explicit Human approval")
+    if reviewed != set(expected_unknowns):
+        errors.append("unresolved relationship lacks exactly one reviewed disposition")
+
+    node_reviews = traversal.get("node_reviews")
+    if not isinstance(node_reviews, list):
+        errors.append("directional traversal node_reviews must be a list")
+        node_reviews = []
+    reviewed_nodes: set[tuple[str, str]] = set()
+    for index, node_review in enumerate(node_reviews):
+        label = f"traversal.node_reviews[{index}]"
+        if not isinstance(node_review, dict):
+            errors.append(f"{label} must be a mapping")
+            continue
+        key = (str(node_review.get("direction")), str(node_review.get("node_sha256")))
+        expected_node = expected_nodes.get(key)
+        if expected_node is None:
+            errors.append(f"{label} does not match an exact affected node")
+            continue
+        if key in reviewed_nodes:
+            errors.append(f"{label} duplicates an affected-node review")
+            continue
+        reviewed_nodes.add(key)
+        report_digest, node = expected_node
+        if node_review.get("report_sha256") != report_digest:
+            errors.append(f"{label} source report SHA-256 is stale")
+        disposition = node_review.get("disposition")
+        if disposition not in {"reviewed_safe", "requires_change", "unknown"}:
+            errors.append(f"{label} has no valid final disposition")
+            continue
+        report_nodes.append(dict(node, _impact_direction=key[0], _impact_review_disposition=disposition))
+    if reviewed_nodes != set(expected_nodes):
+        errors.append("affected traversal node lacks exactly one scoped review")
+    return errors, report_nodes
+
+
 def validate_traversal_evidence(doc: dict[str, Any], changed_files: list[str] | None = None) -> list[str]:
     errors: list[str] = []
     change = doc.get("change") or {}
@@ -1695,6 +1892,23 @@ def validate_traversal_evidence(doc: dict[str, Any], changed_files: list[str] | 
     if not isinstance(traversal, dict):
         if requires_traversal:
             errors.append("risk-classified change requires traversal evidence")
+        return errors
+    if traversal.get("mode") == "directional_reviewed_scope":
+        directional_errors, traversal_nodes = _validate_directional_traversal_evidence(doc, traversal, policy)
+        errors.extend(directional_errors)
+        declared_paths = {str(path) for path in change.get("target_paths") or []}
+        actual_paths = {str(path) for path in (changed_files or [])}
+        for node in traversal_nodes:
+            path = str(node.get("path") or "")
+            disposition = node.get("_impact_review_disposition")
+            if disposition == "requires_change" and path and path not in declared_paths:
+                errors.append(f"required affected path is outside approved target_paths: {path}")
+            if changed_files is not None:
+                expected = "affected_and_changed" if path in actual_paths else "affected_but_unchanged"
+                if node.get("impact_status") != expected:
+                    errors.append(f"affected node status does not match the actual diff: {path or node.get('symbol', 'unknown')}")
+            if disposition == "unknown":
+                errors.append(f"directional traversal affected node remains unresolved: {path or node.get('symbol', 'unknown')}")
         return errors
     if traversal.get("policy_version") != 1 or traversal.get("policy") != "risk-adaptive-bounded":
         errors.append("traversal evidence has an unsupported policy version")
@@ -1897,6 +2111,10 @@ def validate_impact_document(doc: dict[str, Any], root: Path | None = None) -> d
         if scope.get("status") != "APPROVED" or not scope.get("approval_reference") or not scope.get("approved_at"):
             errors.append("implementation requires approved scope with reference and timestamp")
         errors.extend(validate_impact_unknown_dispositions(doc, root))
+        traversal = doc.get("traversal") or {}
+        if (doc.get("change") or {}).get("risk_class") or traversal.get("mode") == "directional_reviewed_scope":
+            recorded_paths = (doc.get("reconciliation") or {}).get("changed_files") if status == "READY" else None
+            errors.extend(validate_traversal_evidence(doc, recorded_paths))
     if status == "READY":
         reconcile = doc.get("reconciliation") or {}
         required = ("base_revision", "head_revision", "diff_digest")
@@ -1916,7 +2134,6 @@ def validate_impact_document(doc: dict[str, Any], root: Path | None = None) -> d
             errors.append("READY requires a project path for Git-bound reconciliation")
         else:
             errors.extend(validate_impact_git_reconciliation(root, reconcile, declared_paths, recorded_paths))
-        errors.extend(validate_traversal_evidence(doc, recorded_paths) if doc.get("traversal") or (doc.get("change") or {}).get("risk_class") else [])
     return {"valid": not errors, "status": status, "errors": errors}
 
 

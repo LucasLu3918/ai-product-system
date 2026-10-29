@@ -56,6 +56,19 @@ def verify_schema_upgrade_rebuilds_call_relations() -> None:
             "src/execute_a.py": "def execute():\n    return 'a'\n",
             "src/execute_b.py": "def execute():\n    return 'b'\n",
             "src/execute_c.py": "def execute():\n    return 'c'\n",
+            "src/executer.py": (
+                "from src.execute_a import execute\n\n"
+                "def run():\n    return execute()\n"
+            ),
+            "src/external_user.py": (
+                "from unavailable_dependency import execute\n\n"
+                "def run():\n    return execute()\n"
+            ),
+            "src/ambiguous_user.py": (
+                "from src.execute_a import execute\n"
+                "from src.execute_b import execute\n\n"
+                "def run():\n    return execute()\n"
+            ),
         }
         for relative, contents in sources.items():
             path = project / relative
@@ -82,13 +95,35 @@ def verify_schema_upgrade_rebuilds_call_relations() -> None:
                 ).fetchone()
                 require(row is not None and row["relation"] == "references",
                         "external attribute calls must not be indexed as local calls")
-                # Simulate a schema-v6 cache that retained the old false call edge.
+                external_path = conn.execute(
+                    "SELECT resolved_target_path FROM relations "
+                    "WHERE source_path = ? AND target_name = ? AND relation = 'calls'",
+                    ("src/external_user.py", "execute"),
+                ).fetchone()
+                require(external_path is not None and external_path["resolved_target_path"] == "",
+                        "explicit external imports must be excluded before local caller resolution")
+                ambiguous_path = conn.execute(
+                    "SELECT resolved_target_path FROM relations "
+                    "WHERE source_path = ? AND target_name = ? AND relation = 'calls'",
+                    ("src/ambiguous_user.py", "execute"),
+                ).fetchone()
+                require(ambiguous_path is not None and ambiguous_path["resolved_target_path"] is None,
+                        "ambiguous local imports must remain unresolved rather than selecting a path")
+                # Simulate a schema-v7 cache without the target-path column that
+                # retained the old false attribute-call edge.
+                columns = {
+                    str(item["name"])
+                    for item in conn.execute("PRAGMA table_info(relations)").fetchall()
+                }
+                if "resolved_target_path" in columns:
+                    conn.execute("DROP INDEX IF EXISTS idx_relations_target_path")
+                    conn.execute("ALTER TABLE relations DROP COLUMN resolved_target_path")
                 conn.execute(
                     "UPDATE relations SET relation = 'calls' "
                     "WHERE source_path = ? AND target_name = ?",
                     ("src/database_client.py", "execute"),
                 )
-                RI.metadata_set(conn, "schema_version", "6")
+                RI.metadata_set(conn, "schema_version", "7")
                 conn.commit()
             finally:
                 conn.close()
@@ -105,10 +140,60 @@ def verify_schema_upgrade_rebuilds_call_relations() -> None:
                 ).fetchone()
                 require(stale_call is None,
                         "schema upgrade must remove ambiguous stale execute edges")
+                columns = {
+                    str(item["name"])
+                    for item in conn.execute("PRAGMA table_info(relations)").fetchall()
+                }
+                require("resolved_target_path" in columns,
+                        "schema upgrade must add the exact target-path column")
+                imported_call = conn.execute(
+                    "SELECT resolved_target_path FROM relations "
+                    "WHERE source_path = ? AND target_name = ? AND relation = 'calls'",
+                    ("src/executer.py", "execute"),
+                ).fetchone()
+                require(imported_call is not None and imported_call["resolved_target_path"] == "src/execute_a.py",
+                        "schema rebuild must index the imported call's exact target path")
+                query_plan = conn.execute(
+                    "EXPLAIN QUERY PLAN SELECT source_path FROM relations "
+                    "WHERE target_name = ? AND relation = 'calls' AND resolved_target_path = ? "
+                    "ORDER BY source_path, source_line LIMIT 2",
+                    ("execute", "src/execute_a.py"),
+                ).fetchall()
+                require(any("idx_relations_target_path" in str(item["detail"]) for item in query_plan),
+                        "exact target-path query must use the composite retrieval index")
+                index_columns = tuple(
+                    str(item["name"])
+                    for item in conn.execute("PRAGMA index_info(idx_relations_target_path)").fetchall()
+                )
+                require(index_columns == (
+                    "target_name", "relation", "resolved_target_path", "source_path", "source_line"
+                ), "schema migration must restore the ordered target-path index")
             finally:
                 conn.close()
                 if snapshot is not None:
                     snapshot.cleanup()
+
+            conn, _ = RI.open_db(db_path)
+            try:
+                conn.execute("DROP INDEX idx_relations_target_path")
+                conn.execute(
+                    "CREATE INDEX idx_relations_target_path "
+                    "ON relations(target_name, relation, resolved_target_path)"
+                )
+                conn.commit()
+            finally:
+                conn.close()
+            conn, _ = RI.open_db(db_path)
+            try:
+                index_columns = tuple(
+                    str(item["name"])
+                    for item in conn.execute("PRAGMA index_info(idx_relations_target_path)").fetchall()
+                )
+                require(index_columns == (
+                    "target_name", "relation", "resolved_target_path", "source_path", "source_line"
+                ), "open_db must repair an existing target-path index with an outdated shape")
+            finally:
+                conn.close()
 
 
 def main() -> int:

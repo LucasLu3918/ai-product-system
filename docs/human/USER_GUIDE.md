@@ -774,7 +774,7 @@ Retrieval index persistence is an internal, rebuildable cache boundary in `scrip
 
 一般 personal publication 只推送已提交的 candidate SHA/ref。本機未提交修改會保留並顯示為工作樹診斷，不會被自動加入候選，也不會單獨阻擋該 commit；遠端授權、完整內容掃描與 GitHub 保護仍適用。
 
-The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; all other WebM paths and near-matches remain subject to strict candidate scanning.
+WebM files have no path exceptions. Strict candidate scanning validates bounded EBML structure, scans declared text metadata and skips media payloads; malformed or oversized files block publication.
 
 Publication preflight scans the exact candidate tree and commit history. The scanner fails closed on oversized or unreadable content and keeps provider-token, private-key and high-entropy literal detection enabled.
 
@@ -994,7 +994,7 @@ Quoted-heredoc PR text is still scanned by content safety; a secret or PII findi
 
 Publication scan evidence 只代表完整 Secret Scan 曾對精確候選通過，不改變內容安全政策；Prepare 和最終 Integration Gate 仍會執行完整候選與歷史掃描。
 
-The generic secret-assignment check ignores only the documented generated-password and parameterized SQL expression shapes. JSON evidence is scanned up to 8,000,000 bytes, other text up to 2,000,000 bytes, and larger inputs block publication. The only WebM exceptions are the three exact repository-relative Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; near-matches and all other WebM files retain strict scanning. These exact strings apply in any repository using the shared policy.
+The generic secret-assignment check ignores only the documented generated-password and parameterized SQL expression shapes. JSON evidence is scanned up to 8,000,000 bytes, other text up to 2,000,000 bytes, and larger inputs block publication. WebM files have no path exceptions; declared text metadata is scanned under a configurable 32 MiB default bound while media payloads are skipped.
 
 Imported ComfyUI workflow JSON is untrusted project content and remains subject to content-safety review; schema validation does not make it trusted instructions.
 

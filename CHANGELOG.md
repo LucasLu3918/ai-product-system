@@ -4,6 +4,10 @@
 
 - Filter lexical Change Impact callers by resolved target path and line before edge budgeting; separately cap raw candidate inspection and report exhaustion as truncated evidence.
 
+- Upgrade the disposable Retrieval relations index to schema v8 with a target-path index, additive migration and full rebuild; visit exact-path Python callers before unresolved candidates while retaining the hard 3,000 candidate cap and fail-closed overflow.
+
+- Add version 2 scoped Change Impact bundles for separate caller/consumer traversals; preserve each bounded report and require exact digest-bound Human approval for every accepted lexical unknown before implementation approval or READY.
+
 - Install the CLI without automatically registering Runtime adapters; explicitly enable existing Harness integration with `aips harness install`. Update and preflight refresh only verifiable existing enablement records; unknown records are preserved. Harness uninstall records `OFF` and preserves local ownership state and unrecognized user data.
 
 - Add per-repository `off`, `observe`, `assist`, and explicitly scoped `enforce` modes through user-level configuration and CLI; show the selected mode in `aips status`. Optional governance does not grant Host permission or weaken runtime policy, protected paths, hard content safety, or GitHub protections.
@@ -21,6 +25,8 @@
 - Classify exact-candidate secret-scan failures with stable redacted diagnostics, and reject unsupported publication command forms before candidate inspection or scanning.
 
 - Add bounded static AVIF EXIF/XMP metadata inspection to staged commit, candidate/history scan, publication preflight and Creative raster validation; preserve fail-closed diagnostics and the existing 8 MiB limit.
+
+- Scan WebM metadata in staged/worktree and exact publication-candidate/history scans with a bounded EBML parser; remove exact-path exemptions, enforce a configurable 32 MiB ceiling, and fail closed on malformed or unsupported structure.
 
 - Add bounded detail codes for unsupported publication command forms and a Claude `PostToolUseFailure` diagnostic that reports observed native execution phase and exit code without raw host error text; preserve fail-closed authorization and recovery behavior.
 

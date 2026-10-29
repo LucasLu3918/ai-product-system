@@ -1217,7 +1217,7 @@ The creative profile registry supports FLUX Klein Base and Distilled through the
 
 External governance state migration leaves staged-content scanning and native commit diagnostics enabled.
 
-The only WebM exceptions are the three exact repository-relative Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; near-matches and all other WebM files retain strict scanning, and the 2,000,000-byte text limit is unchanged.
+WebM has no path exceptions. The scanner uses bounded EBML parsing to inspect declared text metadata, skips media payloads, and blocks malformed/unsupported input or files above the configured 32 MiB default; ordinary text limits remain unchanged.
 
 Mandatory candidate scanning covers final-tree and full-history inputs, preserves provider-token/private-key and literal-assignment detection, and fails closed above the configured JSON and general text limits.
 

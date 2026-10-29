@@ -14,7 +14,7 @@ The installed Claude Code adapter includes the standard publication recipe; Prep
 
 Publication scan evidence is private user-cache data used only by the Claude Code Git Hook. It is separate from runtime content-safety setup and does not alter scanner policy or installation permissions.
 
-The managed publication preflight uses the built-in exact-candidate secret scanner. It scans JSON files up to 8,000,000 bytes and other text files up to 2,000,000 bytes; files above those bounds block publication. The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; there is no extension-wide exemption, and the 2,000,000-byte text limit remains unchanged. The same exact relative paths are excluded in any repository using the shared policy.
+The managed publication preflight uses the built-in exact-candidate secret scanner. It scans JSON files up to 8,000,000 bytes and other text files up to 2,000,000 bytes; files above those bounds block publication. WebM has no path exceptions: the scanner validates bounded EBML structure, scans declared text metadata and skips media payloads. Malformed or unsupported structures and files above the configured 32 MiB default block publication.
 
 Creative ComfyUI `dynamic_local` workflow support reuses the installed AIPS executor and Python dependencies. It does not install ComfyUI, custom nodes, model weights, or a remote service; the local ComfyUI API and selected model files must already be available. Workflow scan and preflight are read-only, while workflow import is an explicit project-confined create-only operation.
 

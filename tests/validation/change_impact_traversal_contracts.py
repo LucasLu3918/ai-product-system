@@ -12,6 +12,7 @@ from retrieval_intelligence import (
     IMPACT_MAX_DEPTH,
     IMPACT_MAX_EDGES,
     IMPACT_MAX_NODES,
+    IMPACT_MAX_CALLER_CANDIDATES,
     risk_adaptive_policy,
 )
 
@@ -22,6 +23,8 @@ def main() -> int:
         errors.append("bounded traversal defaults must remain depth 6, 150 nodes, and 300 edges")
     if IMPACT_CALLER_CANDIDATE_MULTIPLIER != 10:
         errors.append("raw caller candidates must retain the separately bounded 10x scan multiplier")
+    if IMPACT_MAX_CALLER_CANDIDATES != 3000:
+        errors.append("raw caller candidate inspection must retain the hard 3000-row cap")
     shallow = {"docs_style_test": 0, "private_leaf": 1}
     for risk_class, expected_depth in shallow.items():
         if risk_adaptive_policy(risk_class).get("required_depth") != expected_depth:

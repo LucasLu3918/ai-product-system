@@ -431,7 +431,7 @@ Security review verifies:
 - logs/traces/error paths redact sensitive headers/fields;
 - secret scanning evidence exists where practical for general review; every Remote Git publication candidate also passes the mandatory credential-free exact-candidate scan. CI 會在這項掃描通過後執行 repository preflight，兩者都早於完整相依套件與瀏覽器安裝。
 
-The built-in publication scan checks the final tree and all candidate commits from base to head, uses strict mode without inline bypass, and fails closed when the scan or history is incomplete. Its redacted report is bound to the scanner and policy hashes. The generic assignment detector recognizes only the registered generated-password and parameterized SQL expression shapes as non-literal values; known token and private-key patterns and high-entropy literal assignments remain active. JSON text files are scanned up to 8,000,000 bytes, while other text files retain the 2,000,000-byte ceiling; larger inputs block the candidate. External secret-scanning providers remain optional defense-in-depth. The only WebM exceptions are the three exact repository-relative Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; near-matches and all other WebM files retain strict scanning. These exact strings apply in any repository using the shared policy.
+The built-in publication scan checks the final tree and all candidate commits from base to head, uses strict mode without inline bypass, and fails closed when the scan or history is incomplete. Its redacted report is bound to the scanner and policy hashes. The generic assignment detector recognizes only the registered generated-password and parameterized SQL expression shapes as non-literal values; known token and private-key patterns and high-entropy literal assignments remain active. JSON text files are scanned up to 8,000,000 bytes, while other text files retain the 2,000,000-byte ceiling; larger inputs block the candidate. WebM files have no path exceptions: the scanner validates bounded EBML structure and scans declared text metadata while skipping media payloads. The default WebM limit is 32 MiB; malformed, unsupported unknown-size structures, invalid metadata text, and oversized files block publication. External secret-scanning providers remain optional defense-in-depth.
 
 若目前要求的操作明確需要 credential，且沒有 credential-free 路徑，該操作為 BLOCKED。若 credential 被宣告為 optional，則必須使用該能力定義的 `SKIPPED_NOT_CONFIGURED` / `ANALYSIS_PENDING` / `TRIAL_PENDING` 等非 PASS 狀態，且不得因此阻擋無關的 baseline validation 或 release。永遠不得以 hard-coded credential 取代缺失的 secret。
 
@@ -485,7 +485,7 @@ Claude Code quoted-heredoc (`<<'EOF'`) or single-quoted publication text is lite
 
 Publication Hook 的短效 scan evidence 不會放寬內容安全判斷或 sink policy。它綁定精確候選與掃描器／政策摘要；任何漂移都拒絕使用，Prepare 與最終 Gate 仍完整掃描。
 
-The only WebM exceptions are the three exact repository-relative Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; near-matches and all other WebM files retain strict scanning, and the 2,000,000-byte text limit is unchanged.
+WebM has no path exceptions and uses format-aware metadata scanning with a 32 MiB default bound; ordinary text limits remain unchanged.
 
 The bounded publication scanner scans JSON text up to 8,000,000 bytes and other text up to 2,000,000 bytes. Oversized and incomplete files block publication.
 

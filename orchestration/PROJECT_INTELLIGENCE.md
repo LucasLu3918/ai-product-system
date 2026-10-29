@@ -235,7 +235,7 @@ OpenCode shares the existing runtime resolver and CLI consumers. Traversal evide
 
 Shared path/glob wrappers preserve existing Project Intelligence matching behavior; bounded traversal continues to report unresolved edges and partial coverage rather than infer completeness.
 
-Python caller traversal filters lexical same-name candidates by resolved target path and line before applying the relevant-edge budget; other languages retain their existing lexical resolution behavior. It processes at most `min(max_edges × 10, 3,000)` raw caller rows, with at most one additional fetched sentinel reflected in the counter; candidate-budget exhaustion remains `TRUNCATED` and cannot support a completeness claim.
+Python caller traversal uses the disposable schema-v8 composite target-path index to select known exact-path candidates before unresolved rows. Known other-module paths and declared external imports do not consume the candidate budget; ambiguous or unknown resolution remains bounded and fail-closed. It counts at most `min(max_edges × 10, 3,000)` candidates; a single overflow sentinel may be fetched but is not included in the reported counter. Candidate-budget exhaustion remains `TRUNCATED` and cannot support a completeness claim. Schema upgrades add the nullable path column and rebuild the disposable index.
 
 Promotion eligibility and target-path constraints are extracted to a helper while retaining the facade entry point, Human approval and no-overwrite behavior.
 

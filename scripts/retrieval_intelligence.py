@@ -32,7 +32,7 @@ from temporal_intelligence import validate_document as validate_temporal_documen
 
 # Relation extraction semantics are part of the disposable index schema. Bump
 # this when changing extraction behavior so unchanged files are reindexed too.
-SCHEMA_VERSION = 7
+SCHEMA_VERSION = 8
 DEFAULT_TOKEN_BUDGET = 6000
 DEFAULT_RESULT_LIMIT = 12
 MAX_FILE_BYTES = 1_000_000
@@ -46,6 +46,7 @@ IMPACT_MAX_DEPTH = 6
 IMPACT_MAX_NODES = 150
 IMPACT_MAX_EDGES = 300
 IMPACT_CALLER_CANDIDATE_MULTIPLIER = 10
+IMPACT_MAX_CALLER_CANDIDATES = 3000
 IMPACT_MAX_RELATIONS_PER_FILE = 5000
 CHUNK_LINES = 100
 CHUNK_OVERLAP = 20
@@ -349,16 +350,25 @@ def replace_file_index(conn: sqlite3.Connection, root: Path, rel_path: str, fts_
             "INSERT INTO symbols(name, kind, path, line, chunk_id) VALUES (?, ?, ?, ?, ?)",
             (name, kind, rel_path, line, chunk_id),
         )
+    target_path_cache: dict[str, str | None] = {}
     for relation in extract_code_relations(rel_path, text, call_source=source_text):
+        target_name = str(relation["target_name"])
+        resolved_target_path: str | None = None
+        if relation["relation"] == "calls" and Path(rel_path).suffix.lower() == ".py":
+            if target_name not in target_path_cache:
+                target_path_cache[target_name] = _indexed_call_target_path(
+                    root, rel_path, source_text, target_name
+                )
+            resolved_target_path = target_path_cache[target_name]
         conn.execute(
             """INSERT OR REPLACE INTO relations(
                 source_name, source_path, source_definition_line, target_name,
-                source_line, relation, content_hash
-            ) VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                source_line, relation, content_hash, resolved_target_path
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
             (
                 relation["source_name"], rel_path, relation["source_definition_line"],
                 relation["target_name"], relation["source_line"], relation["relation"],
-                file_hash,
+                file_hash, resolved_target_path,
             ),
         )
     return True
@@ -545,6 +555,58 @@ def _resolve_call_target(
     return list(rows), None, False
 
 
+def _indexed_call_target_path(
+    root: Path,
+    source_path: str,
+    source_text: str,
+    target_name: str,
+) -> str | None:
+    """Return a safe exact local target path, ``""`` for known external calls,
+    or ``None`` when static resolution is uncertain.
+
+    Only explicit Python imports/re-exports and same-file definitions are
+    persisted. Unknown cross-file calls stay eligible for bounded resolution.
+    """
+    imported = _local_import_target(root, source_path, target_name)
+    if imported and imported[0] == "external":
+        return ""
+    if imported and imported[0] == "ambiguous":
+        return None
+    if not imported:
+        defined_here = any(
+            name == target_name for name, _kind, _line in extract_symbols(source_path, source_text)
+        )
+        return source_path if defined_here else None
+
+    symbol, target_path = imported[1], imported[2]
+    seen: set[tuple[str, str]] = set()
+    for _ in range(4):
+        identity = (symbol, target_path)
+        if identity in seen:
+            return None
+        seen.add(identity)
+        target_file = root / target_path
+        try:
+            target_source = read_source_text(target_file)
+        except OSError:
+            return None
+        if target_source is None:
+            return None
+        if any(
+            name == symbol for name, _kind, _line in extract_symbols(target_path, target_source)
+        ):
+            return target_path
+        forwarded = _local_import_target(root, target_path, symbol)
+        if not forwarded:
+            return None
+        if forwarded[0] == "external":
+            return ""
+        if forwarded[0] != "local":
+            return None
+        symbol, target_path = forwarded[1], forwarded[2]
+    return None
+
+
 def risk_adaptive_policy(risk_class: str) -> dict[str, Any]:
     key = re.sub(r"[^a-z0-9]+", "_", str(risk_class).lower()).strip("_")
     policies: dict[str, dict[str, Any]] = {
@@ -601,7 +663,7 @@ def traverse_change_impact(
             "depth": depth_limit,
             "caller_candidates": min(
                 max_edges * IMPACT_CALLER_CANDIDATE_MULTIPLIER,
-                IMPACT_MAX_EDGES * IMPACT_CALLER_CANDIDATE_MULTIPLIER,
+                IMPACT_MAX_CALLER_CANDIDATES,
             ),
         },
         "visited_nodes": 0,
@@ -655,23 +717,57 @@ def traverse_change_impact(
     changed_set = set(changed_paths or [])
 
     def caller_rows_for_target(current: dict[str, Any]) -> list[sqlite3.Row]:
-        """Bound raw rows with one overflow sentinel, then retain exact target paths."""
+        """Prefer indexed exact-path callers, then bound unresolved candidates."""
         remaining = int(report["limits"]["caller_candidates"]) - int(report["caller_candidates_scanned"])
         query_limit = max(0, remaining) + 1
-        rows = conn.execute(
-            "SELECT source_name, source_path, source_definition_line, target_name, source_line, relation "
-            "FROM relations WHERE target_name = ? AND relation = 'calls' LIMIT ?",
-            (current["symbol"], query_limit),
-        ).fetchall()
-        report["caller_candidates_scanned"] += len(rows)
-        overflow = len(rows) > remaining
-        if overflow:
-            report["truncated"] = True
-            report["stop_reason"] = "caller_candidate_limit"
-            rows = rows[:max(0, remaining)]
+        target_path = str(current.get("path") or "")
+        if target_path:
+            indexed_rows = conn.execute(
+                "SELECT source_name, source_path, source_definition_line, target_name, "
+                "source_line, relation, resolved_target_path FROM relations "
+                "WHERE target_name = ? AND relation = 'calls' AND resolved_target_path = ? "
+                "ORDER BY source_path, source_line LIMIT ?",
+                (current["symbol"], target_path, query_limit),
+            ).fetchall()
+            report["caller_candidates_scanned"] += min(len(indexed_rows), max(0, remaining))
+            if len(indexed_rows) > remaining:
+                report["truncated"] = True
+                report["stop_reason"] = "caller_candidate_limit"
+                return indexed_rows[:max(0, remaining)]
+
+            remaining -= len(indexed_rows)
+            unresolved_rows = conn.execute(
+                "SELECT source_name, source_path, source_definition_line, target_name, "
+                "source_line, relation, resolved_target_path FROM relations "
+                "WHERE target_name = ? AND relation = 'calls' AND resolved_target_path IS NULL "
+                "ORDER BY source_path, source_line LIMIT ?",
+                (current["symbol"], max(0, remaining) + 1),
+            ).fetchall()
+            report["caller_candidates_scanned"] += min(len(unresolved_rows), max(0, remaining))
+            if len(unresolved_rows) > remaining:
+                report["truncated"] = True
+                report["stop_reason"] = "caller_candidate_limit"
+            rows = [*indexed_rows, *unresolved_rows[:max(0, remaining)]]
+        else:
+            rows = conn.execute(
+                "SELECT source_name, source_path, source_definition_line, target_name, "
+                "source_line, relation, resolved_target_path FROM relations "
+                "WHERE target_name = ? AND relation = 'calls' "
+                "AND (resolved_target_path IS NULL OR resolved_target_path != '') "
+                "ORDER BY source_path, source_line LIMIT ?",
+                (current["symbol"], query_limit),
+            ).fetchall()
+            report["caller_candidates_scanned"] += min(len(rows), max(0, remaining))
+            if len(rows) > remaining:
+                report["truncated"] = True
+                report["stop_reason"] = "caller_candidate_limit"
+                rows = rows[:max(0, remaining)]
 
         exact_rows: list[sqlite3.Row] = []
         for row in rows:
+            indexed_target_path = row["resolved_target_path"]
+            if indexed_target_path == "":
+                continue
             source_path = str(row["source_path"])
             if Path(source_path).suffix.lower() != ".py":
                 exact_rows.append(row)

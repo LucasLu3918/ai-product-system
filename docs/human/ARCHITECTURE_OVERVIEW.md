@@ -100,7 +100,7 @@ Creative Impact Graph edges are currently incomplete; manually reviewed consumer
 
 高風險既有專案變更先以 Change Impact 遍歷明確的 caller、consumer 與資料／事件邊界；scoped coverage 不會提升為 repository-wide 完整性。
 
-Python lexical caller candidates are resolved to exact target paths and lines before edge budgeting; other languages retain lexical resolution. A separate bounded raw-candidate scan prevents unrelated same-name Python calls from causing false truncation; exhaustion remains explicitly incomplete.
+Python lexical callers use the rebuildable schema-v8 target-path index to select known exact paths before unresolved rows; known external imports and other paths do not consume the budget. Unknown targets remain bounded and fail closed at `min(max_edges × 10, 3,000)`; an overflow sentinel is excluded from the counter. Other languages retain lexical resolution, and incomplete traversal stays explicit.
 
 Project Diagnostics points to read-only inspection or a conditional recovery action without running it.
 
@@ -455,7 +455,7 @@ Distilled sampler declarations and one-to-eight ordered reference bindings do no
 
 Publication Hooks use an eight-second fail-closed deadline and may consume only a fresh, exact-candidate Secret Scan record from Prepare. The record is non-authorizing; every Hook invocation rechecks live Git and remote state, and the final Integration Gate repeats the full scan.
 
-The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; all other WebM paths and near-matches remain subject to strict candidate scanning.
+WebM files have no path exceptions. The strict candidate scanner validates bounded EBML structure, scans declared text metadata, skips media payloads, and blocks malformed or oversized files; its configured default limit is 32 MiB.
 
 Personal publication validates the exact candidate tree and history before release. Scanner failure blocks publication, and the detector keeps provider-token, private-key and high-entropy literal checks active.
 
@@ -750,7 +750,7 @@ Claude Code quoted-heredoc (`<<'EOF'`) or single-quoted publication text is lite
 
 Publication scan evidence is a separate, short-lived cache of a successful full candidate/history scan. It cannot replace the scanner, relax content-safety policy, or authorize a protected operation.
 
-The publication scanner examines the exact candidate tree and commit history. Its generic assignment detector recognizes only the documented generated-password and parameterized SQL forms as non-literal values; provider-token, private-key and high-entropy literal checks remain active. JSON scanning is bounded at 8,000,000 bytes and larger inputs fail closed. The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; there is no extension-wide exemption, and the 2,000,000-byte text limit remains unchanged. The same exact relative paths are excluded in any repository using the shared policy.
+The publication scanner examines the exact candidate tree and commit history. Its generic assignment detector recognizes only the documented generated-password and parameterized SQL forms as non-literal values; provider-token, private-key and high-entropy literal checks remain active. JSON scanning is bounded at 8,000,000 bytes and larger inputs fail closed. WebM has no path exceptions: bounded EBML parsing scans declared text metadata, skips media payloads, and blocks malformed, unsupported or oversized input under a configured 32 MiB default.
 
 Commit and publication content-safety checks remain independent from the optional AIPS Required Checks merge gate; disabling that gate does not relax content scanning.
 

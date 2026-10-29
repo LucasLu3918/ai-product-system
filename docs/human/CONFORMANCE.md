@@ -1398,7 +1398,9 @@ Validation-only changes may record a bounded Impact Graph limitation when the re
 
 Lifecycle evidence exercises bounded lexical caller/reference indexing, canonical architecture graph traversal, risk-specific depth and history policy, cycle handling, dynamic-dispatch unknowns, stale/truncated evidence, changed versus unchanged affected paths, and READY evidence validation. Lexical relations remain explicitly inferred; the traversal does not claim compiler-level resolution.
 
-Python caller traversal filters same-name lexical rows by resolved exact target path and line before edge accounting; other languages retain their existing lexical behavior. It processes at most `min(max_edges × 10, 3,000)` raw candidates and may fetch one sentinel to detect overflow; the count includes that row. Candidate-cap exhaustion fails closed as `TRUNCATED/caller_candidate_limit`; lifecycle coverage includes irrelevant-row filtering and cap exhaustion.
+Python caller traversal uses the rebuildable schema-v8 target-path index to select known exact paths before unresolved candidates; known external imports and other paths do not consume the budget. It counts at most `min(max_edges × 10, 3,000)` candidates; a fetched overflow sentinel is excluded from the counter. Candidate-cap exhaustion fails closed as `TRUNCATED/caller_candidate_limit`; lifecycle coverage includes migration/rebuild, exact-path lookup, external/ambiguous classification and cap exhaustion.
+
+High-risk traversal v2 preserves separate caller and consumer reports and validates both at `IMPLEMENTATION_APPROVED` and `READY`. Scoped unresolved lexical findings remain in their original reports and require exact digest-bound Human dispositions; the gate does not reclassify them as resolved or claim complete repository-wide graph coverage.
 
 The publication lifecycle fixture isolates the Python module availability probe before asserting localhost and browser capability blockers, so environment setup does not alter the blocker contract.
 
@@ -2039,7 +2041,7 @@ Scenario 261 also covers quoted-heredoc PR text, dynamic-argument denials with `
 
 Scenario 261 now also covers the bounded Hook deadline, safe upstream flags, exact short-lived scan evidence, and the distinction between ordinary Doctor visibility and strict Required Checks enforcement.
 
-Scenario 263 records the three exact Dewhollow WebM evidence-path exceptions and regression coverage that keeps near-matches and other WebM files under strict scanning.
+Scenario 263 records WebM metadata scanning, resource bounds, malformed-input failure behavior and final-tree/history regression coverage.
 
 Scenario 260 publication coverage includes exact-candidate and full-history secret scanning, strict failure on incomplete scans, and continued provider-token/private-key detection.
 
@@ -2117,7 +2119,7 @@ Scenario 268 verifies opt-in local API workflow import, scan and inspection; bou
 
 Moving legacy governance records to an external backup does not alter staged-content scanning or permit skipped safety checks.
 
-The candidate scanner recognizes only the approved generated-password and parameterized SQL expression shapes as non-literal values. High-entropy literal assignments remain detectable; JSON text is bounded at 8,000,000 bytes and other text at 2,000,000 bytes, with oversized inputs blocked. The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; there is no extension-wide exemption, and the 2,000,000-byte text limit remains unchanged. The same exact relative paths are excluded in any repository using the shared policy.
+The candidate scanner recognizes only the approved generated-password and parameterized SQL expression shapes as non-literal values. High-entropy literal assignments remain detectable; JSON text is bounded at 8,000,000 bytes and other text at 2,000,000 bytes, with oversized inputs blocked. WebM has no path exceptions: bounded EBML parsing scans declared text metadata, skips media payloads, and blocks malformed or over-limit input under a 32 MiB default.
 
 The candidate/history publication scanner separately classifies policy, Git-object and file-read failures; Scenario 261 verifies those failures remain blocked without exposing paths or exception text.
 
