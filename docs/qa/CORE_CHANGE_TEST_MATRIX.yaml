@@ -1,7 +1,7 @@
 version: 1
 candidate:
   base_sha: 16a924c3e2129647fcd46111addb4e535a9044cc
-  changed_files_hash: 39b1ec4d0acd2bd4d007fd5c6e36c94aeaa4558ffb2265ece3400c5f949a8708
+  changed_files_hash: ff4a6845522823c36970d525129d04a1271c49ca084f00bce93c8807a6be010d
 change:
   id: retrieval-target-path-index-v8
   summary: Add exact target-path indexing and bounded directional Change Impact evidence, then scan WebM metadata in staged, worktree and publication-candidate content with fail-closed limits.
@@ -54,9 +54,7 @@ matrix:
       cli_harness: {applicable: true, evidence: "Shared scanner entrypoint is used by strict worktree and publication-candidate modes"}
       docs_schema: {applicable: true, evidence: "Scenario 263, docs/ARCHITECTURE.md, Architecture Overview, Security Assurance, Technology Guide, Project Intelligence, Harness, Documentation Map/Sync, system lifecycle/overview diagrams, Human Conformance, Maintenance, Installation, User Guide and orchestration Conformance documentation"}
 scope_recomputed_after_expansion: true
-actual_diff_reconciled: false
+actual_diff_reconciled: true
 blockers:
-  - Full repository validation did not complete; earlier attempts stopped while waiting for the unrelated OpenCode integration lifecycle. Complete the local Integration Gate against a fixed commit before publication.
-  - Exact-candidate Integration Gate evidence must be collected after the local commit.
-  - Matrix remains BOUND_NEEDS_REVIEW; review the reconciled diff and evidence before marking READY.
+  - Exact-candidate Core Integration Gate has not completed for the reconciled candidate; keep the matrix DRAFT until it passes.
 status: DRAFT
