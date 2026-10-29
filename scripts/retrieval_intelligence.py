@@ -1331,7 +1331,7 @@ def index_status(root: Path, store: Path) -> dict[str, Any]:
                 "reason_code": "CACHE_DATABASE_MISSING", "next_step": "Run aips intelligence index --project <project>; the disposable cache may have been cleaned. Do not trust retained metadata as index readiness."}
     try:
         doc = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-    except Exception:
+    except (OSError, UnicodeError, yaml.YAMLError):
         return {"status": "INVALID", "index": str(db_path), "metadata": str(path)}
     repo = doc.get("repository") or {}
     head = run_git(root, ["rev-parse", "HEAD"]) or "unknown"
