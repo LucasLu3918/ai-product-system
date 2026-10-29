@@ -273,6 +273,8 @@ Getting Started / Installation / User Guide 以 task-oriented方式導覽；Arch
 
 ## Deterministic protection
 
+External-state lifecycle guidance remains mapped to its canonical topics; publication scan evidence is private user-cache data and never project content.
+
 Placement and synchronization previews include staged, unstaged and untracked candidate paths; missing downstream canonical references remain blocking until updated.
 
 Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.

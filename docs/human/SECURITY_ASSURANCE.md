@@ -223,6 +223,8 @@ Review actual:
 
 ## Release Security Gate
 
+Publication mode controls do not change scanner coverage: every exact candidate must pass the shared content and secret scan before publication.
+
 Project-state migration requires a verified external backup and exact candidate scan; moving files never bypasses publication checks or review authority.
 
 Local JSON diagnostics from `prepare` or `diagnose` do not satisfy publication validation, scan evidence, or merge requirements; rerun the read-only checks after correcting the reported cause.

@@ -8,6 +8,8 @@ Project Intelligence 是 AIPS 對既有專案建立的可重用理解層。
 
 ## 第一次 Existing Project
 
+EPHEMERAL Intelligence and run state remain in external user storage; candidate-bound publication scan evidence is kept in the private AIPS cache.
+
 Project Intelligence 一律存在外部 user state。既有 `.ai/` 會保持唯讀；明確 attach/bootstrap 可驗證後複製 legacy Intelligence 到外部，來源保留不變。
 
 診斷的 Recovery Plan 以既有 reason code 提供先後步驟及授權標記。bootstrap／finalize／refresh 是需要已批准任務範圍的衍生狀態操作；diagnose 本身仍不建立、附加或修復專案。

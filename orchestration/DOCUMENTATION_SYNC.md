@@ -223,6 +223,8 @@ Documentation sync path normalization (Scenario 221): `documentation_sync.evalua
 
 ## Human documentation placement
 
+Skill Explorer guidance and WebM publication-scanner guidance retain distinct canonical placements; neither mapping grants approval or merges the topics.
+
 For the optional Harness lifecycle, keep explicit registration, OFF/ACTIVE/UNKNOWN status, verified-ACTIVE-only refresh, and preservation of unrecognized local state synchronized across Human installation/runtime guides and their lifecycle evidence. Do not imply per-project observe/assist/enforce modes.
 
 Map shared runtime cache and package-install diagnostics into existing canonical publication and installation topics. Preserve the current topic structure and verify the recursive documentation closure with the final candidate.

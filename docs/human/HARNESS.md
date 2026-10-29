@@ -62,6 +62,8 @@ AIPS Core
 
 ## Native Runtime Adapters
 
+The Matt Pocock Skill Explorer remains a separate discovery feature; the shared publication scanner does not change adapter capabilities or skill admission.
+
 Qwen ComfyUI workflow support adds no Host adapter or native permission. It remains within AIPS Creative execution and Scenario 236.
 
 Claude Code receives a structured, redacted JSON diagnostic when local `prepare` or `diagnose` preflight fails; this does not authorize a retry, and unsupported shell wrappers remain denied.

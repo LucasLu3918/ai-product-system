@@ -80,6 +80,8 @@ aips project mode set enforce --project /path/to/project --scope git_push,gh_pr_
 
 ## Creative Direction、Style 與 Brand
 
+Content scanning does not decode creative media or establish visual quality, license, provenance, or Human acceptance.
+
 ComfyUI workflow 的資源授權依明確 profile 與 grant 驗證；模型探索只使用固定 loopback API，診斷不會自動提交工作。
 
 OpenCode 的 Context 上限也適用於本機 Creative 工作；超限時維持 fail-closed，不投遞 Context 或支援的原生檔案寫入，修復後再重試。
@@ -230,6 +232,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
+The shared publication scanner is an AIPS service boundary; it does not change native Runtime adapter capabilities.
+
 安裝 AIPS CLI 不會註冊 Runtime adapter；`aips harness status` 初始回報 `OFF`。需要個人整合時才執行 `aips harness install`。更新只刷新可驗證的啟用記錄；`UNKNOWN` 會保留原狀。`aips harness uninstall` 移除可驗證的外部整合並保留本機 ownership／額外資料，標記 `OFF`。
 
 Creative ComfyUI workflows use the separate AIPS Creative execution contract; Qwen reference binding does not expand Host adapter permissions.
@@ -321,6 +325,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 Turn Context 只列出這一回合真正需要的準備步驟：READY+STALE 的 Intelligence 在任務相關主題未受影響時只是提示，不要求 refresh；唯讀或未選到主題的回合不會要求建立 Retrieval 索引。修改既有專案時仍須處理 Change Impact。
 
 ## Roles、Skills 與重用
+
+The Matt Pocock Skill Explorer remains a separate discovery workflow and does not alter publication scanner policy.
 
 Qwen Image Edit Plus support extends the existing workflow contract and does not add a Role, Skill, or Skill Explorer permission.
 
@@ -675,6 +681,8 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 ComfyUI 工作恢復的 lifecycle fixture 只驗證 queue 讀取、確切 ID 刪除與不中斷非 AIPS 工作，屬於恢復安全證據，不代表 Agent 任務成果或品質。
 
 ## Logging、Observability 與 Operations
+
+The Parallel Run Dashboard projects run state; it is separate from exact-candidate Content Safety scanning.
 
 Run dashboard 只投影外部持久化的 run state 與事件；不得把執行紀錄寫入專案目錄或暴露原始敏感輸出。
 

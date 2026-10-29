@@ -163,6 +163,8 @@ Project Intelligence、runs 與 Change Impact 一律使用 AIPS external user st
 
 ## Creative Workflow
 
+The publication scanner inspects bounded WebM metadata only; creative review still owns visual quality, provenance, and acceptance.
+
 Creative grants and workspaces remain separate from project governance state; neither project mode nor diagnostics authorize generation or asset publication.
 
 Qwen Image Edit 2511 maps ordered project-local references to the built-in encoder ports `image1`–`image3`; Qwen Image 2.1 keeps its existing object-map input. Both use the same loopback-only ComfyUI request boundary. See Scenario 236 and `orchestration/CREATIVE_DIRECTION.md`.
@@ -249,6 +251,8 @@ Plan36 publication diagnostics preserve this topic's existing behavior and autho
 Creative writes in Git workspaces keep their existing guard; task-scoped Intelligence refresh and Retrieval index guidance (Scenario 269) does not relax them.
 
 ## Planning 與 Product Delivery
+
+Requirement planning and scoped Change Impact establish implementation evidence; neither substitutes for the separate exact-candidate publication scan.
 
 Plan44's exact candidate matrix binds diagnostic and adapter evidence to the final changed-file set.
 

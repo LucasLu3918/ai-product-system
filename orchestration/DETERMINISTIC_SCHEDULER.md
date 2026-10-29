@@ -218,6 +218,8 @@ Dependabot repository preflight and action pin sync (Scenario 221): `scripts/rep
 
 ## Read-only declaration and fail-closed boundary
 
+Parallel Run Dashboard state is a read-only projection and does not add scheduling commands or alter the publication Content Safety gate.
+
 Task ownership is validated against the run-state record before work is scheduled; unknown or conflicting owners fail closed and cannot be inferred from conversation history.
 
 Scheduler readiness does not authorize runtime resources. Each ComfyUI action still requires an independently valid Resource Authorization profile and a Runtime Policy rule whose supplied destination conditions all match.

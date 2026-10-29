@@ -223,6 +223,8 @@ Automated     49.6%
 
 ## v0.16.2 Install / Preflight Evidence Maturity
 
+Scenario 044 keeps Intelligence and run state in external user storage; publication scan evidence is also private candidate-bound cache data.
+
 Harness 安裝生命週期另由 `tests/evidence/install_preflight_lifecycle.py` 與 `tests/test_harness_enablement.py` 驗證：AIPS CLI 安裝預設不註冊 Runtime adapter；明確安裝後才為 `ACTIVE`，有效停用標記為 `OFF`，無法驗證的狀態為 `UNKNOWN`。卸載保留 Harness ownership 目錄與其中未辨識資料。
 
 以完整隔離 fixture 實際執行 AIPS CLI，而不是只檢查 shell 文字：
@@ -1727,6 +1729,8 @@ The probe denies only a harmless synthetic local Bash command. Unsupported, malf
 新增技能路由案例維持人工 conformance；只有直接證據才可提高自動化成熟度或改變 quality baseline。
 ## Scenario 179 — Evidence-backed Change Impact Unknown Dispositions
 
+Scoped traversal preserves its bounded unknowns and Human disposition evidence; it does not upgrade global graph completeness.
+
 The retrieval lifecycle verifies that a relation-extractor schema upgrade rebuilds unchanged files, removes stale call edges, and uses raw source only for in-memory syntax parsing; indexed output remains redacted. High-risk traversal treats ambiguous lexical targets as candidates, resolves exact canonical nodes when mapped, and retains unmapped architecture seeds as explicit unknowns.
 
 技能與一般方法可重用；專案專屬遊戲規則、遙測與參與者資料留在受治理的專案儲存，不得升格到全域素材。
@@ -1879,6 +1883,8 @@ The existing OpenCode integration lifecycle also verifies hash-bound asset impor
 The cross-profile quality evidence extension is covered by Scenario 258; this creative execution scenario continues to distinguish generated artifacts, image checks, Human review and user acceptance.
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
+
+Skill Explorer evidence remains independent from publication content-safety checks and does not change skill admission.
 
 The Skill Explorer remains an explicit capability-selection surface; optional project governance does not auto-install or activate Skills.
 

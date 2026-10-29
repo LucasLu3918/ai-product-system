@@ -73,6 +73,8 @@ aips mcp inspect
 
 ## Runtime integration
 
+The shared publication Content Safety scan runs independently of native adapter installation, Parallel Run Dashboard setup, and the external user-state lifecycle.
+
 AIPS does not enable repository governance when the CLI is installed. Check a project with `aips project mode show`; opt in with `aips project mode set observe` or `aips project mode set assist`. Select `enforce` only with an explicit action scope, for example `aips project mode set enforce --project /path/to/project --scope git_push,gh_pr_merge`. Settings live under the user XDG configuration, outside the project.
 
 The runtime resolves literal `git -C <path> push` against the command invocation cwd and validates the explicit target repository; it does not silently fall back to another checkout.

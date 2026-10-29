@@ -6,6 +6,8 @@ Scenario 275 covers optional per-project governance modes with `off` as the defa
 
 ## Scenario 044 — External AIPS State Lifecycle
 
+Intelligence, run state, and candidate-bound scanner evidence remain in external user state rather than project source.
+
 `aips attach`, `aips detach` and preflight do not create project-local `.ai/`, `.aips/`, Git excludes, hooks or settings. Existing `.ai/intelligence` imports by validated copy and preserves its source. Run and Change Impact state use the external user-state store. Evidence: `tests/evidence/install_preflight_lifecycle.py`, `tests/evidence/project_intelligence_lifecycle.py`, and `tests/evidence/identity_resume_isolation.py`.
 
 
@@ -858,6 +860,8 @@ Current automated inventory: 27 deterministic + 98 lifecycle + 54 agent_eval = 1
 
 ## Scenario 181 — OpenTelemetry Telemetry Projection & Export
 
+Dashboard and telemetry projections remain read-only; neither is scanner evidence or publication authority.
+
 Lifecycle evidence validates bounded existing-event extensions; deterministic OTLP projection/replay; exact pinned GenAI field names; duration spans only for complete timestamp pairs; Gate waiting intervals; independent-review correlation without inherited context; HTTPS/loopback policy; host-only credentials; content/secret rejection; local receiver behavior; and transport-failure degradation without changing AIPS execution results.
 
 Current automated inventory: 27 deterministic + 100 lifecycle + 54 agent_eval = 181 / 181; manual 0; uncovered 0.
@@ -1117,6 +1121,8 @@ AIPS retains HTTP status, endpoint, sanitized API error, branch/effective-rules 
 The branch lifecycle report classifies remote branches using current exact-SHA PR metadata and local checkout evidence. It distinguishes branches to keep, superseded work, PR branches requiring rebase, and cleanup candidates. These are advisory dispositions only: report generation and the scheduled workflow never delete branches or grant cleanup authorization. Unknown or incomplete evidence fails closed to KEEP. Scenario 257 is covered by `tests/evidence/branch_hygiene_lifecycle.py` and `tests/validation/branch_hygiene_contracts.py`.
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
+
+Skill Explorer conformance remains separate from the shared exact-candidate publication scanner.
 
 Skill catalog selection is explicit and remains independent of per-project governance preferences.
 

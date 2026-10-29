@@ -399,6 +399,8 @@ A compatible external Agent may execute the bounded contract, but `external_exec
 
 ## Evolution Effectiveness feedback
 
+Core Content Safety scanner changes are assessed by their Core Matrix and exact-candidate Gate; they are not Evolution effectiveness or adoption evidence.
+
 Evaluation fixtures remain outside indexed product sources; feedback determines which bounded optimization to review and never auto-adopts a candidate.
 
 The monthly effectiveness layer measures the observed value of the Technology Intelligence funnel without becoming a self-modifying source policy.
