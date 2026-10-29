@@ -13,7 +13,7 @@ change:
     - Version 2 scoped directional Change Impact evidence with implementation-approval-time validation and digest-bound Human dispositions for bounded lexical unknowns
     - WebM EBML metadata scanning across worktree, final tree and candidate history; exact-path exceptions removed, 32 MiB default input bound, malformed/unsupported inputs fail closed
     - Redacted secret detection in declared WebM text fields while skipping media payloads, with resource and invalid-encoding checks
-    - Architecture diagrams: N/A; validation evidence boundaries and approval timing change, while runtime topology remains unchanged
+    - Update Architecture diagrams with the WebM metadata-only candidate scan and external-state boundary; runtime topology remains unchanged
 review_evidence:
   required: false
 matrix:
@@ -52,7 +52,7 @@ matrix:
       security: {applicable: true, evidence: "Secret values redacted; byte, metadata, element-count and nesting bounds enforced; parser ignores media payload bytes and rejects malformed/unsupported structures"}
       migration_recovery: {applicable: false, evidence: "No persistent scanner state or schema changes for WebM metadata parsing"}
       cli_harness: {applicable: true, evidence: "Shared scanner entrypoint is used by strict worktree and publication-candidate modes"}
-      docs_schema: {applicable: true, evidence: "Scenario 263, Architecture Overview, Security Assurance, Technology Guide, Project Intelligence, Human Conformance, Maintenance, Installation, User Guide and orchestration Conformance documentation"}
+      docs_schema: {applicable: true, evidence: "Scenario 263, docs/ARCHITECTURE.md, Architecture Overview, Security Assurance, Technology Guide, Project Intelligence, Harness, Documentation Map/Sync, system lifecycle/overview diagrams, Human Conformance, Maintenance, Installation, User Guide and orchestration Conformance documentation"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: false
 blockers:

@@ -44,4 +44,6 @@ Evaluation control data stays outside indexed product sources so expected answer
 
 逐項驗證案例與版本化證據見[情境驗證紀錄](CONFORMANCE.md)。歷史數字不代表未來趨勢；本機 fixture 或安裝狀態也不能證明模型品質、Runtime enforcement 或外部 Provider 的實際效果。
 
+Core scanner hardening (including WebM metadata coverage) remains under its Core Change Matrix and publication Gate; passing those checks does not create an Evolution Trial or adoption decision.
+
 查看更多現行命令與證據要求，請閱讀 [Evolution Radar 使用指南](EVOLUTION_RADAR.md)。所有採納、實作與發布仍沿用各自的人類審查與授權流程。

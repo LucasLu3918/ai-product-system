@@ -14,6 +14,8 @@ Project-local Harness state is not created. `aips attach` initializes or imports
 
 Commit-time media checks inspect supported AVIF metadata through the existing content-safety path; they do not broaden native runtime interception.
 
+Native Runtime adapters do not implement the publication content scanner. Exact-candidate Prepare and the Integration Gate use the shared AIPS scanner; WebM scanning inspects bounded declared metadata, skips media payloads, and does not upgrade OpenCode's ADVISORY enforcement status.
+
 The creative workspace import is an explicit local CLI workflow using the existing AIPS launcher and private metadata cache.
 
 

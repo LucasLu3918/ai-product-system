@@ -62,6 +62,7 @@ OpenCode EPHEMERAL creative Context remains subject to the shared 12,000-byte ce
 Creative execution is unaffected by the Claude Code publication recipe; committing generated assets still uses the same commit content-safety scan, and Prepare scan evidence (30 minutes, PR-bound) never authorizes creative output.
 
 Publication Hook scan evidence is limited to Git candidate/history Secret Scanning. It does not cache Creative review, authorize asset import, or change any image-generation or artwork provenance decision.
+WebM metadata scanning is also limited to Git candidate/history content safety; it skips media payloads and makes no claim about a creative asset's visual quality, license, provenance or Human acceptance.
 
 ### Local ComfyUI model profiles
 

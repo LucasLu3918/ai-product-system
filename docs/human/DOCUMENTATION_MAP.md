@@ -167,6 +167,8 @@ Claude Code 標準發布寫法的代理端正本是 `harness/adapters/claude-cod
 
 `publication_scan_evidence.py` is mapped by `config/documentation-placement.yaml` to the publication-preflight Human topic; Scenario 261 remains the verification contract for the Hook and Doctor lifecycle.
 
+WebM publication metadata scanning is owned by `scripts/check_secret_leakage.py` and `config/secret-scan.yaml`. Keep its bounded EBML fields, size limit, fail-closed behavior and media-payload exclusion aligned across the Content Safety protocol, Security Assurance, Technology Guide, Architecture and Scenario 263; it does not establish creative visual acceptance.
+
 The fixed FLUX 3 Klein runtime-schema validator and its lifecycle evidence are maintained with `scripts/creative_execution.py`, `tests/evidence/creative_execution_lifecycle.py`, and Scenario 236; this does not add a character-artwork capability or alter its provenance flow.
 
 Scenario 267 and the active `docs/qa/CORE_CHANGE_TEST_MATRIX.yaml` record the READY+STALE native-write policy and its retained denial cases.

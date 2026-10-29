@@ -48,6 +48,8 @@
 - CI tested Node.js: `24`
 <!-- AIPS-SYSTEM-FACTS:END -->
 
+Publication content scanning is part of the existing `aips publish prepare` and Integration Gate path, not a new Runtime capability. The shared scanner validates bounded WebM EBML metadata, applies secret detectors to declared text fields, skips media payloads and fails closed on malformed, unsupported or oversized input.
+
 OpenCode V2 adapter lifecycle, install/doctor repair guidance, Session-scoped Context and tested native permission boundaries are documented in [Harness](HARNESS.md); use `aips harness trace` for the bounded privacy-limited event view.
 
 Temporal queries use the existing Python and Git runtime; the internal adapter adds no dependency or public command.

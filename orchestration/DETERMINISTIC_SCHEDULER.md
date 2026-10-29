@@ -359,6 +359,7 @@ Publication uses `aips publish checks --pr <number> --head <sha>` for latest-che
 Content safety decisions used by deterministic execution and publication preflight must be provider-neutral and reproducible. Optional semantic classifiers may emit advisory signals only and cannot be the sole release decision.
 
 Publication scanning treats `.m4a` as bounded structured audio: require valid M4A atoms, scan readable `moov` metadata, reject disguised or malformed files, and enforce the existing 8 MiB staged-file ceiling. Do not decode `mdat` as text; retain the existing secret/content safety decisions and other media handling.
+WebM publication scanning follows the same content-safety boundary: parse supported EBML metadata within a 32 MiB configured default, inspect declared text fields, skip media payloads and block malformed, unsupported or oversized input. It does not change task readiness, scheduling, ownership or publication authority.
 
 Runtime action authorization is evaluated at the native tool boundary by Runtime Policy Enforcement; task dispatch metadata does not grant action approval or network-egress isolation.
 

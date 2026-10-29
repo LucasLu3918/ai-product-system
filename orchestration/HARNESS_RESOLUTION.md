@@ -29,6 +29,7 @@ Do not use Turn Context to perform repository-wide scans.
 - no AIPS files or Git metadata are written into the project;
 - current tasks may use AIPS normally;
 - Project Intelligence, runs and Change Impact persist under user-level AIPS state;
+- candidate-bound publication scan evidence remains in the private AIPS user cache and is not written into the project;
 - project source remains unchanged.
 
 ### LEGACY `.ai/`
