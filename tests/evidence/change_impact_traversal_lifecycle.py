@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import os
+import hashlib
+import json
 import subprocess
 import sys
 import tempfile
@@ -11,8 +13,11 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from project_intelligence import validate_traversal_evidence
-from project_intelligence import traverse_architecture_impact_graph
+from project_intelligence import (
+    traverse_architecture_impact_graph,
+    validate_impact_document,
+    validate_traversal_evidence,
+)
 from retrieval_intelligence import (
     index_repository,
     risk_adaptive_policy,
@@ -138,6 +143,170 @@ unknowns: []
         self.assertFalse(report["truncated"])
         self.assertEqual(report["status"], "COMPLETE")
         self.assertLessEqual(report["visited_nodes"], 3)
+
+    def test_same_name_callers_are_path_filtered_before_edge_budget(self) -> None:
+        self.write(
+            "src/scanner.py",
+            "def git():\n    return None\n\n"
+            "def scan_candidate():\n    return git()\n",
+        )
+        self.write("src/noise.py", "def git():\n    return None\n")
+        noise_calls = "from src.noise import git\n\n"
+        noise_calls += "\n".join(
+            f"def unrelated_{index}():\n    return git()"
+            for index in range(350)
+        )
+        self.write("src/noise_users.py", noise_calls + "\n")
+        self.write(
+            "src/target_user.py",
+            "from src.scanner import git\n\n"
+            "def publish_candidate():\n    return git()\n",
+        )
+        self.git("add", "-A")
+        self.git("-c", "user.name=AIPS Test", "-c", "user.email=" + chr(64) + "example.invalid", "commit", "-qm", "same-name caller fanout")
+        index_repository(self.repo, self.store, force=True)
+
+        report = traverse_change_impact(
+            self.repo,
+            self.store,
+            [{"symbol": "git", "path": "src/scanner.py"}],
+            "private_leaf",
+            directions=["callers"],
+            max_depth=2,
+            max_edges=300,
+        )
+
+        self.assertEqual(report["status"], "COMPLETE")
+        self.assertFalse(report["truncated"])
+        self.assertLessEqual(report["caller_candidates_scanned"], 2)
+        self.assertLessEqual(
+            report["caller_candidates_scanned"],
+            report["limits"]["caller_candidates"] + 1,
+        )
+        caller_paths = {
+            node.get("path") for node in report["nodes"] if node.get("kind") == "caller"
+        }
+        self.assertIn("src/target_user.py", caller_paths)
+        self.assertNotIn("src/noise_users.py", caller_paths)
+
+    def test_exact_target_path_callers_survive_noise_before_candidate_budget(self) -> None:
+        self.write("src/scanner.py", "def git():\n    return None\n")
+        self.write("src/noise.py", "def git():\n    return None\n")
+        noise_calls = "from src.noise import git\n\n"
+        noise_calls += "\n".join(
+            f"def unrelated_{index}():\n    return git()"
+            for index in range(15)
+        )
+        self.write("src/noise_users.py", noise_calls + "\n")
+        self.write(
+            "src/target_user.py",
+            "from src.scanner import git\n\n"
+            "def publish_candidate():\n    return git()\n",
+        )
+        self.git("add", "-A")
+        self.git("-c", "user.name=AIPS Test", "-c", "user.email=" + chr(64) + "example.invalid", "commit", "-qm", "exact target path before scan budget")
+        index_repository(self.repo, self.store, force=True)
+
+        report = traverse_change_impact(
+            self.repo,
+            self.store,
+            [{"symbol": "git", "path": "src/scanner.py"}],
+            "private_leaf",
+            directions=["callers"],
+            max_depth=2,
+            max_edges=1,
+        )
+
+        self.assertEqual(report["status"], "COMPLETE")
+        self.assertFalse(report["truncated"])
+        caller_paths = {
+            node.get("path") for node in report["nodes"] if node.get("kind") == "caller"
+        }
+        self.assertEqual(caller_paths, {"src/target_user.py"})
+
+    def test_caller_candidate_scan_budget_overflow_fails_closed(self) -> None:
+        self.write("src/scanner.py", "def git():\n    return None\n")
+        self.write("src/noise.py", "def git():\n    return None\n")
+        noise_calls = "\n".join(
+            f"def unrelated_{index}():\n    return git()"
+            for index in range(20)
+        )
+        self.write("src/noise_users.py", noise_calls + "\n")
+        self.git("add", "-A")
+        self.git("-c", "user.name=AIPS Test", "-c", "user.email=" + chr(64) + "example.invalid", "commit", "-qm", "caller scan budget")
+        index_repository(self.repo, self.store, force=True)
+
+        report = traverse_change_impact(
+            self.repo,
+            self.store,
+            [{"symbol": "git", "path": "src/scanner.py"}],
+            "private_leaf",
+            directions=["callers"],
+            max_depth=2,
+            max_edges=1,
+        )
+
+        self.assertEqual(report["status"], "TRUNCATED")
+        self.assertTrue(report["truncated"])
+        self.assertEqual(report["stop_reason"], "caller_candidate_limit")
+        self.assertEqual(
+            report["caller_candidates_scanned"],
+            report["limits"]["caller_candidates"],
+        )
+
+    def test_pathless_candidate_overflow_counter_stays_within_hard_cap(self) -> None:
+        self.write("src/scanner.py", "def git():\n    return None\n")
+        callers = "\n".join(
+            f"def unresolved_{index}():\n    return git()"
+            for index in range(20)
+        )
+        self.write("src/unresolved_users.py", callers + "\n")
+        self.git("add", "-A")
+        self.git("-c", "user.name=AIPS Test", "-c", "user.email=" + chr(64) + "example.invalid", "commit", "-qm", "pathless caller scan budget")
+        index_repository(self.repo, self.store, force=True)
+
+        report = traverse_change_impact(
+            self.repo,
+            self.store,
+            [{"symbol": "git"}],
+            "private_leaf",
+            directions=["callers"],
+            max_depth=2,
+            max_edges=1,
+        )
+
+        self.assertEqual(report["status"], "TRUNCATED")
+        self.assertEqual(report["stop_reason"], "caller_candidate_limit")
+        self.assertEqual(
+            report["caller_candidates_scanned"],
+            report["limits"]["caller_candidates"],
+        )
+
+    def test_exact_caller_edge_budget_overflow_fails_closed(self) -> None:
+        self.write("src/scanner.py", "def git():\n    return None\n")
+        callers = "from src.scanner import git\n\n"
+        callers += "\n".join(
+            f"def publish_{index}():\n    return git()"
+            for index in range(5)
+        )
+        self.write("src/publishers.py", callers + "\n")
+        self.git("add", "-A")
+        self.git("-c", "user.name=AIPS Test", "-c", "user.email=" + chr(64) + "example.invalid", "commit", "-qm", "exact caller edge budget")
+        index_repository(self.repo, self.store, force=True)
+
+        report = traverse_change_impact(
+            self.repo,
+            self.store,
+            [{"symbol": "git", "path": "src/scanner.py"}],
+            "private_leaf",
+            directions=["callers"],
+            max_depth=2,
+            max_edges=1,
+        )
+
+        self.assertEqual(report["status"], "TRUNCATED")
+        self.assertTrue(report["truncated"])
+        self.assertEqual(report["stop_reason"], "max_edges")
 
     def test_history_is_attached_only_for_policy_or_unresolved_cases(self) -> None:
         self.write("docs/change.md", "get_products response shape changed\n")
@@ -341,6 +510,134 @@ unknowns: []
         self.assertTrue(any("aips intelligence impact-validate" in error for error in errors))
         broken = {**valid, "traversal": {**valid["traversal"], "status": "TRUNCATED", "truncated": True}}
         self.assertTrue(validate_traversal_evidence(broken, ["src/api.py"]))
+
+    def test_directional_reports_accept_only_exact_human_reviewed_unknowns(self) -> None:
+        def digest(value: object) -> str:
+            encoded = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+            return "sha256:" + hashlib.sha256(encoded).hexdigest()
+
+        scope_id = "scanner-boundary"
+        unresolved = {
+            "callers": [{"kind": "ambiguous_target", "path": "tests/test_cli.py", "line": 14, "symbol": "run"}],
+            "consumers": [{"kind": "dynamic_relationship", "path": "scripts/consumer.py", "line": 22, "symbol": "dispatch"}],
+        }
+
+        def report(direction: str) -> dict:
+            return {
+                "policy_version": 1,
+                "policy": "risk-adaptive-bounded",
+                "risk_class": "security_boundary",
+                "status": "BOUNDED_WITH_UNKNOWNS",
+                "seeds": [{"symbol": "scanner", "path": "scripts/scanner.py"}],
+                "directions": [direction],
+                "required_depth": {direction: 2},
+                "reached_depth": {direction: 3},
+                "max_depth": 6,
+                "limits": {"nodes": 150, "edges": 300, "depth": 6, "caller_candidates": 3000},
+                "visited_nodes": 4,
+                "visited_edges": 3,
+                "caller_candidates_scanned": 8 if direction == "callers" else 0,
+                "truncated": False,
+                "unresolved": unresolved[direction],
+                "nodes": [{
+                    "kind": "caller" if direction == "callers" else "consumer",
+                    "symbol": "affected_entry",
+                    "path": f"scripts/{direction}_entry.py",
+                    "line": 5,
+                    "depth": 1,
+                    "impact_status": "affected_but_unchanged",
+                    "disposition": "pending_review",
+                }],
+                "architecture_graph": {"status": "COMPLETE", "coverage_scope_ids": [scope_id]},
+            }
+
+        reports = {direction: report(direction) for direction in ("callers", "consumers")}
+        node_reviews = [
+            {
+                "direction": direction,
+                "report_sha256": digest(reports[direction]),
+                "node_sha256": digest(reports[direction]["nodes"][0]),
+                "disposition": "reviewed_safe",
+            }
+            for direction in ("callers", "consumers")
+        ]
+        unknowns = []
+        for direction, entries in unresolved.items():
+            for index, item in enumerate(entries):
+                unknowns.append({
+                    "id": f"traversal-{direction}-{index}",
+                    "description": "Reviewed unresolved relationship in bounded traversal.",
+                    "disposition": "ACCEPTED_LIMITATION",
+                    "resolution": "Human review found the relationship does not expand the approved scanner scope.",
+                    "evidence": [{"kind": "repository_file", "path": "scripts/project_intelligence.py", "sha256": "sha256:" + "a" * 64}],
+                    "review": {"status": "APPROVED", "reviewer": "human", "approval_reference": "user-approval", "reviewed_at": "2026-10-29T00:00:00Z"},
+                    "traversal_review": {
+                        "direction": direction,
+                        "report_sha256": digest(reports[direction]),
+                        "unresolved_sha256": digest(item),
+                        "disposition": "reviewed_safe",
+                    },
+                })
+        doc = {
+            "change": {"risk_class": "security_boundary", "target_paths": []},
+            "unknowns": unknowns,
+            "traversal": {
+                "policy_version": 2,
+                "policy": "risk-adaptive-bounded",
+                "mode": "directional_reviewed_scope",
+                "scope_id": scope_id,
+                "directions": ["callers", "consumers"],
+                "reports": reports,
+                "node_reviews": node_reviews,
+            },
+        }
+        self.assertEqual(validate_traversal_evidence(doc, []), [])
+        implementation_approved = {
+            **doc,
+            "status": "IMPLEMENTATION_APPROVED",
+            "scope_review": {"status": "APPROVED", "approval_reference": "scope", "approved_at": "2026-10-29"},
+            "unknowns": [],
+        }
+        approval_errors = validate_impact_document(implementation_approved).get("errors", [])
+        self.assertTrue(any("unresolved relationship lacks exactly one reviewed disposition" in error
+                            for error in approval_errors))
+
+        missing_review = {**doc, "unknowns": unknowns[:-1]}
+        self.assertTrue(any("unresolved relationship lacks exactly one reviewed disposition" in error
+                            for error in validate_traversal_evidence(missing_review, [])))
+
+        missing_node_review = json.loads(json.dumps(doc))
+        missing_node_review["traversal"]["node_reviews"].pop()
+        self.assertTrue(any("affected traversal node lacks exactly one scoped review" in error
+                            for error in validate_traversal_evidence(missing_node_review, [])))
+
+        stale_fingerprint = json.loads(json.dumps(doc))
+        stale_fingerprint["unknowns"][0]["traversal_review"]["unresolved_sha256"] = "sha256:" + "0" * 64
+        self.assertTrue(any("does not match an exact unresolved record" in error
+                            for error in validate_traversal_evidence(stale_fingerprint, [])))
+
+        over_budget = json.loads(json.dumps(doc))
+        over_budget["traversal"]["reports"]["callers"]["visited_edges"] = 301
+        self.assertTrue(any("exceeds the approved edge limit" in error
+                            for error in validate_traversal_evidence(over_budget, [])))
+
+        truncated = json.loads(json.dumps(doc))
+        truncated["traversal"]["reports"]["consumers"]["truncated"] = True
+        self.assertTrue(any("truncated directional traversal cannot establish scoped evidence" in error
+                            for error in validate_traversal_evidence(truncated, [])))
+
+        unknown_truncation = json.loads(json.dumps(doc))
+        unknown_truncation["traversal"]["reports"]["consumers"].pop("truncated")
+        self.assertTrue(any("truncated directional traversal cannot establish scoped evidence" in error
+                            for error in validate_traversal_evidence(unknown_truncation, [])))
+
+        malformed_direction = json.loads(json.dumps(doc))
+        malformed_direction["traversal"]["directions"] = [{"unexpected": "mapping"}]
+        self.assertTrue(validate_traversal_evidence(malformed_direction, []))
+
+        malformed_scope_graph = json.loads(json.dumps(doc))
+        malformed_scope_graph["traversal"]["reports"]["callers"]["architecture_graph"] = []
+        self.assertTrue(validate_traversal_evidence(malformed_scope_graph, []))
 
     def test_legacy_artifact_without_risk_profile_remains_compatible(self) -> None:
         self.assertEqual(validate_traversal_evidence({"change": {}}, []), [])

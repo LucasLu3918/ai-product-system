@@ -223,6 +223,8 @@ Automated     49.6%
 
 ## v0.16.2 Install / Preflight Evidence Maturity
 
+Scenario 044 keeps Intelligence and run state in external user storage; publication scan evidence is also private candidate-bound cache data.
+
 Harness 安裝生命週期另由 `tests/evidence/install_preflight_lifecycle.py` 與 `tests/test_harness_enablement.py` 驗證：AIPS CLI 安裝預設不註冊 Runtime adapter；明確安裝後才為 `ACTIVE`，有效停用標記為 `OFF`，無法驗證的狀態為 `UNKNOWN`。卸載保留 Harness ownership 目錄與其中未辨識資料。
 
 以完整隔離 fixture 實際執行 AIPS CLI，而不是只檢查 shell 文字：
@@ -1398,6 +1400,10 @@ Validation-only changes may record a bounded Impact Graph limitation when the re
 
 Lifecycle evidence exercises bounded lexical caller/reference indexing, canonical architecture graph traversal, risk-specific depth and history policy, cycle handling, dynamic-dispatch unknowns, stale/truncated evidence, changed versus unchanged affected paths, and READY evidence validation. Lexical relations remain explicitly inferred; the traversal does not claim compiler-level resolution.
 
+Python caller traversal uses the rebuildable schema-v8 target-path index to select known exact paths before unresolved candidates; known external imports and other paths do not consume the budget. It counts at most `min(max_edges × 10, 3,000)` candidates; a fetched overflow sentinel is excluded from the counter. Candidate-cap exhaustion fails closed as `TRUNCATED/caller_candidate_limit`; lifecycle coverage includes migration/rebuild, exact-path lookup, external/ambiguous classification and cap exhaustion.
+
+High-risk traversal v2 preserves separate caller and consumer reports and validates both at `IMPLEMENTATION_APPROVED` and `READY`. Scoped unresolved lexical findings remain in their original reports and require exact digest-bound Human dispositions; the gate does not reclassify them as resolved or claim complete repository-wide graph coverage.
+
 The publication lifecycle fixture isolates the Python module availability probe before asserting localhost and browser capability blockers, so environment setup does not alter the blocker contract.
 
 目前 Scenario inventory：
@@ -1723,6 +1729,8 @@ The probe denies only a harmless synthetic local Bash command. Unsupported, malf
 新增技能路由案例維持人工 conformance；只有直接證據才可提高自動化成熟度或改變 quality baseline。
 ## Scenario 179 — Evidence-backed Change Impact Unknown Dispositions
 
+Scoped traversal preserves its bounded unknowns and Human disposition evidence; it does not upgrade global graph completeness.
+
 The retrieval lifecycle verifies that a relation-extractor schema upgrade rebuilds unchanged files, removes stale call edges, and uses raw source only for in-memory syntax parsing; indexed output remains redacted. High-risk traversal treats ambiguous lexical targets as candidates, resolves exact canonical nodes when mapped, and retains unmapped architecture seeds as explicit unknowns.
 
 技能與一般方法可重用；專案專屬遊戲規則、遙測與參與者資料留在受治理的專案儲存，不得升格到全域素材。
@@ -1875,6 +1883,8 @@ The existing OpenCode integration lifecycle also verifies hash-bound asset impor
 The cross-profile quality evidence extension is covered by Scenario 258; this creative execution scenario continues to distinguish generated artifacts, image checks, Human review and user acceptance.
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
+
+Skill Explorer evidence remains independent from publication content-safety checks and does not change skill admission.
 
 The Skill Explorer remains an explicit capability-selection surface; optional project governance does not auto-install or activate Skills.
 
@@ -2037,7 +2047,7 @@ Scenario 261 also covers quoted-heredoc PR text, dynamic-argument denials with `
 
 Scenario 261 now also covers the bounded Hook deadline, safe upstream flags, exact short-lived scan evidence, and the distinction between ordinary Doctor visibility and strict Required Checks enforcement.
 
-Scenario 263 records the three exact Dewhollow WebM evidence-path exceptions and regression coverage that keeps near-matches and other WebM files under strict scanning.
+Scenario 263 records WebM metadata scanning, resource bounds, malformed-input failure behavior and final-tree/history regression coverage.
 
 Scenario 260 publication coverage includes exact-candidate and full-history secret scanning, strict failure on incomplete scans, and continued provider-token/private-key detection.
 
@@ -2115,7 +2125,7 @@ Scenario 268 verifies opt-in local API workflow import, scan and inspection; bou
 
 Moving legacy governance records to an external backup does not alter staged-content scanning or permit skipped safety checks.
 
-The candidate scanner recognizes only the approved generated-password and parameterized SQL expression shapes as non-literal values. High-entropy literal assignments remain detectable; JSON text is bounded at 8,000,000 bytes and other text at 2,000,000 bytes, with oversized inputs blocked. The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; there is no extension-wide exemption, and the 2,000,000-byte text limit remains unchanged. The same exact relative paths are excluded in any repository using the shared policy.
+The candidate scanner recognizes only the approved generated-password and parameterized SQL expression shapes as non-literal values. High-entropy literal assignments remain detectable; JSON text is bounded at 8,000,000 bytes and other text at 2,000,000 bytes, with oversized inputs blocked. WebM has no path exceptions: bounded EBML parsing scans declared text metadata, skips media payloads, and blocks malformed or over-limit input under a 32 MiB default.
 
 The candidate/history publication scanner separately classifies policy, Git-object and file-read failures; Scenario 261 verifies those failures remain blocked without exposing paths or exception text.
 

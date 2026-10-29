@@ -1,29 +1,58 @@
 version: 1
 candidate:
-  base_sha: a46c65fe69d58f0b92662627f9360fa082caf05b
-  changed_files_hash: cbc473f6d36956425927e91eecc3e699cd1b2c8bf27b15719278dde76fc746b7
+  base_sha: 16a924c3e2129647fcd46111addb4e535a9044cc
+  changed_files_hash: ff4a6845522823c36970d525129d04a1271c49ca084f00bce93c8807a6be010d
 change:
-  id: runtime-policy-exact-destination
-  summary: Match Runtime Policy destination conditions exactly and reject malformed conditions while preserving the independent Resource Authorization boundary.
+  id: retrieval-target-path-index-v8
+  summary: Add exact target-path indexing and bounded directional Change Impact evidence, then scan WebM metadata in staged, worktree and publication-candidate content with fail-closed limits.
   boundary:
-    - Runtime Policy destination condition validation and exact host, port, method, and path matching
-    - Claude and Gemini native hook decisions for policy allow and deny cases
-    - ComfyUI Resource Authorization separation and canonical documentation/conformance
+    - Retrieval schema v8 migration, full rebuild and composite target-path index lifecycle
+    - Retrieval Intelligence impact traversal caller selection, exact path/line resolution and evidence reporting
+    - bounded caller-candidate exhaustion behavior and traversal contract, preserving the 3,000 hard cap
+    - Scenario 175, canonical Change Impact/Project Intelligence policy, Human project guidance, documentation placement and changelog
+    - Version 2 scoped directional Change Impact evidence with implementation-approval-time validation and digest-bound Human dispositions for bounded lexical unknowns
+    - WebM EBML metadata scanning across worktree, final tree and candidate history; exact-path exceptions removed, 32 MiB default input bound, malformed/unsupported inputs fail closed
+    - Redacted secret detection in declared WebM text fields while skipping media payloads, with resource and invalid-encoding checks
+    - Update Architecture diagrams with the WebM metadata-only candidate scan and external-state boundary; runtime topology remains unchanged
 review_evidence:
   required: false
 matrix:
-  - boundary: Runtime Policy exact destination matching and fail-closed validation
-    reason: A policy allow must apply only to the supplied exact endpoint conditions; malformed conditions must not be ignored or broaden access.
+  - boundary: Exact caller target filtering and bounded candidate scan
+    reason: Unrelated same-name lexical callers must not consume the relevant-edge budget, while candidate exhaustion must remain explicitly incomplete and bounded.
     checks:
-      static_lint: {applicable: true, evidence: "Exact-candidate Integration Gate ruff-critical and ruff-debt-ratchet checks"}
-      unit: {applicable: true, evidence: "tests/test_runtime_policy.py"}
-      integration: {applicable: true, evidence: "tests/evidence/runtime_policy_lifecycle.py — Claude/Gemini hook lifecycle"}
-      contract: {applicable: true, evidence: "tests/validation/runtime_policy_contracts.py and repository validator"}
-      e2e: {applicable: true, evidence: "tests/evidence/runtime_policy_lifecycle.py — synthetic hook requests verify exact endpoint allow and mismatch denial"}
-      security: {applicable: true, evidence: "Runtime Policy unit, contract, native Hook lifecycle and mandatory candidate secret scan in exact-candidate Integration Gate"}
-      migration_recovery: {applicable: false, na_reason: "No persisted state, schema migration, or recovery behavior changes."}
-      cli_harness: {applicable: true, evidence: "tests/evidence/runtime_policy_lifecycle.py — managed Claude and Gemini native hook behavior"}
-      docs_schema: {applicable: true, evidence: "Publish preview documentation closure/placement plus tests/validate_repository.py and scenario conformance checks"}
+      static_lint: {applicable: true, evidence: "Ruff/compile checks for scripts/retrieval_storage.py, scripts/retrieval_intelligence.py and changed Python lifecycle/contract files"}
+      unit: {applicable: true, evidence: "tests/evidence/change_impact_traversal_lifecycle.py — exact target path before noise, unresolved candidate cap and exact edge budget"}
+      integration: {applicable: true, evidence: "tests/evidence/retrieval_intelligence_lifecycle.py — schema-v7 migration/rebuild, stale-edge removal, exact path persistence and indexed query plan; plus traversal lifecycle"}
+      contract: {applicable: true, evidence: "tests/validation/change_impact_traversal_contracts.py — traversal defaults, candidate multiplier and fixed 3,000 hard cap"}
+      e2e: {applicable: true, evidence: "AIPS impact-traverse on caller-only seed and original WebM scanner seed after rebuilding the v8 index"}
+      security: {applicable: true, evidence: "Only explicit local imports/re-exports and same-file definitions receive exact paths; ambiguous/unknown calls remain bounded and fail-closed; mandatory candidate secret scan in Integration Gate"}
+      migration_recovery: {applicable: true, evidence: "tests/evidence/retrieval_intelligence_lifecycle.py — additive schema-v7 migration followed by forced full rebuild and removal of stale relation edges"}
+      cli_harness: {applicable: true, evidence: "aips intelligence impact-traverse caller-direction output contract and stable facade"}
+      docs_schema: {applicable: true, evidence: "Scenario 175, Human Architecture Overview/Project Intelligence/Technology Guide/Conformance, documentation placement closure, repository validator, and YAML schema validation"}
+  - boundary: Directional scoped traversal bundle and reviewed unknown dispositions
+    reason: High-risk evidence must preserve independent caller/consumer reports and observed unknowns while allowing only exact, current, Human-approved safe limitations under strict per-report bounds.
+    checks:
+      static_lint: {applicable: true, evidence: "Compile and static checks for scripts/project_intelligence.py and changed Python lifecycle/contract files"}
+      unit: {applicable: true, evidence: "tests/evidence/change_impact_traversal_lifecycle.py — exact report/finding digests, missing/duplicate/stale dispositions, direction/depth and truncation"}
+      integration: {applicable: true, evidence: "tests/validation/change_impact_resolution_contracts.py and `aips intelligence impact-validate` at IMPLEMENTATION_APPROVED/READY"}
+      contract: {applicable: true, evidence: "tests/validation/change_impact_traversal_contracts.py — preserved 150/300/6/3000 bounds and risk depths"}
+      e2e: {applicable: true, evidence: "Validate two scoped impact-traverse reports over identical seeds and scope; keep source report status intact"}
+      security: {applicable: true, evidence: "Reject truncated, stale, extra, duplicate, missing or unapproved findings; verify in-root current evidence hashes and human reviewer metadata; preserve global partial coverage"}
+      migration_recovery: {applicable: false, evidence: "No persistence/schema change in the scoped evidence contract"}
+      cli_harness: {applicable: true, evidence: "AIPS impact-validate fails closed before IMPLEMENTATION_APPROVED and preserves legacy single-report behavior"}
+      docs_schema: {applicable: true, evidence: "Change Impact template/protocol, Scenario 175, Human Project Intelligence/Technology Guide/Conformance, and repository validator"}
+  - boundary: Bounded WebM metadata secret scanning
+    reason: WebM metadata must receive the same strict secret checks as text while binary media payloads stay unparsed and malformed or oversized inputs fail closed.
+    checks:
+      static_lint: {applicable: true, evidence: "Python compile and repository static contracts for scripts/check_secret_leakage.py and affected evidence tests"}
+      unit: {applicable: true, evidence: "tests/test_secret_scan_baseline_compat.py — metadata and nested TagString detection, redaction, RFC 8794 NUL termination, malformed UTF-8, unknown-size Cluster boundary and 32 MiB limit"}
+      integration: {applicable: true, evidence: "tests/evidence/secret_safety.py — strict worktree scan detects WebM secrets and blocks malformed input"}
+      contract: {applicable: true, evidence: "tests/test_secret_scan_baseline_compat.py — configured WebM policy bound, no exact-path exemptions, and parser hard-cap validation"}
+      e2e: {applicable: true, evidence: "tests/evidence/secret_scan_publication_lifecycle.py — committed WebM secret detection and retention in candidate history; malformed candidate WebM blocks"}
+      security: {applicable: true, evidence: "Secret values redacted; byte, metadata, element-count and nesting bounds enforced; parser ignores media payload bytes and rejects malformed/unsupported structures"}
+      migration_recovery: {applicable: false, evidence: "No persistent scanner state or schema changes for WebM metadata parsing"}
+      cli_harness: {applicable: true, evidence: "Shared scanner entrypoint is used by strict worktree and publication-candidate modes"}
+      docs_schema: {applicable: true, evidence: "Scenario 263, docs/ARCHITECTURE.md, Architecture Overview, Security Assurance, Technology Guide, Project Intelligence, Harness, Documentation Map/Sync, system lifecycle/overview diagrams, Human Conformance, Maintenance, Installation, User Guide and orchestration Conformance documentation"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []

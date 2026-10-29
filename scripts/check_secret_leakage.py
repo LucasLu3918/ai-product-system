@@ -27,9 +27,63 @@ SKIP_DIRS = {
 BINARY_EXT = {
     ".png", ".jpg", ".jpeg", ".gif", ".webp", ".avif", ".ico", ".pdf",
     ".zip", ".gz", ".tar", ".7z", ".woff", ".woff2", ".ttf", ".otf",
-    ".mp3", ".mp4", ".m4a", ".mov", ".sqlite", ".db",
+    ".mp3", ".mp4", ".m4a", ".mov", ".webm", ".sqlite", ".db",
 }
 FONT_EXT = {".woff", ".woff2", ".ttf", ".otf"}
+WEBM_MAX_BYTES = 32 * 1024 * 1024
+WEBM_MAX_ELEMENTS = 100_000
+WEBM_MAX_DEPTH = 16
+WEBM_MAX_METADATA_BYTES = 1024 * 1024
+WEBM_TEXT_ELEMENTS = {
+    0x7BA9,  # Info/Title
+    0x4D80,  # Info/MuxingApp
+    0x5741,  # Info/WritingApp
+    0x7384,  # SegmentFilename
+    0x536E,  # TrackEntry/Name
+    0x22B59C,  # TrackEntry/Language
+    0x22B59D,  # TrackEntry/LanguageBCP47
+    0x86,  # TrackEntry/CodecID
+    0x258688,  # TrackEntry/CodecName
+    0x3A9697,  # TrackEntry/CodecSettings
+    0x3B4040,  # TrackEntry/CodecInfoURL
+    0x26B240,  # TrackEntry/CodecDownloadURL
+    0x45A3,  # SimpleTag/TagName
+    0x4487,  # SimpleTag/TagString
+    0x447A,  # SimpleTag/TagLanguage
+    0x447B,  # SimpleTag/TagLanguageBCP47
+    0x85,  # ChapterDisplay/ChapString
+    0x437C,  # ChapterDisplay/ChapLanguage
+    0x437D,  # ChapterDisplay/ChapLanguageBCP47
+    0x437E,  # ChapterDisplay/ChapCountry
+    0x466E,  # AttachedFile/FileName
+    0x467E,  # AttachedFile/FileDescription
+    0x4660,  # AttachedFile/FileMimeType
+}
+WEBM_ASCII_STRING_ELEMENTS = {
+    0x22B59C, 0x22B59D, 0x86, 0x3B4040, 0x26B240,
+    0x447A, 0x447B, 0x437C, 0x437D, 0x437E, 0x4660,
+}
+WEBM_METADATA_MASTERS = {
+    0x1A45DFA3,  # EBML
+    0x1549A966,  # Info
+    0x1654AE6B,  # Tracks
+    0xAE,  # TrackEntry
+    0x1254C367,  # Tags
+    0x7373,  # Tag
+    0x67C8,  # SimpleTag
+    0x1043A770,  # Chapters
+    0x45B9,  # EditionEntry
+    0xB6,  # ChapterAtom
+    0x80,  # ChapterDisplay
+    0x1941A469,  # Attachments
+    0x61A7,  # AttachedFile
+}
+WEBM_SEGMENT_LEVEL1 = {
+    0x114D9B74, 0x1549A966, 0x1654AE6B, 0x1F43B675,
+    0x1C53BB6B, 0x1941A469, 0x1043A770, 0x1254C367,
+}
+WEBM_SEGMENT_ELEMENTS = WEBM_SEGMENT_LEVEL1 | {0xBF, 0xEC}
+WEBM_CLUSTER_CHILDREN = {0xE7, 0x5854, 0xA7, 0xAB, 0xA3, 0xA0, 0xAF, 0xBF, 0xEC}
 PLACEHOLDER_HINTS = {
     "placeholder", "example", "dummy", "fake", "changeme", "replace_me",
     "replace-me", "your_", "your-", "xxxxx", "redacted", "sample", "fixture",
@@ -110,6 +164,10 @@ def load_policy(path: Path) -> tuple[dict[str, Any], str]:
     json_limit = limits.get("max_json_file_bytes", limits["max_file_bytes"])
     if not isinstance(json_limit, int) or json_limit < limits["max_file_bytes"]:
         raise ScanError("secret-scan policy max_json_file_bytes must be an integer at least max_file_bytes",
+                        reason_code="SECRET_SCAN_POLICY_INVALID", phase="content_scan.policy_validation")
+    webm_limit = limits.get("max_webm_file_bytes", WEBM_MAX_BYTES)
+    if not isinstance(webm_limit, int) or isinstance(webm_limit, bool) or not 1 <= webm_limit <= WEBM_MAX_BYTES:
+        raise ScanError("secret-scan policy max_webm_file_bytes must be a positive integer no greater than 32 MiB",
                         reason_code="SECRET_SCAN_POLICY_INVALID", phase="content_scan.policy_validation")
     generated = policy.get("generated_paths") or []
     lockfiles = policy.get("lockfiles") or {}
@@ -236,6 +294,139 @@ def scan_m4a(payload: bytes, location: str, policy: dict[str, Any], findings: li
     return None
 
 
+class WebMInspectionError(ValueError):
+    """Malformed, unsupported, or resource-exhausting EBML/WebM input."""
+
+
+def _ebml_vint(data: bytes, offset: int, *, element_id: bool = False) -> tuple[int, int, bool]:
+    if offset >= len(data):
+        raise WebMInspectionError("truncated EBML variable integer")
+    first = data[offset]
+    mask = 0x80
+    width = 1
+    while width <= (4 if element_id else 8) and not first & mask:
+        mask >>= 1
+        width += 1
+    if width > (4 if element_id else 8) or offset + width > len(data):
+        raise WebMInspectionError("invalid EBML variable integer")
+    value = first if element_id else first & (mask - 1)
+    for byte in data[offset + 1:offset + width]:
+        value = (value << 8) | byte
+    unknown = not element_id and value == (1 << (7 * width)) - 1
+    return value, offset + width, unknown
+
+
+def scan_webm(payload: bytes, location: str, policy: dict[str, Any], findings: list[dict[str, Any]], *, revision: str | None = None) -> str | None:
+    """Scan EBML WebM text fields with finite size, depth, element and text budgets."""
+    limit = policy.get("limits", {}).get("max_webm_file_bytes", WEBM_MAX_BYTES)
+    if len(payload) > limit:
+        return f"WebM exceeds {limit // (1024 * 1024)} MiB publication limit: {normalize_path(location)}"
+
+    count = 0
+    metadata_size = 0
+
+    def children(start: int, end: int, *, depth: int, container: str) -> int:
+        nonlocal count, metadata_size
+        if depth > WEBM_MAX_DEPTH:
+            raise WebMInspectionError("EBML nesting exceeds limit")
+        position = start
+        while position < end:
+            element_start = position
+            element, position, _ = _ebml_vint(payload, position, element_id=True)
+            size, content_start, unknown = _ebml_vint(payload, position)
+            position = content_start
+            count += 1
+            if count > WEBM_MAX_ELEMENTS:
+                raise WebMInspectionError("EBML element count exceeds limit")
+            if container == "unknown-cluster" and element in WEBM_SEGMENT_LEVEL1:
+                return element_start
+            if container == "segment" and element not in WEBM_SEGMENT_ELEMENTS:
+                raise WebMInspectionError("unsupported Segment child element")
+            if container == "unknown-cluster" and element not in WEBM_CLUSTER_CHILDREN:
+                raise WebMInspectionError("unsupported unknown-sized Cluster child")
+            if unknown:
+                if container == "segment" and element == 0x1F43B675:
+                    next_position = children(position, end, depth=depth + 1, container="unknown-cluster")
+                    if next_position <= element_start:
+                        raise WebMInspectionError("invalid unknown-sized Cluster boundary")
+                    position = next_position
+                    continue
+                if container == "segment" and element == 0x18538067:
+                    element_end = end
+                else:
+                    raise WebMInspectionError("unsupported unknown-sized EBML element")
+            else:
+                element_end = position + size
+                if element_end > end:
+                    raise WebMInspectionError("EBML element exceeds parent boundary")
+            if element in WEBM_TEXT_ELEMENTS:
+                metadata_size += size
+                if metadata_size > WEBM_MAX_METADATA_BYTES:
+                    raise WebMInspectionError("WebM text metadata exceeds limit")
+                text_bytes = payload[position:element_end].split(b"\x00", 1)[0]
+                if element in WEBM_ASCII_STRING_ELEMENTS and any(byte < 0x20 or byte > 0x7E for byte in text_bytes):
+                    raise WebMInspectionError("invalid ASCII in WebM text metadata")
+                try:
+                    text = text_bytes.decode("utf-8", errors="strict")
+                except UnicodeError as exc:
+                    raise WebMInspectionError("invalid UTF-8 in WebM text metadata") from exc
+                scan_text(text, location, policy, strict=True, findings=findings, revision=revision)
+            elif element in WEBM_METADATA_MASTERS:
+                if element == 0x1A45DFA3:
+                    children(position, element_end, depth=depth + 1, container="header")
+                elif element == 0x18538067:
+                    children(position, element_end, depth=depth + 1, container="segment")
+                else:
+                    children(position, element_end, depth=depth + 1, container="metadata")
+            elif element == 0x1F43B675 and not unknown:
+                # Cluster payload is media data; declared boundaries are validated and skipped.
+                pass
+            position = element_end
+        if position != end:
+            raise WebMInspectionError("invalid EBML parent boundary")
+        return position
+
+    try:
+        if not payload:
+            raise WebMInspectionError("empty WebM")
+        header_id, header_pos, _ = _ebml_vint(payload, 0, element_id=True)
+        header_size, header_content, header_unknown = _ebml_vint(payload, header_pos)
+        if header_id != 0x1A45DFA3 or header_unknown:
+            raise WebMInspectionError("missing EBML header")
+        header_end = header_content + header_size
+        if header_end > len(payload):
+            raise WebMInspectionError("truncated EBML header")
+        doctype_values: list[str] = []
+        position = header_content
+        while position < header_end:
+            element, p, _ = _ebml_vint(payload, position, element_id=True)
+            size, content, unknown = _ebml_vint(payload, p)
+            if unknown or content + size > header_end:
+                raise WebMInspectionError("invalid EBML header field boundary")
+            count += 1
+            if count > WEBM_MAX_ELEMENTS:
+                raise WebMInspectionError("EBML element count exceeds limit")
+            if element == 0x4282:
+                doctype_values.append(payload[content:content + size].decode("ascii", errors="strict"))
+            position = content + size
+        if doctype_values != ["webm"]:
+            raise WebMInspectionError("EBML DocType is not webm")
+        # Parse metadata within the finite EBML header after validating its DocType.
+        children(header_content, header_end, depth=1, container="header")
+        position = header_end
+        segment_id, p, _ = _ebml_vint(payload, position, element_id=True)
+        segment_size, segment_content, segment_unknown = _ebml_vint(payload, p)
+        if segment_id != 0x18538067:
+            raise WebMInspectionError("missing WebM Segment")
+        segment_end = len(payload) if segment_unknown else segment_content + segment_size
+        if segment_end != len(payload):
+            raise WebMInspectionError("trailing data outside WebM Segment")
+        children(segment_content, segment_end, depth=1, container="segment")
+    except (WebMInspectionError, UnicodeError, RecursionError):
+        return f"invalid or unsupported WebM: {normalize_path(location)}"
+    return None
+
+
 def scan_font(payload: bytes, location: str, policy: dict[str, Any], findings: list[dict[str, Any]], *, revision: str | None = None) -> str | None:
     from media_metadata import MediaInspectionError, extract_metadata
     try:
@@ -308,12 +499,14 @@ def iter_files(root: Path, explicit: list[str], policy: dict[str, Any]) -> Itera
         for name in files:
             path = Path(base) / name
             relative = path.relative_to(root).as_posix()
-            if not generated_path(relative, policy) and (path.suffix.lower() not in BINARY_EXT or path.suffix.lower() in FONT_EXT | {".m4a", ".avif"}):
+            if not generated_path(relative, policy) and (path.suffix.lower() not in BINARY_EXT or path.suffix.lower() in FONT_EXT | {".m4a", ".avif", ".webm"}):
                 yield path
 
 
 def max_scan_file_bytes(path: str, policy: dict[str, Any]) -> int:
     limits = policy["limits"]
+    if PurePosixPath(path).suffix.lower() == ".webm":
+        return limits.get("max_webm_file_bytes", WEBM_MAX_BYTES)
     if PurePosixPath(path).suffix.lower() == ".json":
         return limits.get("max_json_file_bytes", limits["max_file_bytes"])
     return limits["max_file_bytes"]
@@ -327,6 +520,20 @@ def scan_worktree(root: Path, policy: dict[str, Any], *, strict: bool, paths: li
         if generated_path(relative, policy):
             continue
         try:
+            if path.suffix.lower() == ".webm":
+                webm_limit = max_scan_file_bytes(relative, policy)
+                if path.stat().st_size > webm_limit:
+                    blockers.append(f"WebM exceeds {webm_limit // (1024 * 1024)} MiB publication limit: {normalize_path(relative)}")
+                    continue
+                with path.open("rb") as source:
+                    payload = source.read(webm_limit + 1)
+                if len(payload) > webm_limit:
+                    blockers.append(f"WebM exceeds {webm_limit // (1024 * 1024)} MiB publication limit: {normalize_path(relative)}")
+                    continue
+                blocker = scan_webm(payload, relative, policy, findings)
+                if blocker:
+                    blockers.append(blocker)
+                continue
             if path.suffix.lower() == ".avif":
                 if path.stat().st_size > 8 * 1024 * 1024:
                     blockers.append(f"raster exceeds 8 MiB publication limit: {relative}")
@@ -418,11 +625,19 @@ def scan_candidate(root: Path, base: str, head: str, policy: dict[str, Any], *,
     # Scan the committed final tree, not a possibly dirty filesystem view.
     for mode, blob_sha, path in decode_tree_paths(git(root, "ls-tree", "-rz", "--full-tree", head_sha)):
         suffix = PurePosixPath(path).suffix.lower()
-        if mode == "160000" or generated_path(path, policy) or (suffix in BINARY_EXT and suffix not in FONT_EXT | {".m4a", ".avif"}):
+        if mode == "160000" or generated_path(path, policy) or (suffix in BINARY_EXT and suffix not in FONT_EXT | {".m4a", ".avif", ".webm"}):
             continue
         if mode == "120000":
             continue
         try:
+            if suffix == ".webm":
+                if int(git_text(root, "cat-file", "-s", blob_sha)) > max_scan_file_bytes(path, policy):
+                    blockers.append(f"WebM exceeds {max_scan_file_bytes(path, policy) // (1024 * 1024)} MiB publication limit: {normalize_path(path)}")
+                    continue
+                blocker = scan_webm(git(root, "cat-file", "blob", blob_sha), path, policy, findings)
+                if blocker:
+                    blockers.append(blocker)
+                continue
             if suffix == ".avif":
                 if int(git_text(root, "cat-file", "-s", blob_sha)) > 8 * 1024 * 1024:
                     blockers.append(f"raster exceeds 8 MiB publication limit: {normalize_path(path)}")
@@ -489,10 +704,18 @@ def scan_candidate(root: Path, base: str, head: str, policy: dict[str, Any], *,
                 blockers.append("candidate history contains a path that is not UTF-8")
                 continue
             suffix = PurePosixPath(path).suffix.lower()
-            if generated_path(path, policy) or (suffix in BINARY_EXT and suffix not in FONT_EXT | {".m4a", ".avif"}):
+            if generated_path(path, policy) or (suffix in BINARY_EXT and suffix not in FONT_EXT | {".m4a", ".avif", ".webm"}):
                 continue
             try:
                 object_spec = f"{commit}:{path}"
+                if suffix == ".webm":
+                    if int(git_text(root, "cat-file", "-s", object_spec)) > max_scan_file_bytes(path, policy):
+                        blockers.append(f"candidate history WebM exceeds {max_scan_file_bytes(path, policy) // (1024 * 1024)} MiB publication limit: {normalize_path(path)}")
+                        continue
+                    blocker = scan_webm(git(root, "cat-file", "blob", object_spec), path, policy, findings, revision=commit)
+                    if blocker:
+                        blockers.append(blocker)
+                    continue
                 if suffix == ".avif":
                     if int(git_text(root, "cat-file", "-s", object_spec)) > 8 * 1024 * 1024:
                         blockers.append(f"candidate history raster exceeds 8 MiB publication limit: {normalize_path(path)}")

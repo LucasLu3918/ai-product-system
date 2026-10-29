@@ -14,6 +14,8 @@ Project-local Harness state is not created. `aips attach` initializes or imports
 
 Commit-time media checks inspect supported AVIF metadata through the existing content-safety path; they do not broaden native runtime interception.
 
+Native Runtime adapters do not implement the publication content scanner. Exact-candidate Prepare and the Integration Gate use the shared AIPS scanner; WebM scanning inspects bounded declared metadata, skips media payloads, and does not upgrade OpenCode's ADVISORY enforcement status.
+
 The creative workspace import is an explicit local CLI workflow using the existing AIPS launcher and private metadata cache.
 
 
@@ -59,6 +61,8 @@ AIPS Core
 `aips publish doctor --worktree <root> --worktree-details` provides read-only phase and evidence diagnostics. Runtime adapters may use its recovery guidance, while native permission and Human approval remain separate.
 
 ## Native Runtime Adapters
+
+The Matt Pocock Skill Explorer remains a separate discovery feature; the shared publication scanner does not change adapter capabilities or skill admission.
 
 Qwen ComfyUI workflow support adds no Host adapter or native permission. It remains within AIPS Creative execution and Scenario 236.
 

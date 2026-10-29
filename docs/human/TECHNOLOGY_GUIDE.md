@@ -104,6 +104,8 @@ Local hybrid retrieval 組合 lexical、symbols、structural relation、tests、
 
 Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEMENTATION_APPROVED` 進入核准範圍；實作後對帳 actual diff 與 declared impact，只有完整記錄 reconciliation evidence 才能標記 `READY`。
 
+High-risk Change Impact validates traversal before implementation approval. A version 2 scoped bundle may keep callers and consumers in separate reports; each must share the same seeds, risk class and exact graph scope, remain non-truncated, and stay under its own 150-node, 300-edge, six-hop and 3,000-caller-candidate limits. Every unresolved record requires an exact digest link and explicit Human-approved reviewed-safe limitation with verifiable current evidence. Global graph coverage remains unchanged.
+
 ## Execution
 
 The publication path resolves literal `git -C <path> push` to its actual target worktree before candidate validation, so caller cwd cannot redirect candidate identity.
@@ -177,6 +179,8 @@ Approval CLI 在既有 dispatch 中提出 high-assurance exact-operation proposa
 公開 Python Facade 保留同一函式／例外物件，Discovery、Query Terms、Creative Trace 與 Asset Validation 分別處理有界掃描、查詢詞、隱私 trace 與影像容器驗證。任意 MCP／自訂工具仍不在原生檔案 Guard 的驗證範圍。
 
 Impact candidate extraction is bounded and read-only; its source references remain unreviewed and are not execution or approval evidence.
+
+For Python callers, Impact traversal uses the rebuildable schema-v8 composite target-path index to select known exact-path rows before unresolved candidates; other languages retain lexical resolution. Known other-module paths and declared external imports are excluded before the budget. It counts at most `min(max_edges × 10, 3,000)` candidates; one sentinel may be fetched to detect overflow but is excluded from the reported count. Exhaustion is reported as incomplete rather than silently dropping possible callers. Older disposable indexes are migrated and fully rebuilt.
 
 The shared validation-path inventory classifies known roots and prefixes for both CI planners. Each planner keeps its own risk and validator-selection semantics; unknown or malformed paths continue to select full validation.
 
@@ -303,7 +307,7 @@ Scenario 269 changes Turn Context preparation wording only; creative execution, 
 
 ## Security & Governance
 
-The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; all other WebM paths and near-matches remain subject to strict candidate scanning.
+WebM files have no path exceptions. The strict candidate scanner validates bounded EBML structure, scans declared text metadata, skips media payloads, and blocks malformed or oversized files; the default file limit is 32 MiB.
 
 Personal publication runs an exact-candidate and full-history scan. Only the documented generated-password and parameterized SQL forms are treated as non-literal values; provider tokens, private keys and high-entropy literals remain detectable. The content-safety conformance suite verifies that oversized or incomplete inputs block publication.
 
@@ -374,7 +378,7 @@ Scenario 261 regression coverage includes quoted-heredoc PR bodies and content-s
 
 The Creative lifecycle test uses synthetic local providers to verify Base/Distilled profile settings and one-to-eight ordered staged-reference bindings. It does not certify real inference, image quality, independent review or user acceptance.
 
-Scenario 263 records the three exact Dewhollow WebM evidence-path exceptions and regression coverage that keeps near-matches and other WebM files under strict scanning.
+Scenario 263 records WebM metadata scanning, resource bounds, malformed-input failure behavior and final-tree/history regression coverage.
 
 Skill Explorer 的文件映射不影響 Creative runtime；本次增加的 FLUX 3 Klein 驗證只涵蓋 live `TextGenerate` schema 與最終 payload 相容性，MPS 推論仍未驗證。
 
@@ -704,7 +708,7 @@ The JSON fallback is non-authorizing and cannot substitute for a successful full
 
 PR-bound scan evidence is non-authorizing and cannot substitute for the full candidate and history scan.
 
-The shared publication scanner recognizes only the documented generated-password and parameterized SQL forms as non-literal assignment values. Known provider tokens, private keys and high-entropy literals remain detectable, and oversized text or JSON remains fail-closed under its configured finite bound. The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; there is no extension-wide exemption, and the 2,000,000-byte text limit remains unchanged. The same exact relative paths are excluded in any repository using the shared policy.
+The shared publication scanner recognizes only the documented generated-password and parameterized SQL forms as non-literal assignment values. Known provider tokens, private keys and high-entropy literals remain detectable, and oversized text or JSON remains fail-closed under its configured finite bound. WebM has no path exceptions: declared text metadata is scanned with bounded EBML parsing, media payloads are skipped, and the configured 32 MiB default limit applies.
 
 The optional `AIPS_ENFORCE_REQUIRED_CHECKS=1` merge gate does not change the content-safety scanner contract or candidate scanning.
 

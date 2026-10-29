@@ -6,6 +6,8 @@ Scenario 275 covers optional per-project governance modes with `off` as the defa
 
 ## Scenario 044 — External AIPS State Lifecycle
 
+Intelligence, run state, and candidate-bound scanner evidence remain in external user state rather than project source.
+
 `aips attach`, `aips detach` and preflight do not create project-local `.ai/`, `.aips/`, Git excludes, hooks or settings. Existing `.ai/intelligence` imports by validated copy and preserves its source. Run and Change Impact state use the external user-state store. Evidence: `tests/evidence/install_preflight_lifecycle.py`, `tests/evidence/project_intelligence_lifecycle.py`, and `tests/evidence/identity_resume_isolation.py`.
 
 
@@ -858,6 +860,8 @@ Current automated inventory: 27 deterministic + 98 lifecycle + 54 agent_eval = 1
 
 ## Scenario 181 — OpenTelemetry Telemetry Projection & Export
 
+Dashboard and telemetry projections remain read-only; neither is scanner evidence or publication authority.
+
 Lifecycle evidence validates bounded existing-event extensions; deterministic OTLP projection/replay; exact pinned GenAI field names; duration spans only for complete timestamp pairs; Gate waiting intervals; independent-review correlation without inherited context; HTTPS/loopback policy; host-only credentials; content/secret rejection; local receiver behavior; and transport-failure degradation without changing AIPS execution results.
 
 Current automated inventory: 27 deterministic + 100 lifecycle + 54 agent_eval = 181 / 181; manual 0; uncovered 0.
@@ -1118,6 +1122,8 @@ The branch lifecycle report classifies remote branches using current exact-SHA P
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+Skill Explorer conformance remains separate from the shared exact-candidate publication scanner.
+
 Skill catalog selection is explicit and remains independent of per-project governance preferences.
 
 Creative ComfyUI workflow changes do not add Skills, Skill Explorer routes, or installation permissions.
@@ -1217,7 +1223,7 @@ The creative profile registry supports FLUX Klein Base and Distilled through the
 
 External governance state migration leaves staged-content scanning and native commit diagnostics enabled.
 
-The only WebM exceptions are the three exact repository-relative Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; near-matches and all other WebM files retain strict scanning, and the 2,000,000-byte text limit is unchanged.
+WebM has no path exceptions. The scanner uses bounded EBML parsing to inspect declared text metadata, skips media payloads, and blocks malformed/unsupported input or files above the configured 32 MiB default; ordinary text limits remain unchanged.
 
 Mandatory candidate scanning covers final-tree and full-history inputs, preserves provider-token/private-key and literal-assignment detection, and fails closed above the configured JSON and general text limits.
 

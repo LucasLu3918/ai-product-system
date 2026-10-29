@@ -47,6 +47,7 @@ def open_db(path: Path) -> tuple[sqlite3.Connection, bool]:
             source_line INTEGER NOT NULL,
             relation TEXT NOT NULL,
             content_hash TEXT NOT NULL,
+            resolved_target_path TEXT,
             PRIMARY KEY(source_path, source_line, target_name, relation)
         );
         CREATE INDEX IF NOT EXISTS idx_relations_target ON relations(target_name, relation);
@@ -86,6 +87,29 @@ def open_db(path: Path) -> tuple[sqlite3.Connection, bool]:
             PRIMARY KEY(ancestor, descendant)
         );
         """
+    )
+    relation_columns = {
+        str(row["name"])
+        for row in conn.execute("PRAGMA table_info(relations)").fetchall()
+    }
+    if "resolved_target_path" not in relation_columns:
+        conn.execute("ALTER TABLE relations ADD COLUMN resolved_target_path TEXT")
+    expected_target_index = (
+        "target_name", "relation", "resolved_target_path", "source_path", "source_line",
+    )
+    existing_target_index = conn.execute(
+        "SELECT 1 FROM sqlite_master WHERE type = 'index' AND name = 'idx_relations_target_path'"
+    ).fetchone()
+    if existing_target_index:
+        indexed_columns = tuple(
+            str(row["name"])
+            for row in conn.execute("PRAGMA index_info(idx_relations_target_path)").fetchall()
+        )
+        if indexed_columns != expected_target_index:
+            conn.execute("DROP INDEX idx_relations_target_path")
+    conn.execute(
+        "CREATE INDEX IF NOT EXISTS idx_relations_target_path "
+        "ON relations(target_name, relation, resolved_target_path, source_path, source_line)"
     )
     fts_available = True
     try:

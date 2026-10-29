@@ -12,6 +12,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+Creative artwork documentation remains a separate placement surface; metadata scanning does not establish visual or provenance acceptance.
+
 Native `git -C <path> push` validation follows the explicit target worktree, including its candidate SHA and scan evidence; invalid or dynamic target paths remain blocked.
 
 Publication parser changes preserve exact-candidate binding: upstream branch shorthand is accepted only for the checked-out branch and is normalized to the observed full HEAD SHA/ref. The regular scan, authorization and required-check boundaries still apply.
@@ -346,6 +348,8 @@ Focused Intelligence context evidence must distinguish storage deduplication fro
 
 ## Impact-derived regression testing
 
+Requirement-planning evidence and impact-derived regression coverage stay bound to their own validated scope; a scanner pass does not approve requirements.
+
 For the publication Core boundary, review Hook timing/redaction, Doctor policy states, exact evidence invalidation, upstream flag parsing and full candidate/history scanning against the final matrix-bound diff.
 
 Runtime Policy destination-matching changes require evidence for exact host, port, method, and path matches plus fail-closed handling of unknown or malformed conditions; keep this distinct from Resource Authorization profile validation.
@@ -538,7 +542,7 @@ When publication preflight changes, keep the working-tree preview, content safet
 
 The optional OpenAPI validator is installed only by `aips openapi install` into the managed AIPS venv using pinned `requirements-openapi.txt`; basic installation stays network-minimal. Keep `aips openapi doctor`, `aips doctor`, actionable missing-dependency errors and product-root CLI validation aligned. The `installation-entrypoints` workflow must prove fresh-install missing status, explicit setup and real validation from an independent product directory on Linux, plus dependency-free lifecycle contracts on Linux and macOS. Windows coverage describes the supported WSL launcher contract only.
 
-Every publication candidate also runs the built-in strict secret scan before dependency installation in GitHub Actions and during local publication preflight. The Integration Gate repeats the scan as required candidate-bound evidence. Both use `config/secret-scan.yaml`, scan final content plus `base..head` history, ignore no inline bypass markers and fail closed on incomplete input. The generic assignment detector exempts only the documented generated-password and parameterized SQL value forms; high-entropy literals and provider-token/private-key detectors remain active. JSON is scanned through 8,000,000 bytes, other text through 2,000,000 bytes, and larger files block publication. Keep the single `repository` required-check context; the Janitor aggregate continues to carry failures. The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; there is no extension-wide exemption, and the 2,000,000-byte text limit remains unchanged. The same exact relative paths are excluded in any repository using the shared policy.
+Every publication candidate also runs the built-in strict secret scan before dependency installation in GitHub Actions and during local publication preflight. The Integration Gate repeats the scan as required candidate-bound evidence. Both use `config/secret-scan.yaml`, scan final content plus `base..head` history, ignore no inline bypass markers and fail closed on incomplete input. The generic assignment detector exempts only the documented generated-password and parameterized SQL value forms; high-entropy literals and provider-token/private-key detectors remain active. JSON is scanned through 8,000,000 bytes, other text through 2,000,000 bytes, and larger files block publication. WebM has no path exceptions: bounded EBML parsing scans declared text metadata and skips media payloads; malformed or unsupported structures and files above the configured 32 MiB default block publication. Keep the single `repository` required-check context; the Janitor aggregate continues to carry failures.
 
 Before committing, `aips publish preview --base <base> --change-class <class>` reports documentation closure with the rule responsible for each required file and checks the candidate Core Matrix binding. After reviewing the final change boundary, `aips publish matrix-sync --base <base>` can refresh the canonical matrix base/hash fields. This does not mark the matrix ready or reconciled.
 
@@ -590,6 +594,8 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
 ## Validation architecture consistency
+
+The Skill Explorer lifecycle remains independently validated and is not evidence for Content Safety scanner behavior.
 
 Qwen Image Edit Plus changes use a candidate-bound Core Change matrix covering ordered-port behavior, rejection cases, retained Qwen 2.1 compatibility, loopback integration, secret scanning, and documentation closure.
 
@@ -904,7 +910,7 @@ Scan evidence is reused only for the identical candidate, operation, target, rem
 
 The publication evidence record can only reuse a successful full Secret Scan for an unchanged exact candidate. It does not relax content-safety checks or replace final-tree/history scanning.
 
-The only WebM exceptions are the three exact repository-relative Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; near-matches and all other WebM files retain strict scanning, and the 2,000,000-byte text limit is unchanged.
+WebM files have no path exceptions and use bounded metadata scanning with a configurable 32 MiB default ceiling; ordinary text limits remain unchanged.
 
 Candidate scanning exempts only the documented generated-password and parameterized SQL forms from generic literal-assignment detection. Provider tokens, private keys and high-entropy literals remain active; JSON is scanned through 8,000,000 bytes, other text through 2,000,000 bytes, and larger inputs block publication.
 

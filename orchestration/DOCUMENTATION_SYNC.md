@@ -8,6 +8,8 @@ Action-only dependency updates still require documentation closure. setup-node v
 
 Change Impact traversal 的使用與限制應在 Human Project Intelligence 指南、Technology Guide、架構概覽及本 orchestration 契約同步；Scenario 175 的 evidence 與 Conformance inventory 也必須保持一致。
 
+WebM publication metadata scanning is mapped to the Human Security Assurance, Technology Guide, Architecture Overview, Documentation Map and Conformance topics plus this Content Safety contract. Record that one bounded EBML parser scans declared text metadata in the exact candidate/history, skips media payloads and fails closed on malformed, unsupported or oversized files; do not imply video decoding or visual review.
+
 OpenTelemetry export sources are mapped to the observability/run-state topics and Scenario 181. The projection stays derived and does not add a new authority surface.
 
 ## Purpose
@@ -220,6 +222,8 @@ Documentation sync path normalization (Scenario 221): `documentation_sync.evalua
 
 
 ## Human documentation placement
+
+Skill Explorer guidance and WebM publication-scanner guidance retain distinct canonical placements; neither mapping grants approval or merges the topics.
 
 For the optional Harness lifecycle, keep explicit registration, OFF/ACTIVE/UNKNOWN status, verified-ACTIVE-only refresh, and preservation of unrecognized local state synchronized across Human installation/runtime guides and their lifecycle evidence. Do not imply per-project observe/assist/enforce modes.
 

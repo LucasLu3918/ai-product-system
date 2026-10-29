@@ -8,6 +8,8 @@ Project Intelligence 是 AIPS 對既有專案建立的可重用理解層。
 
 ## 第一次 Existing Project
 
+EPHEMERAL Intelligence and run state remain in external user storage; candidate-bound publication scan evidence is kept in the private AIPS cache.
+
 Project Intelligence 一律存在外部 user state。既有 `.ai/` 會保持唯讀；明確 attach/bootstrap 可驗證後複製 legacy Intelligence 到外部，來源保留不變。
 
 診斷的 Recovery Plan 以既有 reason code 提供先後步驟及授權標記。bootstrap／finalize／refresh 是需要已批准任務範圍的衍生狀態操作；diagnose 本身仍不建立、附加或修復專案。
@@ -100,6 +102,8 @@ Plan38 records the publication authority, Doctor, snapshot and Claude Hook calle
 
 Publication changes retain the recorded bounded traversal and direct consumer review; repository-wide API, data, event and consumer graph coverage remains partial and must not be inferred from the local path graph.
 
+High-risk Change Impact can preserve separate caller and consumer reports as a version 2 scoped bundle. Each direction keeps its own hard budgets and original status; separate node reviews bind every non-seed node to the exact report and node digests. Every unresolved lexical finding needs a matching report/finding digest, current source evidence and explicit Human approval as a reviewed limitation before implementation approval. This does not mark the finding resolved or upgrade global graph coverage.
+
 Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
 
 The creative workspace import review uses a seed-scoped graph for the profile, CLI, and direct test consumers; repository-wide graph coverage remains partial/unknown.
@@ -162,6 +166,8 @@ Validation-scope metadata is advisory while every Gate still runs the complete v
 Repository validation-scope metadata can refine candidate-path planning, but current execution remains full-run shadow and does not alter Project Intelligence consumer closure or impact confidence.
 
 Architecture-impact traversal is kept behind `project_intelligence.py` as a compatible internal module; existing callers keep the same function and evidence shape. Retrieval structural graph construction follows the same facade boundary. These extractions preserve indexed evidence, bounded traversal and explicit unknowns.
+
+Python caller impact uses the rebuildable schema-v8 target-path index to select known exact-path candidates before unresolved candidates. Known other-module paths and declared external imports do not consume the budget; uncertain targets remain bounded and fail closed. Traversal counts at most `min(max_edges × 10, 3,000)` candidates; one extra sentinel may be read to detect overflow but is excluded from the counter. Reaching the limit reports `TRUNCATED` rather than implying complete caller coverage. Older disposable indexes are migrated and fully rebuilt.
 
 OpenAPI generator executable/version, declared tool inputs and generated ownership are project-local implementation evidence. Keep them in the Implementation Profile and Phase 3 provenance records; do not promote one project's generator choice into reusable global Project Intelligence. Scenario 196 defines the local execution and rollback boundary.
 
@@ -445,7 +451,7 @@ Publication recipe diagnostics are static text; they never echo commands and do 
 
 The publication Hook may reuse only a short-lived, integrity-checked record of a prior full scan. Candidate, repository/worktree, remote tip, target, diff, scanner or policy drift invalidates it; the record never replaces final candidate/history scanning.
 
-Candidate scanning reads the final tree and all commits in `base..head`; provider-token and private-key detection remain enabled. JSON text is scanned up to 8,000,000 bytes, while other text retains a 2,000,000-byte bound; an oversized or incomplete scan blocks publication. The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; there is no extension-wide exemption, and the 2,000,000-byte text limit remains unchanged. The same exact relative paths are excluded in any repository using the shared policy.
+Candidate scanning reads the final tree and all commits in `base..head`; provider-token and private-key detection remain enabled. JSON text is scanned up to 8,000,000 bytes, while other text retains a 2,000,000-byte bound; an oversized or incomplete scan blocks publication. WebM has no path exceptions: bounded EBML parsing scans declared text metadata, skips media payloads, and blocks malformed, unsupported unknown-size structures, invalid metadata text, or files over the configured 32 MiB default.
 
 Dynamic ComfyUI workflow JSON and imported workflow files are project content, not Project Intelligence instructions or canonical capability truth. Review them within the exact project Change Boundary; only runtime schema and inventory observations can establish current local compatibility, and scoped evidence does not upgrade repository-wide graph coverage.
 

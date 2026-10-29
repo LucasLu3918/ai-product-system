@@ -14,7 +14,7 @@ The installed Claude Code adapter includes the standard publication recipe; Prep
 
 Publication scan evidence is private user-cache data used only by the Claude Code Git Hook. It is separate from runtime content-safety setup and does not alter scanner policy or installation permissions.
 
-The managed publication preflight uses the built-in exact-candidate secret scanner. It scans JSON files up to 8,000,000 bytes and other text files up to 2,000,000 bytes; files above those bounds block publication. The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; there is no extension-wide exemption, and the 2,000,000-byte text limit remains unchanged. The same exact relative paths are excluded in any repository using the shared policy.
+The managed publication preflight uses the built-in exact-candidate secret scanner. It scans JSON files up to 8,000,000 bytes and other text files up to 2,000,000 bytes; files above those bounds block publication. WebM has no path exceptions: the scanner validates bounded EBML structure, scans declared text metadata and skips media payloads. Malformed or unsupported structures and files above the configured 32 MiB default block publication.
 
 Creative ComfyUI `dynamic_local` workflow support reuses the installed AIPS executor and Python dependencies. It does not install ComfyUI, custom nodes, model weights, or a remote service; the local ComfyUI API and selected model files must already be available. Workflow scan and preflight are read-only, while workflow import is an explicit project-confined create-only operation.
 
@@ -72,6 +72,8 @@ aips mcp inspect
 `aips system preflight` 在已安裝的 system checkout 有本機變更時，會略過自動更新、沿用目前版本並顯示版本、commit 與清理步驟；變更不會被丟棄或提交。明確執行 `aips update` 仍會在有變更時拒絕。
 
 ## Runtime integration
+
+The shared publication Content Safety scan runs independently of native adapter installation, Parallel Run Dashboard setup, and the external user-state lifecycle.
 
 AIPS does not enable repository governance when the CLI is installed. Check a project with `aips project mode show`; opt in with `aips project mode set observe` or `aips project mode set assist`. Select `enforce` only with an explicit action scope, for example `aips project mode set enforce --project /path/to/project --scope git_push,gh_pr_merge`. Settings live under the user XDG configuration, outside the project.
 

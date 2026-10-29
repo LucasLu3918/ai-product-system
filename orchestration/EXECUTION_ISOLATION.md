@@ -308,6 +308,8 @@ Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. 
 
 ## Parallel runtime resource isolation
 
+The WebM scanner reads bounded declared metadata from the exact candidate and does not decode media payloads or create an execution workspace; candidate scan evidence remains separate from isolation and resource authorization.
+
 Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
 
 

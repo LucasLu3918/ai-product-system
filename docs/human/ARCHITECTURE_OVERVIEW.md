@@ -100,6 +100,8 @@ Creative Impact Graph edges are currently incomplete; manually reviewed consumer
 
 高風險既有專案變更先以 Change Impact 遍歷明確的 caller、consumer 與資料／事件邊界；scoped coverage 不會提升為 repository-wide 完整性。
 
+Python lexical callers use the rebuildable schema-v8 target-path index to select known exact paths before unresolved rows; known external imports and other paths do not consume the budget. Unknown targets remain bounded and fail closed at `min(max_edges × 10, 3,000)`; an overflow sentinel is excluded from the counter. Other languages retain lexical resolution, and incomplete traversal stays explicit.
+
 Project Diagnostics points to read-only inspection or a conditional recovery action without running it.
 
 
@@ -160,6 +162,8 @@ repository_id
 Project Intelligence、runs 與 Change Impact 一律使用 AIPS external user state；`off` / `observe` / `assist` / `enforce` 是獨立的可選治理模式。
 
 ## Creative Workflow
+
+The publication scanner inspects bounded WebM metadata only; creative review still owns visual quality, provenance, and acceptance.
 
 Creative grants and workspaces remain separate from project governance state; neither project mode nor diagnostics authorize generation or asset publication.
 
@@ -247,6 +251,8 @@ Plan36 publication diagnostics preserve this topic's existing behavior and autho
 Creative writes in Git workspaces keep their existing guard; task-scoped Intelligence refresh and Retrieval index guidance (Scenario 269) does not relax them.
 
 ## Planning 與 Product Delivery
+
+Requirement planning and scoped Change Impact establish implementation evidence; neither substitutes for the separate exact-candidate publication scan.
 
 Plan44's exact candidate matrix binds diagnostic and adapter evidence to the final changed-file set.
 
@@ -453,7 +459,7 @@ Distilled sampler declarations and one-to-eight ordered reference bindings do no
 
 Publication Hooks use an eight-second fail-closed deadline and may consume only a fresh, exact-candidate Secret Scan record from Prepare. The record is non-authorizing; every Hook invocation rechecks live Git and remote state, and the final Integration Gate repeats the full scan.
 
-The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; all other WebM paths and near-matches remain subject to strict candidate scanning.
+WebM files have no path exceptions. The strict candidate scanner validates bounded EBML structure, scans declared text metadata, skips media payloads, and blocks malformed or oversized files; its configured default limit is 32 MiB.
 
 Personal publication validates the exact candidate tree and history before release. Scanner failure blocks publication, and the detector keeps provider-token, private-key and high-entropy literal checks active.
 
@@ -748,7 +754,7 @@ Claude Code quoted-heredoc (`<<'EOF'`) or single-quoted publication text is lite
 
 Publication scan evidence is a separate, short-lived cache of a successful full candidate/history scan. It cannot replace the scanner, relax content-safety policy, or authorize a protected operation.
 
-The publication scanner examines the exact candidate tree and commit history. Its generic assignment detector recognizes only the documented generated-password and parameterized SQL forms as non-literal values; provider-token, private-key and high-entropy literal checks remain active. JSON scanning is bounded at 8,000,000 bytes and larger inputs fail closed. The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; there is no extension-wide exemption, and the 2,000,000-byte text limit remains unchanged. The same exact relative paths are excluded in any repository using the shared policy.
+The publication scanner examines the exact candidate tree and commit history. Its generic assignment detector recognizes only the documented generated-password and parameterized SQL forms as non-literal values; provider-token, private-key and high-entropy literal checks remain active. JSON scanning is bounded at 8,000,000 bytes and larger inputs fail closed. WebM has no path exceptions: bounded EBML parsing scans declared text metadata, skips media payloads, and blocks malformed, unsupported or oversized input under a configured 32 MiB default.
 
 Commit and publication content-safety checks remain independent from the optional AIPS Required Checks merge gate; disabling that gate does not relax content scanning.
 

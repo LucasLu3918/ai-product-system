@@ -134,5 +134,6 @@ Shared publication diagnostics can expose target-branch identity, safe HTTP/erro
 Plan35 diagnostic response extensions do not upgrade OpenCode Shell interception or permission controls. Host-specific denial observations require evidence from the actual runtime.
 
 Publication diagnostics do not change OpenCode enforcement status. They remain read-only and advisory; direct Shell, MCP/custom-tool, and out-of-process effects keep their existing unsupported/host-controlled status.
+The shared candidate Secret Scan is an independent AIPS publication check, not OpenCode native acceptance evidence. Its bounded WebM metadata handling does not upgrade Host interception or enforcement claims.
 
 Task-scoped Turn Context requirement fields (`refresh_required`, `retrieval_needed`, `retrieval_index_status`) are additive; the OpenCode write guard does not read them and its decisions are unchanged.

@@ -13,6 +13,7 @@ The dedicated aips creative import-candidate / import CLI is separate from OpenC
 
 Publication prepare/diagnose planning is read-only and binds an explicit candidate worktree; native tools retain their own permission and authority checks. Re-observe live Git/PR state before continuation; a planning fingerprint never grants publication or merge authority.
 For publication blocks, use `aips publish doctor` and `aips publish diagnose --worktree <root> --command '<literal command>'` as read-only observations. Preserve their stable reason code, phase, Required Checks state and safe next step; never expose raw GitHub output or treat unavailable evidence as success. Diagnosis never executes merge or consumes grants; repository policy and merge actions remain under existing Human Authority and native confirmation.
+OpenCode's native guard does not replace content safety. The shared publication scanner checks the exact final tree and commit history, including bounded declared WebM text metadata; scanner success grants no Host permission or publication authority.
 Creative benchmark evidence is a read-only post-trial report and cannot establish OpenCode Context delivery or permission-hook acceptance.
 
 Native acceptance records exact version/platform/source evidence. Arbitrary Shell process effects, MCP/custom-tool effects and out-of-process writes are UNSUPPORTED; older reports without explicit effect coverage remain UNVERIFIED. Overall governance remains ADVISORY.

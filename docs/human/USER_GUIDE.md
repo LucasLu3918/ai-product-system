@@ -80,6 +80,8 @@ aips project mode set enforce --project /path/to/project --scope git_push,gh_pr_
 
 ## Creative Direction、Style 與 Brand
 
+Content scanning does not decode creative media or establish visual quality, license, provenance, or Human acceptance.
+
 ComfyUI workflow 的資源授權依明確 profile 與 grant 驗證；模型探索只使用固定 loopback API，診斷不會自動提交工作。
 
 OpenCode 的 Context 上限也適用於本機 Creative 工作；超限時維持 fail-closed，不投遞 Context 或支援的原生檔案寫入，修復後再重試。
@@ -230,6 +232,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
+The shared publication scanner is an AIPS service boundary; it does not change native Runtime adapter capabilities.
+
 安裝 AIPS CLI 不會註冊 Runtime adapter；`aips harness status` 初始回報 `OFF`。需要個人整合時才執行 `aips harness install`。更新只刷新可驗證的啟用記錄；`UNKNOWN` 會保留原狀。`aips harness uninstall` 移除可驗證的外部整合並保留本機 ownership／額外資料，標記 `OFF`。
 
 Creative ComfyUI workflows use the separate AIPS Creative execution contract; Qwen reference binding does not expand Host adapter permissions.
@@ -321,6 +325,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 Turn Context 只列出這一回合真正需要的準備步驟：READY+STALE 的 Intelligence 在任務相關主題未受影響時只是提示，不要求 refresh；唯讀或未選到主題的回合不會要求建立 Retrieval 索引。修改既有專案時仍須處理 Change Impact。
 
 ## Roles、Skills 與重用
+
+The Matt Pocock Skill Explorer remains a separate discovery workflow and does not alter publication scanner policy.
 
 Qwen Image Edit Plus support extends the existing workflow contract and does not add a Role, Skill, or Skill Explorer permission.
 
@@ -676,6 +682,8 @@ ComfyUI 工作恢復的 lifecycle fixture 只驗證 queue 讀取、確切 ID 刪
 
 ## Logging、Observability 與 Operations
 
+The Parallel Run Dashboard projects run state; it is separate from exact-candidate Content Safety scanning.
+
 Run dashboard 只投影外部持久化的 run state 與事件；不得把執行紀錄寫入專案目錄或暴露原始敏感輸出。
 
 創作可靠性 Core candidate 保留完整 Gate、媒材拒絕及取消授權回歸。損壞 PNG fixture 必須失敗；合成測試不能替代真實模型與人工品質驗收。
@@ -774,7 +782,7 @@ Retrieval index persistence is an internal, rebuildable cache boundary in `scrip
 
 一般 personal publication 只推送已提交的 candidate SHA/ref。本機未提交修改會保留並顯示為工作樹診斷，不會被自動加入候選，也不會單獨阻擋該 commit；遠端授權、完整內容掃描與 GitHub 保護仍適用。
 
-The only WebM exceptions are the three exact Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; all other WebM paths and near-matches remain subject to strict candidate scanning.
+WebM files have no path exceptions. Strict candidate scanning validates bounded EBML structure, scans declared text metadata and skips media payloads; malformed or oversized files block publication.
 
 Publication preflight scans the exact candidate tree and commit history. The scanner fails closed on oversized or unreadable content and keeps provider-token, private-key and high-entropy literal detection enabled.
 
@@ -994,7 +1002,7 @@ Quoted-heredoc PR text is still scanned by content safety; a secret or PII findi
 
 Publication scan evidence 只代表完整 Secret Scan 曾對精確候選通過，不改變內容安全政策；Prepare 和最終 Integration Gate 仍會執行完整候選與歷史掃描。
 
-The generic secret-assignment check ignores only the documented generated-password and parameterized SQL expression shapes. JSON evidence is scanned up to 8,000,000 bytes, other text up to 2,000,000 bytes, and larger inputs block publication. The only WebM exceptions are the three exact repository-relative Dewhollow Gate 1 evidence paths listed in `config/secret-scan.yaml`; near-matches and all other WebM files retain strict scanning. These exact strings apply in any repository using the shared policy.
+The generic secret-assignment check ignores only the documented generated-password and parameterized SQL expression shapes. JSON evidence is scanned up to 8,000,000 bytes, other text up to 2,000,000 bytes, and larger inputs block publication. WebM files have no path exceptions; declared text metadata is scanned under a configurable 32 MiB default bound while media payloads are skipped.
 
 Imported ComfyUI workflow JSON is untrusted project content and remains subject to content-safety review; schema validation does not make it trusted instructions.
 

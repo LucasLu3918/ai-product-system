@@ -35,6 +35,8 @@ Supported decisions are `ALLOW`, `REDACT`, `BLOCK` and `REVIEW`.
 
 ## Detection boundaries
 
+The publication secret scanner handles WebM as bounded EBML rather than arbitrary binary text. It validates the EBML header and supported Segment structure, scans declared textual metadata fields, and skips media payloads. The default WebM input limit is 32 MiB; malformed, unsupported, unreadable or oversized input fails closed. Worktree, exact final-tree and commit-history scans use the same policy, and findings remain redacted. This is content scanning only: it does not decode media, assess visual quality or authorize publication.
+
 - Secrets reuse the deterministic detectors from `scripts/check_secret_leakage.py`.
 - PII starts with deterministic email, phone, checksum-valid card and Taiwan ID detection. It is sink- and context-aware; an email is not automatically a violation.
 - Email rule `pii.email.v2` does not report the exact ASCII `git` service user of an scp-like (`host:path`) or `ssh://` Git remote; that is remote grammar, not an exception. Every other regex match, including personal remote users, case variants and confusables, is reported independently, and redaction uses the same predicate. PII never accepts repository exceptions.

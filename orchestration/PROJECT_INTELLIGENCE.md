@@ -27,6 +27,8 @@ Read-only Context remains available in ordinary directories and repositories wit
 
 ## Storage
 
+Candidate-bound publication scan evidence is kept in the private AIPS user cache; it is not persisted in project Intelligence or source files.
+
 Project records use opaque repository identities in the user-state store; project attachment does not create or rewrite repository-local configuration.
 
 External user-state store (all projects):
@@ -234,6 +236,7 @@ OpenCode consumes the shared Context resolver and rechecks the active Session ta
 OpenCode shares the existing runtime resolver and CLI consumers. Traversal evidence must include both the native projection writer and Harness/Command consumers before READY reconciliation.
 
 Shared path/glob wrappers preserve existing Project Intelligence matching behavior; bounded traversal continues to report unresolved edges and partial coverage rather than infer completeness.
+
 
 Promotion eligibility and target-path constraints are extracted to a helper while retaining the facade entry point, Human approval and no-overwrite behavior.
 
@@ -672,6 +675,10 @@ Compact output and runtime hooks also expose one `aips_profile=` line that repor
 The CLI commands are deterministic building blocks used by the Agent/Harness and remain available for debugging.
 
 ## Retrieval relationships and impact traversal
+
+Python caller target indexing narrows known exact paths before bounded unresolved candidates; it preserves the 3,000 hard limit and explicit truncation.
+
+Python caller traversal uses the disposable schema-v8 composite target-path index to select known exact-path candidates before unresolved rows. Known other-module paths and declared external imports do not consume the candidate budget; ambiguous or unknown resolution remains bounded and fail-closed. It counts at most `min(max_edges × 10, 3,000)` candidates; a single overflow sentinel may be fetched but is not included in the reported counter. Candidate-budget exhaustion remains `TRUNCATED` and cannot support a completeness claim. Schema upgrades add the nullable path column and rebuild the disposable index.
 
 Scenario 266 records content-safety verification while preserving existing maintenance and publication authority boundaries.
 

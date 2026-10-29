@@ -81,6 +81,8 @@ aips attach /path/to/project
 
 `attach` 只會在使用者層初始化或匯入外部 Intelligence；不建立 `.ai/`、不修改 Git metadata 或專案 `.gitignore`。既有 `.ai/` 內容維持不變。
 
+EPHEMERAL 專案的 Change Impact 與 run state 也保存在使用者狀態目錄，不會寫入專案。Git 發布前則會獨立掃描精確候選；WebM 僅掃描受限 EBML 文字 metadata，影片 payload 不解碼。
+
 `aips system preflight /path/to/project` 會更新並驗證 AIPS system checkout。更新前先確認該專案的工作樹狀態與變更範圍。
 
 ## 更新

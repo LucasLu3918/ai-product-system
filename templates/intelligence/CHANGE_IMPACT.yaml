@@ -42,6 +42,11 @@ unknowns: [] # Legacy strings remain valid input but unresolved; approval requir
 #     reviewer: human
 #     approval_reference: <explicit approval reference>
 #     reviewed_at: <ISO-8601 timestamp>
+#   traversal_review: # Required only when disposition closes a traversal unresolved record.
+#     direction: callers # callers | consumers
+#     report_sha256: sha256:<canonical JSON digest of that exact directional report>
+#     unresolved_sha256: sha256:<canonical JSON digest of that exact unresolved record>
+#     disposition: reviewed_safe # Human-reviewed limitation; does not claim the edge is resolved.
 scope_review:
   status: PENDING # PENDING | APPROVED
   approval_reference: null
@@ -54,5 +59,20 @@ reconciliation:
   changed_files: [] # Exact sorted repository-relative paths from the same diff.
   impact_graph_reviewed: false
   evidence: []
-traversal: null # Versioned impact-traverse evidence: seeds, directions, depths, limits, findings, dispositions, unknowns and history.
+traversal: null # Legacy v1 single report, or v2 directional_reviewed_scope with callers/consumers reports, shared seeds, exact scope_id and reviewed unknown links.
+# Version 2 bounded form (each report remains the unmodified impact-traverse output):
+# traversal:
+#   policy_version: 2
+#   policy: risk-adaptive-bounded
+#   mode: directional_reviewed_scope
+#   scope_id: <exact graph coverage scope>
+#   directions: [callers, consumers]
+#   reports:
+#     callers: <exact caller-only impact-traverse report>
+#     consumers: <exact consumer-only impact-traverse report>
+#   node_reviews: # One row per non-seed node; source reports stay exact.
+#     - direction: callers
+#       report_sha256: sha256:<canonical JSON digest of the exact callers report>
+#       node_sha256: sha256:<canonical JSON digest of the exact node mapping>
+#       disposition: reviewed_safe # reviewed_safe | requires_change | unknown
 status: DRAFT # DRAFT | IMPLEMENTATION_APPROVED | READY | BLOCKED

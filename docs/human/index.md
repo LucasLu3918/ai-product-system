@@ -88,6 +88,8 @@ Claude Code 的標準 commit／push／PR 寫法請參閱 Claude Code adapter；�
 
 Publication Hook recovery and Required Checks Doctor semantics live in the User Guide and Security Assurance guide; Scenario 261 records their current safe-recovery and candidate-binding contracts.
 
+候選內容安全與 WebM metadata 掃描的操作和邊界，請參閱[安全保證](SECURITY_ASSURANCE.md)、[技術指南](TECHNOLOGY_GUIDE.md)及 [Scenario 263](CONFORMANCE.md#scenario-263--commit-safety-diagnostics)；掃描不會解碼媒體，也不會授予發布權限。
+
 本機 Creative 工作流支援明確選用已安裝模型與 schema 驗證的 ComfyUI API graph；固定 profile 維持預設，預檢不會啟動推論。
 
 ComfyUI creative model profile registry、已審核拓樸家族、FLUX 3 Klein Base/Distilled sampler profiles、dynamic edit 有序多參考圖，以及 `TextGenerate` runtime schema／最終 payload 預檢的文件入口，請參閱 User Guide、Technology Guide、Security Assurance 及 `orchestration/CREATIVE_DIRECTION.md`；Scenario 236 是合成驗證依據，不代表 MPS 推論已驗證。 使用者本機 profile 只能引用已審核拓撲範本，核准需互動式確認（Scenario 271）。

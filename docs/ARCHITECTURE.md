@@ -34,6 +34,8 @@ OpenCode also keeps its existing 12,000-byte transient Context ceiling. If the c
 
 Staged media content is inspected by the existing bounded safety scanner; AVIF adds metadata extraction without changing Harness authority or provider execution, creative provenance or licensing, personal publication approval, or ComfyUI resource authorization.
 
+Publication candidates also parse WebM as bounded EBML: declared text metadata is scanned in the worktree, final tree and candidate history, while media payloads are skipped. Malformed, unsupported or oversized files fail closed at the configured 32 MiB default; this does not establish visual quality or grant publication authority.
+
 Plan44 extends the existing flow with allowlisted shell-form detail and Claude-only native failure evidence; it adds no authority service, retry path or architecture component.
 
 The shared publication guard fails closed on unexpected authorization exceptions and returns a diagnostic ID plus an allowlisted exception class without exception text. Claude Code `onFailure: block` is enabled only for managed publication hooks on v2.1.295 or later; older or unknown versions retain compatible settings and receive a warning.

@@ -142,6 +142,8 @@ Creative workflow reliability is validated through its exact-candidate Core Matr
 
 OpenCode adapter 的 Session Context 與 native permission acceptance 屬 Harness 與 Core Change Gate 證據，不構成 Evolution Radar 的 adoption、provider 或 production readiness 證據。
 
+Core Content Safety changes, including bounded WebM metadata scanning, are validated by their Core Matrix and publication Gate. They do not become an Evolution Trial, adoption signal or publication approval without a separately approved Radar workflow.
+
 `SYSTEM_CORE.md` 為固定核心；協定依 task classification 漸進載入。任務 route resolution 不代表完整 enforcement，也不改變各 Runtime 已驗證的治理強度。
 
 Task ownership leases and dashboard projections are operational coordination evidence, not Radar signals or Human adoption decisions. They cannot promote a candidate or grant publication authority.
