@@ -9,10 +9,10 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from project_intelligence import validate_traversal_evidence
 from retrieval_intelligence import (
     IMPACT_CALLER_CANDIDATE_MULTIPLIER,
+    IMPACT_MAX_CALLER_CANDIDATES,
     IMPACT_MAX_DEPTH,
     IMPACT_MAX_EDGES,
     IMPACT_MAX_NODES,
-    IMPACT_MAX_CALLER_CANDIDATES,
     risk_adaptive_policy,
 )
 
