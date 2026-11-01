@@ -12,6 +12,9 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+Behavior-bearing observer and docs-only helper scripts require explicit canonical placement mappings. Reconcile the full documentation closure before marking a Core Change matrix READY.
+
+
 Runtime Policy diagnostics are documented in the canonical Resource Authorization, Claude adapter and Scenario 177 sections; global Change Impact coverage remains partial.
 
 Creative artwork documentation remains a separate placement surface; metadata scanning does not establish visual or provenance acceptance.
@@ -427,6 +430,9 @@ Do not claim TOOL_GUARDED when the installed pre-tool guard is absent or unverif
 
 ## Durable Run State consistency
 
+PermissionDenied diagnostics are separate from durable run state; they do not record checkpoints, prompts, or raw tool inputs.
+
+
 恢復計畫與品質摘要都是唯讀觀察；讀取報告不會附加專案、刷新狀態、授予工具權限或改變生成／人工審核／接受狀態。
 
 創作可靠性 Core candidate 保留完整 Gate、媒材拒絕及取消授權回歸。損壞 PNG fixture 必須失敗；合成測試不能替代真實模型與人工品質驗收。
@@ -499,6 +505,9 @@ High-risk external runtime actions also require an exact, unexpired Approval Rec
 High-risk external runtime actions also require an exact, unexpired Approval Record and fresh verified network-egress enforcement. A hook alone is not a sandbox; missing provider proof blocks the action.
 
 ## Public repository / CI consistency
+
+User-private Claude diagnostic logs are not repository artifacts and must not be committed or included in CI reports.
+
 
 Publication preflight source and scenario changes must be represented in the canonical trigger maps; preview closure must include the Hook, authority, Doctor, exact scan evidence, tests and Scenario 261.
 
@@ -599,6 +608,9 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 
 ## Validation architecture consistency
 
+Docs-only classification is review-only and never asserts tests are inapplicable; the exact candidate still runs its required Core Change matrix.
+
+
 The Core Change Matrix binds profile-path redaction, no-fallback behavior, exact destination differences and Claude pre-tool versus native post-tool evidence.
 
 The Skill Explorer lifecycle remains independently validated and is not evidence for Content Safety scanner behavior.
@@ -645,6 +657,8 @@ Scenario 259 remains the independent contract for upstream Skill inventory and p
 Scenario 260/261 lifecycle, focused publication tests and the exact-candidate Integration Gate cover the new policy observation boundary.
 
 Plan44 keeps `COMMAND_FORM_UNSUPPORTED` backward compatible while adding safe `detail_code` guidance for pipes, compound commands, wrappers and unsupported upstream push options. Claude's managed `PostToolUseFailure:Bash` hook reports observed native execution failure and a parsed exit code without raw host text; Scenario 261, runtime contracts, security redaction, exact candidate matrix and Integration Gate cover the boundary. It does not retry, grant authority or alter existing merge, squash-tree or Branch Hygiene cleanup behavior.
+
+Plan50 adds allowlisted parser-node/segment evidence and one canonical repo-local literal `cd` prefix, while retaining fail-closed handling for path escape and additional shell commands. Claude Auto Mode `PermissionDenied` is captured by a separate observer that stores fixed fields and hashes only with private file permissions and bounded retention. Its settings group is AIPS-managed and removable without touching user hooks. The opt-in docs-only report is derived from Git status, never self-attests tests as not applicable, and does not replace secret scan, Human approval, reconciliation, or exact-candidate checks.
 
 The publication validation matrix records the exact candidate, endpoint-status classifications and the no-mutation recovery invariant.
 

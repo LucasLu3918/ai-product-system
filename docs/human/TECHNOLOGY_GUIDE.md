@@ -11,6 +11,9 @@ Retrieval relation candidates are built by a small standard-library module behin
 
 ## Runtime & Integration
 
+Claude's managed PermissionDenied observer is a host-specific observation hook; other runtimes retain their own event semantics.
+
+
 CLI installation does not automatically register Runtime adapters. Harness state is classified as `OFF`, `ACTIVE`, or `UNKNOWN`; refresh is allowed only for verified `ACTIVE` ownership. Explicit uninstall removes verifiable external integrations, records `OFF`, and preserves local ownership plus unrecognized files.
 
 OpenCode checks direct native-write targets against Project Intelligence readiness, freshness, instruction authority and project-root confinement; READY+STALE freshness is advisory for local L2 source writes only.
@@ -58,6 +61,9 @@ Canonical AIPS Skills 可從 MCP Resource 按需載入，也可由 `aips skills 
 `aips skills list` reads canonical Skill metadata and remains available independently of Runtime adapter enablement; it does not install Skills or write project state.
 
 ## Project Understanding
+
+Project diagnostics and docs-only review are read-only and do not write Project Intelligence or Change Impact state.
+
 
 The project lifecycle stores all new AIPS state outside the repository. Attach/detach do not change Git config, hooks, `info/exclude` or `.gitignore`; legacy `.ai/` data remains unchanged.
 
@@ -107,6 +113,9 @@ Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEM
 High-risk Change Impact validates traversal before implementation approval. A version 2 scoped bundle may keep callers and consumers in separate reports; each must share the same seeds, risk class and exact graph scope, remain non-truncated, and stay under its own 150-node, 300-edge, six-hop and 3,000-caller-candidate limits. Every unresolved record requires an exact digest link and explicit Human-approved reviewed-safe limitation with verifiable current evidence. Global graph coverage remains unchanged.
 
 ## Execution
+
+Commit parsing accepts bounded literal forms and resolves one repo-local cd before the existing staged-content scan.
+
 
 Creative tool actions retain Resource Authorization and Runtime Policy checks; profile paths remain project-relative in diagnostics and failed destination fields are redacted.
 
@@ -309,6 +318,9 @@ Scenario 269 changes Turn Context preparation wording only; creative execution, 
 
 ## Security & Governance
 
+The observer never changes Claude permissions or retries a denied operation; publication still depends on Human authority.
+
+
 WebM files have no path exceptions. The strict candidate scanner validates bounded EBML structure, scans declared text metadata, skips media payloads, and blocks malformed or oversized files; the default file limit is 32 MiB.
 
 Personal publication runs an exact-candidate and full-history scan. Only the documented generated-password and parameterized SQL forms are treated as non-literal values; provider tokens, private keys and high-entropy literals remain detectable. The content-safety conformance suite verifies that oversized or incomplete inputs block publication.
@@ -369,6 +381,11 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 Content-safety detector changes are versioned (for example `pii.email.v2`) and bound to Scenario 266 with a fixed corpus; they never add a PII exception path.
 
 ## Quality & Verification
+
+Docs-only status never waives the Core Change Test Matrix or exact-candidate validation.
+
+The opt-in docs-only review derives its report from the actual diff and never skips tests, secret scanning, Human approval, or Change Impact reconciliation. Claude Auto Mode `PermissionDenied` logging is a separate passive observer; it stores bounded hash-only evidence and never retries or changes the Host decision.
+
 
 Skill and governance-mode contracts remain advisory to authorization: neither grants access, and denied Runtime Policy actions stay denied.
 
@@ -631,6 +648,9 @@ Scenario 269 lifecycle evidence covers task-scoped Turn Context preparation (REA
 
 ## Product Delivery
 
+A documentation-only classification does not authorize a push, PR, merge, or release.
+
+
 Publication diagnostics do not change Human approval, Host permission, Required Checks, merge policy or execution authority.
 
 Publication transfer parses GitHub remotes from the literal `git@github.com:<owner>/<repo>.git` form and from `https`/`ssh` URLs. The scanner's `git`-only SSH exemption does not relax any other email finding, so transfer code should not hide remote strings behind string assembly.
@@ -649,6 +669,9 @@ Planning Package 可用 EARS 結構表達適合的功能需求，並以 optional
 Implementation Resolution 先釐清 REST/OpenAPI authority，再依既有專案證據或新專案的 Human-confirmed 選型建立 Implementation Profile。Go、PHP、Python、.NET 語言 Profile 提供穩定基線，專案規則與工具鏈仍優先。結構驗證器只檢查欄位、來源和 ownership 衝突，不判斷架構或技術建議是否正確；未取得驗證證據時回報 `UNVERIFIED`。
 
 ## Evolution & Maintenance
+
+Scenario 261 preserves the boundary between host refusal, AIPS policy refusal, and native execution failure.
+
 
 Core behavior changes are recorded under the single `Unreleased` changelog heading with compatibility notes before they are considered for a release.
 
@@ -709,6 +732,9 @@ Official Docs Site 使用 VitePress 1.6.x stable line，提供 sidebar、local s
 
 Documentation Placement 將每個 behavior-bearing source 綁到 canonical Human topic；Technology Guide 的廣域 trigger surface若出現尚未映射的新 source，CI 會 fail closed，要求先更新 placement contract。每條已知 subsystem rule 也明確限制 Technology Guide 可修改的 domain，因此版本新增功能不能再任意 append 到文件尾端。
 ## Runtime Content Safety Boundary
+
+Hash-only observer storage and opt-in docs classification do not bypass content or secret scanning.
+
 
 The JSON fallback is non-authorizing and cannot substitute for a successful full candidate and history scan.
 

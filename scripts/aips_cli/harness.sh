@@ -142,7 +142,7 @@ codex_runtime_available() {
 install_claude_adapter() {
   local target="$HOME/.claude/CLAUDE.md"
   local settings="$HOME/.claude/settings.json"
-  local py hook_cmd guard_cmd failure_cmd memory_ok="false" hook_ok="false"
+  local py hook_cmd guard_cmd failure_cmd permission_denied_cmd memory_ok="false" hook_ok="false"
   py="$(python_bin)"
   if ! command -v claude >/dev/null 2>&1; then
     write_adapter_state "claude-code" "NOT_DETECTED" "managed_memory_plus_prompt_hook" "" "UNSUPPORTED"
@@ -156,7 +156,8 @@ install_claude_adapter() {
   hook_cmd="AIPS_MANAGED_HOOK=1 AIPS_BIN='$SYSTEM_DIR/bin/aips' '$py' '$SYSTEM_DIR/scripts/turn_context_hook.py' --runtime claude-code"
   guard_cmd="AIPS_MANAGED_HOOK=1 AIPS_BIN='$SYSTEM_DIR/bin/aips' '$py' '$SYSTEM_DIR/scripts/governance_guard.py' hook --runtime claude-code"
   failure_cmd="$guard_cmd"
-  if "$py" "$SYSTEM_DIR/scripts/manage_runtime_adapter.py" install-claude-hook       --settings "$settings" --command "$hook_cmd" --guard-command "$guard_cmd" --failure-command "$failure_cmd" >/dev/null; then
+  permission_denied_cmd="AIPS_MANAGED_HOOK=1 '$py' '$SYSTEM_DIR/scripts/claude_permission_denied.py'"
+  if "$py" "$SYSTEM_DIR/scripts/manage_runtime_adapter.py" install-claude-hook       --settings "$settings" --command "$hook_cmd" --guard-command "$guard_cmd" --failure-command "$failure_cmd" --permission-denied-command "$permission_denied_cmd" >/dev/null; then
     hook_ok="true"
   fi
 

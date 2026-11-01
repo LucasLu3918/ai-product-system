@@ -28,6 +28,24 @@ Given `aips publish prepare` completes the exact candidate and history secret sc
 
 Given a Claude Code publication Hook starts, then a hard eight-second deadline returns a fail-closed structured denial with its last safe phase, stable reason code and elapsed milliseconds. Generic Git read-only commands return before any GitHub observation. A timeout does not start a retry loop or claim a network cause.
 
+Given a supported commit uses `git add -- <path>`, `git commit -m`, repeated `-m`, `-F <message-file>`, literal `git add ... && git commit ...`, a quoted literal heredoc, or one literal repo-local `cd` prefix, when AIPS parses and scans it, then a positive fixture covers that form and the staged content scan remains bound to the actual repository root. Diagnostics for rejected AST forms include only an allowlisted parser node, segment index, construct code and line/column; the raw command is never returned.
+
+Given the commit command includes a pipeline, non-`&&` connector, nested command substitution, trailing publication/destructive command, `git -c core.hooksPath=/dev/null`, parent traversal, symlink escape, or a path outside the current repository, when the Hook validates the full call, then the complete call is denied before Git execution and the diagnostic identifies only safe parser/path evidence.
+
+Given Claude Auto Mode returns a `PermissionDenied` event, when AIPS observer logging is installed, then `source=claude_auto_mode` is recorded separately from AIPS `PreToolUse` and `PostToolUseFailure`. The private JSONL contains fixed fields and hashes only, has 0700/0600 permissions, retains no more than 30 days or 1,000 records, and never changes the Host refusal or retries the call. PreToolUse crashes/timeouts continue to use the existing failure policy and never create an Auto Mode record.
+
+Given a user explicitly runs `aips project docs-only review --opt-in`, when the helper inspects Git status and canonical paths, then it reports DOCS_ONLY only for allowed user-document paths, lists ignored paths separately, and still requires diff, Markdown/path, secret-scan, approval and reconciliation checks. `.claude/settings.json`, AIPS/security/configuration files, code, symlink escapes, and unknown paths cannot be classified as docs-only; no `tests_not_applicable` assertion is accepted. An unchanged or PENDING Change Impact reconciliation remains visibly incomplete.
+
+| ID | Contract | Verification |
+|---|---|---|
+| T01-T07 | Positive fixtures for add, commit, multi-message, message file, add-and-commit chain, repo-local `cd`, and literal heredoc | `tests.test_publication_authority` |
+| T08-T09, T16-T17 | Reject trailing operations, command substitution, hook bypass, traversal, symlink escape and absolute outside-repository paths | `tests.test_publication_authority` |
+| T10-T11 | Separate ignored RUNLOG from the Git diff; reject `.claude/settings.json` in docs-only classification | `tests.test_docs_only_review` |
+| T12 | Keep docs-only status review-only and retain approval/reconciliation as required checks | `tests.test_docs_only_review`, `tests.validation.claude_block_diagnostics_contracts` |
+| T13, T18 | Log only Claude Auto Mode source; do not invent an AIPS refusal when only Self-Modification is shown | `tests.test_claude_permission_denied` |
+| T14 | Preserve existing PreToolUse crash/timeout policy; never route it through PermissionDenied | `tests.test_publication_diagnostics`, `tests.test_claude_permission_denied` |
+| T15 | Every documented accepted commit form has a positive fixture | `tests.test_publication_authority` |
+
 Given Doctor cannot read branch protection or effective rules because GitHub returns permission-limited evidence, then `required_check_state` remains `UNKNOWN_PERMISSION` and the diagnostic is visible. It blocks Doctor only when `AIPS_ENFORCE_REQUIRED_CHECKS=1`; ordinary branch pushes do not turn missing read permission into proof that checks are unconfigured. Strict merge verification remains blocked on unknown evidence, and GitHub native branch rules continue to enforce configured checks.
 
 Given `AIPS_GOVERNANCE_AUDIT_LEDGER` is configured, when a Prepare, Hook, or Doctor diagnostic has a Diagnostic ID, then the system may append only allowlisted redacted fields to that existing hash-chained ledger, and `aips publish diagnose --diagnostic-id <UUID>` returns the matching event only after chain verification. Unset configuration returns `NOT_CONFIGURED`; append failure returns `FAILED` without changing authorization. No default ledger is created, raw commands are never stored, and Host denial / Human Authority remain independent blockers.

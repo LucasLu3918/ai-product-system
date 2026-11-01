@@ -161,6 +161,8 @@ The durable Human surface is the original GitHub Issue containing Radar evidence
 
 ## Documentation consistency
 
+
+
 Core security hardening, including the bounded WebM publication scanner, is verified by its Core Change Matrix and exact-candidate Integration Gate. Those results are not Evolution signals, Trials or adoption evidence; a Radar decision still requires its own Human-approved workflow.
 
 Creative repair evidence separates original-prompt admission, criterion observations, finite attempts, repeated-defect stops, real local inference and native host-version acceptance. Fixture success does not establish vision accuracy or Human acceptance; unknown real-world measurements remain explicit.
@@ -398,6 +400,9 @@ A compatible external Agent may execute the bounded contract, but `external_exec
 
 
 ## Evolution Effectiveness feedback
+
+Scenario 261 is verification evidence only; it does not create an Evolution Radar trial or adoption decision.
+
 
 Core Content Safety scanner changes are assessed by their Core Matrix and exact-candidate Gate; they are not Evolution effectiveness or adoption evidence.
 

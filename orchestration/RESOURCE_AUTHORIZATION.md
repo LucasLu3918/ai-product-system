@@ -82,6 +82,9 @@ Protected operations such as publication, administration and destructive deletio
 
 ## Enforcement truth
 
+Claude Auto Mode PermissionDenied is outside AIPS Resource Authorization; the passive observer cannot grant or retry a denied tool.
+
+
 Resource authorization is checked at the consuming runtime boundary; a valid profile or diagnostic report alone does not execute a workflow or confer broader host permission.
 
 Shared publication guard 的非預期授權例外會拒絕操作，輸出只包含 allowlist 例外類別與診斷 ID；這不改變任何資源 grant。

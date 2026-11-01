@@ -73,6 +73,26 @@ class PublicationError(ValueError):
             result.update(detail_code=detail_code, detail=detail[0], next_step=detail[1])
         if detail_code == 'REMOTE_OBSERVATION_TIMEOUT':
             result['category'] = 'TIMEOUT'
+        parser_evidence = self.context.get('parser_evidence')
+        if isinstance(parser_evidence, dict):
+            evidence: dict[str, Any] = {}
+            parser_node = parser_evidence.get('parser_node')
+            if isinstance(parser_node, str) and re.fullmatch(r'[a-z_]{1,40}', parser_node):
+                evidence['parser_node'] = parser_node
+            segment_index = parser_evidence.get('failed_segment_index')
+            if type(segment_index) is int and 0 <= segment_index <= 10000:
+                evidence['failed_segment_index'] = segment_index
+            construct = parser_evidence.get('unsupported_construct')
+            if isinstance(construct, str) and re.fullmatch(r'[A-Z][A-Z0-9_]{1,63}', construct):
+                evidence['unsupported_construct'] = construct
+            location = parser_evidence.get('parser_location')
+            if isinstance(location, dict):
+                safe_location = {key: value for key, value in location.items()
+                                 if key in {'line', 'column'} and type(value) is int and 1 <= value <= 1000000}
+                if safe_location:
+                    evidence['parser_location'] = safe_location
+            if evidence:
+                result['evidence'] = evidence
         detail_zh, next_step_zh = PUBLICATION_DIAGNOSTICS_ZH.get(
             code, ('發布驗證未通過。', '檢查此階段的安全診斷，修正後重新執行唯讀驗證。'))
         if detail:

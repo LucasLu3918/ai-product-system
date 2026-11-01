@@ -2,11 +2,17 @@
 
 ## Scenario 275 — Optional Project Governance Modes
 
+The docs-only review command is opt-in and read-only; it does not change project mode.
+
+
 Optional governance modes do not change Resource Authorization default-deny behavior or permit Profile fallback.
 
 Scenario 275 covers optional per-project governance modes with `off` as the default. Its evidence is scoped to the local configuration and supported native Hook paths; repository-wide Impact Graph coverage remains partial, and Host enforcement still depends on verified native capability.
 
 ## Scenario 044 — External AIPS State Lifecycle
+
+The Claude diagnostic JSONL is separate user state; it does not create project files or change Git metadata.
+
 
 Intelligence, run state, and candidate-bound scanner evidence remain in external user state rather than project source.
 
@@ -57,6 +63,9 @@ OpenCode integration retains system preflight and existing-host lifecycle checks
 `aips project check <path>` reports attachment mode and Project Intelligence freshness without mutation; freshness problems remain informational and only an invalid path fails. `aips system preflight <path>` delegates to the existing update and repository-validation lifecycle. The legacy `aips preflight` route remains supported.
 
 ## Scenario 233 — Public CLI Help and Error Contracts
+
+The docs-only CLI is explicitly opt-in and reports review-only status.
+
 
 Harness lifecycle regression evidence additionally covers default-OFF CLI installation, explicit adapter registration, fail-closed unknown ownership, and uninstall preservation of local state. See `tests/evidence/install_preflight_lifecycle.py` and `tests/test_harness_enablement.py`; these checks do not assert per-project governance modes.
 
@@ -870,6 +879,9 @@ Current automated inventory: 27 deterministic + 100 lifecycle + 54 agent_eval = 
 
 ## Scenario 182 — Deterministic Execution Ownership
 
+Parallel execution ownership remains independent from the read-only docs-only classifier and passive Claude denial observer.
+
+
 Ownership claims and checkpoints remain bound to the exact task/run record; the optional repository governance mode does not change scheduler enforcement.
 
 Lifecycle evidence covers scheduler-serialized task claims, active AIPS worktree binding, lease heartbeat/stale/recovery states, actual Git-diff reconciliation, out-of-scope blocking and read-only owner projection. Legacy Task Graph v1 and checkpoints remain valid; current Resource Authorization enforcement stays `ADVISORY`.
@@ -1098,6 +1110,8 @@ Scenario 210 is lifecycle-covered by `tests/evidence/install_preflight_lifecycle
 
 ## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance
 
+
+
 Publication diagnostics remain remote GitHub observations; Project Diagnostics does not bootstrap or mutate the repository's policy.
 
 Scenario 237 includes publication policy observation on the remote default branch, safe structured HTTP status evidence and transient read-only recovery.
@@ -1123,6 +1137,9 @@ AIPS retains HTTP status, endpoint, sanitized API error, branch/effective-rules 
 The branch lifecycle report classifies remote branches using current exact-SHA PR metadata and local checkout evidence. It distinguishes branches to keep, superseded work, PR branches requiring rebase, and cleanup candidates. These are advisory dispositions only: report generation and the scheduled workflow never delete branches or grant cleanup authorization. Unknown or incomplete evidence fails closed to KEEP. Scenario 257 is covered by `tests/evidence/branch_hygiene_lifecycle.py` and `tests/validation/branch_hygiene_contracts.py`.
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
+
+Skill Explorer evidence does not establish Claude Auto Mode hook semantics.
+
 
 Skill discovery does not grant Runtime Policy access; protected actions still require explicit Resource Authorization.
 
@@ -1185,6 +1202,12 @@ Scenario 269 changes no Skill catalog or installation behavior; it adds task-sco
 
 ## Scenario 260 — Publication diagnostics and Doctor
 
+Docs-only classification derives from Git status and keeps approval and reconciliation as required checks.
+
+
+Claude PermissionDenied, AIPS PreToolUse, and native PostToolUseFailure retain distinct event sources.
+
+
 Publication lifecycle regression evidence covers a dirty selected worktree with a fixed candidate SHA: the plan and push remain commit-bound, local files are preserved, and dirty status is not an AIPS-only publication blocker. GitHub policy, required checks and content scanning remain unchanged.
 
 Scenario 263 is separate from publication Doctor and cannot satisfy PR merge checks or approval.
@@ -1226,6 +1249,9 @@ Scenario 268 covers opt-in model-agnostic local ComfyUI API workflows: bounded s
 The creative profile registry supports FLUX Klein Base and Distilled through the shared audited topology with validated profile-specific sampler settings. Dynamic ComfyUI edits accept one to eight ordered, explicitly bound local references and verify every staged file against its source hash. MFLUX FLUX.1 remains single-reference; FLUX.2/Qwen edit uses the bounded `--image-paths` option.
 
 ## Scenario 263 — Commit Safety Diagnostics
+
+Scenario 261 verifies safe repo-local cd parsing, redacted parser evidence, and refusal of unsupported shell forms.
+
 
 Content-safety findings remain untrusted input and do not authorize a protected action or publication.
 

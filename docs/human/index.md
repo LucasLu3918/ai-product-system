@@ -76,6 +76,9 @@ features:
 
 ## 文件如何組織
 
+Harness behavior is described in Harness and User Guide; security boundaries are in Security Assurance; command references are in System Reference.
+
+
 Runtime Policy 與 Resource Authorization 的診斷契約見 Security Assurance、Harness 與 Scenario 177；診斷只提供遮罩後證據，不改變權限。
 
 安裝 AIPS CLI 不會自動註冊 Runtime adapter。需要整合時，請依 [Installation](INSTALLATION.md) 明確安裝 Harness；停用狀態與卸載時本機資料保留方式見 [Harness](HARNESS.md) 與 [Conformance](CONFORMANCE.md)。

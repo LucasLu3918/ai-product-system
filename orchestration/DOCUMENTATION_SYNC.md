@@ -223,6 +223,9 @@ Documentation sync path normalization (Scenario 221): `documentation_sync.evalua
 
 ## Human documentation placement
 
+New behavior-bearing scripts must map to canonical topics in config/documentation-placement.yaml, and the complete closure must be present before publish readiness.
+
+
 Runtime Policy diagnostic updates belong in the canonical Runtime Policy, Resource Authorization, Claude adapter and Scenario 177 topics; do not imply repository-wide Impact Graph completeness.
 
 Skill Explorer guidance and WebM publication-scanner guidance retain distinct canonical placements; neither mapping grants approval or merges the topics.

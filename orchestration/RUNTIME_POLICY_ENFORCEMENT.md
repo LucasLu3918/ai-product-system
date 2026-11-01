@@ -8,6 +8,8 @@ Runtime Policy Enforcement provides deterministic, provider-neutral decisions fo
 
 ## Flow and authority
 
+
+
 ~~~text
 Runtime hook payload
 → trusted adapter normalization to Runtime Action Envelope
@@ -67,6 +69,12 @@ Scenario 266 records added-line injection classification and safe recovery for t
 Publication diagnostics share safe failure classifications with native policy reporting but remain read-only. A diagnostic lookup or trace write cannot change a policy decision, create a grant, or claim the Host executed an action.
 
 ## Per-project optional governance modes
+
+Host PermissionDenied, AIPS PreToolUse decisions, and native execution failures are separate observations with independent authority.
+
+
+The docs-only report does not set or weaken optional project governance mode.
+
 
 Optional governance modes do not change the independent Runtime Policy or Resource Authorization default-deny decision and never authorize Profile fallback.
 

@@ -12,6 +12,9 @@ Imported ComfyUI API workflows remain untrusted project content. Dynamic executi
 
 ## Contract
 
+The Claude Auto Mode observer stores fixed fields and hashes only; it cannot change Host denial, retry the action, or bypass a content sink.
+
+
 Working-tree cleanliness is not a content-safety substitute: the scanner continues to inspect the exact committed candidate and applicable history, while unrelated working files remain outside the candidate and are not silently added.
 
 Static AVIF EXIF/XMP metadata uses the existing media registry and strict scanner under an 8 MiB input and 1 MiB metadata limit; unknown or animated structures fail closed without decoding image payload as text.
@@ -75,6 +78,9 @@ Quoted-heredoc or single-quoted publication text reaches the same `github_pr` si
 Pure dependency update documentation exemption (Scenario 221): `pure_dependency_update` in `scripts/dependency_impact.py` returns `PURE_DEPENDENCY_UPDATE` only when every changed file is an allowlisted dependency manifest (`.github/workflows/*.yml`, root `requirements*.txt`, `constraints/*.txt`) modified in place and every changed line pair is either a full-SHA pinned `uses:` reference for the same action with a non-decreasing version comment, or an exact `name==version` pin with a strictly higher version. Documentation Impact, Documentation Placement and Documentation Sync then suppress documentation requirements only and report each dependency's classification, risk and `human_review_required`; any other line or file, downgrade, unpinned reference, planned path, size-limit overflow or predicate failure keeps the full rules. Secret scanning, content safety, the Core Change Test Matrix, the Integration Gate, required checks and Human merge approval are unchanged, and `automatic_merge_authorized` stays false.
 
 ## Security invariants
+
+Commit refusal evidence is limited to allowlisted AST coordinates and never echoes the raw shell command.
+
 
 A literal `git -C <path> push` is scanned against the resolved target worktree; no fallback to caller cwd or another checkout is permitted, and unbound paths fail closed.
 

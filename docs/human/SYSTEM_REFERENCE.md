@@ -58,6 +58,11 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 
 ## Observation fields
 
+Claude PermissionDenied diagnostics identify source and fixed reason class; tool input, reason text, command, and transcript are represented only by hashes or omitted.
+
+PermissionDenied events are retained in bounded user-level state outside project repositories; they do not change command permissions or retry blocked actions.
+
+
 New AIPS state is stored outside the project. `aips attach` imports validated legacy Intelligence by copying it to user state; attach/detach do not modify project files or Git metadata.
 
 | Command | Field / option | Observation |

@@ -8,6 +8,9 @@
 
 ## macOS / Linux
 
+The Claude PermissionDenied observer stores fixed fields and hashes under the user's private state directory with 0700/0600 permissions.
+
+
 A missing or invalid Resource Authorization Profile remains a deny; correct the trusted project-relative setting instead of relying on fallback or installing a global tool.
 
 The installed CLI returns stable, redacted JSON errors for local `prepare` and `diagnose` failures; this changes output format only and does not grant publication permission.
@@ -75,6 +78,9 @@ aips mcp inspect
 
 ## Runtime integration
 
+Claude installation adds one AIPS-managed PermissionDenied observer group; it does not change Claude permission rules or other user hooks.
+
+
 The shared publication Content Safety scan runs independently of native adapter installation, Parallel Run Dashboard setup, and the external user-state lifecycle.
 
 AIPS does not enable repository governance when the CLI is installed. Check a project with `aips project mode show`; opt in with `aips project mode set observe` or `aips project mode set assist`. Select `enforce` only with an explicit action scope, for example `aips project mode set enforce --project /path/to/project --scope git_push,gh_pr_merge`. Settings live under the user XDG configuration, outside the project.
@@ -115,6 +121,9 @@ MCP 設定可用 `aips mcp config --client <client>` 預覽。該命令不會替
 
 ## 常見問題與排查
 
+A missing diagnostic record does not alter a Claude denial; storage failures are silent and the hook returns no retry or permission decision.
+
+
 ### `aips: command not found`
 
 若剛完成安裝，先開啟新的 terminal。若安裝時使用 `--no-configure-shell`，請自行將安裝器顯示的 CLI 目錄加入 `PATH)，或使用絕對路徑執行 `aips doctor`。
@@ -153,6 +162,9 @@ aips system preflight /path/to/project
 
 ## 解除安裝
 
+Uninstall removes only the AIPS-managed PermissionDenied group and leaves user-owned hook groups and existing diagnostic data intact.
+
+
 ~~~bash
 aips uninstall
 ~~~
@@ -166,6 +178,9 @@ aips uninstall
 - `--remove-cache`：刪除外部 Project Intelligence 快取。
 
 ## 會保留什麼
+
+The private diagnostic JSONL is bounded to 30 days or 1,000 records and contains hashes rather than raw tool input.
+
 
 一般解除安裝會保留 AIPS system repository、專案原始碼、使用者撰寫的 Agent 指示與 Skills、專案內的 `.ai/` workspace，以及外部 Project Intelligence 快取。未經明確選項要求，AIPS 不會清除這些專案知識或 Python 環境。
 

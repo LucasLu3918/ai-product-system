@@ -223,6 +223,9 @@ Review actual:
 
 ## Release Security Gate
 
+A docs-only report is advisory classification; publication still requires candidate scanning, Human authority, reconciliation, and required checks.
+
+
 Publication mode controls do not change scanner coverage: every exact candidate must pass the shared content and secret scan before publication.
 
 Project-state migration requires a verified external backup and exact candidate scan; moving files never bypasses publication checks or review authority.
@@ -249,6 +252,10 @@ Specific protected-publication reason codes expose only sanitized underlying cat
 Plan45 classifies exact-candidate secret-scanner failures (`SECRET_SCAN_POLICY_INVALID`, `SECRET_SCAN_ALLOWLIST_EXPIRED`, `SECRET_SCAN_BASE_INVALID`, `SECRET_SCAN_GIT_OBJECT_MISSING`, `SECRET_SCAN_FILE_UNREADABLE`, `SECRET_SCAN_POLICY_UNAVAILABLE`, `SECRET_SCAN_INTERNAL_ERROR`) with a phase, scanner component, bounded error class and safe recovery step. Raw exception text, candidate paths and secret values are not included in publication diagnostics. Findings and incomplete scans continue to block publication. Unsupported command executables/subcommands are rejected before candidate inspection and scanning; accepted literal forms still pass the complete candidate validation and scan.
 
 Unsupported publication command forms retain the stable refusal code and add only an allowlisted detail code; raw shell input is never included. Claude `PostToolUseFailure` is an observation after native execution starts, and reports a bounded category and parsed exit code without the host error text. It cannot authorize, retry or mutate publication state; PreToolUse denial remains `NOT_EXECUTED`.
+
+Claude Auto Mode `PermissionDenied` uses a separate passive observer. It stores only a fixed event/source/category/tool allowlist and SHA-256 hashes under the user's private state directory, enforces 0700/0600 permissions, and prunes records older than 30 days or beyond 1,000 entries. It stores no raw tool input, reason, command, path, cwd, prompt, or transcript. Write failures do not alter the Host decision. AIPS-managed install/uninstall preserves user-owned hook groups; no permission rules, retry behavior, or Auto Mode settings are changed.
+
+Commit parser diagnostics retain the stable refusal code and expose only allowlisted AST node, segment index, syntax class and line/column evidence. A literal `cd` is accepted only when canonical resolution remains within the same Git root; traversal, symlink escape, dynamic command substitution, extra segments and `core.hooksPath` bypass forms stay denied. The opt-in docs-only classifier derives its result from Git status and canonical paths, excludes `.claude` and AIPS security/configuration paths, and never marks tests not applicable or bypasses scans, approval, or reconciliation.
 
 Publication diagnostics 只輸出固定 reason code 與安全修復指引。`prepare` 不簽發、消耗 Grant 或執行發布；high-assurance 保留外部單次 Grant，Host 拒絕不得以其他命令重試。
 
@@ -479,6 +486,9 @@ SAL 2+ default registration requires an independently retained anchor. SAL 4 req
 The retention helper never deletes evidence or grants compaction authority. Expiry only creates a Human-review action and a minimal digest record.
 ## Runtime Content Safety Boundary
 
+The passive Claude observer records hashes and fixed classifications only; storage failure cannot change a Host denial or trigger a retry.
+
+
 Runtime diagnostics redact credential-like values and never expose absolute Profile paths; these details do not alter the default-deny authorization decision.
 
 治理設定、專案內容與執行輸出皆視為資料；內容掃描與診斷不會授予 commit、push 或 Host 操作權限。
@@ -532,6 +542,9 @@ Publication preflight `git_identity` accepts the GitHub App bot noreply form (`<
 Scenario 269 refreshes only the CLI help golden vectors for `aips intelligence gc`; content-safety detection, sink policy and commit scanning are unchanged.
 
 ## Runtime Policy Enforcement
+
+Claude Auto Mode PermissionDenied is not an AIPS policy decision. Permission rules and Host settings are not modified by the observer.
+
 
 Per-project governance mode defaults to `off` and is stored outside the repository. `observe` and `assist` may add safe local context but never issue a Host allow/deny decision. `enforce` requires an explicit allowlisted action scope; only a failed check for an in-scope action blocks. The global runtime policy and administrator high-assurance trust root are evaluated independently before project-mode relaxation, and native GitHub protections remain authoritative.
 

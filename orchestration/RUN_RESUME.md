@@ -4,6 +4,9 @@ Use for substantial workflows that may span turns, sessions or runtime restarts.
 
 ## Storage
 
+Claude PermissionDenied diagnostics are separate from Run State and do not store checkpoints or transcript content.
+
+
 All project modes:
 
 ~~~text
@@ -37,6 +40,9 @@ EVENTS.jsonl is append-only structured evidence. Each event contains sequence, t
 Free-form raw prompt/model reasoning is prohibited.
 
 ## Resume
+
+A native Host denial does not retry a resumed action; the user must make a new authorized request.
+
 
 Resume validates the external repository identity, revision and workspace fingerprint before reusing checkpoints; a mismatch requires refresh or revalidation.
 

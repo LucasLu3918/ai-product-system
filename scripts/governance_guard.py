@@ -482,48 +482,111 @@ COMMIT_ADD_OPTIONS = {'-A', '--all', '-u', '--update', '-f', '--force', '--'}
 COMMIT_FLAG_OPTIONS = {'--allow-empty', '--allow-empty-message', '--no-verify', '--signoff', '-s', '--quiet', '-q'}
 
 
-def _commit_chain(command: str) -> tuple[list[list[str]], list[str]]:
-    """Return literal `git add` commands joined by && before one final `git commit`.
+def _commit_parser_error(command: str, construct: str, *, node: Any = None, segment: int = 0) -> PublicationError:
+    start = getattr(node, 'pos', (0, 0))[0] if node is not None else 0
+    prefix = command[:start]
+    evidence = {
+        'parser_node': getattr(node, 'kind', None) or 'unknown',
+        'failed_segment_index': max(0, int(segment)),
+        'unsupported_construct': construct,
+    }
+    evidence['parser_location'] = {'line': prefix.count('\n') + 1, 'column': len(prefix.rsplit('\n', 1)[-1]) + 1}
+    return PublicationError(
+        "commit must be standalone or use literal git add commands joined by &&; one literal repo-local cd prefix is supported",
+        reason_code='COMMAND_FORM_UNSUPPORTED', detail_code='COMMIT_FORM_UNSUPPORTED',
+        context={'parser_evidence': evidence}, phase='command_validation')
+
+
+def _literal_repo_cd(cwd: Path, target: str) -> Path:
+    """Resolve one literal cd target and require it to stay inside the current repository."""
+    from publication_authority import PublicationError
+    if not target or '\0' in target or target.startswith('-') or '..' in Path(target).parts:
+        raise PublicationError("cd target is not a safe literal repository path", 'COMMAND_FORM_UNSUPPORTED',
+                               detail_code='COMMIT_FORM_UNSUPPORTED', phase='command_validation',
+                               context={'parser_evidence': {'parser_node': 'command', 'failed_segment_index': 0,
+                                                            'unsupported_construct': 'CD_TARGET_UNSAFE'}})
+    try:
+        repo_proc = subprocess.run(['git', 'rev-parse', '--show-toplevel'], cwd=cwd, env=READ_ONLY_GIT_ENV,
+                                   capture_output=True, text=True, timeout=10, check=False)
+        if repo_proc.returncode:
+            raise OSError('repository root unavailable')
+        root = Path(repo_proc.stdout.strip()).resolve(strict=True)
+        current = Path(cwd).resolve(strict=True)
+        candidate = (Path(target) if Path(target).is_absolute() else current / target).resolve(strict=True)
+        candidate.relative_to(root)
+        if not candidate.is_dir():
+            raise ValueError('cd target is not a directory')
+        current.relative_to(root)
+        return candidate
+    except (OSError, ValueError, subprocess.TimeoutExpired) as exc:
+        raise PublicationError("cd target is outside the current repository or unavailable",
+                               'COMMAND_FORM_UNSUPPORTED', detail_code='COMMIT_FORM_UNSUPPORTED',
+                               phase='command_validation', context={'parser_evidence': {
+                                   'parser_node': 'command', 'failed_segment_index': 0,
+                                   'unsupported_construct': 'PATH_OUTSIDE_REPOSITORY'}}) from exc
+
+
+def _commit_chain(command: str, cwd: Path | None = None) -> tuple[list[list[str]], list[str], Path | None]:
+    """Return literal `git add` commands, commit, and the execution cwd after an optional safe cd.
 
     Words Bash would expand carry a NUL marker, so literal `$` or backticks in quoted text stay allowed.
     """
     import bashlex
     from publication_commands import inline_literal_heredocs, shell_commands
-    unsupported = PublicationError("commit must be standalone or follow literal git add commands joined by &&",
-                                   reason_code='COMMAND_FORM_UNSUPPORTED', detail_code='COMMIT_FORM_UNSUPPORTED')
     normalized = inline_literal_heredocs(command)
-    commands = shell_commands(normalized, mark_dynamic=True)
+    try:
+        commands = shell_commands(normalized, mark_dynamic=True)
+    except Exception as exc:
+        raise _commit_parser_error(command, 'SHELL_SYNTAX_UNSUPPORTED') from exc
     if len(commands) == 1:
         if commands[0][:2] != ['git', 'commit']:
-            raise unsupported
-        return [], commands[0]
-    if '<<' in normalized:
-        raise unsupported
+            raise _commit_parser_error(command, 'NON_COMMIT_COMMAND')
+        return [], commands[0], cwd
     try:
         trees = bashlex.parse(normalized)
     except (ValueError, NotImplementedError, bashlex.errors.ParsingError) as exc:
-        raise unsupported from exc
+        raise _commit_parser_error(command, 'SHELL_SYNTAX_UNSUPPORTED') from exc
     if len(trees) != 1 or trees[0].kind != 'list':
-        raise unsupported
+        node = trees[0] if trees else None
+        raise _commit_parser_error(command, 'AST_SHAPE_UNSUPPORTED', node=node)
     parts = trees[0].parts
+    ast_commands = [part for part in parts if part.kind == 'command']
     operators = [part.op for part in parts if part.kind == 'operator']
-    # Any substitution, pipe or other connector adds commands that the operators cannot account for.
-    if (any(part.kind not in {'command', 'operator'} for part in parts) or any(op != '&&' for op in operators)
-            or len(operators) != len(commands) - 1):
-        raise unsupported
-    *adds, commit = commands
-    if commit[:2] != ['git', 'commit'] or any(add[:2] != ['git', 'add'] for add in adds):
-        raise unsupported
+    unknown = next((part for part in parts if part.kind not in {'command', 'operator'}), None)
+    if unknown is not None:
+        raise _commit_parser_error(command, 'AST_NODE_UNSUPPORTED', node=unknown,
+                                   segment=sum(1 for part in parts[:parts.index(unknown)] if part.kind == 'command'))
+    if any(op != '&&' for op in operators):
+        operator = next(part for part in parts if part.kind == 'operator' and part.op != '&&')
+        raise _commit_parser_error(command, 'COMMAND_CONNECTOR_UNSUPPORTED', node=operator,
+                                   segment=sum(1 for part in parts[:parts.index(operator)] if part.kind == 'command'))
+    if len(operators) != len(ast_commands) - 1 or len(commands) != len(ast_commands):
+        node = ast_commands[min(len(ast_commands) - 1, max(0, len(operators)))] if ast_commands else trees[0]
+        raise _commit_parser_error(command, 'NESTED_OR_UNBOUND_COMMAND', node=node,
+                                   segment=max(0, min(len(commands) - 1, len(ast_commands) - 1)))
+    execution_cwd = cwd
+    commit_commands = commands
+    if commands and commands[0][:1] == ['cd']:
+        if cwd is None or len(commands[0]) != 2:
+            raise _commit_parser_error(command, 'CD_PREFIX_UNSUPPORTED', node=ast_commands[0], segment=0)
+        execution_cwd = _literal_repo_cd(cwd, commands[0][1])
+        commit_commands = commands[1:]
+        ast_commands = ast_commands[1:]
+    *adds, commit = commit_commands
+    if tuple(commit[:2]) != ('git', 'commit') or any(tuple(add[:2]) != ('git', 'add') for add in adds):
+        index = next((i for i, item in enumerate(commit_commands)
+                      if tuple(item[:2]) not in {('git', 'add'), ('git', 'commit')}), len(commit_commands) - 1)
+        raise _commit_parser_error(command, 'UNSUPPORTED_GIT_SEGMENT', node=ast_commands[min(index, len(ast_commands) - 1)], segment=index)
     for add in adds:
         for word in add[2:]:
             if '\0' in word:
-                raise PublicationError("git add pathspecs must be literal", reason_code='PUBLICATION_INPUT_UNBOUND')
+                raise _commit_parser_error(command, 'DYNAMIC_GIT_ADD_PATH', node=ast_commands[0], segment=0)
             if word.startswith('-') and word not in COMMIT_ADD_OPTIONS:
-                raise unsupported
-    return adds, commit
+                raise _commit_parser_error(command, 'GIT_ADD_OPTION_UNSUPPORTED', node=ast_commands[0], segment=0)
+    return adds, commit, execution_cwd
 
 
-def _git_add_paths(cwd: Path, add: list[str]) -> tuple[set[str], set[str]]:
+def _git_add_paths(cwd: Path, add: list[str], root: Path | None = None) -> tuple[set[str], set[str]]:
     """Resolve what `git add` would stage without writing the index or object database."""
     try:
         proc = subprocess.run(['git', '-c', 'core.quotePath=false', 'add', '--dry-run', *add[2:]], cwd=cwd,
@@ -540,14 +603,26 @@ def _git_add_paths(cwd: Path, add: list[str]) -> tuple[set[str], set[str]]:
         if not match:
             raise PublicationError("git add preview is ambiguous", "CONTENT_INSPECTION_UNAVAILABLE", phase='staged_index')
         (added if match[1] == 'add' else removed).add(match[2])
-    return added, removed
+    if root is None:
+        return added, removed
+    try:
+        # `git add --dry-run` prints repository-root-relative paths even when invoked
+        # from a subdirectory, so normalize from the root rather than the process cwd.
+        normalize = lambda item: (root / item).resolve(strict=False).relative_to(root).as_posix()
+        return {normalize(item) for item in added}, {normalize(item) for item in removed}
+    except (OSError, ValueError) as exc:
+        raise PublicationError("git add path leaves the current repository", 'COMMAND_FORM_UNSUPPORTED',
+                               detail_code='COMMIT_FORM_UNSUPPORTED', phase='command_validation',
+                               context={'parser_evidence': {'parser_node': 'command', 'failed_segment_index': 0,
+                                                            'unsupported_construct': 'PATH_OUTSIDE_REPOSITORY'}}) from exc
 
 
 def commit_safety(cwd: Path, command: str) -> dict:
     """Scan actual commit messages and candidate content; exempt only final author email metadata."""
     from content_safety import added_line_numbers_from_diff, scan_payload
     from publication_authority import PublicationError
-    adds, commit = _commit_chain(command)
+    adds, commit, command_cwd = _commit_chain(command, cwd)
+    command_cwd = command_cwd or cwd
     args = commit[2:]
     if any('\0' in word for word in args):
         raise PublicationError("commit message/file must be literal without shell expansion", reason_code='PUBLICATION_INPUT_UNBOUND')
@@ -569,7 +644,7 @@ def commit_safety(cwd: Path, command: str) -> dict:
                 if value == '-':
                     raise PublicationError("stdin commit message cannot be inspected", reason_code='CONTENT_INSPECTION_UNAVAILABLE')
                 try:
-                    value = (cwd / value).read_text(encoding='utf-8')
+                    value = (command_cwd / value).read_text(encoding='utf-8')
                 except (OSError, UnicodeError) as exc:
                     raise PublicationError("commit message file unavailable", reason_code='MESSAGE_FILE_UNAVAILABLE',
                                            context={'error_class': type(exc).__name__}, phase='commit_message') from exc
@@ -643,7 +718,7 @@ def commit_safety(cwd: Path, command: str) -> dict:
     worktree_paths: set[str] = set()
     removed_paths: set[str] = set()
     for add in adds:
-        added, removed = _git_add_paths(cwd, add)
+        added, removed = _git_add_paths(command_cwd, add, root)
         worktree_paths |= added
         removed_paths |= removed
     try:

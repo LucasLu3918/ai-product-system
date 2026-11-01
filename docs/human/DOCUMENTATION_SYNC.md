@@ -33,6 +33,9 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+The Claude diagnostics update is a publication and security contract; it does not change creative behavior or provenance documentation.
+
+
 Runtime Policy diagnostics must stay synchronized across Resource Authorization, Claude adapter guidance, Security Assurance and Scenario 177; keep direct Change Impact scope distinct from global coverage.
 
 For Qwen Image Edit Plus reference mapping, keep the user and technology guides, Scenario 236, Creative Direction, and the candidate Core Change matrix aligned; preserve the Qwen Image 2.1 object-map contract and local execution boundary.
@@ -74,6 +77,7 @@ Publication recovery documentation must be updated within existing canonical H2 
 Publication diagnostics and Doctor are one shared behavior across Human guidance and Claude Code, Codex and OpenCode adapters. Keep Required Checks state names, GitHub provider outcomes, redaction, read-only behavior, Claude's single retryable Doctor observation, and the no-policy-mutation/no-merge-authority boundary aligned with Scenario 260.
 
 Plan44 also synchronizes stable unsupported-command `detail_code` values and Claude's distinct `PostToolUseFailure` native-execution observation across User Guide, Security Assurance, Maintenance, Claude adapter guidance and Scenario 261. Keep raw Host errors private and preserve the PreToolUse `NOT_EXECUTED` state.
+
 
 Documentation rules match concrete behavior-bearing paths and map them to their owning topics. Shared registries such as `tests/scenario_coverage.yaml` do not by themselves imply that unrelated product domains changed; use scenario-specific rules when one scenario owns the behavior. CLI facade files follow the command group they route, not every feature that happens to use the same facade.
 
@@ -276,6 +280,9 @@ Canonical source 是 docs/human/TECHNOLOGY_GUIDE.md。舊 HTML 只保留 backwar
 Getting Started / Installation / User Guide 以 task-oriented方式導覽；Architecture / Technology Guide 負責 explanation；Conformance 負責 reference/evidence history；Maintenance 文件給 maintainer。
 
 ## Deterministic protection
+
+Plan50 documents parser AST evidence, one repo-local literal cd, a hash-only Claude Auto Mode PermissionDenied observer, and opt-in docs-only review. Keep the three Claude event sources distinct and preserve scans, Human approval, and reconciliation.
+
 
 External-state lifecycle guidance remains mapped to its canonical topics; publication scan evidence is private user-cache data and never project content.
 

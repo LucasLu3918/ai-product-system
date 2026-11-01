@@ -40,6 +40,10 @@ Publication candidates also parse WebM as bounded EBML: declared text metadata i
 
 Plan44 extends the existing flow with allowlisted shell-form detail and Claude-only native failure evidence; it adds no authority service, retry path or architecture component.
 
+Claude Auto Mode `PermissionDenied` feeds a separate passive, privacy-bounded observer; AIPS `PreToolUse` remains the command-validation and deny path, and `PostToolUseFailure` remains post-execution evidence. The observer cannot return a permission decision, retry, or change Host policy. Commit-form parser diagnostics attach only allowlisted AST/segment coordinates; a literal `cd` prefix is resolved within the same Git root before the existing staged-content scan.
+
+The opt-in docs-only report is a read-only projection of actual Git status and canonical repository paths. It does not skip secret scanning, approval, reconciliation, or required validation.
+
 The shared publication guard fails closed on unexpected authorization exceptions and returns a diagnostic ID plus an allowlisted exception class without exception text. Claude Code `onFailure: block` is enabled only for managed publication hooks on v2.1.295 or later; older or unknown versions retain compatible settings and receive a warning.
 Plan41 keeps commit inspection inside Runtime Content Safety: the native Hook and `aips safety diagnose commit` share one scanner, findings grant no authority, and unsupported binary or incomplete scans remain fail-closed.
 Plan47 classifies injection signals on added staged lines while retaining full-blob secret/PII inspection; exact expiring exceptions and redacted recovery are covered by Scenario 266.

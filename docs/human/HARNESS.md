@@ -8,6 +8,10 @@ Runtime Context 統一解析驗證 Python 與 cache/config 路徑；它將 Playw
 
 ## Integration model
 
+Claude Auto Mode PermissionDenied is a Host-owned observation, separate from AIPS PreToolUse and PostToolUseFailure; installation adds only the AIPS-managed observer group and preserves other hooks.
+The project diagnostics command is read-only and opt-in; it cannot change project governance mode or replace Change Impact review.
+
+
 Runtime Policy denial details are bounded and sanitized; they do not expand adapter coverage or imply that a denied tool started.
 
 Creative workflow execution is an AIPS product capability, separate from Host adapter permissions. Qwen Image Edit Plus uses the local ComfyUI contract in Scenario 236 and does not expand Harness runtime authority.
@@ -64,6 +68,9 @@ AIPS Core
 
 ## Native Runtime Adapters
 
+The Claude PermissionDenied observer keeps only fixed fields and hashes in private user state. It does not retry or change the Host refusal.
+
+
 The Matt Pocock Skill Explorer remains a separate discovery feature; the shared publication scanner does not change adapter capabilities or skill admission.
 
 Qwen ComfyUI workflow support adds no Host adapter or native permission. It remains within AIPS Creative execution and Scenario 236.
@@ -81,6 +88,8 @@ Adapter action guards remain separate from staged AVIF content-safety diagnostic
 
 Claude Code v2.1.295+ 的 managed publication PreToolUse guard 設定 `onFailure: block`；舊版/未知版不寫入不相容欄位並發出警示。AIPS 另以八秒內部 deadline 回傳結構化拒絕；`PostToolUseFailure` 的 timeout 會標示 `TIMEOUT_OBSERVED`，不推測成網路故障。UserPromptSubmit context hook 不套用此 failure policy。同一 guard 另以 `Edit|Write|NotebookEdit|MultiEdit` matcher 攔截代理對已安裝 AIPS 系統目錄與 profile 設定的寫入，並以常見 Shell 寫入形式做盡力偵測（不是完整防護）；拒絕碼為 `PROTECTED_PATH_WRITE`，請改在開發 repo 修改並透過 PR 發布。
 獨立的 `PostToolUseFailure:Bash` observer 只回報已開始執行的原生指令失敗分類與可解析 exit code，不回傳原始錯誤、不重試也不授權。
+
+獨立的 Claude `PermissionDenied` observer 僅記錄 Auto Mode 拒絕來源、受限工具名稱/分類與雜湊；記錄存於 `~/.local/state/aips/diagnostics/claude-permission-denied.jsonl`，目錄/檔案權限為 0700/0600，保留最多 30 天或 1,000 筆。原始 tool input、reason、transcript、cwd 與命令不落盤。它不會回傳 retry 或權限決定，儲存失敗也不會改變 Host 拒絕。AIPS PreToolUse、PostToolUseFailure、手動拒絕與 permission rule 拒絕各自維持不同來源。
 Creative asset import remains an explicit CLI operation. OpenCode native file permissions neither authorize nor execute the Git import path; the exact-hash candidate and separate Git publication boundary still apply.
 
 Claude Code commit Hook diagnostics include only safe reason/category/detector data, an optional sanitized repository-relative file, and a Diagnostic ID. `aips safety diagnose commit` invokes the same scanner in read-only mode; this does not add a Host capability or publication permission.
@@ -90,6 +99,8 @@ Publication Hook responses share the authority layer's stable reason code and sa
 Claude Code's publication Hook runs one bounded read-only Doctor after explicitly retryable network, rate-limit or GitHub server failures; OpenCode and Codex do not claim this automatic behavior.
 
 Claude Code PreToolUse denials may include a bounded diagnostic ID, reason code, phase, category, retry state and next step in additional context; raw command text, arguments and credentials are excluded.
+
+Unsupported commit forms may add redacted parser evidence (`parser_node`, `failed_segment_index`, `unsupported_construct`, and line/column); it never echoes the command. A single literal repo-local `cd` prefix is supported for `git add ... && git commit ...`; path traversal, symlink escape, dynamic expansion, and any extra command remain denied.
 
 Claude Code may reject a Bash merge as Merge Without Review independently of AIPS PreToolUse; preserve exact Host-versus-AIPS provenance and route confirmation through native permissions rather than rewrites.
 

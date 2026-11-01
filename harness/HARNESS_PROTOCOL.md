@@ -70,6 +70,9 @@ Load `SYSTEM_CORE.md` with minimal Harness rules and critical native/project ins
 
 ## Mutation safety
 
+Claude PermissionDenied is a Host observation and cannot be converted into an AIPS allow, retry, or permission-rule change.
+
+
 For confined local L2 source writes, READY Project Intelligence with STALE freshness is advisory and remains visible. Turn Context sets `refresh_required` and a task-scoped `targeted_refresh` only when task-relevant topics are affected or their irrelevance cannot be proven; `retrieval_index_required` is true only when the current task needs retrieval. Change Impact remains required for mutation. UNKNOWN freshness, non-READY Intelligence, unavailable canonical protocols, authority conflicts, escaping paths, creative writes and external/high-risk effects keep their existing stops.
 
 Staged AVIF metadata denials are produced by the content-safety scanner and do not broaden native runtime action interception.
@@ -175,6 +178,9 @@ Creative adapters share a declarative model profile registry and closed executor
 Publication diagnosis is a read-only capability. Runtime adapters may report the shared reason code, phase, safe next step and Required Checks state, but must not treat diagnosis as permission, expose raw host output, modify policy, or execute a merge.
 
 ## Publication Root-Cause Recovery (Plan35)
+
+The docs-only report is read-only and does not waive candidate scans, Human approval, or Change Impact reconciliation.
+
 
 The Claude Code publication Hook also enforces an eight-second internal deadline and returns a fail-closed diagnostic with the last safe phase and elapsed time. A fresh Prepare scan record can avoid a duplicate Hook scan for 30 minutes, but never skips live authority, target, candidate or remote-tip checks.
 

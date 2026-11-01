@@ -66,6 +66,9 @@ Ordinary generation grants permit bounded `quality-check` of manifests produced 
 
 ## Publication Root-Cause Recovery (Plan35)
 
+Claude Code PermissionDenied is a Claude-only Host event; OpenCode must not invent that event or attribute its own policy decisions to Claude.
+
+
 Plan53 changes are Claude Code publication-adapter behavior. OpenCode permissions and action guards remain separate; no OpenCode operation consumes the publication scan-evidence cache or gains Git authority from it.
 
 The Claude Code standard publication recipe and quoted-heredoc literal handling are Claude Code Hook behavior; OpenCode permissions remain ADVISORY and unchanged.

@@ -220,6 +220,9 @@ Dependabot repository preflight and action pin sync (Scenario 221): `scripts/rep
 
 ## Read-only declaration and fail-closed boundary
 
+Claude PermissionDenied is not a scheduler retry signal, and docs-only review cannot authorize task execution.
+
+
 Parallel Run Dashboard state is a read-only projection and does not add scheduling commands or alter the publication Content Safety gate.
 
 Task ownership is validated against the run-state record before work is scheduled; unknown or conflicting owners fail closed and cannot be inferred from conversation history.
@@ -342,6 +345,9 @@ The Scheduler validates this structure and includes runtime requirements only fo
 
 Only `tcp` is supported in v0.51. Port IDs must be stable resource IDs, `preferred` is optional and non-authoritative, and `expose_as` accepts environment-variable names only.
 ## Runtime Content Safety Boundary
+
+The commit parser's literal repo-local cd support keeps the existing candidate scan bound to the repository root.
+
 
 For native `git -C <path> push`, the explicit target worktree determines candidate SHA/ref and scan binding, independent of invocation cwd.
 

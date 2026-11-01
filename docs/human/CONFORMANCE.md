@@ -223,6 +223,9 @@ Automated     49.6%
 
 ## v0.16.2 Install / Preflight Evidence Maturity
 
+Claude diagnostics remain in private user state; install and uninstall manage only AIPS-owned hooks and preserve user-owned settings.
+
+
 Scenario 044 keeps Intelligence and run state in external user storage; publication scan evidence is also private candidate-bound cache data.
 
 Harness 安裝生命週期另由 `tests/evidence/install_preflight_lifecycle.py` 與 `tests/test_harness_enablement.py` 驗證：AIPS CLI 安裝預設不註冊 Runtime adapter；明確安裝後才為 `ACTIVE`，有效停用標記為 `OFF`，無法驗證的狀態為 `UNKNOWN`。卸載保留 Harness ownership 目錄與其中未辨識資料。
@@ -1770,6 +1773,9 @@ Diagnostic recommendations remain read-only and conditional.
 
 ## Scenario 233 — Public CLI Help and Error Contracts
 
+The docs-only review command requires explicit opt-in and returns review-only status.
+
+
 OpenCode Context 超限會回傳穩定的 `context_compaction_over_budget` reason code 與唯讀復原指令，不改變既有 CLI 命令表面。
 
 Scenario 268 adds explicit `creative workflows` routes while preserving the existing Skills CLI contract.
@@ -1813,6 +1819,9 @@ The lifecycle uses synthetic SVG/PNG fixtures to verify confined paths, active-c
 Scenario 269 keeps the creative Git write denial unchanged; only ordinary Turn Context refresh and index guidance becomes task-scoped.
 
 ## Scenario 235 — OpenCode Native Context and Action Guard
+
+Claude PermissionDenied semantics are runtime-specific and are not attributed to OpenCode.
+
 
 When the compact projection exceeds 12,000 bytes, Scenario 235 also requires stable `context_compaction_over_budget` diagnostics, bounded section-size trace metadata, read-only recovery guidance, and denial of supported native file writes before manifest policy evaluation. Section values, prompts, paths, and raw CLI output stay excluded.
 
@@ -1885,6 +1894,9 @@ The existing OpenCode integration lifecycle also verifies hash-bound asset impor
 The cross-profile quality evidence extension is covered by Scenario 258; this creative execution scenario continues to distinguish generated artifacts, image checks, Human review and user acceptance.
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
+
+Skill installation evidence remains separate from the Claude PermissionDenied observer and docs-only review contracts.
+
 
 Skill discovery and reuse do not grant Runtime Policy permissions; the action still requires its trusted Resource Authorization Profile.
 
@@ -1974,6 +1986,9 @@ Scenario 269 changes no Skill discovery or installation behavior; its lifecycle 
 
 ## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance
 
+The opt-in docs-only report derives from Git status and never marks Change Impact reconciled.
+
+
 Scenario 044 verifies no-write attach/detach behavior, external Intelligence persistence and preservation of legacy `.ai/` data.
 
 Scenario 267's direct-write lifecycle complements diagnostics: stale READY freshness remains visible while independent native guard denials remain covered.
@@ -1990,6 +2005,9 @@ Plan40 also verifies explicit reason-code coverage, `INTERNAL_DIAGNOSTIC_GAP` fo
 Plan44 also verifies stable detail codes for unsupported command forms and a separate Claude `PostToolUseFailure` path that reports observed native execution failure and exit code without raw host text. PreToolUse denial remains `NOT_EXECUTED`; no retry or authority is added.
 
 ## Scenario 240 — Personal Publication Default and High-Assurance Opt-In
+
+A native Claude Auto Mode denial remains separate from AIPS publication authorization.
+
 
 Content-safety PASS is candidate evidence only and does not authorize PR merge or change publication mode.
 
@@ -2036,6 +2054,9 @@ Declared behavior dependencies select potentially stale Eval cases for review. T
 Current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md).
 
 ## Scenario 260 — Publication diagnostics and Doctor
+
+PreToolUse, PermissionDenied, and PostToolUseFailure remain distinct sources in publication diagnostics.
+
 
 Runtime Policy diagnostic details do not create publication authority; the protected publication path retains its Human approval and required-check gates.
 
@@ -2131,6 +2152,9 @@ Scenario 268 verifies opt-in local API workflow import, scan and inspection; bou
 
 ## Scenario 263 — Commit Safety Diagnostics
 
+Commit diagnostics expose allowlisted AST and segment evidence; one literal repo-local cd is scanned at its canonical working directory.
+
+
 Content-safety findings and Runtime Policy diagnostics remain separate evidence; a diagnostic never grants permission to retry or publish.
 
 Moving legacy governance records to an external backup does not alter staged-content scanning or permit skipped safety checks.
@@ -2188,6 +2212,9 @@ Scenario 272 covers the profile switch mechanism: default-strict loading, fail-c
 Scenario 274 covers the profile-gated relaxations `claude_coauthor_trailer` (exact Claude co-author trailer in the final trailer block of the publication gate PII scan) and `post_merge_refresh` (one detached `aips intelligence refresh` per store per HEAD); both default to off.
 
 ## Scenario 275 — Optional Project Governance Modes
+
+Docs-only classification does not change the project's governance mode or waive required checks.
+
 
 Optional governance modes do not alter Runtime Policy default deny or permit fallback when the trusted Profile is missing or invalid.
 

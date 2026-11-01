@@ -621,6 +621,12 @@ Do not claim the project has been initialized merely from directory/file-name in
 
 ## Existing-project automatic behavior
 
+Post-change Impact reconciliation binds the exact clean base/head diff; a docs-only classification never substitutes for it.
+
+
+The docs-only review reads current Git status without writing Project Intelligence, project files, or Git metadata.
+
+
 Retrieval relation extraction behavior is versioned with the disposable index schema. When changing which source relationships are indexed, increment `SCHEMA_VERSION` so unchanged files are fully re-extracted; incremental content hashes alone cannot remove relations produced by an older extractor. Parse raw source only in memory for syntax-sensitive call-name extraction; persist only redacted chunks and relationship rows.
 
 All new Intelligence, run and Change Impact data stays in external user state. `aips attach` initializes or imports there; `aips detach` is a compatibility no-op for storage. Neither command writes `.ai/`, `.git/info/exclude` or `.gitignore`; legacy `.ai/` content remains unchanged.
@@ -760,6 +766,8 @@ shared contract/data/event relationships
 A task against one component loads the system summary, that component's relevant topics, and shared dependencies from the Impact Graph. It does not preload unrelated applications.
 
 ## Review changes
+
+
 
 Regenerate Human Review HTML when:
 

@@ -34,6 +34,9 @@ Trial 通過只表示證據可供審查。正式 `ADOPT` 必須由人類另行�
 
 ## Effectiveness Feedback
 
+Scenario 261 records local verification for Claude event separation, bounded diagnostics, and diff-derived docs-only review.
+
+
 Core scanner hardening (including WebM metadata coverage) remains under its Core Change Matrix and publication Gate; passing those checks does not create an Evolution Trial or adoption decision.
 
 Evaluation control data stays outside indexed product sources so expected answers cannot contaminate retrieval measurements; optimization decisions remain Human-reviewed.
@@ -43,6 +46,8 @@ Evaluation control data stays outside indexed product sources so expected answer
 每月與每季摘要會呈現蒐集、shortlist、semantic analysis、actionable 建議、Trial、PASS 與 ADOPT 的流程指標，也會標示重複或失敗資料。統計只提示人類檢視。缺少分析、歷史資料不完整或 evidence archive 無法驗證時，都會明確保留為未完成／待檢視。
 
 ## Verification History
+
+
 
 逐項驗證案例與版本化證據見[情境驗證紀錄](CONFORMANCE.md)。歷史數字不代表未來趨勢；本機 fixture 或安裝狀態也不能證明模型品質、Runtime enforcement 或外部 Provider 的實際效果。
 

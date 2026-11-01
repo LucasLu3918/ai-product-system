@@ -157,7 +157,8 @@ class ClaudeGuardInstallerTests(unittest.TestCase):
 
     def test_guard_matcher_covers_file_edit_tools_and_keeps_failure_policy(self):
         status, _ = adapter.install_claude_hook(self.settings, 'AIPS_MANAGED_HOOK=1 hook', 'AIPS_MANAGED_HOOK=1 guard hook --runtime claude-code',
-                                                'AIPS_MANAGED_HOOK=1 guard hook --runtime claude-code', fail_closed=True)
+                                                'AIPS_MANAGED_HOOK=1 guard hook --runtime claude-code',
+                                                permission_denied_command='AIPS_MANAGED_HOOK=1 permission observer', fail_closed=True)
         self.assertEqual(status, 'OK')
         data = json.loads(self.settings.read_text(encoding='utf-8'))
         guard_group = next(g for g in data['hooks']['PreToolUse'] if adapter.is_aips_hook(g))
@@ -166,17 +167,32 @@ class ClaudeGuardInstallerTests(unittest.TestCase):
         failure_group = next(g for g in data['hooks']['PostToolUseFailure'] if adapter.is_aips_hook(g))
         self.assertEqual(failure_group['matcher'], 'Bash')
         self.assertNotIn('onFailure', failure_group['hooks'][0])
+        observer_group = next(g for g in data['hooks']['PermissionDenied'] if adapter.is_aips_hook(g))
+        self.assertEqual(observer_group['hooks'][0]['command'], 'AIPS_MANAGED_HOOK=1 permission observer')
+        self.assertNotIn('matcher', observer_group)
 
     def test_refresh_without_failure_blocking_keeps_matcher_and_omits_onfailure(self):
         adapter.install_claude_hook(self.settings, 'AIPS_MANAGED_HOOK=1 hook', 'AIPS_MANAGED_HOOK=1 guard hook --runtime claude-code',
-                                    'AIPS_MANAGED_HOOK=1 guard hook --runtime claude-code', fail_closed=True)
+                                    'AIPS_MANAGED_HOOK=1 guard hook --runtime claude-code',
+                                    permission_denied_command='AIPS_MANAGED_HOOK=1 permission observer', fail_closed=True)
         adapter.install_claude_hook(self.settings, 'AIPS_MANAGED_HOOK=1 hook', 'AIPS_MANAGED_HOOK=1 guard hook --runtime claude-code',
-                                    'AIPS_MANAGED_HOOK=1 guard hook --runtime claude-code', fail_closed=False)
+                                    'AIPS_MANAGED_HOOK=1 guard hook --runtime claude-code',
+                                    permission_denied_command='AIPS_MANAGED_HOOK=1 permission observer', fail_closed=False)
         data = json.loads(self.settings.read_text(encoding='utf-8'))
         guard_groups = [g for g in data['hooks']['PreToolUse'] if adapter.is_aips_hook(g)]
         self.assertEqual(len(guard_groups), 1)
         self.assertEqual(guard_groups[0]['matcher'], 'Bash|Edit|Write|NotebookEdit|MultiEdit')
         self.assertNotIn('onFailure', guard_groups[0]['hooks'][0])
+
+    def test_uninstall_removes_only_the_aips_permission_denied_observer(self):
+        user_hook = {'hooks': [{'type': 'command', 'command': 'user-permission-hook'}]}
+        self.settings.write_text(json.dumps({'hooks': {'PermissionDenied': [user_hook]}}), encoding='utf-8')
+        adapter.install_claude_hook(self.settings, 'AIPS_MANAGED_HOOK=1 hook',
+                                    permission_denied_command='AIPS_MANAGED_HOOK=1 permission observer')
+        status, _ = adapter.uninstall_claude_hook(self.settings)
+        self.assertEqual(status, 'OK')
+        data = json.loads(self.settings.read_text(encoding='utf-8'))
+        self.assertEqual(data['hooks']['PermissionDenied'], [user_hook])
 
 
 class GuardHookSubprocessTests(unittest.TestCase):

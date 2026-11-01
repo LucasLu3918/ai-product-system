@@ -144,6 +144,8 @@ An explicit read-only task may omit a writer boundary only when it has no `write
 
 ## Resource-scoped authorization
 
+
+
 Qwen Image Edit Plus reference injection uses the existing project-local staging and loopback ComfyUI boundary; this mapping does not grant access to external endpoints or additional runtime resources.
 
 Runtime Policy and Resource Authorization are separate gates for ComfyUI actions. Destination conditions constrain the exact endpoint and cannot widen the profile's declared resource scope.
@@ -172,6 +174,8 @@ The authorization profile defaults to DENY and can only narrow ordinary operatio
 Runtime Policy Enforcement may require provider-observed network allowlist evidence for protected external egress. The existing E2B candidate is disabled and deny-all; it does not currently authorize external egress. A pre-tool hook is not a substitute for sandbox network control.
 
 ## Runtime-security assessment boundary
+
+
 
 
 Issue #79 keeps out-of-band anomaly evidence and semantic intent governance outside the active Execution Isolation / Resource Authorization enforcement path. They remain assessment candidates only.
@@ -309,6 +313,12 @@ Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. 
 
 
 ## Parallel runtime resource isolation
+
+A Host refusal is observed without retry or permission widening; AIPS authorization remains independently enforced.
+
+
+The Claude PermissionDenied observer writes bounded user-local diagnostics but creates no execution workspace and does not alter isolation policy.
+
 
 The WebM scanner reads bounded declared metadata from the exact candidate and does not decode media payloads or create an execution workspace; candidate scan evidence remains separate from isolation and resource authorization.
 
