@@ -46,7 +46,7 @@ matrix:
         evidence: "tests.test_protected_path_guard PASS (29 tests); Claude PreToolUse and PostToolUseFailure regressions PASS in publication diagnostics."
       docs_schema:
         applicable: true
-        evidence: "Full repository validation PASS; committed docs-impact closure awaits candidate binding."
+        evidence: "Full repository validation PASS; final docs-impact --require-complete PASS (58 direct paths, 58 closure paths, 0 missing additions)."
 
   - boundary: Claude Auto Mode PermissionDenied observer
     reason: Record only fixed allowlisted fields and hashes for the native PermissionDenied event; preserve the original refusal and keep PreToolUse and PostToolUseFailure distinct.
@@ -77,7 +77,7 @@ matrix:
         evidence: "Managed Claude settings lifecycle PASS; PreToolUse/PostToolUseFailure regressions PASS (23 publication diagnostic tests)."
       docs_schema:
         applicable: true
-        evidence: "Pending docs impact closure and repository validation."
+        evidence: "Full repository validation PASS; final docs-impact --require-complete PASS (58 direct paths, 58 closure paths, 0 missing additions)."
 
   - boundary: Diff-derived docs-only review
     reason: Classification is opt-in and read-only, derived from Git status and canonical paths, and never asserts tests are inapplicable or skips required checks.
@@ -108,11 +108,9 @@ matrix:
         evidence: "CLI dispatch, status-derived classification and required diff/Markdown/path/secret-scan/approval/reconciliation checks verified locally."
       docs_schema:
         applicable: true
-        evidence: "Full repository validation PASS; committed docs-impact closure awaits candidate binding."
+        evidence: "Full repository validation PASS; final docs-impact --require-complete PASS (58 direct paths, 58 closure paths, 0 missing additions)."
 
 scope_recomputed_after_expansion: true
-actual_diff_reconciled: false
-blockers:
-  - Local validation and exact candidate reconciliation are pending.
-  - candidate binding refreshed; review scope and evidence before marking READY
-status: DRAFT
+blockers: []
+actual_diff_reconciled: true
+status: READY
