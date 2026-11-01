@@ -250,6 +250,10 @@ Plan45 classifies exact-candidate secret-scanner failures (`SECRET_SCAN_POLICY_I
 
 Unsupported publication command forms retain the stable refusal code and add only an allowlisted detail code; raw shell input is never included. Claude `PostToolUseFailure` is an observation after native execution starts, and reports a bounded category and parsed exit code without the host error text. It cannot authorize, retry or mutate publication state; PreToolUse denial remains `NOT_EXECUTED`.
 
+Claude Auto Mode `PermissionDenied` uses a separate passive observer. It stores only a fixed event/source/category/tool allowlist and SHA-256 hashes under the user's private state directory, enforces 0700/0600 permissions, and prunes records older than 30 days or beyond 1,000 entries. It stores no raw tool input, reason, command, path, cwd, prompt, or transcript. Write failures do not alter the Host decision. AIPS-managed install/uninstall preserves user-owned hook groups; no permission rules, retry behavior, or Auto Mode settings are changed.
+
+Commit parser diagnostics retain the stable refusal code and expose only allowlisted AST node, segment index, syntax class and line/column evidence. A literal `cd` is accepted only when canonical resolution remains within the same Git root; traversal, symlink escape, dynamic command substitution, extra segments and `core.hooksPath` bypass forms stay denied. The opt-in docs-only classifier derives its result from Git status and canonical paths, excludes `.claude` and AIPS security/configuration paths, and never marks tests not applicable or bypasses scans, approval, or reconciliation.
+
 Publication diagnostics 只輸出固定 reason code 與安全修復指引。`prepare` 不簽發、消耗 Grant 或執行發布；high-assurance 保留外部單次 Grant，Host 拒絕不得以其他命令重試。
 
 Creative asset transfer requires an exact source SHA-256 and a create-only target. Git destinations are rejected by default; an explicit `--allow-git-destination` opt-in is recorded in the hash-bound candidate and is limited to the exact Git worktree root with a non-Git EPHEMERAL source. Candidate metadata is private and excludes asset bytes. Import never stages, commits or publishes the asset.

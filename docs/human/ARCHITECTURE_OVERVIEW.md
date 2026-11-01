@@ -447,6 +447,8 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 
 Runtime Policy and Resource Authorization remain deny-by-default. Claude PreToolUse can show bounded, redacted diagnostics but cannot grant access or claim that a denied tool ran.
 
+Claude Auto Mode `PermissionDenied`, AIPS `PreToolUse`, and native `PostToolUseFailure` are separate event sources. A passive observer stores fixed fields and hashes only; it never changes the Host decision. The commit guard reports bounded AST/segment evidence while preserving the same-repository boundary for a literal `cd` prefix.
+
 Optional project governance mode 是本機外部設定；預設 `off`，專案設定不得覆蓋全域 runtime 或高保證政策。
 
 A literal `git -C <path> push` binds candidate identity and scanning to the explicit target worktree, even when the invocation cwd differs; invalid or dynamic paths fail before candidate inspection.

@@ -99,6 +99,13 @@ project_mode() {
   "$py" "$SYSTEM_DIR/scripts/project_governance_mode.py" "$@"
 }
 
+project_docs_only() {
+  local py
+  py="$(python_bin)"
+  [ -n "$py" ] || die "python3 is required."
+  "$py" "$SYSTEM_DIR/scripts/docs_only_review.py" "$@"
+}
+
 validate_repo() {
   local py
   py="$(validation_python_for_root "$SYSTEM_DIR" true || true)"

@@ -77,6 +77,7 @@ VALIDATORS = (
     ValidatorSpec("validation.maintenance_reliability_contracts", False),
     ValidatorSpec("validation.quality_ratchet_contracts", False, ("config/quality-ratchet.yaml", "scripts/quality_ratchet.py", "requirements-validation.txt", "constraints/tested.txt", "tests/evidence/release_channel_properties.py"), False),
     ValidatorSpec("validation.publish_preflight_contracts", False),
+    ValidatorSpec("validation.claude_block_diagnostics_contracts", False, ("scripts/governance_guard.py", "scripts/publication_authority.py", "scripts/manage_runtime_adapter.py", "scripts/claude_permission_denied.py", "scripts/docs_only_review.py", "tests/scenarios/261-publication-diagnostics-and-safe-recovery.md", "tests/validation/claude_block_diagnostics_contracts.py"), False),
     ValidatorSpec("validation.eval_interop_contracts", True),
     ValidatorSpec("validation.telemetry_export_contracts", True),
     ValidatorSpec("validation.security_workflow_contracts", False, (".github/workflows/dependency-review.yml", ".github/workflows/scorecard.yml", "tests/validation/security_workflow_contracts.py"), False),

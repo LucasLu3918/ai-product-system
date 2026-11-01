@@ -26,6 +26,8 @@
 
 - Classify exact-candidate secret-scan failures with stable redacted diagnostics, and reject unsupported publication command forms before candidate inspection or scanning.
 
+- Add safe repository-local `cd` parsing with redacted AST evidence for commit-form refusals; observe Claude Auto Mode `PermissionDenied` separately in a private, hash-only, retention-bounded log; and add an opt-in docs-only report derived from canonical Git changes without skipping safety or approval checks.
+
 - Add bounded static AVIF EXIF/XMP metadata inspection to staged commit, candidate/history scan, publication preflight and Creative raster validation; preserve fail-closed diagnostics and the existing 8 MiB limit.
 
 - Scan WebM metadata in staged/worktree and exact publication-candidate/history scans with a bounded EBML parser; remove exact-path exemptions, enforce a configurable 32 MiB ceiling, and fail closed on malformed or unsupported structure.

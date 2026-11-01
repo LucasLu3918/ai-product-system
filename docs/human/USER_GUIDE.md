@@ -74,9 +74,12 @@ AIPS 安裝後不會自動接管專案 Hook。使用 `aips project mode show` �
 ~~~sh
 aips project mode set assist --project /path/to/project
 aips project mode set enforce --project /path/to/project --scope git_push,gh_pr_merge
+aips project docs-only review --project /path/to/project --opt-in
 ~~~
 
 缺少設定時為 `off`；`observe` 與 `assist` 不會因 AIPS 專案層治理阻擋或替 Host 放行。硬內容安全掃描在所有模式都會執行，安全 findings 不會降級成提醒。`enforce` 只套用明列動作，且設定存在使用者層 XDG 目錄，不會寫入專案。`aips status <project>` 會同時顯示獨立的 optional governance mode。
+
+`aips project docs-only review --opt-in` 是唯讀、明確呼叫的 diff 分類報告：它從 Git status、canonical paths 與 symlink 狀態推導是否只有文件變更，排除 `.claude`、AIPS/security/configuration、程式碼與未知路徑。它只列出仍須執行的 diff、Markdown/path、secret scan、approval 與 reconciliation 檢查；不改治理模式、不略過程式驗證，也不接受 Change Impact 中自行填寫的 `tests_not_applicable`。
 
 所有新 Intelligence、checkpoint 與 Change Impact 草稿都保存在使用者層。`aips detach` 是相容入口，不會搬移或刪除資料；停用 optional governance 請使用 `aips project mode set off --project <path>`。既有 `.ai/` 會保留為唯讀 legacy 資料。
 
@@ -857,6 +860,8 @@ Prepare 與 `aips publish diagnose` 會並列候選驗證、授權與執行狀�
 Diagnostic ID 只有在使用者已設定既有 `AIPS_GOVERNANCE_AUDIT_LEDGER` 時，才會寫入 allowlist 欄位並可用 `aips publish diagnose --diagnostic-id <UUID> --format json` 查詢。查詢會驗證 hash chain；未設定時顯示 `NOT_CONFIGURED`，不會自動建立新 ledger。Trace 寫入失敗不會改變 Hook 的允許／拒絕決定，也不輸出原始指令或例外內容。
 
 `aips publish diagnose` 對 pipe、多重命令與 Shell 包裝語法維持拒絕；`git push -u/--set-upstream origin <目前分支>` 只在分支符合目前工程 branch policy 時接受，並以唯讀方式正規化至目前候選 SHA/ref。裸分支、`HEAD` 或其他分支仍拒絕。診斷會在既有穩定錯誤碼下提供 `detail_code` 與安全修正指引，不會授權推送。Claude Code 的 `PostToolUseFailure:Bash` 另外回報已開始執行的原生工具失敗階段、固定錯誤分類及可解析的 exit code；原始 Host 錯誤與命令不會進診斷，Hook 不會重試或授權。PreToolUse 拒絕仍標示 `NOT_EXECUTED`。
+
+Claude Auto Mode 的 `[Self-Modification]` 拒絕由原生 `PermissionDenied` observer 以 `source=claude_auto_mode` 獨立記錄，AIPS 不會將它標成 parser 或 PreToolUse 錯誤。logger 只保存 hash 與固定分類在私有診斷檔；不會重新執行或改變拒絕結果。AIPS commit parser 可指出安全 AST/segment 證據並接受單一 repo-local literal `cd`；不安全路徑、動態展開與尾端額外指令仍拒絕。
 
 `branch-hygiene.yml` 的報告會依 branch SHA、目前 main、local checkout 與 PR 狀態列出 `KEEP`、`SUPERSEDED`、`REBASE_REQUIRED` 或 `CLEANUP_CANDIDATE`。這些分類供維護者檢視，不會自動 merge、rebase、關閉 PR 或刪除 branch；清理仍須逐筆核准 exact manifest。
 

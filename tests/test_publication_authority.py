@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import copy
+import json
 import os
 import random
 import subprocess
@@ -666,6 +667,45 @@ class PublicationTest(unittest.TestCase):
             with self.subTest(command=dynamic), self.assertRaises(auth.PublicationError):
                 guard.commit_safety(self.repo, dynamic)
 
+    def test_repo_local_literal_cd_is_scanned_and_unsafe_prefixes_have_ast_evidence(self):
+        docs = self.repo / 'docs'
+        docs.mkdir()
+        (docs / 'collision-study.md').write_text('safe documentation\n', encoding='utf-8')
+        command = "cd docs && git add -- collision-study.md && git commit -m 'docs: test'"
+        result = guard.commit_safety(self.repo, command)
+        self.assertEqual(result['decision'], 'ALLOW', result)
+
+        outside = self.path / 'outside'
+        outside.mkdir()
+        for unsafe in [
+            "cd ../outside && git add -- collision-study.md && git commit -m 'docs: test'",
+            f"cd {outside} && git add -- collision-study.md && git commit -m 'docs: test'",
+            "cd docs && git add -- collision-study.md && git commit -m 'docs: test' && git push origin main",
+            "cd docs && git add -- collision-study.md && git commit -m \"$(printf x)\"",
+            "git -c core.hooksPath=/dev/null commit -m 'docs: test'",
+        ]:
+            with self.subTest(command=unsafe), self.assertRaises(auth.PublicationError) as caught:
+                guard.commit_safety(self.repo, unsafe)
+            diagnostic = caught.exception.diagnostic()
+            self.assertEqual(diagnostic['reason_code'], 'COMMAND_FORM_UNSUPPORTED')
+            self.assertIn('evidence', diagnostic)
+            self.assertIn('parser_node', diagnostic['evidence'])
+            self.assertIn('failed_segment_index', diagnostic['evidence'])
+            self.assertNotIn(unsafe, json.dumps(diagnostic))
+
+    def test_cd_symlink_escape_is_rejected_with_canonical_path_reason(self):
+        docs = self.repo / 'docs'
+        docs.mkdir()
+        outside = self.path / 'outside'
+        outside.mkdir()
+        (docs / 'escape').symlink_to(outside, target_is_directory=True)
+        command = "cd docs/escape && git add -- x && git commit -m 'docs: test'"
+        with self.assertRaises(auth.PublicationError) as caught:
+            guard.commit_safety(self.repo, command)
+        diagnostic = caught.exception.diagnostic()
+        self.assertEqual(diagnostic['reason_code'], 'COMMAND_FORM_UNSUPPORTED')
+        self.assertEqual(diagnostic['evidence']['unsupported_construct'], 'PATH_OUTSIDE_REPOSITORY')
+
     def test_m4a_publication_scans_metadata_rejects_spoofs_and_enforces_size_limit(self):
         from m4a_inspection import inspect_m4a
 
@@ -1225,6 +1265,32 @@ class GuardFalseDenialTest(unittest.TestCase):
                             'git add x && git commit -m x && git push origin main']:
             with self.subTest(command=unsupported):
                 self.assertEqual(self.hook(unsupported)['permissionDecision'], 'deny')
+
+    def test_t01_t07_supported_commit_forms_have_positive_fixtures(self):
+        import shlex
+
+        self.git('config', 'user.email', 'fixture' + '@' + 'users.noreply.github.com')
+        (self.repo / 'file.txt').write_text('clean change\n', encoding='utf-8')
+        # T01 is a parser-positive case; commit_safety itself accepts only a commit
+        # command (or a safe add-and-commit chain), so standalone add is not authorized.
+        self.assertEqual(shell_commands('git add -- file.txt'), [['git', 'add', '--', 'file.txt']])
+        # T02: standalone commit.
+        self.assertEqual(guard.commit_safety(self.repo, "git commit -m 'single message'")['decision'], 'ALLOW')
+        self.git('reset', '-q')
+        self.git('add', '--', 'file.txt')
+        # T03: repeated -m values remain literal and scan the staged payload.
+        repeated = 'git commit -m ' + shlex.quote('subject') + ' -m ' + shlex.quote('body')
+        self.assertEqual(guard.commit_safety(self.repo, repeated)['decision'], 'ALLOW')
+        self.git('reset', '-q')
+        # T04: -F resolves a literal message path in the effective execution cwd.
+        (self.repo / 'message.txt').write_text('file-backed message\n', encoding='utf-8')
+        self.git('add', '--', 'file.txt')
+        self.assertEqual(guard.commit_safety(self.repo, 'git commit -F message.txt')['decision'], 'ALLOW')
+        self.git('reset', '-q')
+        # T05: a literal add-and-commit chain is accepted.
+        chain = "git add -- file.txt && git commit -m 'chained message'"
+        self.assertEqual(guard.commit_safety(self.repo, chain)['decision'], 'ALLOW')
+        # T06/T07 are covered by the repo-local cd and quoted literal heredoc fixtures.
 
     def test_unsupported_commit_forms_name_the_quoted_heredoc_recipe(self):
         import json

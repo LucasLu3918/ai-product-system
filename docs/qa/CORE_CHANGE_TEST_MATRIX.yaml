@@ -1,115 +1,118 @@
 version: 1
 candidate:
-  base_sha: 0eb7c6db0efc77e1fe2d9fffcca07913b63a7ced
-  changed_files_hash: 90ebd810549006a01ee29ae65b24ee74b1f9791fd78c0dff0eb3eabffe7c81e7
+  base_sha: 115aa03de059fbbce6463c714a58c239e26631fa
+  changed_files_hash: 48b63e64ddf2ddbe54fe6f939b207202a08d14de6bb799efa8c6eef8d1e4f1c3
 
 change:
-  id: claude-runtime-diagnostics-optimization
-  summary: Add bounded, redacted Resource Authorization diagnostics and carry them through Claude pre-tool denials without changing authorization outcomes.
+  id: claude-code-block-diagnostics-2026-11-01
+  summary: Add redacted Claude Auto Mode PermissionDenied observation, safe literal repo-local cd parsing for commit scanning, parser refusal evidence, and opt-in diff-derived docs-only review without changing authorization outcomes.
   boundary:
-    - Resource Authorization profile resolution and destination constraint diagnostics
-    - Runtime Policy result propagation and Claude Code PreToolUse failure-phase reporting
-    - Self-improvement multi-file editing guidance and related Human/Agent documentation
-    - Existing capability truth and ComfyUI environment-failure classification
+    - bashlex-backed commit command parsing and staged-content scanning
+    - Claude PermissionDenied passive observer lifecycle and private bounded JSONL retention
+    - read-only docs-only classification derived from Git status and canonical paths
+    - AIPS-managed Claude hook composition and preserved user settings
+    - Scenario 261 contracts, validation registry and documentation
 
 review_evidence:
   required: false
 
 matrix:
-  - boundary: Resource Authorization diagnostics
-    reason: Profile resolution and destination mismatch results now provide safe, actionable details while preserving default deny.
+  - boundary: Commit parser and content scanning
+    reason: Accept only documented literal forms, support one canonical repo-local cd prefix, reject dynamic or unsafe AST forms, and keep the scan rooted at the actual repository.
     checks:
       static_lint:
         applicable: true
-        evidence: "aips validate (PASS; full repository validation includes Python syntax/static contracts)"
+        evidence: "bin/aips validate PASS; targeted parser and contract tests rerun after the final T12/T17 fixtures."
       unit:
         applicable: true
-        evidence: ".venv/bin/python tests/test_runtime_policy.py (PASS: missing/outside/malformed profile, project-relative redaction, exact failed destination fields, no fallback)"
+        evidence: ".venv/bin/python -m unittest tests.test_publication_authority PASS (58 tests); final T17 absolute-path and symlink cases PASS."
       integration:
         applicable: true
-        evidence: ".venv/bin/python tests/evidence/resource_authorization_lifecycle.py (PASS)"
+        evidence: "tests.test_publication_diagnostics PASS (23 tests); tests.test_protected_path_guard PASS (29 tests including managed-hook composition); docs-only CLI smoke keeps code changes NOT_DOCS_ONLY."
       contract:
         applicable: true
-        evidence: ".venv/bin/python -m tests.validation.resource_authorization_contracts && .venv/bin/python -m tests.validation.runtime_policy_contracts (PASS)"
+        evidence: "Scenario 261 T01-T09/T15-T17 unit fixtures and tests.validation.claude_block_diagnostics_contracts PASS."
       e2e:
         applicable: false
-        na_reason: No product UI or end-user execution path changed; synthetic CLI and Hook lifecycle evidence cover the affected boundary.
+        na_reason: No product UI or end-user execution flow changed; command parser and Hook lifecycle are exercised with isolated Git repositories.
       security:
         applicable: true
-        evidence: "Unit and lifecycle cases prove default-deny, failed-fields-only output, path confinement, and synthetic secret redaction."
+        evidence: "PASS: dynamic forms, hook bypass, path traversal, symlink escape, absolute outside-repository paths and trailing operations fail closed; refusal evidence excludes the raw command."
       migration_recovery:
         applicable: false
-        na_reason: No persisted state, schema migration, or runtime data writes were added.
+        na_reason: No persisted project state or data migration is introduced.
       cli_harness:
         applicable: true
-        evidence: ".venv/bin/python tests/evidence/runtime_policy_lifecycle.py (PASS: Claude PreToolUse emits bounded safe diagnostics and remains a denial)."
+        evidence: "tests.test_protected_path_guard PASS (29 tests); Claude PreToolUse and PostToolUseFailure regressions PASS in publication diagnostics."
       docs_schema:
         applicable: true
-        evidence: "aips docs impact --base main --require-complete with 38 candidate paths: complete, closure 38/38, required_additions 0; aips validate PASS."
+        evidence: "Full repository validation PASS; committed docs-impact closure awaits candidate binding."
 
-  - boundary: Claude Hook execution-phase diagnostics
-    reason: Pre-tool denials carry safe Runtime Policy details; native PostToolUseFailure remains distinct and owns observed exit status.
+  - boundary: Claude Auto Mode PermissionDenied observer
+    reason: Record only fixed allowlisted fields and hashes for the native PermissionDenied event; preserve the original refusal and keep PreToolUse and PostToolUseFailure distinct.
     checks:
       static_lint:
         applicable: true
-        evidence: "aips validate (PASS; full repository validation includes Python syntax/static contracts)"
+        evidence: "bin/aips validate PASS; final targeted tests and contract validator PASS."
       unit:
         applicable: true
-        evidence: ".venv/bin/python tests/test_runtime_policy.py (PASS)"
+        evidence: "tests.test_claude_permission_denied PASS (4 tests): fixed fields/hash-only output, retention, 0700/0600, ignored event class and symlink refusal."
       integration:
         applicable: true
-        evidence: ".venv/bin/python tests/evidence/runtime_policy_lifecycle.py (PASS); .venv/bin/python -m tests.test_publication_diagnostics (23 tests PASS)."
+        evidence: "tests.test_protected_path_guard PASS (29 tests): PermissionDenied hook install/update/uninstall preserves unrelated user settings."
       contract:
         applicable: true
-        evidence: "aips validate (PASS; runtime policy contracts and Scenario 177 included)."
+        evidence: "Scenario 261 T13-T14/T18; publication diagnostics (23 tests) and Claude block diagnostics contract validator PASS."
       e2e:
         applicable: false
-        na_reason: Native Host acceptance depends on a separately configured Claude Code runtime; synthetic native Hook protocol lifecycle is deterministic and available locally.
+        na_reason: Native Auto Mode denial is host-owned; local synthetic Hook protocol tests verify observer behavior without modifying host permission decisions.
       security:
         applicable: true
-        evidence: "Runtime Policy lifecycle asserts no absolute path, URL query token, execution status, or false tool-started claim leaks from a denial."
+        evidence: "PASS: fixed fields and hashes only, 30-day/1,000-record retention, 0700/0600 permissions, no raw values, and symlink refusal."
       migration_recovery:
         applicable: false
-        na_reason: No state migration or retry behavior changed.
+        na_reason: The observer writes only its new private diagnostic log and does not migrate or alter policy state.
       cli_harness:
         applicable: true
-        evidence: "Claude PreToolUse lifecycle plus existing PostToolUseFailure regression coverage."
+        evidence: "Managed Claude settings lifecycle PASS; PreToolUse/PostToolUseFailure regressions PASS (23 publication diagnostic tests)."
       docs_schema:
         applicable: true
-        evidence: "aips docs impact closure complete; aips validate (PASS)."
+        evidence: "Pending docs impact closure and repository validation."
 
-  - boundary: Agent multi-file edit procedure and existing capability guidance
-    reason: Documentation clarifies safe edit/rollback practice and existing capability limits without adding a generic transaction mechanism or runtime.
+  - boundary: Diff-derived docs-only review
+    reason: Classification is opt-in and read-only, derived from Git status and canonical paths, and never asserts tests are inapplicable or skips required checks.
     checks:
       static_lint:
         applicable: true
-        evidence: "aips validate (PASS)."
+        evidence: "bin/aips validate PASS; final docs-only tests and contract validator PASS."
       unit:
-        applicable: false
-        na_reason: No executable behavior was added for this documentation-only boundary.
+        applicable: true
+        evidence: "tests.test_docs_only_review PASS (4 tests): explicit opt-in, Git-derived changed/ignored paths, protected paths, symlink escape and empty diff."
       integration:
         applicable: true
-        evidence: "aips validate (PASS); .venv/bin/python scripts/capability_registry.py check (45 capabilities, 10 surfaces PASS)."
+        evidence: "aips project docs-only review --opt-in --format json reaches the helper and classifies current code/test/config changes NOT_DOCS_ONLY."
       contract:
         applicable: true
-        evidence: "Existing Resource Authorization, Runtime Policy, OpenCode advisory, and creative preflight contracts run in full validation."
+        evidence: "Scenario 261 T10-T12; tests.validation.claude_block_diagnostics_contracts PASS; status remains DOCS_ONLY_REVIEW_ONLY with approval_and_reconciliation required."
       e2e:
         applicable: false
-        na_reason: No new user-facing product flow or execution surface was added.
+        na_reason: This is a local read-only CLI classification, not a product UI flow.
       security:
         applicable: true
-        evidence: "Review confirms default deny, no machine-wide installation, no expanded Hook claims, and preserved Human-only publication authority."
+        evidence: "PASS: code/config/security paths, .claude/settings.json, unknown paths and symlink escapes cannot be classified DOCS_ONLY."
       migration_recovery:
         applicable: false
-        na_reason: No persistent data or configuration migration.
+        na_reason: No persistent state or migration is performed.
       cli_harness:
         applicable: true
-        evidence: "Full local Integration Gate exercises the existing Harness and creative preflight contracts."
+        evidence: "CLI dispatch, status-derived classification and required diff/Markdown/path/secret-scan/approval/reconciliation checks verified locally."
       docs_schema:
         applicable: true
-        evidence: "aips docs impact closure complete (38/38, zero missing additions); aips validate (PASS)."
+        evidence: "Full repository validation PASS; committed docs-impact closure awaits candidate binding."
 
 scope_recomputed_after_expansion: true
-actual_diff_reconciled: true
-blockers: []
-status: READY
+actual_diff_reconciled: false
+blockers:
+  - Local validation and exact candidate reconciliation are pending.
+  - candidate binding refreshed; review scope and evidence before marking READY
+status: DRAFT

@@ -646,6 +646,8 @@ Scenario 260/261 lifecycle, focused publication tests and the exact-candidate In
 
 Plan44 keeps `COMMAND_FORM_UNSUPPORTED` backward compatible while adding safe `detail_code` guidance for pipes, compound commands, wrappers and unsupported upstream push options. Claude's managed `PostToolUseFailure:Bash` hook reports observed native execution failure and a parsed exit code without raw host text; Scenario 261, runtime contracts, security redaction, exact candidate matrix and Integration Gate cover the boundary. It does not retry, grant authority or alter existing merge, squash-tree or Branch Hygiene cleanup behavior.
 
+Plan50 adds allowlisted parser-node/segment evidence and one canonical repo-local literal `cd` prefix, while retaining fail-closed handling for path escape and additional shell commands. Claude Auto Mode `PermissionDenied` is captured by a separate observer that stores fixed fields and hashes only with private file permissions and bounded retention. Its settings group is AIPS-managed and removable without touching user hooks. The opt-in docs-only report is derived from Git status, never self-attests tests as not applicable, and does not replace secret scan, Human approval, reconciliation, or exact-candidate checks.
+
 The publication validation matrix records the exact candidate, endpoint-status classifications and the no-mutation recovery invariant.
 
 Publication Scenario 260 requires tests for exact merge flags, SHA pinning, Required Checks missing/unconfigured/unknown, privacy redaction and advisory-only Host recovery.
