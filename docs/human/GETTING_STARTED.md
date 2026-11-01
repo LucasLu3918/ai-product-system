@@ -50,6 +50,9 @@ aips commands list
 
 ## 開始工作
 
+A docs-only review is a report about the current Git diff, not an approval to publish.
+
+
 安裝 CLI 不會自動啟用 Runtime adapter。需要將 AIPS 整合至支援的 Agent 時，先檢查 `aips harness status`，再明確執行 `aips harness install`。啟用後可開啟 Agent 或 IDE，描述目標、限制與驗收方式；可用能力取決於 Runtime 的實際支援。
 
 ~~~text
@@ -63,6 +66,9 @@ aips commands list
 必要時可參考[使用指南](USER_GUIDE.md)了解產品交付、品質審查、Git 發布與其他流程。
 
 ## Existing Project
+
+For a read-only documentation classification, run aips project docs-only review --opt-in; approval and Change Impact reconciliation remain separate.
+
 
 已有程式專案時，先檢視目前狀態與恢復建議：
 

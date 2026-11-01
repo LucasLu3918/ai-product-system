@@ -182,6 +182,9 @@ For Phase 4, the Gate runs only the deterministic fake-generator lifecycle fixtu
 
 ## Core Change Test Matrix reuse
 
+The Core Change matrix binds the exact repository diff and remains mandatory even when the docs-only helper reports DOCS_ONLY.
+
+
 For Large/Core changes, the Gate reuses `templates/review/CORE_CHANGE_TEST_MATRIX.yaml`; it does not introduce a parallel Janitor matrix.
 
 When a Validation Profile marks `matrix_required: true`, missing/unready matrix, blockers or unreconciled actual diff BLOCK execution.
@@ -303,6 +306,9 @@ Versioned review matrices may preserve history, but CI consumes only the canonic
 
 Parallel Runtime Port Isolation does not change Integration Gate authority or candidate semantics. Runtime port lifecycle evidence is executed by repository validation for the exact candidate, while Scheduler-focused validation continues to check deterministic Task Graph metadata. A port lease is ephemeral execution coordination evidence and is not included as a merge/release authorization token.
 ## Content Safety Gate
+
+Docs-only classification does not bypass the complete-candidate secret scan or any required content-safety check.
+
 
 When native Git uses `-C`, the explicit path selects the candidate worktree and the Integration Gate scans that exact candidate; an unresolved target is a blocker.
 

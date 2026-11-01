@@ -10,6 +10,8 @@ The orchestrator coordinates work. It is not a super-role and cannot override go
 
 ## Minimal algorithm
 
+Project diagnostics and docs-only review read the current worktree without creating or changing project files; persistent AIPS state remains external to the repository.
+
 Installing the AIPS CLI does not register a Runtime adapter. Harness enablement, refresh, and disablement are explicit user-directed CLI lifecycle actions; the orchestrator must not trigger them as an incidental task-preflight or resume side effect.
 
 For ComfyUI actions, evaluate the declared resource and operation through Resource Authorization, then apply Runtime Policy destination conditions. Scheduling or a valid profile alone is not runtime authorization.
@@ -264,9 +266,17 @@ When extracting an internal retrieval module, preserve the existing facade and l
 
 ## Core Change Approval
 
+
+
 Large/core changes are proposal-first. Use `templates/core-change-proposal.md`. Semantic impact matters more than the number of changed files. No implementation begins until the user approves the proposed boundary. Material scope drift requires re-approval.
 
 ## Git Publish Approval
+
+AIPS core changes resolve canonical documentation placement and full documentation closure before the candidate can be marked READY.
+
+
+A docs-only report is not Git authority; push, PR, required checks, and merge remain behind the publication gate.
+
 
 Publication approval and diagnostics bind the selected worktree, immutable source SHA and target ref. Uncommitted files remain local; the orchestrator must not stage them implicitly or treat their presence alone as a push denial.
 

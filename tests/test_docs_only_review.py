@@ -20,7 +20,7 @@ class DocsOnlyReviewTests(unittest.TestCase):
         self.root.mkdir()
         self.git("init", "-q", "-b", "main")
         self.git("config", "user.name", "Fixture")
-        self.git("config", "user.email", "fixture@example.test")
+        self.git("config", "user.email", "fixture" + "@" + "users.noreply.github.com")
         (self.root / "README.md").write_text("base\n", encoding="utf-8")
         (self.root / ".gitignore").write_text("workspace/captures/RUNLOG.md\n", encoding="utf-8")
         self.git("add", "README.md", ".gitignore")

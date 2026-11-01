@@ -78,6 +78,9 @@ Runtime hook 另有 best-effort 的 protected-path guard：代理不得寫入已
 
 ## Project Intelligence 與 Retrieval
 
+Project diagnostics and docs-only review consume the current repository state read-only; they do not mutate Project Intelligence or reconcile Change Impact.
+
+
 Retrieval relations are disposable lexical candidates. Relation-extraction behavior is versioned with the index schema so a schema change triggers full re-extraction, including unchanged files; raw source may be parsed in memory for syntax-sensitive identifiers while persisted index content remains redacted.
 
 所有新 AIPS 狀態都存於 repository 外。`aips attach` 明確初始化或匯入外部 Intelligence，不建立 `.ai/`，也不修改 Git 設定、hooks 或 ignore；既有 `.ai/` 只作保留的 legacy 資料。
@@ -162,6 +165,9 @@ repository_id
 Project Intelligence、runs 與 Change Impact 一律使用 AIPS external user state；`off` / `observe` / `assist` / `enforce` 是獨立的可選治理模式。
 
 ## Creative Workflow
+
+Claude Auto Mode observation and docs-only classification remain outside the creative execution and asset-provenance flow.
+
 
 Creative workflows use the same Resource Authorization boundary; safe diagnostics identify only the project-relative Profile source and the destination fields that failed.
 
@@ -305,6 +311,9 @@ Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行
 
 ## Deterministic Execution
 
+Commit parsing remains fail-closed: only bounded literal forms are scanned, and one repo-local cd prefix is resolved before the staged-content scan.
+
+
 Deterministic execution 將 task ownership、checkpoint、resume 與外部 run state 綁定至已驗證的專案身分；隔離及失敗診斷不改變 Host 或 repository 權限。
 
 Dynamic ComfyUI reference counts and FLUX sampler profiles remain executor preflight inputs; they introduce no scheduler, checkpoint or resume state.
@@ -445,6 +454,9 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 
 ## Security 與 Governance
 
+Claude Auto Mode PermissionDenied is observed separately from AIPS PreToolUse and native PostToolUseFailure; the observer cannot grant, retry, or widen access.
+
+
 Runtime Policy and Resource Authorization remain deny-by-default. Claude PreToolUse can show bounded, redacted diagnostics but cannot grant access or claim that a denied tool ran.
 
 Claude Auto Mode `PermissionDenied`, AIPS `PreToolUse`, and native `PostToolUseFailure` are separate event sources. A passive observer stores fixed fields and hashes only; it never changes the Host decision. The commit guard reports bounded AST/segment evidence while preserving the same-repository boundary for a literal `cd` prefix.
@@ -582,6 +594,9 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 
 ## Maintenance governance
+
+The docs-only report leaves secret scanning, Human approval, and exact Change Impact reconciliation in the publication path.
+
 
 Native publication uses the committed candidate SHA/ref; local staged, modified or untracked files remain outside that candidate and do not independently block a push. Candidate scanning and remote policy checks are unchanged.
 

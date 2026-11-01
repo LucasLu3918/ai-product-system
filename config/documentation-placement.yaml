@@ -264,6 +264,16 @@ placement_rules:
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification, Security & Governance]
       docs/human/SECURITY_ASSURANCE.md: [Product baseline vs change impact, Release Security Gate, Secret and credential safety, Runtime Policy Enforcement]
 
+  - id: claude-block-diagnostics-and-docs-only-review
+    triggers: [scripts/claude_permission_denied.py, scripts/docs_only_review.py]
+    placements:
+      docs/human/HARNESS.md: [Native Runtime Adapters]
+      docs/human/USER_GUIDE.md: [Git Publication 與 Release, Runtime Content Safety Boundary]
+      docs/human/SECURITY_ASSURANCE.md: [Runtime Content Safety Boundary]
+      docs/human/MAINTENANCE.md: [Documentation Impact Gate]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Security 與 Governance]
+      docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
+
   - id: publication-transfer
     triggers: [scripts/publication_transfer.py, tests/evidence/publication_transfer_lifecycle.py]
     placements:
@@ -989,7 +999,7 @@ placement_rules:
       docs/human/HARNESS.md: [Integration model, Ownership 與解除]
       docs/human/PROJECT_INTELLIGENCE.md: [第一次 Existing Project]
       docs/human/USER_GUIDE.md: [Existing Project, Checkpoint / Resume, Git Publication 與 Release]
-      docs/human/SYSTEM_REFERENCE.md: [Public commands, Capability surfaces, Runtime support]
+      docs/human/SYSTEM_REFERENCE.md: [Public commands, Capability surfaces, Runtime support, Observation fields]
       docs/human/MAINTENANCE.md: [Validation architecture consistency, Public repository / CI consistency]
       docs/human/TECHNOLOGY_GUIDE.md: [Project Understanding, Quality & Verification]
       docs/human/CONFORMANCE.md: [v0.16.2 Install / Preflight Evidence Maturity]

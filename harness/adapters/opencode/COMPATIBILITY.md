@@ -20,6 +20,9 @@ The owned `plugins/aips-opencode.ts` projection is installed only for a positive
 
 ## Readiness and enforcement boundary
 
+Claude Auto Mode PermissionDenied is not an OpenCode event; keep OpenCode permission evidence and AIPS diagnostics separately attributed.
+
+
 Per-project governance preferences remain in private external state; OpenCode native Context/Hook evidence is evaluated separately and is not implied by a repository mode value.
 
 Qwen Image Edit Plus workflow support is enforced by the AIPS Creative ComfyUI contract and does not establish OpenCode adapter acceptance or alter this adapter’s compatibility claims.

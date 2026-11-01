@@ -14,6 +14,8 @@ Use for visual artifacts of any type: websites, UI, banners, hero visuals, socia
 
 ## Flow
 
+
+
 ~~~text
 Creative Request
 → Asset / Brand Intake
@@ -54,6 +56,9 @@ Persist the approved result using `templates/creative/CREATIVE_DIRECTION.yaml`.
 Material visual artifacts use `visual-quality-review`. Review against the approved direction and brand rules, not generic taste alone.
 
 ## Local character artwork
+
+Creative execution does not reinterpret Claude Auto Mode denials or use the docs-only classifier as authorization; both remain outside the creative action path.
+
 
 Creative workspaces and grants remain separate from repository governance state; AIPS project attachment does not create project-local metadata or authorize generated-asset publication.
 

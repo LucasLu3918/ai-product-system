@@ -26,6 +26,9 @@ When a shared module-extraction lifecycle gains another facade, retain identity 
 
 ## Impact-derived Test Matrix
 
+Scenario 261 binds positive parser forms, unsafe shell refusals, observer privacy, docs-only required checks, and their exact candidate paths.
+
+
 For `git -C` support, test caller cwd differing from target, relative and absolute paths, subdirectory targets, and missing/dynamic-path rejection before candidate inspection or scan.
 
 For publication parser changes, cover `-u` and `--set-upstream` current-branch shorthand, full SHA refspecs, and denials for bare branch names, `HEAD`, wrong branches, and unsupported options; verify diagnostics stay read-only and no authority is granted.
@@ -98,6 +101,9 @@ scope expands
 Do not keep the original smaller matrix merely because it is already green.
 
 ## Strict completion rule
+
+A docs-only report never self-attests tests as inapplicable; the required matrix, secret scan, approval, and reconciliation still run.
+
 
 A Large/Core Change is not complete when:
 

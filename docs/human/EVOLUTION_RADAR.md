@@ -133,6 +133,12 @@ Plan36 extends existing publication diagnostics after a concrete failure report;
 
 ## Current Boundaries
 
+Scenario 261 records the parser, observer, and docs-only review contracts; passing checks do not imply a new Evolution Radar adoption.
+
+
+Claude block diagnostics add no provider trial or Auto Mode bypass; the observer records a bounded Host event without changing its decision.
+
+
 
 Creative workflow reliability is validated through its exact-candidate Core Matrix and deterministic lifecycle evidence; it does not create an Evolution Radar trial or authorize autonomous code, publication or merge actions.
 
@@ -168,6 +174,8 @@ Evolution Radar 不做：
 - 以 deterministic keyword score 冒充 semantic adoption decision。
 
 ## Verification History
+
+
 
 Scenario 230 保留固定核心 byte limit、相對 base 的縮減比例，以及十種分類和混合任務路由的驗證紀錄。
 

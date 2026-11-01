@@ -12,6 +12,9 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+Behavior-bearing observer and docs-only helper scripts require explicit canonical placement mappings. Reconcile the full documentation closure before marking a Core Change matrix READY.
+
+
 Runtime Policy diagnostics are documented in the canonical Resource Authorization, Claude adapter and Scenario 177 sections; global Change Impact coverage remains partial.
 
 Creative artwork documentation remains a separate placement surface; metadata scanning does not establish visual or provenance acceptance.
@@ -427,6 +430,9 @@ Do not claim TOOL_GUARDED when the installed pre-tool guard is absent or unverif
 
 ## Durable Run State consistency
 
+PermissionDenied diagnostics are separate from durable run state; they do not record checkpoints, prompts, or raw tool inputs.
+
+
 恢復計畫與品質摘要都是唯讀觀察；讀取報告不會附加專案、刷新狀態、授予工具權限或改變生成／人工審核／接受狀態。
 
 創作可靠性 Core candidate 保留完整 Gate、媒材拒絕及取消授權回歸。損壞 PNG fixture 必須失敗；合成測試不能替代真實模型與人工品質驗收。
@@ -499,6 +505,9 @@ High-risk external runtime actions also require an exact, unexpired Approval Rec
 High-risk external runtime actions also require an exact, unexpired Approval Record and fresh verified network-egress enforcement. A hook alone is not a sandbox; missing provider proof blocks the action.
 
 ## Public repository / CI consistency
+
+User-private Claude diagnostic logs are not repository artifacts and must not be committed or included in CI reports.
+
 
 Publication preflight source and scenario changes must be represented in the canonical trigger maps; preview closure must include the Hook, authority, Doctor, exact scan evidence, tests and Scenario 261.
 
@@ -598,6 +607,9 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
 ## Validation architecture consistency
+
+Docs-only classification is review-only and never asserts tests are inapplicable; the exact candidate still runs its required Core Change matrix.
+
 
 The Core Change Matrix binds profile-path redaction, no-fallback behavior, exact destination differences and Claude pre-tool versus native post-tool evidence.
 

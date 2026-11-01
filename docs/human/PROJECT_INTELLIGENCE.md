@@ -8,6 +8,9 @@ Project Intelligence 是 AIPS 對既有專案建立的可重用理解層。
 
 ## 第一次 Existing Project
 
+The opt-in docs-only report reads canonical Git paths without writing Project Intelligence; it does not mark a Change Impact record READY.
+
+
 The Claude Runtime Policy change uses a reviewed direct caller/consumer scope; unresolved lexical matcher aliases remain accepted limitations, and global API/data/event/consumer coverage stays partial.
 
 EPHEMERAL Intelligence and run state remain in external user storage; candidate-bound publication scan evidence is kept in the private AIPS cache.
@@ -442,6 +445,9 @@ Scenario 134 不改 production Retrieval / Turn Context。Local Trial PASS 也�
 
 Project Intelligence follows `orchestration/PROJECT_IDENTITY.md`. EPHEMERAL storage is workspace-scoped by canonical `workspace_id`; repository-wide writer coordination belongs to the isolation layer and uses `repository_id`.
 ## Runtime Content Safety Boundary
+
+A docs-only classification continues to require content scanning, Human approval, and exact Change Impact reconciliation.
+
 
 Change Impact evidence records only the reviewed direct boundary; unresolved lexical aliases remain explicit and do not upgrade global coverage.
 

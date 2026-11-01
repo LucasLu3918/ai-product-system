@@ -24,6 +24,12 @@ Do not use Turn Context to perform repository-wide scans.
 
 ## Project modes
 
+Observer storage errors are non-blocking and never alter the original Claude refusal or create a retry.
+
+
+The Claude PermissionDenied observer is installed only in the AIPS-managed Claude settings group and leaves unrelated user hooks intact.
+
+
 ### EXTERNAL (default)
 
 - no AIPS files or Git metadata are written into the project;
@@ -49,6 +55,8 @@ Installation status and capability are different.
 - UNSUPPORTED — no safe integration.
 
 ## Instruction composition
+
+
 
 Resolve without replacing:
 
@@ -80,6 +88,8 @@ SOURCE_REGISTRY distinguishes:
 Example: Codex may auto-load AGENTS.md while Claude does not. Therefore "do not duplicate storage" does not mean "never load it for another runtime".
 
 ## Failure policy
+
+
 
 - general/read-only request: Harness/Intelligence problems fail soft when safe;
 - existing-project mutation: missing required instructions/Intelligence/Impact context fails closed for the edit until resolved.

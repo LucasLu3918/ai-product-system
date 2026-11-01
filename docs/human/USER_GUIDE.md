@@ -59,6 +59,9 @@ Plan
 
 ## Existing Project
 
+Use aips project docs-only review --opt-in to classify the actual Git diff. The report remains review-only and keeps secret scan, Human approval, and Change Impact reconciliation required.
+
+
 Optional project governance modes do not change Resource Authorization default-deny behavior or permit fallback to another Profile.
 
 Existing Project mutation 前會解析 nearest instructions、Project Intelligence、Change Boundary 與 Impact Graph。沒有 `.ai/` 仍可使用 EPHEMERAL mode，Reusable Intelligence 存在 AIPS external cache。
@@ -84,6 +87,9 @@ aips project docs-only review --project /path/to/project --opt-in
 所有新 Intelligence、checkpoint 與 Change Impact 草稿都保存在使用者層。`aips detach` 是相容入口，不會搬移或刪除資料；停用 optional governance 請使用 `aips project mode set off --project <path>`。既有 `.ai/` 會保留為唯讀 legacy 資料。
 
 ## Creative Direction、Style 與 Brand
+
+Claude publication diagnostics and docs-only review do not change local creative generation, asset provenance, or Human visual review.
+
 
 Creative tool actions remain subject to the same Resource Authorization Profile; a safe diagnostic explains a denial but does not approve or retry the action.
 
@@ -239,6 +245,9 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
+Claude Auto Mode refusals are Host observations; AIPS PreToolUse denials and PostToolUseFailure evidence remain separate.
+
+
 Claude PreToolUse may show bounded Runtime Policy diagnostics; a denial means the action was not authorized and does not mean the tool started.
 
 The shared publication scanner is an AIPS service boundary; it does not change native Runtime adapter capabilities.
@@ -334,6 +343,9 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 Turn Context 只列出這一回合真正需要的準備步驟：READY+STALE 的 Intelligence 在任務相關主題未受影響時只是提示，不要求 refresh；唯讀或未選到主題的回合不會要求建立 Retrieval 索引。修改既有專案時仍須處理 Change Impact。
 
 ## Roles、Skills 與重用
+
+The Claude-only PermissionDenied observer is installed through the managed runtime adapter; other runtimes do not inherit Claude event semantics.
+
 
 Roles and Skills describe work and do not grant runtime access; the trusted Resource Authorization Profile remains the authority for each protected action.
 
@@ -745,6 +757,9 @@ The dashboard is an observation surface. It shows workflow state, gate, last act
 
 ## Checkpoint / Resume
 
+The Claude PermissionDenied diagnostic log is separate from workflow checkpoints and never changes resume state.
+
+
 Checkpoint 與 resume state 儲存在 AIPS 使用者狀態目錄，並以專案身分命名空間隔離；附加或解除專案不會清除使用者資料。
 
 For Creative `generate-set`, the job result records each Bundle independently; reruns skip only completed outputs whose saved Bundle, output and provenance hashes still match.
@@ -758,6 +773,9 @@ Standalone and shadow dependency-review artifacts retain exact base/head, run ID
 舊聊天內容不是 authoritative run state；若 workspace fingerprint 已變，先 refresh / revalidate 再接續。
 
 ## Project Intelligence
+
+Project diagnostics and docs-only classification are read-only reports; neither one marks Change Impact READY.
+
 
 `aips attach`、`aips detach` 與 preflight 不會寫入 `.ai/`、`.aips/`、`.git/info/exclude`、Git hooks 或專案設定。若既有 `.ai/` 含有 Intelligence，明確執行 attach/bootstrap 會驗證後複製到外部 user state，保留原始內容供審核及回復。
 
@@ -788,6 +806,9 @@ Just-in-Time Retrieval 只帶入本次任務相關的 code、symbols、tests、h
 Retrieval index persistence is an internal, rebuildable cache boundary in `scripts/retrieval_storage.py`; existing commands and imports continue through the `retrieval_intelligence.py` compatibility facade.
 
 ## Git Publication 與 Release
+
+Commit refusal evidence contains allowlisted AST coordinates only. A single literal cd is accepted only when its canonical target remains in the current repository.
+
 
 Runtime Policy diagnostics do not grant Git publication, release or merge authority; those decisions remain behind the existing Human approval gate.
 
@@ -1012,6 +1033,9 @@ Scenario / validation history
 
 Documentation Placement Contract 會檢查 heading hierarchy、version/scenario-style heading 與 changed-line placement。新增功能不得只在 current-behavior 文件尾端追加 `vX.Y` / Scenario 說明；若確實需要新 topic，必須同時把 canonical section 加入 placement contract。
 ## Runtime Content Safety Boundary
+
+Docs-only status never waives the required content and secret scans, Human approval, or exact Change Impact reconciliation.
+
 
 Runtime diagnostics redact credential-like values and expose only project-relative Profile paths; they do not authorize retries or fallback.
 

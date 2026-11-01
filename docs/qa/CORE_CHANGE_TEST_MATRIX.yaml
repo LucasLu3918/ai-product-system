@@ -1,7 +1,7 @@
 version: 1
 candidate:
   base_sha: 115aa03de059fbbce6463c714a58c239e26631fa
-  changed_files_hash: 48b63e64ddf2ddbe54fe6f939b207202a08d14de6bb799efa8c6eef8d1e4f1c3
+  changed_files_hash: 79c61c5a291b8dd239cf01538f93f97ae6081861814d7d815490a3a6eb7cd866
 
 change:
   id: claude-code-block-diagnostics-2026-11-01

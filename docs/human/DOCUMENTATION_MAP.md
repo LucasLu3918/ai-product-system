@@ -26,6 +26,9 @@ Harness 的選用啟用、`OFF`／`ACTIVE`／`UNKNOWN` 狀態與保留本機額�
 
 ## 文件角色
 
+Claude block diagnostics and docs-only review are documented in the Harness, Security Assurance, and User Guide canonical topics.
+
+
 Skill Explorer behavior remains independent from local creative workflow updates; see Scenario 259 for Skills and Scenario 236 for Qwen ComfyUI reference contracts.
 
 OpenCode Context 超限診斷屬於 Runtime adapter 行為，不會新增 Role、Skill 或 Skill Explorer 路由；使用者復原步驟位於 User Guide 的 Global Harness 主題。
@@ -158,6 +161,9 @@ Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scr
 `docs/human/PROJECT_INTELLIGENCE.md` 說明 READY+STALE 何時只是提示、何時需要 targeted refresh，以及 `aips intelligence gc` 的用法。
 
 ## Agent / machine canonical 文件
+
+Behavior-bearing observer and docs-only scripts are mapped to existing Human documentation topics by config/documentation-placement.yaml.
+
 
 Scenario 177 is the canonical lifecycle evidence for project-relative Profile diagnostics, destination `constraint_diff`, Claude pre-tool denial formatting and separate native tool failure reporting.
 

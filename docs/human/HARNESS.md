@@ -8,6 +8,10 @@ Runtime Context 統一解析驗證 Python 與 cache/config 路徑；它將 Playw
 
 ## Integration model
 
+Claude Auto Mode PermissionDenied is a Host-owned observation, separate from AIPS PreToolUse and PostToolUseFailure; installation adds only the AIPS-managed observer group and preserves other hooks.
+The project diagnostics command is read-only and opt-in; it cannot change project governance mode or replace Change Impact review.
+
+
 Runtime Policy denial details are bounded and sanitized; they do not expand adapter coverage or imply that a denied tool started.
 
 Creative workflow execution is an AIPS product capability, separate from Host adapter permissions. Qwen Image Edit Plus uses the local ComfyUI contract in Scenario 236 and does not expand Harness runtime authority.
@@ -63,6 +67,9 @@ AIPS Core
 `aips publish doctor --worktree <root> --worktree-details` provides read-only phase and evidence diagnostics. Runtime adapters may use its recovery guidance, while native permission and Human approval remain separate.
 
 ## Native Runtime Adapters
+
+The Claude PermissionDenied observer keeps only fixed fields and hashes in private user state. It does not retry or change the Host refusal.
+
 
 The Matt Pocock Skill Explorer remains a separate discovery feature; the shared publication scanner does not change adapter capabilities or skill admission.
 

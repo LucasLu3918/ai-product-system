@@ -223,6 +223,9 @@ Review actual:
 
 ## Release Security Gate
 
+A docs-only report is advisory classification; publication still requires candidate scanning, Human authority, reconciliation, and required checks.
+
+
 Publication mode controls do not change scanner coverage: every exact candidate must pass the shared content and secret scan before publication.
 
 Project-state migration requires a verified external backup and exact candidate scan; moving files never bypasses publication checks or review authority.
@@ -483,6 +486,9 @@ SAL 2+ default registration requires an independently retained anchor. SAL 4 req
 The retention helper never deletes evidence or grants compaction authority. Expiry only creates a Human-review action and a minimal digest record.
 ## Runtime Content Safety Boundary
 
+The passive Claude observer records hashes and fixed classifications only; storage failure cannot change a Host denial or trigger a retry.
+
+
 Runtime diagnostics redact credential-like values and never expose absolute Profile paths; these details do not alter the default-deny authorization decision.
 
 治理設定、專案內容與執行輸出皆視為資料；內容掃描與診斷不會授予 commit、push 或 Host 操作權限。
@@ -536,6 +542,9 @@ Publication preflight `git_identity` accepts the GitHub App bot noreply form (`<
 Scenario 269 refreshes only the CLI help golden vectors for `aips intelligence gc`; content-safety detection, sink policy and commit scanning are unchanged.
 
 ## Runtime Policy Enforcement
+
+Claude Auto Mode PermissionDenied is not an AIPS policy decision. Permission rules and Host settings are not modified by the observer.
+
 
 Per-project governance mode defaults to `off` and is stored outside the repository. `observe` and `assist` may add safe local context but never issue a Host allow/deny decision. `enforce` requires an explicit allowlisted action scope; only a failed check for an in-scope action blocks. The global runtime policy and administrator high-assurance trust root are evaluated independently before project-mode relaxation, and native GitHub protections remain authoritative.
 
