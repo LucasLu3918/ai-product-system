@@ -223,6 +223,8 @@ Documentation sync path normalization (Scenario 221): `documentation_sync.evalua
 
 ## Human documentation placement
 
+The Skill Explorer route, generated JSON and static HTML fallback are a Human documentation presentation contract. Keep the route, search/filter/error fallback, source attribution and explicit-only install wording aligned across Scenario 259 and the Human canonical topics. This presentation contract does not change canonical Skill routing or installation policy.
+
 New behavior-bearing scripts must map to canonical topics in config/documentation-placement.yaml, and the complete closure must be present before publish readiness.
 
 

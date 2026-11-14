@@ -21,6 +21,7 @@
 10. Run `aips skills install --upstream --all` in an isolated home and confirm all 31 unique source Skills are installed; seven same-ID source entries resolve to canonical AIPS Skills, disposition remains visible without blocking installation, repeat installation is idempotent, and status can filter upstream ownership.
 11. Remove one upstream Skill and then all upstream Skills for selected Hosts; confirm AIPS catalog and Portable Command Skills remain, shared Codex/Gemini projections remain until their final Host reference is removed, and modified source files plus user resources are preserved.
 12. Install one upstream Skill into Claude workspace scope and confirm status and uninstall are restricted to that project; confirm scripts and hooks are not executed or configured by installation.
+13. Open the Skill Explorer from VitePress navigation and directly at /SKILL_EXPLORER; confirm current catalog data, Chinese/English/ID search, combined filters, empty results, and copy failure fallback. Open /skill-catalog.html and confirm the standalone static catalog remains available.
 
 ## Expected result
 
@@ -35,6 +36,8 @@
 - Upstream native install selects every non-canonical ID regardless of disposition, rejects unsafe source paths/digests, skips canonical duplicate IDs, requires explicit invocation in Codex and Claude projections, and uses the existing per-file ownership manifest for safe status/uninstall.
 - `--upstream` install/uninstall never modifies AIPS catalog or Portable Command ownership; modified Skills and user-added resources remain available after removal.
 - The Explorer distinguishes active Skills from deferred, excluded, reference-only and unadopted source items.
+- The VitePress route and legacy static URL both show catalog content; failed JSON loading offers retry and a link to the static page.
+- Filtering and display remain read-only and do not install or activate Skills.
 
 ## Coverage
 

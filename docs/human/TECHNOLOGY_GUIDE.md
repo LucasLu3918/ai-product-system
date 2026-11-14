@@ -382,6 +382,8 @@ Content-safety detector changes are versioned (for example `pii.email.v2`) and b
 
 ## Quality & Verification
 
+Skill Explorer 是文件網站上的唯讀目錄；搜尋與篩選不會安裝或啟用 Skills。網站展示驗收只確認資料載入、篩選、空結果和錯誤備援，不能替代 Skill 路由、安裝或 Runtime 權限驗證。
+
 Docs-only status never waives the Core Change Test Matrix or exact-candidate validation.
 
 The opt-in docs-only review derives its report from the actual diff and never skips tests, secret scanning, Human approval, or Change Impact reconciliation. Claude Auto Mode `PermissionDenied` logging is a separate passive observer; it stores bounded hash-only evidence and never retries or changes the Host decision.
@@ -717,6 +719,8 @@ Project lifecycle guidance is placed in the canonical Existing Project, Installa
 OpenCode stale-freshness 行為須在 Human Harness、Project Intelligence 指南、adapter 契約與 Scenario 267 中保持一致。
 
 官方文件網站面向使用者與維護者，操作指引、概念及導覽以繁體中文撰寫；專有名詞首次出現時補上英文原名。程式碼、指令、API／設定欄位、路徑、狀態與原因碼保留 canonical 拼法，方便搜尋與複製。首頁採任務導覽；架構圖與流程圖須符合目前程式與設定，並附繁體中文替代文字及圖說。
+
+Skill Explorer 的 /SKILL_EXPLORER 頁面讀取 scripts/skill_catalog.py 產生的靜態 JSON；/skill-catalog.html 保留獨立 HTML 備援。Registry 與釘選的 upstream manifest 是資料來源，網站元件不呼叫外部 API，也不執行安裝。python scripts/skill_catalog.py --check 檢查兩個生成產物是否同步。
 
 文件網站固定使用 VitePress 1.6.4；`package.json` 只覆寫 `vitepress` 引入的 Vite 為 6.4.4，由 Vite 自身宣告的 `esbuild ^0.25.0` 提供修補版本，不另行強制覆寫 esbuild。這個 Vite 版本超出 VitePress 1.6.4 原本宣告的 Vite 5 範圍，因此更新時必須重新驗證相容性；上游穩定版原生支援已修補工具鏈後，再評估移除覆寫。
 

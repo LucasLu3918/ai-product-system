@@ -1895,6 +1895,8 @@ The cross-profile quality evidence extension is covered by Scenario 258; this cr
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+網站展示檢查涵蓋 VitePress 導覽與直接路由、目錄資料載入、搜尋與複合篩選、載入／空結果／錯誤狀態，以及舊靜態 HTML 網址。這些檢查只驗證文件介面，不代表 Skill 自動路由、安裝、Host 呼叫或方法品質通過。
+
 Skill installation evidence remains separate from the Claude PermissionDenied observer and docs-only review contracts.
 
 
@@ -2054,6 +2056,8 @@ Declared behavior dependencies select potentially stale Eval cases for review. T
 Current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md).
 
 ## Scenario 260 — Publication diagnostics and Doctor
+
+文件網站 build 通過只表示 VitePress 產物可建立，不代表 GitHub Pages 已部署、PR 檢查通過或取得 merge 授權。
 
 PreToolUse, PermissionDenied, and PostToolUseFailure remain distinct sources in publication diagnostics.
 

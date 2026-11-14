@@ -1,0 +1,2313 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><title>AIPS 文件改版 · 本機異動檢視</title><style>
+:root{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color-scheme:light dark;--bg:#f4f6f3;--panel:#fff;--ink:#172c2b;--muted:#5b6c69;--line:#d5dfda;--accent:#176c61;--code:#f5f7f6}@media(prefers-color-scheme:dark){:root{--bg:#111b1a;--panel:#1c2927;--ink:#edf5f2;--muted:#b4c5c0;--line:#354541;--accent:#76d1bf;--code:#131e1c}}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);line-height:1.6}header,main{width:min(1120px,calc(100% - 32px));margin:auto}header{padding:54px 0 26px}.eyebrow{color:var(--accent);font-size:.8rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}h1{font-size:clamp(2rem,5vw,3.5rem);line-height:1.1;margin:.25em 0}.lede{max-width:730px;color:var(--muted);font-size:1.08rem}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:26px 0}.metric,.issue,.toolbar,.file-card{border:1px solid var(--line);border-radius:14px;background:var(--panel)}.metric{padding:16px 18px}.metric strong{display:block;font-size:1.65rem;color:var(--accent)}.issue{padding:20px;margin:20px 0 30px}.issue h2{margin:.1rem 0 .6rem;font-size:1.15rem}.issue p{margin:.35rem 0;color:var(--muted)}.toolbar{display:flex;flex-wrap:wrap;gap:8px;padding:12px;margin-bottom:12px;align-items:center}.toolbar input{flex:1 1 240px;min-height:42px;border:1px solid var(--line);border-radius:8px;padding:8px 12px;background:var(--bg);color:var(--ink);font:inherit}button{border:1px solid var(--line);border-radius:999px;padding:8px 12px;background:var(--panel);color:var(--ink);font:inherit;cursor:pointer}button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}.file-card{margin:10px 0;overflow:hidden}summary{display:flex;align-items:center;gap:12px;list-style:none;padding:14px 16px;cursor:pointer}summary::-webkit-details-marker{display:none}summary:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}.file-index{color:var(--muted);font-variant-numeric:tabular-nums}.file-path{font-family:ui-monospace,SFMono-Regular,monospace;overflow-wrap:anywhere}.file-group{margin-left:auto;color:var(--muted);font-size:.82rem;text-align:right}pre{margin:0;padding:16px;max-height:560px;overflow:auto;background:var(--code);border-top:1px solid var(--line);font:12px/1.55 ui-monospace,SFMono-Regular,monospace;tab-size:2}code{white-space:pre}.foot{padding:22px 0 48px;color:var(--muted);font-size:.9rem}[hidden]{display:none!important}@media(max-width:620px){header{padding-top:34px}.summary{grid-template-columns:1fr}summary{align-items:flex-start;flex-wrap:wrap}.file-group{margin-left:34px;text-align:left}pre{font-size:11px}}
+</style></head><body><header><p class="eyebrow">AIPS · Local Review</p><h1>文件改版<br>異動檢視</h1><p class="lede">本頁直接收錄目前工作樹相對 HEAD 的逐檔差異。可用分類按鈕或搜尋路徑，展開每個檔案查看實際修改內容。</p><div class="summary"><div class="metric"><strong>23</strong>異動檔案</div><div class="metric"><strong>3</strong>變更分類</div><div class="metric"><strong>本機</strong>未發布</div></div><section class="issue"><h2>修正重點：技能頁導覽 404</h2><p>基線瀏覽已確認，直接開啟舊版 skill-catalog.html 有完整目錄；但站內連結被導向不存在的 /skill-catalog 路由。新版提供原生 VitePress 頁面，保留舊靜態 HTML 和載入失敗備援。</p><p>其餘異動整理首頁與文件導引、目錄來源與中文資訊、手機圖表檢視，以及對應驗收規則。</p></section><div class="toolbar"><input id="search" type="search" placeholder="搜尋檔案路徑…" aria-label="搜尋檔案路徑"><button type="button" data-filter="all" aria-pressed="true">全部</button><button type="button" data-filter="Skill Explorer 與網站介面">Skill Explorer 與網站介面</button><button type="button" data-filter="使用者文件與導覽">使用者文件與導覽</button><button type="button" data-filter="驗收與 Agent 文件規則">驗收與 Agent 文件規則</button><button id="expand" type="button">全部展開</button></div><p id="count" aria-live="polite"></p></header><main><article class="file-card" data-path="docs/human/.vitepress/config.mts" data-group="Skill Explorer 與網站介面"><details><summary><span class="file-index">01</span><span class="file-path">docs/human/.vitepress/config.mts</span><span class="file-group">Skill Explorer 與網站介面</span></summary><pre><code>--- a/docs/human/.vitepress/config.mts
++++ b/docs/human/.vitepress/config.mts
+@@ -16,8 +16,9 @@
+       { text: &#x27;使用指南&#x27;, link: &#x27;/USER_GUIDE&#x27; },
+       { text: &#x27;系統架構&#x27;, link: &#x27;/ARCHITECTURE_OVERVIEW&#x27; },
+       { text: &#x27;更多&#x27;, items: [
+-        { text: &#x27;Skill 探索器&#x27;, link: &#x27;/skill-catalog.html&#x27; },
++        { text: &#x27;Skill 探索器&#x27;, link: &#x27;/SKILL_EXPLORER&#x27; },
+         { text: &#x27;專案脈絡&#x27;, link: &#x27;/PROJECT_INTELLIGENCE&#x27; },
++        { text: &#x27;名詞表&#x27;, link: &#x27;/GLOSSARY&#x27; },
+         { text: &#x27;系統參考&#x27;, link: &#x27;/SYSTEM_REFERENCE&#x27; },
+         { text: &#x27;技術指南&#x27;, link: &#x27;/TECHNOLOGY_GUIDE&#x27; }
+       ] }
+@@ -27,7 +28,7 @@
+         { text: &#x27;總覽&#x27;, link: &#x27;/&#x27; }, { text: &#x27;快速上手&#x27;, link: &#x27;/GETTING_STARTED&#x27; }, { text: &#x27;安裝／更新／解除&#x27;, link: &#x27;/INSTALLATION&#x27; }
+       ]},
+       { text: &#x27;使用 AIPS&#x27;, items: [
+-        { text: &#x27;使用指南&#x27;, link: &#x27;/USER_GUIDE&#x27; }, { text: &#x27;Skill 探索器&#x27;, link: &#x27;/skill-catalog.html&#x27; }, { text: &#x27;Agent 整合與 MCP&#x27;, link: &#x27;/HARNESS&#x27; }, { text: &#x27;專案脈絡&#x27;, link: &#x27;/PROJECT_INTELLIGENCE&#x27; }, { text: &#x27;安全保證&#x27;, link: &#x27;/SECURITY_ASSURANCE&#x27; }
++        { text: &#x27;使用指南&#x27;, link: &#x27;/USER_GUIDE&#x27; }, { text: &#x27;Skill 探索器&#x27;, link: &#x27;/SKILL_EXPLORER&#x27; }, { text: &#x27;Agent 整合與 MCP&#x27;, link: &#x27;/HARNESS&#x27; }, { text: &#x27;專案脈絡&#x27;, link: &#x27;/PROJECT_INTELLIGENCE&#x27; }, { text: &#x27;名詞表&#x27;, link: &#x27;/GLOSSARY&#x27; }, { text: &#x27;安全保證&#x27;, link: &#x27;/SECURITY_ASSURANCE&#x27; }
+       ]},
+       { text: &#x27;架構與技術&#x27;, items: [
+         { text: &#x27;系統架構&#x27;, link: &#x27;/ARCHITECTURE_OVERVIEW&#x27; }, { text: &#x27;系統參考&#x27;, link: &#x27;/SYSTEM_REFERENCE&#x27; }, { text: &#x27;技術指南&#x27;, link: &#x27;/TECHNOLOGY_GUIDE&#x27; }, { text: &#x27;演進雷達&#x27;, link: &#x27;/EVOLUTION_RADAR&#x27; }, { text: &#x27;演進流程圖&#x27;, link: &#x27;/EVOLUTION_RADAR_OVERVIEW&#x27; }
+</code></pre></details></article><article class="file-card" data-path="docs/human/.vitepress/theme/components/skillexplorer.vue" data-group="Skill Explorer 與網站介面"><details><summary><span class="file-index">更新</span><span class="file-path">docs/human/.vitepress/theme/components/SkillExplorer.vue</span><span class="file-group">Skill Explorer 與網站介面</span></summary><pre><code>--- a/docs/human/.vitepress/theme/components/SkillExplorer.vue
++++ b/docs/human/.vitepress/theme/components/SkillExplorer.vue
+@@ -0,0 +1,141 @@
++&lt;script setup lang=&quot;ts&quot;&gt;
++import { computed, onMounted, ref } from &#x27;vue&#x27;
++import { withBase } from &#x27;vitepress&#x27;
++
++type Skill = {
++  id: string
++  title_en: string
++  title_zh: string
++  description_en: string
++  description_zh: string
++  category: string
++  source: &#x27;aips&#x27; | &#x27;upstream&#x27;
++  source_path: string
++  upstream_path?: string
++  upstream_commit?: string | null
++  status: string
++  installable: boolean
++  disposition: string
++  reason: string
++  targets: string[]
++  example: string
++}
++
++const skills = ref&lt;Skill[]&gt;([])
++const loading = ref(true)
++const loadError = ref(&#x27;&#x27;)
++const query = ref(&#x27;&#x27;)
++const category = ref(&#x27;&#x27;)
++const source = ref(&#x27;&#x27;)
++const status = ref(&#x27;&#x27;)
++const installable = ref(&#x27;&#x27;)
++const copiedId = ref(&#x27;&#x27;)
++const copyError = ref(&#x27;&#x27;)
++
++const categoryNames: Record&lt;string, string&gt; = {
++  engineering: &#x27;工程&#x27;, productivity: &#x27;生產力&#x27;, &#x27;in-progress&#x27;: &#x27;開發中&#x27;, misc: &#x27;其他&#x27;,
++  database: &#x27;資料庫&#x27;, &#x27;delivery-planning&#x27;: &#x27;交付規劃&#x27;, infrastructure: &#x27;基礎設施&#x27;,
++  operations: &#x27;維運&#x27;, performance: &#x27;效能&#x27;, product: &#x27;產品&#x27;, quality: &#x27;品質&#x27;,
++  security: &#x27;安全&#x27;, design: &#x27;設計&#x27;, testing: &#x27;測試&#x27;,
++  planning: &#x27;規劃&#x27;,
++  documentation: &#x27;文件&#x27;, &#x27;code-quality&#x27;: &#x27;程式品質&#x27;
++}
++const statusNames: Record&lt;string, string&gt; = {
++  enabled: &#x27;AIPS 可用&#x27;, &#x27;auto-routed&#x27;: &#x27;自動路由&#x27;, experimental: &#x27;實驗／選用&#x27;,
++  integrated: &#x27;已整合&#x27;, adopted: &#x27;已採納&#x27;, optional: &#x27;選用&#x27;, workflow: &#x27;流程整合&#x27;,
++  deferred: &#x27;延後評估&#x27;, excluded: &#x27;排除&#x27;, reference: &#x27;來源參考&#x27;, &#x27;not-adopted&#x27;: &#x27;不導入&#x27;
++}
++
++const categories = computed(() =&gt; [...new Set(skills.value.map((skill) =&gt; skill.category))].sort())
++const filtered = computed(() =&gt; {
++  const terms = query.value.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean)
++  return skills.value.filter((skill) =&gt; {
++    const haystack = [skill.id, skill.title_en, skill.title_zh, skill.description_en,
++      skill.description_zh, skill.category, skill.source, skill.disposition,
++      skill.reason, skill.targets.join(&#x27; &#x27;), skill.example].join(&#x27; &#x27;).toLocaleLowerCase()
++    return terms.every((term) =&gt; haystack.includes(term))
++      &amp;&amp; (!category.value || skill.category === category.value)
++      &amp;&amp; (!source.value || skill.source === source.value)
++      &amp;&amp; (!status.value || skill.status === status.value)
++      &amp;&amp; (!installable.value || String(skill.installable) === installable.value)
++  })
++})
++
++async function loadCatalog() {
++  loading.value = true
++  loadError.value = &#x27;&#x27;
++  try {
++    const response = await fetch(withBase(&#x27;/skill-catalog.json&#x27;))
++    if (!response.ok) throw new Error(`HTTP ${response.status}`)
++    const data = await response.json()
++    if (!Array.isArray(data.skills)) throw new Error(&#x27;目錄資料格式不正確&#x27;)
++    skills.value = data.skills
++  } catch (error) {
++    loadError.value = `無法載入 Skill 目錄（${error instanceof Error ? error.message : &#x27;未知錯誤&#x27;}）。`
++  } finally {
++    loading.value = false
++  }
++}
++
++async function copyExample(skill: Skill) {
++  copyError.value = &#x27;&#x27;
++  try {
++    await navigator.clipboard.writeText(skill.example)
++    copiedId.value = skill.id
++    window.setTimeout(() =&gt; { copiedId.value = &#x27;&#x27; }, 1500)
++  } catch {
++    copyError.value = &#x27;瀏覽器未允許剪貼簿存取，請從下方文字手動複製。&#x27;
++  }
++}
++
++onMounted(loadCatalog)
++&lt;/script&gt;
++
++&lt;template&gt;
++  &lt;section class=&quot;skill-explorer&quot; aria-label=&quot;Skill 探索器&quot;&gt;
++    &lt;p class=&quot;explorer-intro&quot;&gt;依名稱、用途、ID 或來源搜尋。處置狀態與安裝資格分開篩選。&lt;/p&gt;
++    &lt;div class=&quot;explorer-controls&quot;&gt;
++      &lt;label class=&quot;explorer-search&quot;&gt;搜尋
++        &lt;input v-model=&quot;query&quot; type=&quot;search&quot; placeholder=&quot;例如：測試、debug、writing-shape&quot; autocomplete=&quot;off&quot;&gt;
++      &lt;/label&gt;
++      &lt;label&gt;分類
++        &lt;select v-model=&quot;category&quot;&gt;&lt;option value=&quot;&quot;&gt;全部分類&lt;/option&gt;&lt;option v-for=&quot;item in categories&quot; :key=&quot;item&quot; :value=&quot;item&quot;&gt;{{ categoryNames[item] || item }}&lt;/option&gt;&lt;/select&gt;
++      &lt;/label&gt;
++      &lt;label&gt;來源
++        &lt;select v-model=&quot;source&quot;&gt;&lt;option value=&quot;&quot;&gt;全部來源&lt;/option&gt;&lt;option value=&quot;aips&quot;&gt;AIPS canonical&lt;/option&gt;&lt;option value=&quot;upstream&quot;&gt;上游參考&lt;/option&gt;&lt;/select&gt;
++      &lt;/label&gt;
++      &lt;label&gt;狀態
++        &lt;select v-model=&quot;status&quot;&gt;&lt;option value=&quot;&quot;&gt;全部狀態&lt;/option&gt;&lt;option v-for=&quot;(label, key) in statusNames&quot; :key=&quot;key&quot; :value=&quot;key&quot;&gt;{{ label }}&lt;/option&gt;&lt;/select&gt;
++      &lt;/label&gt;
++      &lt;label&gt;安裝資格
++        &lt;select v-model=&quot;installable&quot;&gt;&lt;option value=&quot;&quot;&gt;全部&lt;/option&gt;&lt;option value=&quot;true&quot;&gt;可安裝上游&lt;/option&gt;&lt;option value=&quot;false&quot;&gt;AIPS canonical／不可安裝&lt;/option&gt;&lt;/select&gt;
++      &lt;/label&gt;
++      &lt;button class=&quot;explorer-clear&quot; type=&quot;button&quot; @click=&quot;query = &#x27;&#x27;; category = &#x27;&#x27;; source = &#x27;&#x27;; status = &#x27;&#x27;; installable = &#x27;&#x27;&quot;&gt;清除篩選&lt;/button&gt;
++    &lt;/div&gt;
++    &lt;p class=&quot;explorer-count&quot; aria-live=&quot;polite&quot;&gt;{{ loading ? &#x27;載入技能目錄…&#x27; : `顯示 ${filtered.length} / ${skills.length} 項` }}&lt;/p&gt;
++    &lt;div v-if=&quot;loading&quot; class=&quot;explorer-state&quot; role=&quot;status&quot;&gt;正在載入目錄…&lt;/div&gt;
++    &lt;div v-else-if=&quot;loadError&quot; class=&quot;explorer-state explorer-error&quot; role=&quot;alert&quot;&gt;
++      &lt;p&gt;{{ loadError }}&lt;/p&gt;&lt;button type=&quot;button&quot; @click=&quot;loadCatalog&quot;&gt;重新載入&lt;/button&gt;
++      &lt;p&gt;&lt;a :href=&quot;withBase(&#x27;/skill-catalog.html&#x27;)&quot;&gt;開啟靜態目錄備援&lt;/a&gt;&lt;/p&gt;
++    &lt;/div&gt;
++    &lt;p v-else-if=&quot;filtered.length === 0&quot; class=&quot;explorer-state&quot; role=&quot;status&quot;&gt;找不到符合條件的 Skill，請調整搜尋或清除篩選。&lt;/p&gt;
++    &lt;div v-else class=&quot;skill-grid&quot;&gt;
++      &lt;article v-for=&quot;skill in filtered&quot; :key=&quot;`${skill.source}:${skill.id}`&quot; class=&quot;skill-card&quot;&gt;
++        &lt;div class=&quot;skill-badges&quot;&gt;
++          &lt;span class=&quot;skill-badge&quot;&gt;{{ categoryNames[skill.category] || skill.category }}&lt;/span&gt;
++          &lt;span class=&quot;skill-badge&quot; :class=&quot;`status-${skill.status}`&quot;&gt;{{ statusNames[skill.status] || skill.status }}&lt;/span&gt;
++          &lt;span v-if=&quot;skill.source === &#x27;upstream&#x27;&quot; class=&quot;skill-badge&quot;&gt;上游原文&lt;/span&gt;
++        &lt;/div&gt;
++        &lt;h2&gt;{{ skill.title_zh || skill.title_en }} &lt;small v-if=&quot;skill.title_zh&quot;&gt;{{ skill.title_en }}&lt;/small&gt;&lt;/h2&gt;
++        &lt;code&gt;{{ skill.id }}&lt;/code&gt;
++        &lt;p&gt;{{ skill.description_zh || skill.description_en }}&lt;small v-if=&quot;skill.source === &#x27;upstream&#x27;&quot; class=&quot;translation-note&quot;&gt;（上游英文原文）&lt;/small&gt;&lt;/p&gt;
++        &lt;dl&gt;
++          &lt;template v-if=&quot;skill.source === &#x27;upstream&#x27;&quot;&gt;&lt;dt&gt;AIPS 處置&lt;/dt&gt;&lt;dd&gt;{{ skill.reason || skill.disposition }}&lt;/dd&gt;&lt;dt&gt;安裝資格&lt;/dt&gt;&lt;dd&gt;{{ skill.installable ? &#x27;使用者可選擇安裝&#x27; : &#x27;使用 AIPS canonical&#x27; }}&lt;/dd&gt;&lt;/template&gt;
++          &lt;dt&gt;來源&lt;/dt&gt;&lt;dd&gt;{{ skill.source === &#x27;aips&#x27; ? &#x27;AIPS canonical&#x27; : `上游 · ${skill.upstream_commit}` }}&lt;/dd&gt;
++          &lt;dt&gt;本機路徑&lt;/dt&gt;&lt;dd&gt;&lt;code&gt;{{ skill.source_path }}&lt;/code&gt;&lt;/dd&gt;
++        &lt;/dl&gt;
++        &lt;details&gt;&lt;summary&gt;使用範例&lt;/summary&gt;&lt;pre&gt;{{ skill.example }}&lt;/pre&gt;&lt;button type=&quot;button&quot; @click=&quot;copyExample(skill)&quot;&gt;{{ copiedId === skill.id ? &#x27;已複製&#x27; : &#x27;複製範例&#x27; }}&lt;/button&gt;&lt;p v-if=&quot;copyError&quot; class=&quot;copy-error&quot;&gt;{{ copyError }}&lt;/p&gt;&lt;/details&gt;
++      &lt;/article&gt;
++    &lt;/div&gt;
++  &lt;/section&gt;
++&lt;/template&gt;
+</code></pre></details></article><article class="file-card" data-path="docs/human/.vitepress/theme/custom.css" data-group="Skill Explorer 與網站介面"><details><summary><span class="file-index">03</span><span class="file-path">docs/human/.vitepress/theme/custom.css</span><span class="file-group">Skill Explorer 與網站介面</span></summary><pre><code>--- a/docs/human/.vitepress/theme/custom.css
++++ b/docs/human/.vitepress/theme/custom.css
+@@ -168,19 +168,43 @@
+   }
+
+   .vp-doc figure.docs-figure {
+-    overflow-x: auto;
+-    overscroll-behavior-inline: contain;
++    padding: 0.8rem;
+   }
+
+   .vp-doc figure.docs-figure img,
+-  .vp-doc figure.docs-figure figcaption {
+-    min-width: 960px;
+-  }
++  .vp-doc figure.docs-figure figcaption { min-width: 0; }
+
+   .docs-path-card {
+     min-height: 0;
+   }
+ }
++
++.skill-explorer { margin: 1.5rem 0 3rem; }
++.explorer-intro, .explorer-count { color: var(--vp-c-text-2); }
++.explorer-controls { display: grid; grid-template-columns: minmax(220px, 2fr) repeat(4, minmax(125px, 1fr)) auto; gap: 0.75rem; align-items: end; }
++.explorer-controls label { display: grid; gap: 0.35rem; font-size: 0.86rem; font-weight: 600; }
++.explorer-controls input, .explorer-controls select { width: 100%; min-height: 42px; padding: 0.55rem 0.7rem; border: 1px solid var(--vp-c-divider); border-radius: 8px; background: var(--vp-c-bg); color: var(--vp-c-text-1); font: inherit; }
++.explorer-controls :focus-visible, .skill-explorer button:focus-visible, .skill-explorer summary:focus-visible { outline: 3px solid var(--vp-c-brand-1); outline-offset: 2px; }
++.explorer-clear, .skill-explorer button { min-height: 40px; padding: 0.5rem 0.8rem; border: 1px solid var(--vp-c-brand-1); border-radius: 8px; background: var(--vp-c-brand-1); color: white; font: inherit; cursor: pointer; }
++.skill-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 1rem; }
++.skill-card { min-width: 0; padding: 1rem; border: 1px solid var(--vp-c-divider); border-radius: 12px; background: var(--vp-c-bg-soft); }
++.skill-badges { display: flex; flex-wrap: wrap; gap: 0.4rem; }
++.skill-badge { padding: 0.18rem 0.6rem; border-radius: 999px; background: var(--vp-c-brand-soft); color: var(--vp-c-brand-1); font-size: 0.78rem; }
++.skill-card h2 { margin: 0.8rem 0 0.2rem !important; padding: 0 !important; font-size: 1.1rem; }
++.skill-card h2 small, .skill-card p small { display: block; color: var(--vp-c-text-2); font-size: 0.82rem; font-weight: 400; }
++.skill-card code { overflow-wrap: anywhere; }
++.skill-card dl { display: grid; grid-template-columns: minmax(5rem, auto) 1fr; gap: 0.25rem 0.65rem; font-size: 0.85rem; }
++.skill-card dt { color: var(--vp-c-text-2); }
++.skill-card dd { margin: 0; overflow-wrap: anywhere; }
++.skill-card pre { max-height: 15rem; overflow: auto; padding: 0.7rem; border-radius: 8px; white-space: pre-wrap; overflow-wrap: anywhere; }
++.skill-card details { border-top: 1px solid var(--vp-c-divider); padding-top: 0.7rem; }
++.skill-card summary { color: var(--vp-c-brand-1); cursor: pointer; }
++.explorer-state { padding: 1.2rem; border: 1px solid var(--vp-c-divider); border-radius: 10px; background: var(--vp-c-bg-soft); }
++.explorer-error, .copy-error { color: var(--vp-c-danger-1); }
++.translation-note { color: var(--vp-c-text-2); }
++
++@media (max-width: 900px) { .explorer-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); } .explorer-search { grid-column: 1 / -1; } }
++@media (max-width: 520px) { .explorer-controls { grid-template-columns: 1fr; } .explorer-search { grid-column: auto; } }
+
+ @media (prefers-reduced-motion: reduce) {
+   *,
+</code></pre></details></article><article class="file-card" data-path="docs/human/.vitepress/theme/index.ts" data-group="Skill Explorer 與網站介面"><details><summary><span class="file-index">04</span><span class="file-path">docs/human/.vitepress/theme/index.ts</span><span class="file-group">Skill Explorer 與網站介面</span></summary><pre><code>--- a/docs/human/.vitepress/theme/index.ts
++++ b/docs/human/.vitepress/theme/index.ts
+@@ -1,3 +1,10 @@
+ import DefaultTheme from &#x27;vitepress/theme&#x27;
++import SkillExplorer from &#x27;./components/SkillExplorer.vue&#x27;
+ import &#x27;./custom.css&#x27;
+-export default DefaultTheme
++
++export default {
++  ...DefaultTheme,
++  enhanceApp({ app }) {
++    app.component(&#x27;SkillExplorer&#x27;, SkillExplorer)
++  }
++}
+</code></pre></details></article><article class="file-card" data-path="docs/human/architecture_overview.md" data-group="使用者文件與導覽"><details><summary><span class="file-index">05</span><span class="file-path">docs/human/ARCHITECTURE_OVERVIEW.md</span><span class="file-group">使用者文件與導覽</span></summary><pre><code>--- a/docs/human/ARCHITECTURE_OVERVIEW.md
++++ b/docs/human/ARCHITECTURE_OVERVIEW.md
+@@ -1,11 +1,15 @@
+ # 系統架構總覽
+
++AIPS 把工作分成 Runtime 接入、專案脈絡、任務路由與驗證。Runtime 提供 Host 能力；Project Intelligence 提供可追溯的專案資訊；Role、Skill 與 Protocol 僅按本次需求載入。檢查結果是審查證據，合併、發布與上線仍由人決定。
++
++初次閱讀可先看[快速上手](GETTING_STARTED.md)，再依工作需要查看[使用指南](USER_GUIDE.md)、[Harness 與 MCP](HARNESS.md)或[安全保證](SECURITY_ASSURANCE.md)。
++
+ CLI 安裝與 Runtime adapter 啟用分開：`aips harness install` 是明確啟用入口；更新與 preflight 只刷新可驗證的既有啟用紀錄。不明紀錄會保留並警示；狀態觀察與 adapter 刷新尚無共同跨程序鎖，並行停用仍未驗證。per-repository 治理模式仍未由此切片實作。
+
+
+ AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前架構**；版本歷史放 CHANGELOG，Scenario 證據歷史放 Conformance。
+
+-![AI Product System 架構總覽](assets/system-overview.svg)
++&lt;a href=&quot;./assets/system-overview.svg&quot;&gt;&lt;img src=&quot;./assets/system-overview.svg&quot; alt=&quot;AI Product System 架構總覽。可點擊圖表開啟 SVG 原尺寸。&quot; /&gt;&lt;/a&gt;
+
+ ## Runtime 與接入層
+
+</code></pre></details></article><article class="file-card" data-path="docs/human/conformance.md" data-group="使用者文件與導覽"><details><summary><span class="file-index">06</span><span class="file-path">docs/human/CONFORMANCE.md</span><span class="file-group">使用者文件與導覽</span></summary><pre><code>--- a/docs/human/CONFORMANCE.md
++++ b/docs/human/CONFORMANCE.md
+@@ -1895,6 +1895,8 @@
+
+ ## Scenario 259 — Matt Pocock Skill Integration and Explorer
+
++網站展示檢查涵蓋 VitePress 導覽與直接路由、目錄資料載入、搜尋與複合篩選、載入／空結果／錯誤狀態，以及舊靜態 HTML 網址。這些檢查只驗證文件介面，不代表 Skill 自動路由、安裝、Host 呼叫或方法品質通過。
++
+ Skill installation evidence remains separate from the Claude PermissionDenied observer and docs-only review contracts.
+
+
+</code></pre></details></article><article class="file-card" data-path="docs/human/documentation_map.md" data-group="使用者文件與導覽"><details><summary><span class="file-index">07</span><span class="file-path">docs/human/DOCUMENTATION_MAP.md</span><span class="file-group">使用者文件與導覽</span></summary><pre><code>--- a/docs/human/DOCUMENTATION_MAP.md
++++ b/docs/human/DOCUMENTATION_MAP.md
+@@ -82,7 +82,7 @@
+
+ Public CLI commands are documented under the owning user workflow and matching Scenario evidence. A shared dispatcher or Scenario registry does not make unrelated command domains part of that change.
+
+-Skill 的使用者搜尋入口是 &lt;a href=&quot;./skill-catalog.html&quot;&gt;Skill Explorer&lt;/a&gt;；49 個 canonical AIPS Skills 與 38 個 vendored 上游來源分開呈現，來源清單固定 commit 並記錄本地路徑與 SHA-256。Skill routing 的 canonical 定義仍在各 `SKILL.md` 與 Registry；Scenario 259 記錄自動路由、實驗／選用與 `$grill-with-docs` 明確呼叫邊界。
++Skill 的使用者搜尋入口是 [Skill 探索器](SKILL_EXPLORER.md)；AIPS canonical Skills 與 vendored 上游來源分開呈現，來源清單固定 commit 並記錄本地路徑與 SHA-256。Skill routing 的 canonical 定義仍在各 `SKILL.md` 與 Registry；Scenario 259 記錄自動路由、實驗／選用與 `$grill-with-docs` 明確呼叫邊界。
+
+ Git 發布模式與操作步驟以 [User Guide](./USER_GUIDE.md#git-publication-與-release) 為入口；安全保證、信任根部署與隔離限制以 [Security Assurance](./SECURITY_ASSURANCE.md#runtime-policy-enforcement) 為準。一般個人模式 PR merge 依賴 Claude Code 原生 `ask` 或啟用中的 Gemini AIPS extension `ask_user` policy；明確 task-authorized 的 Claude `--auto` 可由同一候選檢查啟用 GitHub auto-merge，Gemini 仍逐次詢問。Codex 仍為 advisory。
+
+</code></pre></details></article><article class="file-card" data-path="docs/human/documentation_sync.md" data-group="使用者文件與導覽"><details><summary><span class="file-index">08</span><span class="file-path">docs/human/DOCUMENTATION_SYNC.md</span><span class="file-group">使用者文件與導覽</span></summary><pre><code>--- a/docs/human/DOCUMENTATION_SYNC.md
++++ b/docs/human/DOCUMENTATION_SYNC.md
+@@ -12,6 +12,8 @@
+ ## 文件角色
+
+ The shared OpenCode integration lifecycle contains independent Skill Explorer and creative-import cases; document each contract in its own canonical topic.
++
++Skill Explorer website changes keep `SKILL_EXPLORER.md`, the `/SKILL_EXPLORER` VitePress route, `scripts/skill_catalog.py`, generated JSON and legacy static HTML aligned. The display data is derived from `skills/INDEX.yaml`, `skills/locale/zh-TW.json`, and the pinned upstream manifest. Keep upstream source identity and installability distinct from disposition; the Explorer is read-only and never installs a Skill.
+
+ Upstream native Skill lifecycle behavior is documented in User Guide and Harness; ownership-safe removal and source validation evidence belong in Technology Guide, Maintenance, and Scenario 259. Keep command behavior aligned across these canonical sections.
+
+</code></pre></details></article><article class="file-card" data-path="docs/human/getting_started.md" data-group="使用者文件與導覽"><details><summary><span class="file-index">09</span><span class="file-path">docs/human/GETTING_STARTED.md</span><span class="file-group">使用者文件與導覽</span></summary><pre><code>--- a/docs/human/GETTING_STARTED.md
++++ b/docs/human/GETTING_STARTED.md
+@@ -50,8 +50,6 @@
+
+ ## 開始工作
+
+-A docs-only review is a report about the current Git diff, not an approval to publish.
+-
+
+ 安裝 CLI 不會自動啟用 Runtime adapter。需要將 AIPS 整合至支援的 Agent 時，先檢查 `aips harness status`，再明確執行 `aips harness install`。啟用後可開啟 Agent 或 IDE，描述目標、限制與驗收方式；可用能力取決於 Runtime 的實際支援。
+
+@@ -67,10 +65,13 @@
+
+ ## Existing Project
+
+-For a read-only documentation classification, run aips project docs-only review --opt-in; approval and Change Impact reconciliation remain separate.
++先檢視專案狀態與恢復建議，再依專案原生指示、Project Intelligence、變更影響與驗收要求處理。只想判斷 Git diff 是否僅涉及文件時，可明確呼叫唯讀分類報告；報告不會核准變更或發布。
+
++~~~bash
++aips project docs-only review --project /path/to/project --opt-in
++~~~
+
+-已有程式專案時，先檢視目前狀態與恢復建議：
++檢視一般專案狀態：
+
+ ~~~bash
+ aips project diagnose /path/to/project
+</code></pre></details></article><article class="file-card" data-path="docs/human/glossary.md" data-group="使用者文件與導覽"><details><summary><span class="file-index">10</span><span class="file-path">docs/human/GLOSSARY.md</span><span class="file-group">使用者文件與導覽</span></summary><pre><code>--- /dev/null
++++ b/docs/human/GLOSSARY.md
+@@ -0,0 +1,19 @@
++# 名詞表
++
++本表協助閱讀者理解文件中的常用名稱。命令、識別碼與 canonical 路徑保留原文，實際行為以連結的規範文件為準。
++
++| English | 繁體中文 | 說明 |
++| --- | --- | --- |
++| AIPS (AI Product System) | AI Product System | 跨 Agent 的工程工作系統，整理專案脈絡、工作方法與驗證證據。 |
++| Runtime | 執行環境 | Agent 所在的 Host 與其可用工具、權限和原生控制。 |
++| Harness | 整合框架 | 將 AIPS 共用指示接到不同 Runtime 的組件與流程。 |
++| Project Intelligence | 專案脈絡資料 | 可追溯的專案知識與檢索索引；EPHEMERAL 模式保存在使用者外部快取。 |
++| Role | 角色 | 描述工作責任與協作方式的可重用指引。 |
++| Skill | 技能 | 按需求載入的任務方法；canonical 定義位於各 `SKILL.md`。 |
++| Protocol | 協定 | 定義特定流程、決策邊界或驗證要求的規範文件。 |
++| Change Impact | 變更影響 | 記錄輸入、輸出、資料、呼叫端與使用端的影響範圍。 |
++| Human Authority | 人類授權 | 合併、發布、上線與治理決策保留給人。 |
++| Advisory | 建議模式 | 提供證據或診斷，不代表 Host 會強制阻擋操作。 |
++| UNVERIFIED | 尚未驗證 | 缺少足夠證據確認該行為；不能當成通過。 |
++
++延伸閱讀：[系統架構](ARCHITECTURE_OVERVIEW.md)、[Harness 與 MCP](HARNESS.md)、[安全保證](SECURITY_ASSURANCE.md)、[文件導覽](DOCUMENTATION_MAP.md)。
+</code></pre></details></article><article class="file-card" data-path="docs/human/harness.md" data-group="使用者文件與導覽"><details><summary><span class="file-index">11</span><span class="file-path">docs/human/HARNESS.md</span><span class="file-group">使用者文件與導覽</span></summary><pre><code>--- a/docs/human/HARNESS.md
++++ b/docs/human/HARNESS.md
+@@ -1,4 +1,6 @@
+ # Global Harness 與 MCP
++
++AIPS 透過 Harness 將共用指示連接到各 Agent Runtime，並以 MCP 提供可用的 Resources、Prompts 與 deterministic Tools。安裝 CLI 不會自動啟用 adapter；每個 Host 的權限、Hook 與工具能力仍需依其實際驗收證據判讀。要尋找可重用方法，請看[Skill 探索器](SKILL_EXPLORER.md)。
+
+ AIPS 的 Agent integration 分成 **Portable MCP Access Plane** 與 **Runtime-native Adapter Plane**。兩者讀取相同 canonical AIPS sources，但責任不同。
+
+</code></pre></details></article><article class="file-card" data-path="docs/human/maintenance.md" data-group="使用者文件與導覽"><details><summary><span class="file-index">12</span><span class="file-path">docs/human/MAINTENANCE.md</span><span class="file-group">使用者文件與導覽</span></summary><pre><code>--- a/docs/human/MAINTENANCE.md
++++ b/docs/human/MAINTENANCE.md
+@@ -13,6 +13,12 @@
+ ## Documentation Impact Gate
+
+ Behavior-bearing observer and docs-only helper scripts require explicit canonical placement mappings. Reconcile the full documentation closure before marking a Core Change matrix READY.
++
++### Official Docs Site
++
++文件網站由 docs/human/ 的 Markdown、VitePress 設定與主題組成。技能目錄由 skills/INDEX.yaml、zh-TW locale 與釘選的 upstream manifest 產生。修改 registry 或目錄展示時，執行 python scripts/skill_catalog.py 更新 JSON 與舊版 HTML，再以 python scripts/skill_catalog.py --check 檢查生成差異，並執行 npm run docs:build。
++
++檢查 /SKILL_EXPLORER 的站內導覽、搜尋、複合篩選、錯誤備援，以及仍可開啟的 /skill-catalog.html。文件 build 不會發布網站；GitHub Pages 發布仍由既有 workflow 和人工 Git 決策處理。
+
+
+ Runtime Policy diagnostics are documented in the canonical Resource Authorization, Claude adapter and Scenario 177 sections; global Change Impact coverage remains partial.
+</code></pre></details></article><article class="file-card" data-path="docs/human/skill_explorer.md" data-group="使用者文件與導覽"><details><summary><span class="file-index">13</span><span class="file-path">docs/human/SKILL_EXPLORER.md</span><span class="file-group">使用者文件與導覽</span></summary><pre><code>--- /dev/null
++++ b/docs/human/SKILL_EXPLORER.md
+@@ -0,0 +1,7 @@
++# Skill 探索器
++
++&lt;SkillExplorer /&gt;
++
++若互動目錄無法載入，可直接開啟[靜態目錄備援](./skill-catalog.html)。
++
++探索器只列出 AIPS canonical Skills 與已釘選版本的上游參考。卡片的安裝資格與處置狀態是不同資訊；列出上游項目不代表已安裝或會自動呼叫。上游技能只會在使用者明確要求時安裝或使用。
+</code></pre></details></article><article class="file-card" data-path="docs/human/technology_guide.md" data-group="使用者文件與導覽"><details><summary><span class="file-index">14</span><span class="file-path">docs/human/TECHNOLOGY_GUIDE.md</span><span class="file-group">使用者文件與導覽</span></summary><pre><code>--- a/docs/human/TECHNOLOGY_GUIDE.md
++++ b/docs/human/TECHNOLOGY_GUIDE.md
+@@ -718,6 +718,8 @@
+
+ 官方文件網站面向使用者與維護者，操作指引、概念及導覽以繁體中文撰寫；專有名詞首次出現時補上英文原名。程式碼、指令、API／設定欄位、路徑、狀態與原因碼保留 canonical 拼法，方便搜尋與複製。首頁採任務導覽；架構圖與流程圖須符合目前程式與設定，並附繁體中文替代文字及圖說。
+
++Skill Explorer 的 /SKILL_EXPLORER 頁面讀取 scripts/skill_catalog.py 產生的靜態 JSON；/skill-catalog.html 保留獨立 HTML 備援。Registry 與釘選的 upstream manifest 是資料來源，網站元件不呼叫外部 API，也不執行安裝。python scripts/skill_catalog.py --check 檢查兩個生成產物是否同步。
++
+ 文件網站固定使用 VitePress 1.6.4；`package.json` 只覆寫 `vitepress` 引入的 Vite 為 6.4.4，由 Vite 自身宣告的 `esbuild ^0.25.0` 提供修補版本，不另行強制覆寫 esbuild。這個 Vite 版本超出 VitePress 1.6.4 原本宣告的 Vite 5 範圍，因此更新時必須重新驗證相容性；上游穩定版原生支援已修補工具鏈後，再評估移除覆寫。
+
+ 以 Node 24 執行 `npm ci --no-audit --no-fund --ignore-scripts`、`npm audit` 與 `npm run docs:build`，並確認 `npm ls vite esbuild`、開發、預覽與熱更新。`npm run docs:dev` 綁定 `127.0.0.1`，停用跨來源 HTTP 存取並保留 Vite 主機檢查。VitePress 1.6.4 的靜態預覽忽略 host 設定，因此 `npm run docs:preview` 改由已修補的 `vite preview` 提供 `.vitepress/dist`，明確綁定 `127.0.0.1` 並保留 Vite 預設 Host／CORS 限制；網站 base 仍是 `/ai-product-system/`，clean URLs、搜尋與導覽需一併驗證。勿以 `--host 0.0.0.0`、對外 port mapping、tunnel、`cors: true` 或 `allowedHosts: true` 放寬存取；確有遠端開發需求時，另行評估存取控制與明確允許清單。正式網站只部署 build 後的靜態產物。
+</code></pre></details></article><article class="file-card" data-path="docs/human/user_guide.md" data-group="使用者文件與導覽"><details><summary><span class="file-index">15</span><span class="file-path">docs/human/USER_GUIDE.md</span><span class="file-group">使用者文件與導覽</span></summary><pre><code>--- a/docs/human/USER_GUIDE.md
++++ b/docs/human/USER_GUIDE.md
+@@ -1,9 +1,12 @@
+ # AI Product System 使用指南
+
+-Local validation 會依共用 Runtime Context 選擇符合 Gate 需求的 Python；涉及核心執行環境時，Integration Gate 另驗證 runtime invariant matrix。
+-Evolution pre-analysis continues to use `evolution_analysis.py` as its existing command entry point; the internal implementation split requires no new user command.
++Local validation 會依共用 Runtime Context 選擇符合 Gate 需求的 Python；涉及核心執行環境時，Integration Gate 另驗證 runtime invariant matrix。Evolution pre-analysis 沿用 `evolution_analysis.py` 命令入口，內部模組調整不新增使用者指令。
+
+ 本文件描述 **目前如何使用 AIPS**。版本演進放在 `CHANGELOG.md`，Scenario / validation 歷史放在 [Scenario Conformance](CONFORMANCE.md)；current-behavior 文件不再以 `vX.Y` 章節追加新功能。
++
++- [第一次安裝並開始工作](GETTING_STARTED.md)：安裝 CLI、檢查整合狀態，再描述目標與驗收方式。
++- [在既有專案工作](#existing-project)：先檢查專案指示與脈絡，再決定是否附加可重用的專案資料。
++- [尋找可用 Skills](SKILL_EXPLORER.md)：依用途和來源探索方法；清單不代表已安裝或授權執行。
+
+ ## 工作模式與基本流程
+
+@@ -59,7 +62,7 @@
+
+ ## Existing Project
+
+-Use aips project docs-only review --opt-in to classify the actual Git diff. The report remains review-only and keeps secret scan, Human approval, and Change Impact reconciliation required.
++用 `aips project docs-only review --opt-in` 唯讀分類目前的 Git diff。報告不會批准變更或發布；秘密掃描、人工核准與 Change Impact 核對仍各自執行。
+
+
+ Optional project governance modes do not change Resource Authorization default-deny behavior or permit fallback to another Profile.
+</code></pre></details></article><article class="file-card" data-path="docs/human/index.md" data-group="使用者文件與導覽"><details><summary><span class="file-index">16</span><span class="file-path">docs/human/index.md</span><span class="file-group">使用者文件與導覽</span></summary><pre><code>--- a/docs/human/index.md
++++ b/docs/human/index.md
+@@ -34,6 +34,11 @@
+ ## 依你的目標開始
+
+ &lt;div class=&quot;docs-path-grid&quot;&gt;
++  &lt;a class=&quot;docs-path-card&quot; href=&quot;./SKILL_EXPLORER&quot;&gt;
++    &lt;span class=&quot;docs-path-kicker&quot;&gt;找到工作方法&lt;/span&gt;
++    &lt;strong&gt;瀏覽 Skills&lt;/strong&gt;
++    &lt;span&gt;依用途、分類與來源尋找可用方法，並確認上游 Skill 的安裝資格。&lt;/span&gt;
++  &lt;/a&gt;
+   &lt;a class=&quot;docs-path-card&quot; href=&quot;./GETTING_STARTED&quot;&gt;
+     &lt;span class=&quot;docs-path-kicker&quot;&gt;第一次使用&lt;/span&gt;
+     &lt;strong&gt;安裝並開始一項工作&lt;/strong&gt;
+@@ -61,8 +66,8 @@
+ 下圖呈現 AIPS 的主要邊界：Runtime 接收工作，脈絡層提供專案事實，執行與驗證層產生證據；發布和治理等重要決策保留在人手中。
+
+ &lt;figure class=&quot;docs-figure&quot;&gt;
+-  &lt;img src=&quot;./assets/architecture-zh.svg&quot; alt=&quot;AIPS 系統架構圖：Runtime 與 MCP、專案脈絡、工作路由、執行驗證及人類決策之間的關係&quot; /&gt;
+-  &lt;figcaption&gt;系統架構：共用工作脈絡與驗證方式，不代表每個 Runtime 都有相同的防護能力。&lt;/figcaption&gt;
++  &lt;a href=&quot;./assets/architecture-zh.svg&quot;&gt;&lt;img src=&quot;./assets/architecture-zh.svg&quot; alt=&quot;AIPS 系統架構圖：Runtime 與 MCP、專案脈絡、工作路由、執行驗證及人類決策之間的關係&quot; /&gt;&lt;/a&gt;
++  &lt;figcaption&gt;系統架構：共用工作脈絡與驗證方式，不代表每個 Runtime 都有相同的防護能力。小螢幕可點圖開啟原尺寸。&lt;/figcaption&gt;
+ &lt;/figure&gt;
+
+ ## 一項變更如何完成？
+@@ -70,8 +75,8 @@
+ 既有專案會先整理變更邊界，再依影響與風險安排執行和驗證。完成證據後，合併、發布或上線仍走各自的授權流程。
+
+ &lt;figure class=&quot;docs-figure&quot;&gt;
+-  &lt;img src=&quot;./assets/workflow-zh.svg&quot; alt=&quot;AIPS 工作流程圖：從需求與脈絡解析，經影響分析、執行、驗證到人類授權的交付流程&quot; /&gt;
+-  &lt;figcaption&gt;工作流程：檢查結果是決策證據；它本身不會授予發布或上線權限。&lt;/figcaption&gt;
++  &lt;a href=&quot;./assets/workflow-zh.svg&quot;&gt;&lt;img src=&quot;./assets/workflow-zh.svg&quot; alt=&quot;AIPS 工作流程圖：從需求與脈絡解析，經影響分析、執行、驗證到人類授權的交付流程&quot; /&gt;&lt;/a&gt;
++  &lt;figcaption&gt;工作流程：檢查結果是決策證據；它本身不會授予發布或上線權限。小螢幕可點圖開啟原尺寸。&lt;/figcaption&gt;
+ &lt;/figure&gt;
+
+ ## 文件如何組織
+</code></pre></details></article><article class="file-card" data-path="docs/human/public/skill-catalog.html" data-group="Skill Explorer 與網站介面"><details><summary><span class="file-index">17</span><span class="file-path">docs/human/public/skill-catalog.html</span><span class="file-group">Skill Explorer 與網站介面</span></summary><pre><code>--- a/docs/human/public/skill-catalog.html
++++ b/docs/human/public/skill-catalog.html
+@@ -16,7 +16,7 @@
+ &lt;header&gt;
+ &lt;p class=&quot;muted&quot;&gt;AI Product System · 技能圖鑑&lt;/p&gt;
+ &lt;h1&gt;找到適合這項工作的 Skill&lt;/h1&gt;
+-&lt;p class=&quot;lede&quot;&gt;搜尋 AIPS Skills 與 Matt Pocock 上游 38 項來源。上游處置說明 AIPS 的整合關係；是否安裝由使用者決定。同名 AIPS canonical Skill 會直接使用 AIPS 版本。&lt;/p&gt;
++&lt;p class=&quot;lede&quot;&gt;搜尋 AIPS Skills 與 Matt Pocock 上游來源。上游處置說明 AIPS 的整合關係；是否安裝由使用者決定。同名 AIPS canonical Skill 會直接使用 AIPS 版本。&lt;/p&gt;
+ &lt;div class=&quot;stats&quot;&gt;&lt;div class=&quot;stat&quot;&gt;&lt;strong&gt;49&lt;/strong&gt;AIPS 可用 Skills&lt;/div&gt;&lt;div class=&quot;stat&quot;&gt;&lt;strong&gt;31&lt;/strong&gt;可安裝上游 Skills&lt;/div&gt;&lt;div class=&quot;stat&quot;&gt;&lt;strong&gt;7&lt;/strong&gt;使用 AIPS canonical&lt;/div&gt;&lt;div class=&quot;stat&quot;&gt;&lt;strong&gt;87&lt;/strong&gt;可搜尋卡片&lt;/div&gt;&lt;/div&gt;
+ &lt;div class=&quot;controls&quot;&gt;
+ &lt;label&gt;&lt;span class=&quot;muted&quot;&gt;搜尋名稱、用途、情境&lt;/span&gt;&lt;input id=&quot;search&quot; type=&quot;search&quot; placeholder=&quot;例如：debug、測試、writing&quot; autocomplete=&quot;off&quot;&gt;&lt;/label&gt;
+</code></pre></details></article><article class="file-card" data-path="docs/human/public/skill-catalog.json" data-group="Skill Explorer 與網站介面"><details><summary><span class="file-index">18</span><span class="file-path">docs/human/public/skill-catalog.json</span><span class="file-group">Skill Explorer 與網站介面</span></summary><pre><code>--- /dev/null
++++ b/docs/human/public/skill-catalog.json
+@@ -0,0 +1,1609 @@
++{
++  &quot;source_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++  &quot;skills&quot;: [
++    {
++      &quot;id&quot;: &quot;architecture-decision-record&quot;,
++      &quot;title_en&quot;: &quot;Architecture Decision Record&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Record a consequential technical decision with context, alternatives, trade-offs, consequences and review conditions.&quot;,
++      &quot;description_zh&quot;: &quot;記錄具重大影響的技術決策、替代方案、取捨與後續條件。&quot;,
++      &quot;category&quot;: &quot;software-architecture&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;software-architecture/architecture-decision-record/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「architecture-decision-record」Skill，協助我處理「technology choice」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;authorization-security&quot;,
++      &quot;title_en&quot;: &quot;Authorization Security&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Design and review tenant isolation, object-level permissions and authorization boundaries for APIs and workflows.&quot;,
++      &quot;description_zh&quot;: &quot;設計並檢查 API 與流程中的租戶隔離、物件權限和授權邊界。&quot;,
++      &quot;category&quot;: &quot;security&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;security/authorization-security/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「authorization-security」Skill，協助我處理「authz change」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;brand-foundation&quot;,
++      &quot;title_en&quot;: &quot;Brand Foundation&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Define brand positioning, personality, voice and reusable visual foundations before product design.&quot;,
++      &quot;description_zh&quot;: &quot;建立產品定位、品牌個性、語調與可重用的視覺基礎。&quot;,
++      &quot;category&quot;: &quot;design&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;design/brand-foundation/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「brand-foundation」Skill，協助我處理「create brand」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;business-logic-abuse&quot;,
++      &quot;title_en&quot;: &quot;Business Logic Abuse&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Identify abuse of business workflows, limits, state transitions and incentives beyond technical vulnerabilities.&quot;,
++      &quot;description_zh&quot;: &quot;檢查商業流程、限制、狀態轉換與誘因可能遭到的濫用。&quot;,
++      &quot;category&quot;: &quot;security&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;security/business-logic-abuse/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「business-logic-abuse」Skill，協助我處理「fraud abuse」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;capacity-cost&quot;,
++      &quot;title_en&quot;: &quot;Capacity Cost&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Estimate workload capacity and infrastructure cost from explicit usage assumptions and measurable budgets.&quot;,
++      &quot;description_zh&quot;: &quot;依明確用量假設估算系統容量、基礎設施成本與預算。&quot;,
++      &quot;category&quot;: &quot;infrastructure&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;infrastructure/capacity-cost/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「capacity-cost」Skill，協助我處理「infrastructure sizing」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;characterization-testing&quot;,
++      &quot;title_en&quot;: &quot;Characterization Testing&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Capture existing behavior with characterization tests before changing legacy or insufficiently tested code.&quot;,
++      &quot;description_zh&quot;: &quot;在修改缺乏測試的舊系統前，以特徵測試記錄既有行為。&quot;,
++      &quot;category&quot;: &quot;testing&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;testing/characterization-testing/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「characterization-testing」Skill，協助我處理「legacy change without coverage」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;clean-architecture&quot;,
++      &quot;title_en&quot;: &quot;Clean Architecture&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Separate domain rules, use cases and infrastructure through dependency boundaries suited to the existing project.&quot;,
++      &quot;description_zh&quot;: &quot;依專案情境劃分領域規則、使用案例與基礎設施的依賴邊界。&quot;,
++      &quot;category&quot;: &quot;software-architecture&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;software-architecture/clean-architecture/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「clean-architecture」Skill，協助我處理「dependency boundary」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;code-review&quot;,
++      &quot;title_en&quot;: &quot;Code Review&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Review changes for correctness, security, maintainability and evidence against the declared change boundary.&quot;,
++      &quot;description_zh&quot;: &quot;依變更範圍檢查正確性、安全性、可維護性與需求符合度。&quot;,
++      &quot;category&quot;: &quot;quality&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;quality/code-review/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「code-review」Skill，協助我處理「material code review」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;creative-calibration&quot;,
++      &quot;title_en&quot;: &quot;Creative Calibration&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Calibrate creative references and visual directions with user feedback before committing to design execution.&quot;,
++      &quot;description_zh&quot;: &quot;先用參考素材與回饋校準創作方向，再開始設計執行。&quot;,
++      &quot;category&quot;: &quot;design&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;design/creative-calibration/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「creative-calibration」Skill，協助我處理「vague visual request」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;creative-reference-research&quot;,
++      &quot;title_en&quot;: &quot;Creative Reference Research&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Research and evaluate visual references to establish an evidence-based creative direction.&quot;,
++      &quot;description_zh&quot;: &quot;研究視覺參考，建立有根據的創作方向。&quot;,
++      &quot;category&quot;: &quot;design&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;design/creative-reference-research/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「creative-reference-research」Skill，協助我處理「visual reference research」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;data-modeling&quot;,
++      &quot;title_en&quot;: &quot;Data Modeling&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Model domain data, ownership, relationships and invariants with suitable persistence and migration boundaries.&quot;,
++      &quot;description_zh&quot;: &quot;建立資料模型、欄位語意、關係與資料生命週期規則。&quot;,
++      &quot;category&quot;: &quot;database&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;database/data-modeling/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「data-modeling」Skill，協助我處理「domain model」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;database-migration&quot;,
++      &quot;title_en&quot;: &quot;Database Migration&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Plan backward-compatible database changes and data backfills with staged rollout, lock analysis and recovery checkpoints.&quot;,
++      &quot;description_zh&quot;: &quot;規劃並驗證資料庫結構與資料遷移，控制部署風險。&quot;,
++      &quot;category&quot;: &quot;database&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;database/database-migration/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「database-migration」Skill，協助我處理「schema change on live data」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;delivery-planning&quot;,
++      &quot;title_en&quot;: &quot;Delivery Planning&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Plan implementation, dependencies, verification and delivery milestones with explicit risks and approval boundaries.&quot;,
++      &quot;description_zh&quot;: &quot;將目標拆成可驗收的交付切片、依賴關係與執行順序。&quot;,
++      &quot;category&quot;: &quot;delivery-planning&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;planning/delivery-planning/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「delivery-planning」Skill，協助我處理「execution plan」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;dependency-upgrade&quot;,
++      &quot;title_en&quot;: &quot;Dependency Upgrade&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Prioritize dependency updates by exploitability and supply-chain risk, then verify compatibility and lockfile changes.&quot;,
++      &quot;description_zh&quot;: &quot;評估並升級依賴套件，檢查相容性、漏洞與回歸風險。&quot;,
++      &quot;category&quot;: &quot;security&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;security/dependency-upgrade/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「dependency-upgrade」Skill，協助我處理「vulnerability audit report」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;domain-driven-design&quot;,
++      &quot;title_en&quot;: &quot;Domain Driven Design&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Model complex business domains using bounded contexts, aggregates, value objects and domain invariants.&quot;,
++      &quot;description_zh&quot;: &quot;用領域語言、邊界與模型整理複雜的產品商業規則。&quot;,
++      &quot;category&quot;: &quot;software-architecture&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;software-architecture/domain-driven-design/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「domain-driven-design」Skill，協助我處理「complex domain」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;e2e-browser-testing&quot;,
++      &quot;title_en&quot;: &quot;E2E Browser Testing&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Verify critical user journeys in a real browser with deterministic setup, stable selectors and useful failure artifacts.&quot;,
++      &quot;description_zh&quot;: &quot;設計並執行瀏覽器端對端測試，驗證使用者可見流程。&quot;,
++      &quot;category&quot;: &quot;testing&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;testing/e2e-browser-testing/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「e2e-browser-testing」Skill，協助我處理「critical user flow」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;financial-integrity&quot;,
++      &quot;title_en&quot;: &quot;Financial Integrity&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Protect financial value, ledger invariants, reconciliation and replay-safe operations in money-related workflows.&quot;,
++      &quot;description_zh&quot;: &quot;確保金額、餘額、帳務與交易狀態具正確性及可稽核性。&quot;,
++      &quot;category&quot;: &quot;security&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;security/financial-integrity/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「financial-integrity」Skill，協助我處理「payment」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;frontend-implementation&quot;,
++      &quot;title_en&quot;: &quot;Frontend Implementation&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Implement maintainable frontend features with clear component boundaries, state ownership, responsive behavior and complete UI states.&quot;,
++      &quot;description_zh&quot;: &quot;依既有產品模式實作前端互動、狀態與介面。&quot;,
++      &quot;category&quot;: &quot;engineering&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;engineering/frontend-implementation/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「frontend-implementation」Skill，協助我處理「frontend feature」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;game-balance-economy&quot;,
++      &quot;title_en&quot;: &quot;Game Balance Economy&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Evaluate difficulty, progression, random rewards and in-game resource flows with models, simulations and exploit analysis.&quot;,
++      &quot;description_zh&quot;: &quot;分析遊戲經濟、進度、資源流與平衡性。&quot;,
++      &quot;category&quot;: &quot;product&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;product/game-balance-economy/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「game-balance-economy」Skill，協助我處理「difficulty curve」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;game-design-document&quot;,
++      &quot;title_en&quot;: &quot;Game Design Document&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Turn a game concept into a testable design brief covering player experience, core loops, rules and a playable vertical slice.&quot;,
++      &quot;description_zh&quot;: &quot;撰寫可供團隊執行與驗收的遊戲設計文件。&quot;,
++      &quot;category&quot;: &quot;product&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;product/game-design-document/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「game-design-document」Skill，協助我處理「new game concept」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;game-feel&quot;,
++      &quot;title_en&quot;: &quot;Game Feel&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Tune input response and audiovisual feedback with observable events, adjustable parameters and motion-sensitive safeguards.&quot;,
++      &quot;description_zh&quot;: &quot;調整遊戲操作回饋、節奏、動態與手感。&quot;,
++      &quot;category&quot;: &quot;design&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;design/game-feel/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「game-feel」Skill，協助我處理「game feel tuning」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;game-loop-architecture&quot;,
++      &quot;title_en&quot;: &quot;Game Loop Architecture&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Design a game runtime around explicit state transitions, update/render boundaries, deterministic rules and versioned saves.&quot;,
++      &quot;description_zh&quot;: &quot;設計遊戲主迴圈、更新順序與執行期系統邊界。&quot;,
++      &quot;category&quot;: &quot;software-architecture&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;software-architecture/game-loop-architecture/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「game-loop-architecture」Skill，協助我處理「game runtime architecture」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;grill-with-docs&quot;,
++      &quot;title_en&quot;: &quot;Grill With Docs&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Explicitly interview me about a plan or domain model, then prepare a project glossary and ADR draft when the decisions are clear.&quot;,
++      &quot;description_zh&quot;: &quot;經明確呼叫後逐題釐清計畫或領域模型，並整理 Glossary 與 ADR 草稿。&quot;,
++      &quot;category&quot;: &quot;product&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;product/grill-with-docs/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「grill-with-docs」Skill，協助我處理「explicit grill with docs」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;human-guided-wizard&quot;,
++      &quot;title_en&quot;: &quot;Human Guided Wizard&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Prepare a clear step-by-step guide for operational actions that only a human can complete in an external service or dashboard.&quot;,
++      &quot;description_zh&quot;: &quot;將只能由人完成的外部操作整理成安全、逐步的引導流程。&quot;,
++      &quot;category&quot;: &quot;operations&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;operations/human-guided-wizard/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「human-guided-wizard」Skill，協助我處理「human only dashboard step」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;incident-response&quot;,
++      &quot;title_en&quot;: &quot;Incident Response&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Triage incidents, contain impact, recover service and document evidence and follow-up actions.&quot;,
++      &quot;description_zh&quot;: &quot;協助處理服務事故、控制影響、恢復服務並整理後續行動。&quot;,
++      &quot;category&quot;: &quot;operations&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;operations/incident-response/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「incident-response」Skill，協助我處理「production incident」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;issue-triage&quot;,
++      &quot;title_en&quot;: &quot;Issue Triage&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Classify an issue from supplied evidence and produce a reproducible, decision-ready handoff without changing the tracker.&quot;,
++      &quot;description_zh&quot;: &quot;根據證據分類問題、確認優先級並整理可執行的處理簡報。&quot;,
++      &quot;category&quot;: &quot;delivery-planning&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;planning/issue-triage/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「issue-triage」Skill，協助我處理「explicit issue triage request」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;level-design&quot;,
++      &quot;title_en&quot;: &quot;Level Design&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Shape level pacing, spatial readability and mechanic teaching through safe introduction, practice and mastery checks.&quot;,
++      &quot;description_zh&quot;: &quot;設計關卡節奏、空間、挑戰與玩家引導。&quot;,
++      &quot;category&quot;: &quot;design&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;design/level-design/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「level-design」Skill，協助我處理「level layout」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;llm-feature-integration&quot;,
++      &quot;title_en&quot;: &quot;Llm Feature Integration&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Design product LLM features with explicit schemas, quality evaluation, threat controls, latency budgets and cost limits.&quot;,
++      &quot;description_zh&quot;: &quot;將大型語言模型功能安全地整合到產品流程與系統架構。&quot;,
++      &quot;category&quot;: &quot;engineering&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;engineering/llm-feature-integration/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「llm-feature-integration」Skill，協助我處理「llm feature」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;observability-design&quot;,
++      &quot;title_en&quot;: &quot;Observability Design&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Design actionable, privacy-safe logs, metrics, traces, SLOs and alerts before a service launches.&quot;,
++      &quot;description_zh&quot;: &quot;設計日誌、指標、追蹤與告警，支援故障診斷和營運。&quot;,
++      &quot;category&quot;: &quot;operations&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;operations/observability-design/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「observability-design」Skill，協助我處理「new service launch」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;performance-profiling&quot;,
++      &quot;title_en&quot;: &quot;Performance Profiling&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Profile performance bottlenecks and verify optimization claims with reproducible measurements and raw samples.&quot;,
++      &quot;description_zh&quot;: &quot;以量測與剖析找出效能瓶頸並驗證改善。&quot;,
++      &quot;category&quot;: &quot;performance&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;performance/performance-profiling/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「performance-profiling」Skill，協助我處理「latency target」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;product-discovery&quot;,
++      &quot;title_en&quot;: &quot;Product Discovery&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Clarify user problems, product value, assumptions and scope before selecting a solution.&quot;,
++      &quot;description_zh&quot;: &quot;釐清使用者問題、需求證據、產品假設與探索方向。&quot;,
++      &quot;category&quot;: &quot;product&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;product/product-discovery/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「product-discovery」Skill，協助我處理「new product」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;product-research&quot;,
++      &quot;title_en&quot;: &quot;Product Research&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Research product, market and domain evidence to support planning decisions and explicit assumptions.&quot;,
++      &quot;description_zh&quot;: &quot;以可靠來源研究產品、使用者、技術或市場問題。&quot;,
++      &quot;category&quot;: &quot;product&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;product/product-research/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「product-research」Skill，協助我處理「market research」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;prototype&quot;,
++      &quot;title_en&quot;: &quot;Prototype&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Explore a UI, workflow or behavior question with a throwaway prototype that stays separate from production implementation.&quot;,
++      &quot;description_zh&quot;: &quot;建立短期原型，快速驗證設計或技術問題。&quot;,
++      &quot;category&quot;: &quot;engineering&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;engineering/prototype/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「prototype」Skill，協助我處理「explicit prototype request」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;requirements-definition&quot;,
++      &quot;title_en&quot;: &quot;Requirements Definition&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Define traceable requirements, acceptance criteria and downstream planning artifact relationships.&quot;,
++      &quot;description_zh&quot;: &quot;把已確認的產品意圖整理成可追蹤需求、驗收條件與驗證方式。&quot;,
++      &quot;category&quot;: &quot;product&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;product/requirements-definition/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「requirements-definition」Skill，協助我處理「acceptance criteria」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;rest-api&quot;,
++      &quot;title_en&quot;: &quot;Rest Api&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Design and implement REST APIs with contracts, validation, error behavior, authorization and project-native tests.&quot;,
++      &quot;description_zh&quot;: &quot;設計、實作或檢查 REST API 合約、相容性與錯誤行為。&quot;,
++      &quot;category&quot;: &quot;engineering&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;engineering/rest-api/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「rest-api」Skill，協助我處理「rest api change」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;secure-design&quot;,
++      &quot;title_en&quot;: &quot;Secure Design&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Design security boundaries, controls and secret handling proportionate to the system and data risks.&quot;,
++      &quot;description_zh&quot;: &quot;在設計階段辨識威脅並規劃安全控制與信任邊界。&quot;,
++      &quot;category&quot;: &quot;security&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;security/secure-design/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「secure-design」Skill，協助我處理「auth」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;security-testing&quot;,
++      &quot;title_en&quot;: &quot;Security Testing&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Verify security controls with relevant negative tests for authentication, authorization, abuse and data boundaries.&quot;,
++      &quot;description_zh&quot;: &quot;規劃並執行安全測試，驗證系統防護與授權行為。&quot;,
++      &quot;category&quot;: &quot;security&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;security/security-testing/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「security-testing」Skill，協助我處理「sal 3 or 4」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;sql-performance&quot;,
++      &quot;title_en&quot;: &quot;Sql Performance&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Diagnose SQL query and database performance using query plans, indexes and measured workload evidence.&quot;,
++      &quot;description_zh&quot;: &quot;分析 SQL 查詢、索引與執行計畫以改善資料庫效能。&quot;,
++      &quot;category&quot;: &quot;database&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;database/sql-performance/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「sql-performance」Skill，協助我處理「sql bottleneck evidence」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;systematic-debugging&quot;,
++      &quot;title_en&quot;: &quot;Systematic Debugging&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Find and fix software defects through evidence-backed reproduction, isolation, hypothesis testing and regression coverage.&quot;,
++      &quot;description_zh&quot;: &quot;以可驗證假設、縮小範圍和重現步驟診斷故障。&quot;,
++      &quot;category&quot;: &quot;engineering&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;engineering/systematic-debugging/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「systematic-debugging」Skill，協助我處理「error or stack trace」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;tdd&quot;,
++      &quot;title_en&quot;: &quot;Tdd&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Implement testable behavior through failing tests, minimal passing changes and refactoring; use characterization tests for legacy behavior and configure requested test tooling.&quot;,
++      &quot;description_zh&quot;: &quot;以測試先行的紅燈、綠燈、重構循環實作功能，或設定明確要求的測試工具。&quot;,
++      &quot;category&quot;: &quot;testing&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;testing/tdd/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「tdd」Skill，協助我處理「testable behavior change」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;technical-research&quot;,
++      &quot;title_en&quot;: &quot;Technical Research&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Investigate technical APIs, standards, frameworks and architecture choices with current primary-source evidence.&quot;,
++      &quot;description_zh&quot;: &quot;以一手且可信的技術資料調查問題並整理來源證據。&quot;,
++      &quot;category&quot;: &quot;engineering&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;engineering/technical-research/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「technical-research」Skill，協助我處理「technical research request」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;technical-teaching&quot;,
++      &quot;title_en&quot;: &quot;Technical Teaching&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Teach a technical concept through a goal, short explanation, practice, feedback and a learner-chosen next step.&quot;,
++      &quot;description_zh&quot;: &quot;依學習者背景教學，或依明確要求建立課程練習架構。&quot;,
++      &quot;category&quot;: &quot;product&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;product/technical-teaching/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「technical-teaching」Skill，協助我處理「explicit technical teaching request」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;threat-modeling&quot;,
++      &quot;title_en&quot;: &quot;Threat Modeling&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Identify protected assets, trust boundaries, threats and mitigations for the affected system design.&quot;,
++      &quot;description_zh&quot;: &quot;系統化分析資產、威脅、攻擊面與安全控制。&quot;,
++      &quot;category&quot;: &quot;security&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;security/threat-modeling/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「threat-modeling」Skill，協助我處理「sal 3 or 4」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;ux-web-design&quot;,
++      &quot;title_en&quot;: &quot;Ux Web Design&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Design web user experiences, interaction flows and accessible layouts grounded in product requirements.&quot;,
++      &quot;description_zh&quot;: &quot;規劃網站資訊架構、互動流程、可用性與視覺層級。&quot;,
++      &quot;category&quot;: &quot;design&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;design/ux-web-design/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「ux-web-design」Skill，協助我處理「ux flow」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;visual-direction&quot;,
++      &quot;title_en&quot;: &quot;Visual Direction&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Establish a coherent visual direction using approved creative references, style decisions and product constraints.&quot;,
++      &quot;description_zh&quot;: &quot;定義視覺方向、參考依據、風格規則與交付標準。&quot;,
++      &quot;category&quot;: &quot;design&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;design/visual-direction/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「visual-direction」Skill，協助我處理「visual concepts」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;visual-quality-review&quot;,
++      &quot;title_en&quot;: &quot;Visual Quality Review&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Review rendered visual quality, consistency and usability with evidence and actionable findings.&quot;,
++      &quot;description_zh&quot;: &quot;依一致標準檢查視覺成品並提出可執行修正。&quot;,
++      &quot;category&quot;: &quot;design&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;design/visual-quality-review/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「visual-quality-review」Skill，協助我處理「visual review」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;writing-beats&quot;,
++      &quot;title_en&quot;: &quot;Writing Beats&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Arrange selected writing fragments into a sequence of reader-facing moves, with each beat grounded before later beats depend on it.&quot;,
++      &quot;description_zh&quot;: &quot;把原始素材組成有順序的敘事節點，形成文章或內容脈絡。&quot;,
++      &quot;category&quot;: &quot;design&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;design/writing-beats/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「writing-beats」Skill，協助我處理「explicit writing beats request」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;writing-fragments&quot;,
++      &quot;title_en&quot;: &quot;Writing Fragments&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Collect and preserve raw writing material without forcing it into a structure.&quot;,
++      &quot;description_zh&quot;: &quot;探索並整理原始寫作片段，暫不套用文章結構。&quot;,
++      &quot;category&quot;: &quot;design&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;design/writing-fragments/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「writing-fragments」Skill，協助我處理「explicit writing fragments request」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;writing-shape&quot;,
++      &quot;title_en&quot;: &quot;Writing Shape&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Turn a fixed set of writing material into a coherent article by agreeing on its reader journey and shaping one section at a time.&quot;,
++      &quot;description_zh&quot;: &quot;逐段安排素材與論點，將草稿塑造成完整文章。&quot;,
++      &quot;category&quot;: &quot;design&quot;,
++      &quot;source&quot;: &quot;aips&quot;,
++      &quot;source_path&quot;: &quot;design/writing-shape/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: null,
++      &quot;status&quot;: &quot;enabled&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;canonical&quot;,
++      &quot;reason&quot;: &quot;&quot;,
++      &quot;targets&quot;: [],
++      &quot;example&quot;: &quot;請使用 AIPS 的「writing-shape」Skill，協助我處理「explicit writing shape request」的需求。請依照技能指引完成，並列出結果與限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;ask-matt&quot;,
++      &quot;title_en&quot;: &quot;Ask Matt&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Ask which skill or flow fits your situation. A router over the skills in this repo.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;engineering&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/engineering/ask-matt/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/engineering/ask-matt/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;workflow&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;workflow&quot;,
++      &quot;reason&quot;: &quot;The existing Harness and Skill routing already choose applicable AIPS Skills; a second router would duplicate selection.&quot;,
++      &quot;targets&quot;: [
++        &quot;AIPS Skill routing&quot;
++      ],
++      &quot;example&quot;: &quot;請參考上游 ask-matt 的方法，使用 AIPS 已整合的 AIPS Skill routing 來處理「Ask which skill or flow fits your situation. A router over the skills in this repo.」；完成後說明採用範圍與任何限制。 若我明確要求，使用 `aips skills install --upstream ask-matt --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;chief-of-staff&quot;,
++      &quot;title_en&quot;: &quot;Chief Of Staff&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Pursue a long-running goal in a single session by co-ordinating subagents.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;in-progress&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/in-progress/chief-of-staff/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/in-progress/chief-of-staff/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;experimental&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;experimental_optional&quot;,
++      &quot;reason&quot;: &quot;Overlaps AIPS goal tracking and governed orchestration; expose only as an experimental opt-in, preserving AIPS limits on background work and schedules.&quot;,
++      &quot;targets&quot;: [
++        &quot;Goal Management&quot;,
++        &quot;AIPS orchestration&quot;
++      ],
++      &quot;example&quot;: &quot;只有我明確要求時，才試用上游 chief-of-staff 的獨特方法；保留 AIPS 對應 Goal Management、AIPS orchestration 的規範與授權邊界。 若我明確要求，使用 `aips skills install --upstream chief-of-staff --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;claude-handoff&quot;,
++      &quot;title_en&quot;: &quot;Claude Handoff&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Hand the current conversation off to a fresh background agent that picks up the work immediately.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;in-progress&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/in-progress/claude-handoff/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/in-progress/claude-handoff/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;experimental&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;experimental_optional&quot;,
++      &quot;reason&quot;: &quot;Overlaps AIPS checkpoint and handoff behavior; keep explicit-only and preserve user authorization for external handoff.&quot;,
++      &quot;targets&quot;: [
++        &quot;Checkpoint / Resume&quot;
++      ],
++      &quot;example&quot;: &quot;只有我明確要求時，才試用上游 claude-handoff 的獨特方法；保留 AIPS 對應 Checkpoint / Resume 的規範與授權邊界。 若我明確要求，使用 `aips skills install --upstream claude-handoff --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;code-review&quot;,
++      &quot;title_en&quot;: &quot;Code Review&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Review the changes since a fixed point (commit, branch, tag, or merge-base) along two axes: Standards (does the code follow this repo&#x27;s documented coding standards?) and Spec (does the code match what the originating issue/spec asked for?). Runs both reviews in parallel sub-agents and reports them side by side. Use when the user wants to review a branch, a PR, work-in-progress changes, or asks to \&quot;review since X\&quot;.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;engineering&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/engineering/code-review/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/engineering/code-review/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;integrated&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;merged&quot;,
++      &quot;reason&quot;: &quot;Adds separate Standards and Spec lenses, a fixed comparison point and evidence-backed findings.&quot;,
++      &quot;targets&quot;: [
++        &quot;code-review&quot;
++      ],
++      &quot;example&quot;: &quot;請參考上游 code-review 的方法，使用 AIPS 已整合的 code-review 來處理「Review the changes since a fixed point (commit, branch, tag, or merge-base) along two axes: Standards (does the code follow this repo&#x27;s documented coding standards?) and Spec (does the code match what the originating issue/spec asked for?). Runs both reviews in parallel sub-agents and reports them side by side. Use when the user wants to review a branch, a PR, work-in-progress changes, or asks to \&quot;review since X\&quot;.」；完成後說明採用範圍與任何限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;codebase-design&quot;,
++      &quot;title_en&quot;: &quot;Codebase Design&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Shared vocabulary for designing deep modules. Use when the user wants to design or improve a module&#x27;s interface, find deepening opportunities, decide where a seam goes, make code more testable or AI-navigable, or when another skill needs the deep-module vocabulary.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;engineering&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/engineering/codebase-design/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/engineering/codebase-design/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;integrated&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;merged&quot;,
++      &quot;reason&quot;: &quot;Adds deep-module, seam and interface vocabulary to the existing architecture Skill.&quot;,
++      &quot;targets&quot;: [
++        &quot;clean-architecture&quot;
++      ],
++      &quot;example&quot;: &quot;請參考上游 codebase-design 的方法，使用 AIPS 已整合的 clean-architecture 來處理「Shared vocabulary for designing deep modules. Use when the user wants to design or improve a module&#x27;s interface, find deepening opportunities, decide where a seam goes, make code more testable or AI-navigable, or when another skill needs the deep-module vocabulary.」；完成後說明採用範圍與任何限制。 若我明確要求，使用 `aips skills install --upstream codebase-design --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;diagnosing-bugs&quot;,
++      &quot;title_en&quot;: &quot;Diagnosing Bugs&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Diagnosis loop for hard bugs and performance regressions. Use when the user says \&quot;diagnose\&quot;/\&quot;debug this\&quot;, or reports something broken/throwing/failing/slow.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;engineering&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/engineering/diagnosing-bugs/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/engineering/diagnosing-bugs/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;integrated&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;merged&quot;,
++      &quot;reason&quot;: &quot;Adds a tight failing loop, minimization and falsifiable hypotheses to the existing debugging method.&quot;,
++      &quot;targets&quot;: [
++        &quot;systematic-debugging&quot;
++      ],
++      &quot;example&quot;: &quot;請參考上游 diagnosing-bugs 的方法，使用 AIPS 已整合的 systematic-debugging 來處理「Diagnosis loop for hard bugs and performance regressions. Use when the user says \&quot;diagnose\&quot;/\&quot;debug this\&quot;, or reports something broken/throwing/failing/slow.」；完成後說明採用範圍與任何限制。 若我明確要求，使用 `aips skills install --upstream diagnosing-bugs --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;domain-modeling&quot;,
++      &quot;title_en&quot;: &quot;Domain Modeling&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Build and sharpen a project&#x27;s domain model. Use when discussing codebase terminology, writing or editing a GLOSSARY.md, or recording or editing an ADR.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;engineering&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/engineering/domain-modeling/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/engineering/domain-modeling/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;integrated&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;merged&quot;,
++      &quot;reason&quot;: &quot;Adds glossary terminology checks and example-based model validation without duplicating DDD or ADR Skills.&quot;,
++      &quot;targets&quot;: [
++        &quot;domain-driven-design&quot;,
++        &quot;architecture-decision-record&quot;
++      ],
++      &quot;example&quot;: &quot;請參考上游 domain-modeling 的方法，使用 AIPS 已整合的 domain-driven-design、architecture-decision-record 來處理「Build and sharpen a project&#x27;s domain model. Use when discussing codebase terminology, writing or editing a GLOSSARY.md, or recording or editing an ADR.」；完成後說明採用範圍與任何限制。 若我明確要求，使用 `aips skills install --upstream domain-modeling --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;git-guardrails-claude-code&quot;,
++      &quot;title_en&quot;: &quot;Git Guardrails Claude Code&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Set up Claude Code hooks to block dangerous git commands (push, reset --hard, clean, branch -D, etc.) before they execute. Use when user wants to prevent destructive git operations, add git safety hooks, or block git push/reset in Claude Code.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;misc&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/misc/git-guardrails-claude-code/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/misc/git-guardrails-claude-code/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;experimental&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;experimental_optional&quot;,
++      &quot;reason&quot;: &quot;Overlaps AIPS cross-runtime Git publication guardrails; retain the Claude-specific hook setup as an opt-in only when a project explicitly requests that host-specific protection.&quot;,
++      &quot;targets&quot;: [
++        &quot;Git Publication&quot;
++      ],
++      &quot;example&quot;: &quot;只有我明確要求時，才試用上游 git-guardrails-claude-code 的獨特方法；保留 AIPS 對應 Git Publication 的規範與授權邊界。 若我明確要求，使用 `aips skills install --upstream git-guardrails-claude-code --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;grill-me&quot;,
++      &quot;title_en&quot;: &quot;Grill Me&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;A relentless interview to sharpen a plan or design.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;productivity&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/productivity/grill-me/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/productivity/grill-me/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;workflow&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;workflow&quot;,
++      &quot;reason&quot;: &quot;User-invoked clarification already has a governed AIPS path.&quot;,
++      &quot;targets&quot;: [
++        &quot;requirements-definition&quot;
++      ],
++      &quot;example&quot;: &quot;請參考上游 grill-me 的方法，使用 AIPS 已整合的 requirements-definition 來處理「A relentless interview to sharpen a plan or design.」；完成後說明採用範圍與任何限制。 若我明確要求，使用 `aips skills install --upstream grill-me --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;grill-with-docs&quot;,
++      &quot;title_en&quot;: &quot;Grill With Docs&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;A relentless interview to sharpen a plan or design, which also creates docs (ADR&#x27;s and glossary) as we go.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;engineering&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/engineering/grill-with-docs/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/engineering/grill-with-docs/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;experimental&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;experimental_optional&quot;,
++      &quot;reason&quot;: &quot;Retain a separate explicit-only entrypoint; its interview and domain-document outputs overlap existing AIPS capabilities, so the combined workflow is opt-in.&quot;,
++      &quot;targets&quot;: [
++        &quot;grill-me&quot;,
++        &quot;requirements-definition&quot;,
++        &quot;domain-driven-design&quot;,
++        &quot;architecture-decision-record&quot;
++      ],
++      &quot;example&quot;: &quot;只有我明確要求時，才試用上游 grill-with-docs 的獨特方法；保留 AIPS 對應 grill-me、requirements-definition、domain-driven-design、architecture-decision-record 的規範與授權邊界。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;grilling&quot;,
++      &quot;title_en&quot;: &quot;Grilling&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Grill the user relentlessly about a plan, decision, or idea. Use when the user wants to stress-test their thinking, or uses any &#x27;grill&#x27; trigger phrases.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;productivity&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/productivity/grilling/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/productivity/grilling/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;workflow&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;workflow&quot;,
++      &quot;reason&quot;: &quot;Shared clarification method belongs in one AIPS requirements workflow.&quot;,
++      &quot;targets&quot;: [
++        &quot;requirements-definition&quot;
++      ],
++      &quot;example&quot;: &quot;請參考上游 grilling 的方法，使用 AIPS 已整合的 requirements-definition 來處理「Grill the user relentlessly about a plan, decision, or idea. Use when the user wants to stress-test their thinking, or uses any &#x27;grill&#x27; trigger phrases.」；完成後說明採用範圍與任何限制。 若我明確要求，使用 `aips skills install --upstream grilling --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;handoff&quot;,
++      &quot;title_en&quot;: &quot;Handoff&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Compact the current conversation into a handoff document for another agent to pick up.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;productivity&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/productivity/handoff/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/productivity/handoff/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;workflow&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;workflow&quot;,
++      &quot;reason&quot;: &quot;AIPS already has checkpoint and task handoff conventions.&quot;,
++      &quot;targets&quot;: [
++        &quot;Checkpoint / Resume&quot;
++      ],
++      &quot;example&quot;: &quot;請參考上游 handoff 的方法，使用 AIPS 已整合的 Checkpoint / Resume 來處理「Compact the current conversation into a handoff document for another agent to pick up.」；完成後說明採用範圍與任何限制。 若我明確要求，使用 `aips skills install --upstream handoff --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;implement&quot;,
++      &quot;title_en&quot;: &quot;Implement&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Implement a piece of work based on a spec or set of tickets.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;engineering&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/engineering/implement/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/engineering/implement/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;workflow&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;workflow&quot;,
++      &quot;reason&quot;: &quot;The existing implementation, TDD and review flow already covers the responsibility.&quot;,
++      &quot;targets&quot;: [
++        &quot;tdd&quot;,
++        &quot;code-review&quot;
++      ],
++      &quot;example&quot;: &quot;請參考上游 implement 的方法，使用 AIPS 已整合的 tdd、code-review 來處理「Implement a piece of work based on a spec or set of tickets.」；完成後說明採用範圍與任何限制。 若我明確要求，使用 `aips skills install --upstream implement --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;implement-spec&quot;,
++      &quot;title_en&quot;: &quot;Implement Spec&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Implement the result of /to-spec and /to-tickets in code.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;engineering&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/engineering/implement-spec/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/engineering/implement-spec/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;workflow&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;workflow&quot;,
++      &quot;reason&quot;: &quot;Integrate task dependency mapping into the existing planning and scheduling flow.&quot;,
++      &quot;targets&quot;: [
++        &quot;delivery-planning&quot;,
++        &quot;deterministic scheduler&quot;
++      ],
++      &quot;example&quot;: &quot;請參考上游 implement-spec 的方法，使用 AIPS 已整合的 delivery-planning、deterministic scheduler 來處理「Implement the result of /to-spec and /to-tickets in code.」；完成後說明採用範圍與任何限制。 若我明確要求，使用 `aips skills install --upstream implement-spec --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;improve-codebase-architecture&quot;,
++      &quot;title_en&quot;: &quot;Improve Codebase Architecture&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Scan a codebase for deepening opportunities, present them as a visual HTML report, then grill through whichever one you pick.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;engineering&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/engineering/improve-codebase-architecture/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/engineering/improve-codebase-architecture/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;integrated&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;merged&quot;,
++      &quot;reason&quot;: &quot;Adds architecture improvement candidates and deep-module checks to the existing architecture Skill.&quot;,
++      &quot;targets&quot;: [
++        &quot;clean-architecture&quot;
++      ],
++      &quot;example&quot;: &quot;請參考上游 improve-codebase-architecture 的方法，使用 AIPS 已整合的 clean-architecture 來處理「Scan a codebase for deepening opportunities, present them as a visual HTML report, then grill through whichever one you pick.」；完成後說明採用範圍與任何限制。 若我明確要求，使用 `aips skills install --upstream improve-codebase-architecture --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;loop-me&quot;,
++      &quot;title_en&quot;: &quot;Loop Me&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Grill me about specs for the workflows I want to build, within this workspace.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;in-progress&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/in-progress/loop-me/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/in-progress/loop-me/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;experimental&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;experimental_optional&quot;,
++      &quot;reason&quot;: &quot;Overlaps AIPS grill-me and requirements clarification; keep as an optional specialized workflow.&quot;,
++      &quot;targets&quot;: [
++        &quot;grill-me&quot;,
++        &quot;requirements-definition&quot;
++      ],
++      &quot;example&quot;: &quot;只有我明確要求時，才試用上游 loop-me 的獨特方法；保留 AIPS 對應 grill-me、requirements-definition 的規範與授權邊界。 若我明確要求，使用 `aips skills install --upstream loop-me --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;migrate-to-shoehorn&quot;,
++      &quot;title_en&quot;: &quot;Migrate To Shoehorn&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Migrate test files from `as` type assertions to @total-typescript/shoehorn. Use when user mentions shoehorn, wants to replace `as` in tests, or needs partial test data.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;misc&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/misc/migrate-to-shoehorn/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/misc/migrate-to-shoehorn/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;auto-routed&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;auto_routed&quot;,
++      &quot;reason&quot;: &quot;No existing AIPS Skill duplicates this TypeScript testing migration; route matching requests to the pinned source method while applying project-native dependency and test constraints.&quot;,
++      &quot;targets&quot;: [
++        &quot;tdd&quot;
++      ],
++      &quot;example&quot;: &quot;此來源已設為自動路由。遇到「Migrate test files from `as` type assertions to @total-typescript/shoehorn. Use when user mentions shoehorn, wants to replace `as` in tests, or needs partial test data.」時，依 AIPS 對應 tdd 的規範套用 migrate-to-shoehorn 的方法。 若我明確要求，使用 `aips skills install --upstream migrate-to-shoehorn --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;pr&quot;,
++      &quot;title_en&quot;: &quot;Pr&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Use when writing a PR body.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;engineering&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/engineering/pr/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/engineering/pr/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;workflow&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;workflow&quot;,
++      &quot;reason&quot;: &quot;AIPS has a governed Git publication proposal and Human merge authority.&quot;,
++      &quot;targets&quot;: [
++        &quot;Git Publication&quot;
++      ],
++      &quot;example&quot;: &quot;請參考上游 pr 的方法，使用 AIPS 已整合的 Git Publication 來處理「Use when writing a PR body.」；完成後說明採用範圍與任何限制。 若我明確要求，使用 `aips skills install --upstream pr --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;prototype&quot;,
++      &quot;title_en&quot;: &quot;Prototype&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Build a throwaway prototype to answer a design question. Use when the user wants to sanity-check whether a state model or logic feels right, or explore what a UI should look like.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;engineering&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/engineering/prototype/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/engineering/prototype/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;adopted&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;adopted&quot;,
++      &quot;reason&quot;: &quot;Distinct throwaway prototype discipline; isolated from production code and runtime credentials.&quot;,
++      &quot;targets&quot;: [
++        &quot;prototype&quot;
++      ],
++      &quot;example&quot;: &quot;請參考上游 prototype 的方法，使用 AIPS 已整合的 prototype 來處理「Build a throwaway prototype to answer a design question. Use when the user wants to sanity-check whether a state model or logic feels right, or explore what a UI should look like.」；完成後說明採用範圍與任何限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;research&quot;,
++      &quot;title_en&quot;: &quot;Research&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Investigate a question against high-trust primary sources and capture the findings as a Markdown file in the repo. Use when the user wants a topic researched, docs or API facts gathered, or reading legwork delegated to a background agent.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;engineering&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/engineering/research/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/engineering/research/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;adopted&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;adopted&quot;,
++      &quot;reason&quot;: &quot;Distinct technical primary-source research; product and market evidence stays in product-research.&quot;,
++      &quot;targets&quot;: [
++        &quot;technical-research&quot;
++      ],
++      &quot;example&quot;: &quot;請參考上游 research 的方法，使用 AIPS 已整合的 technical-research 來處理「Investigate a question against high-trust primary sources and capture the findings as a Markdown file in the repo. Use when the user wants a topic researched, docs or API facts gathered, or reading legwork delegated to a background agent.」；完成後說明採用範圍與任何限制。 若我明確要求，使用 `aips skills install --upstream research --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;retro&quot;,
++      &quot;title_en&quot;: &quot;Retro&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Conduct a retrospective on a coding session.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;engineering&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/engineering/retro/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/engineering/retro/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;workflow&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;workflow&quot;,
++      &quot;reason&quot;: &quot;Existing self-improvement review proposes evidence-based system changes and does not silently modify core policy.&quot;,
++      &quot;targets&quot;: [
++        &quot;System Self-Improvement Review&quot;
++      ],
++      &quot;example&quot;: &quot;請參考上游 retro 的方法，使用 AIPS 已整合的 System Self-Improvement Review 來處理「Conduct a retrospective on a coding session.」；完成後說明採用範圍與任何限制。 若我明確要求，使用 `aips skills install --upstream retro --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;scaffold-exercises&quot;,
++      &quot;title_en&quot;: &quot;Scaffold Exercises&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Create exercise directory structures with sections, problems, solutions, and explainers that pass linting. Use when user wants to scaffold exercises, create exercise stubs, or set up a new course section.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;misc&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/misc/scaffold-exercises/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/misc/scaffold-exercises/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;auto-routed&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;auto_routed&quot;,
++      &quot;reason&quot;: &quot;No existing AIPS Skill duplicates this exercise scaffold; route matching course-scaffolding requests to the source method.&quot;,
++      &quot;targets&quot;: [
++        &quot;technical-teaching&quot;
++      ],
++      &quot;example&quot;: &quot;此來源已設為自動路由。遇到「Create exercise directory structures with sections, problems, solutions, and explainers that pass linting. Use when user wants to scaffold exercises, create exercise stubs, or set up a new course section.」時，依 AIPS 對應 technical-teaching 的規範套用 scaffold-exercises 的方法。 若我明確要求，使用 `aips skills install --upstream scaffold-exercises --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;setup-matt-pocock-skills&quot;,
++      &quot;title_en&quot;: &quot;Setup Matt Pocock Skills&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Configure this repo for the engineering skills: set up its issue tracker, triage label vocabulary, and domain doc layout. Run once before first use of the other engineering skills.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;engineering&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/engineering/setup-matt-pocock-skills/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/engineering/setup-matt-pocock-skills/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;experimental&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;experimental_optional&quot;,
++      &quot;reason&quot;: &quot;Duplicates AIPS native Skill installation and ownership tracking; preserve the upstream setup as an explicit-only optional reference.&quot;,
++      &quot;targets&quot;: [
++        &quot;AIPS native Skill installation&quot;
++      ],
++      &quot;example&quot;: &quot;只有我明確要求時，才試用上游 setup-matt-pocock-skills 的獨特方法；保留 AIPS 對應 AIPS native Skill installation 的規範與授權邊界。 若我明確要求，使用 `aips skills install --upstream setup-matt-pocock-skills --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;setup-pre-commit&quot;,
++      &quot;title_en&quot;: &quot;Setup Pre Commit&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Set up Husky pre-commit hooks with lint-staged (Prettier), type checking, and tests in the current repo. Use when user wants to add pre-commit hooks, set up Husky, configure lint-staged, or add commit-time formatting/typechecking/testing.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;misc&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/misc/setup-pre-commit/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/misc/setup-pre-commit/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;auto-routed&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;auto_routed&quot;,
++      &quot;reason&quot;: &quot;No equivalent AIPS Skill duplicates this hook setup; route only matching requests and preserve existing project tooling.&quot;,
++      &quot;targets&quot;: [
++        &quot;tdd&quot;,
++        &quot;project-native tooling conventions&quot;
++      ],
++      &quot;example&quot;: &quot;此來源已設為自動路由。遇到「Set up Husky pre-commit hooks with lint-staged (Prettier), type checking, and tests in the current repo. Use when user wants to add pre-commit hooks, set up Husky, configure lint-staged, or add commit-time formatting/typechecking/testing.」時，依 AIPS 對應 tdd、project-native tooling conventions 的規範套用 setup-pre-commit 的方法。 若我明確要求，使用 `aips skills install --upstream setup-pre-commit --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;setup-ts-deep-modules&quot;,
++      &quot;title_en&quot;: &quot;Setup Ts Deep Modules&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Wire dependency-cruiser into a TypeScript repo so each package is a deep module, with implementation hidden in subfolders and reachable only through its entry-point files. User-invoked.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;in-progress&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/in-progress/setup-ts-deep-modules/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/in-progress/setup-ts-deep-modules/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;experimental&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;experimental_optional&quot;,
++      &quot;reason&quot;: &quot;Partially overlaps clean-architecture and introduces repo-specific dependency-cruiser setup; keep opt-in because it changes project tooling.&quot;,
++      &quot;targets&quot;: [
++        &quot;clean-architecture&quot;
++      ],
++      &quot;example&quot;: &quot;只有我明確要求時，才試用上游 setup-ts-deep-modules 的獨特方法；保留 AIPS 對應 clean-architecture 的規範與授權邊界。 若我明確要求，使用 `aips skills install --upstream setup-ts-deep-modules --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;tdd&quot;,
++      &quot;title_en&quot;: &quot;Tdd&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Test-driven development. Use when the user wants to build features or fix bugs test-first, mentions \&quot;red-green-refactor\&quot;, or wants integration tests.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;engineering&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/engineering/tdd/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/engineering/tdd/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;integrated&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;merged&quot;,
++      &quot;reason&quot;: &quot;Adds public-seam, independent-expectation and vertical-slice test quality rules.&quot;,
++      &quot;targets&quot;: [
++        &quot;tdd&quot;
++      ],
++      &quot;example&quot;: &quot;請參考上游 tdd 的方法，使用 AIPS 已整合的 tdd 來處理「Test-driven development. Use when the user wants to build features or fix bugs test-first, mentions \&quot;red-green-refactor\&quot;, or wants integration tests.」；完成後說明採用範圍與任何限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;teach&quot;,
++      &quot;title_en&quot;: &quot;Teach&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Teach the user a new skill or concept, within this workspace.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;productivity&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/productivity/teach/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/productivity/teach/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;adopted&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;adopted&quot;,
++      &quot;reason&quot;: &quot;Adds a distinct goal-practice-feedback teaching loop.&quot;,
++      &quot;targets&quot;: [
++        &quot;technical-teaching&quot;
++      ],
++      &quot;example&quot;: &quot;請參考上游 teach 的方法，使用 AIPS 已整合的 technical-teaching 來處理「Teach the user a new skill or concept, within this workspace.」；完成後說明採用範圍與任何限制。 若我明確要求，使用 `aips skills install --upstream teach --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;to-questionnaire&quot;,
++      &quot;title_en&quot;: &quot;To Questionnaire&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Turn a decision you can&#x27;t fully answer into a questionnaire for someone else to fill in.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;productivity&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/productivity/to-questionnaire/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/productivity/to-questionnaire/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;integrated&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;merged&quot;,
++      &quot;reason&quot;: &quot;Questionnaire output is a format extension to requirement clarification.&quot;,
++      &quot;targets&quot;: [
++        &quot;requirements-definition&quot;
++      ],
++      &quot;example&quot;: &quot;請參考上游 to-questionnaire 的方法，使用 AIPS 已整合的 requirements-definition 來處理「Turn a decision you can&#x27;t fully answer into a questionnaire for someone else to fill in.」；完成後說明採用範圍與任何限制。 若我明確要求，使用 `aips skills install --upstream to-questionnaire --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;to-spec&quot;,
++      &quot;title_en&quot;: &quot;To Spec&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Turn the current conversation into a spec and publish it to the project issue tracker: no interview, just synthesis of what you&#x27;ve already discussed.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;engineering&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/engineering/to-spec/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/engineering/to-spec/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;workflow&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;workflow&quot;,
++      &quot;reason&quot;: &quot;The existing requirement workflow turns accepted user intent into a traceable specification.&quot;,
++      &quot;targets&quot;: [
++        &quot;requirements-definition&quot;
++      ],
++      &quot;example&quot;: &quot;請參考上游 to-spec 的方法，使用 AIPS 已整合的 requirements-definition 來處理「Turn the current conversation into a spec and publish it to the project issue tracker: no interview, just synthesis of what you&#x27;ve already discussed.」；完成後說明採用範圍與任何限制。 若我明確要求，使用 `aips skills install --upstream to-spec --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;to-tickets&quot;,
++      &quot;title_en&quot;: &quot;To Tickets&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Break a plan, spec, or the current conversation into a set of tracer-bullet tickets, each declaring its blocking edges, published to the configured tracker (edges as text in one file per ticket locally, or native blocking links on a real tracker).&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;engineering&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/engineering/to-tickets/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/engineering/to-tickets/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;integrated&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;merged&quot;,
++      &quot;reason&quot;: &quot;Adds vertical slices, dependency edges, verification and traceability.&quot;,
++      &quot;targets&quot;: [
++        &quot;delivery-planning&quot;
++      ],
++      &quot;example&quot;: &quot;請參考上游 to-tickets 的方法，使用 AIPS 已整合的 delivery-planning 來處理「Break a plan, spec, or the current conversation into a set of tracer-bullet tickets, each declaring its blocking edges, published to the configured tracker (edges as text in one file per ticket locally, or native blocking links on a real tracker).」；完成後說明採用範圍與任何限制。 若我明確要求，使用 `aips skills install --upstream to-tickets --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;triage&quot;,
++      &quot;title_en&quot;: &quot;Triage&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Move issues and external PRs through a state machine of triage roles, categorise, verify, grill if needed, and write agent-ready briefs.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;engineering&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/engineering/triage/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/engineering/triage/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;adopted&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;adopted&quot;,
++      &quot;reason&quot;: &quot;Distinct evidence-led issue classification; tracker writes remain explicitly authorized.&quot;,
++      &quot;targets&quot;: [
++        &quot;issue-triage&quot;
++      ],
++      &quot;example&quot;: &quot;請參考上游 triage 的方法，使用 AIPS 已整合的 issue-triage 來處理「Move issues and external PRs through a state machine of triage roles, categorise, verify, grill if needed, and write agent-ready briefs.」；完成後說明採用範圍與任何限制。 若我明確要求，使用 `aips skills install --upstream triage --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;wait-what&quot;,
++      &quot;title_en&quot;: &quot;Wait What&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Stop. That last message did not land: re-pitch it.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;productivity&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/productivity/wait-what/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/productivity/wait-what/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;workflow&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;workflow&quot;,
++      &quot;reason&quot;: &quot;Plain-language explanations are already part of the Human communication contract.&quot;,
++      &quot;targets&quot;: [
++        &quot;Human-facing explanation&quot;
++      ],
++      &quot;example&quot;: &quot;請參考上游 wait-what 的方法，使用 AIPS 已整合的 Human-facing explanation 來處理「Stop. That last message did not land: re-pitch it.」；完成後說明採用範圍與任何限制。 若我明確要求，使用 `aips skills install --upstream wait-what --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;wayfinder&quot;,
++      &quot;title_en&quot;: &quot;Wayfinder&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Plan a huge chunk of work (more than one agent session can hold) as a shared map of decision tickets on your issue tracker, and resolve them one at a time until the way to the destination is clear.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;engineering&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/engineering/wayfinder/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/engineering/wayfinder/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;workflow&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;workflow&quot;,
++      &quot;reason&quot;: &quot;The existing planning package and scheduler cover long-running dependency maps.&quot;,
++      &quot;targets&quot;: [
++        &quot;delivery-planning&quot;,
++        &quot;deterministic scheduler&quot;
++      ],
++      &quot;example&quot;: &quot;請參考上游 wayfinder 的方法，使用 AIPS 已整合的 delivery-planning、deterministic scheduler 來處理「Plan a huge chunk of work (more than one agent session can hold) as a shared map of decision tickets on your issue tracker, and resolve them one at a time until the way to the destination is clear.」；完成後說明採用範圍與任何限制。 若我明確要求，使用 `aips skills install --upstream wayfinder --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;wizard&quot;,
++      &quot;title_en&quot;: &quot;Wizard&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Generate an interactive bash wizard that walks a human through steps only they can perform. Use when provisioning infrastructure, setting up credentials or CI secrets, walking an unfamiliar third-party dashboard, or running a one-off migration or cutover. Don&#x27;t invoke this for steps the agent can perform itself.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;engineering&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/engineering/wizard/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/engineering/wizard/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;adopted&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;adopted&quot;,
++      &quot;reason&quot;: &quot;Distinct human-only external steps; no secret collection or privileged execution.&quot;,
++      &quot;targets&quot;: [
++        &quot;human-guided-wizard&quot;
++      ],
++      &quot;example&quot;: &quot;請參考上游 wizard 的方法，使用 AIPS 已整合的 human-guided-wizard 來處理「Generate an interactive bash wizard that walks a human through steps only they can perform. Use when provisioning infrastructure, setting up credentials or CI secrets, walking an unfamiliar third-party dashboard, or running a one-off migration or cutover. Don&#x27;t invoke this for steps the agent can perform itself.」；完成後說明採用範圍與任何限制。 若我明確要求，使用 `aips skills install --upstream wizard --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;writing-beats&quot;,
++      &quot;title_en&quot;: &quot;Writing Beats&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Writing, exploit; assemble raw material into a journey of beats, grounding each term before a beat leans on it.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;in-progress&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/in-progress/writing-beats/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/in-progress/writing-beats/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;optional&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;adopted_optional&quot;,
++      &quot;reason&quot;: &quot;User explicitly selected the optional Writing workflow; invoke only on explicit request.&quot;,
++      &quot;targets&quot;: [
++        &quot;writing-beats&quot;
++      ],
++      &quot;example&quot;: &quot;請參考上游 writing-beats 的方法，使用 AIPS 已整合的 writing-beats 來處理「Writing, exploit; assemble raw material into a journey of beats, grounding each term before a beat leans on it.」；完成後說明採用範圍與任何限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;writing-for-agents&quot;,
++      &quot;title_en&quot;: &quot;Writing For Agents&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Writing documents for agents. Use when creating or editing skills, or modifying AGENTS.md or CLAUDE.md.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;productivity&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/productivity/writing-for-agents/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/productivity/writing-for-agents/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;workflow&quot;,
++      &quot;installable&quot;: true,
++      &quot;disposition&quot;: &quot;workflow&quot;,
++      &quot;reason&quot;: &quot;Existing admission and documentation rules own reusable agent writing guidance.&quot;,
++      &quot;targets&quot;: [
++        &quot;CAPABILITY_INCUBATION.md&quot;,
++        &quot;documentation governance&quot;
++      ],
++      &quot;example&quot;: &quot;請參考上游 writing-for-agents 的方法，使用 AIPS 已整合的 CAPABILITY_INCUBATION.md、documentation governance 來處理「Writing documents for agents. Use when creating or editing skills, or modifying AGENTS.md or CLAUDE.md.」；完成後說明採用範圍與任何限制。 若我明確要求，使用 `aips skills install --upstream writing-for-agents --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;writing-fragments&quot;,
++      &quot;title_en&quot;: &quot;Writing Fragments&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Writing, explore: mine raw fragments, no structure yet.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;in-progress&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/in-progress/writing-fragments/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/in-progress/writing-fragments/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;optional&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;adopted_optional&quot;,
++      &quot;reason&quot;: &quot;User explicitly selected the optional Writing workflow; invoke only on explicit request.&quot;,
++      &quot;targets&quot;: [
++        &quot;writing-fragments&quot;
++      ],
++      &quot;example&quot;: &quot;請參考上游 writing-fragments 的方法，使用 AIPS 已整合的 writing-fragments 來處理「Writing, explore: mine raw fragments, no structure yet.」；完成後說明採用範圍與任何限制。&quot;
++    },
++    {
++      &quot;id&quot;: &quot;writing-shape&quot;,
++      &quot;title_en&quot;: &quot;Writing Shape&quot;,
++      &quot;title_zh&quot;: &quot;&quot;,
++      &quot;description_en&quot;: &quot;Writing, exploit: shape raw material into an article, paragraph by paragraph.&quot;,
++      &quot;description_zh&quot;: &quot;&quot;,
++      &quot;category&quot;: &quot;in-progress&quot;,
++      &quot;source&quot;: &quot;upstream&quot;,
++      &quot;source_path&quot;: &quot;external-skills/matt-pocock/in-progress/writing-shape/SKILL.md&quot;,
++      &quot;upstream_path&quot;: &quot;skills/in-progress/writing-shape/SKILL.md&quot;,
++      &quot;upstream_commit&quot;: &quot;49dd158d1076134a641b33efb035946536778336&quot;,
++      &quot;status&quot;: &quot;optional&quot;,
++      &quot;installable&quot;: false,
++      &quot;disposition&quot;: &quot;adopted_optional&quot;,
++      &quot;reason&quot;: &quot;User explicitly selected the optional Writing workflow; invoke only on explicit request.&quot;,
++      &quot;targets&quot;: [
++        &quot;writing-shape&quot;
++      ],
++      &quot;example&quot;: &quot;請參考上游 writing-shape 的方法，使用 AIPS 已整合的 writing-shape 來處理「Writing, exploit: shape raw material into an article, paragraph by paragraph.」；完成後說明採用範圍與任何限制。&quot;
++    }
++  ]
++}
+</code></pre></details></article><article class="file-card" data-path="orchestration/conformance.md" data-group="驗收與 Agent 文件規則"><details><summary><span class="file-index">19</span><span class="file-path">orchestration/CONFORMANCE.md</span><span class="file-group">驗收與 Agent 文件規則</span></summary><pre><code>--- a/orchestration/CONFORMANCE.md
++++ b/orchestration/CONFORMANCE.md
+@@ -1138,6 +1138,8 @@
+
+ ## Scenario 259 — Matt Pocock Skill Integration and Explorer
+
++Website presentation evidence is scoped to the Human Explorer route: VitePress navigation and direct route must load generated catalog data, combined search/filters must provide clear empty/loading/error states, and the legacy static HTML URL must remain usable. These checks do not attest to Skill routing, installation, native Host invocation, or semantic method quality; those remain separate Scenario 259 exercises.
++
+ Skill Explorer evidence does not establish Claude Auto Mode hook semantics.
+
+
+</code></pre></details></article><article class="file-card" data-path="orchestration/documentation_sync.md" data-group="驗收與 Agent 文件規則"><details><summary><span class="file-index">20</span><span class="file-path">orchestration/DOCUMENTATION_SYNC.md</span><span class="file-group">驗收與 Agent 文件規則</span></summary><pre><code>--- a/orchestration/DOCUMENTATION_SYNC.md
++++ b/orchestration/DOCUMENTATION_SYNC.md
+@@ -138,6 +138,8 @@
+
+ ## Human Documentation Namespace
+
++Skill Explorer route, generated JSON and static HTML fallback are a Human documentation presentation contract. Keep the route, search/filter/error fallback, source attribution and explicit-only install wording aligned across Scenario 259, the Human User Guide / Harness / Technology Guide, Documentation Map and Documentation Sync. This presentation contract does not change canonical Skill routing or installation policy.
++
+ Permanent Human-only documentation MUST live under `docs/human/`. The detailed audience policy is deterministic:
+
+ - config: `config/documentation-audience.yaml`;
+</code></pre></details></article><article class="file-card" data-path="scripts/skill_catalog.py" data-group="Skill Explorer 與網站介面"><details><summary><span class="file-index">21</span><span class="file-path">scripts/skill_catalog.py</span><span class="file-group">Skill Explorer 與網站介面</span></summary><pre><code>--- a/scripts/skill_catalog.py
++++ b/scripts/skill_catalog.py
+@@ -14,6 +14,7 @@
+ REGISTRY = ROOT / &quot;skills/INDEX.yaml&quot;
+ SOURCE = ROOT / &quot;skills/integrations/matt-pocock-skills.json&quot;
+ OUTPUT = ROOT / &quot;docs/human/public/skill-catalog.html&quot;
++JSON_OUTPUT = ROOT / &quot;docs/human/public/skill-catalog.json&quot;
+
+ DISPOSITION = {
+     &quot;merged&quot;: (&quot;已合併至 AIPS&quot;, &quot;integrated&quot;),
+@@ -45,8 +46,9 @@
+     )
+
+
+-def build_cards(registry: dict[str, Any], source: dict[str, Any]) -&gt; tuple[str, list[str]]:
++def build_cards(registry: dict[str, Any], source: dict[str, Any]) -&gt; tuple[str, list[str], list[dict[str, Any]]]:
+     cards: list[str] = []
++    catalog: list[dict[str, Any]] = []
+     categories: set[str] = set()
+     active = registry.get(&quot;skills&quot;)
+     if not isinstance(active, dict):
+@@ -57,6 +59,23 @@
+         category = str(skill.get(&quot;capability&quot;, &quot;other&quot;))
+         categories.add(category)
+         prompt = prompt_for_active(identifier, skill.get(&quot;triggers&quot;) or [])
++        catalog.append({
++            &quot;id&quot;: identifier,
++            &quot;title_en&quot;: title(identifier),
++            &quot;title_zh&quot;: &quot;&quot;,
++            &quot;description_en&quot;: str(skill.get(&quot;description&quot;, &quot;&quot;)),
++            &quot;description_zh&quot;: str((registry.get(&quot;locale_descriptions&quot;) or {}).get(identifier, &quot;&quot;)),
++            &quot;category&quot;: category,
++            &quot;source&quot;: &quot;aips&quot;,
++            &quot;source_path&quot;: str(skill.get(&quot;path&quot;, &quot;&quot;)),
++            &quot;upstream_commit&quot;: None,
++            &quot;status&quot;: &quot;enabled&quot;,
++            &quot;installable&quot;: False,
++            &quot;disposition&quot;: &quot;canonical&quot;,
++            &quot;reason&quot;: &quot;&quot;,
++            &quot;targets&quot;: [],
++            &quot;example&quot;: prompt,
++        })
+         search = &quot; &quot;.join(
+             [identifier, skill.get(&quot;description&quot;, &quot;&quot;), category, prompt, &quot;AIPS 啟用&quot;]
+         )
+@@ -114,6 +133,24 @@
+             prompt += f&quot; 若我明確要求，使用 `aips skills install --upstream {record[&#x27;id&#x27;]} --host &lt;host&gt;` 安裝；只在我明確呼叫時使用此技能。&quot;
+         target_text = &quot;、&quot;.join(targets) if targets else &quot;無；目前沒有啟用對應 AIPS Skill&quot;
+         local_path = record.get(&quot;local_path&quot;) or record.get(&quot;path&quot;, &quot;&quot;)
++        catalog.append({
++            &quot;id&quot;: str(record.get(&quot;id&quot;, &quot;&quot;)),
++            &quot;title_en&quot;: title(str(record.get(&quot;id&quot;, &quot;&quot;))),
++            &quot;title_zh&quot;: &quot;&quot;,
++            &quot;description_en&quot;: str(record.get(&quot;description&quot;, &quot;&quot;)),
++            &quot;description_zh&quot;: &quot;&quot;,
++            &quot;category&quot;: category,
++            &quot;source&quot;: &quot;upstream&quot;,
++            &quot;source_path&quot;: str(local_path),
++            &quot;upstream_path&quot;: str(record.get(&quot;path&quot;, &quot;&quot;)),
++            &quot;upstream_commit&quot;: str(source.get(&quot;source&quot;, {}).get(&quot;commit&quot;, &quot;&quot;)),
++            &quot;status&quot;: status,
++            &quot;installable&quot;: installable,
++            &quot;disposition&quot;: str(disposition),
++            &quot;reason&quot;: str(record.get(&quot;reason&quot;, &quot;&quot;)),
++            &quot;targets&quot;: list(targets),
++            &quot;example&quot;: prompt,
++        })
+         search = &quot; &quot;.join(
+             [record.get(&quot;id&quot;, &quot;&quot;), record.get(&quot;description&quot;, &quot;&quot;), category, label, target_text, record.get(&quot;reason&quot;, &quot;&quot;), prompt]
+         )
+@@ -144,7 +181,8 @@
+                 prompt=esc(prompt),
+             )
+         )
+-    return &quot;\n&quot;.join(cards), sorted(categories)
++    catalog.sort(key=lambda item: (item[&quot;source&quot;] != &quot;aips&quot;, item[&quot;id&quot;]))
++    return &quot;\n&quot;.join(cards), sorted(categories), catalog
+
+
+ def render() -&gt; str:
+@@ -154,8 +192,8 @@
+     if source.get(&quot;source&quot;, {}).get(&quot;commit&quot;) != &quot;49dd158d1076134a641b33efb035946536778336&quot;:
+         raise ValueError(&quot;upstream source commit is not pinned to the reviewed SHA&quot;)
+     records = source.get(&quot;skills&quot;)
+-    if not isinstance(records, list) or len(records) != 38:
+-        raise ValueError(&quot;the upstream inventory must classify exactly 38 Skills&quot;)
++    if not isinstance(records, list):
++        raise ValueError(&quot;the upstream inventory must contain a skills list&quot;)
+     counts: dict[str, int] = {}
+     for record in records:
+         category = record.get(&quot;category&quot;)
+@@ -166,7 +204,11 @@
+     installable_count = sum(record.get(&quot;id&quot;) not in canonical_ids for record in records)
+     canonical_count = len(records) - installable_count
+
+-    cards, categories = build_cards(registry, source)
++    cards, categories, catalog = build_cards(registry, source)
++    localized = json.loads((ROOT / &quot;skills/locale/zh-TW.json&quot;).read_text(encoding=&quot;utf-8&quot;))
++    for skill in catalog:
++        if skill[&quot;source&quot;] == &quot;aips&quot;:
++            skill[&quot;description_zh&quot;] = str(localized.get(skill[&quot;id&quot;], skill[&quot;description_en&quot;]))
+     active_count = len(registry[&quot;skills&quot;])
+     category_options = &quot;\n&quot;.join(
+         f&#x27;&lt;option value=&quot;{esc(category)}&quot;&gt;{esc(category)}&lt;/option&gt;&#x27; for category in categories
+@@ -190,8 +232,8 @@
+ &lt;header&gt;
+ &lt;p class=&quot;muted&quot;&gt;AI Product System · 技能圖鑑&lt;/p&gt;
+ &lt;h1&gt;找到適合這項工作的 Skill&lt;/h1&gt;
+-&lt;p class=&quot;lede&quot;&gt;搜尋 AIPS Skills 與 Matt Pocock 上游 38 項來源。上游處置說明 AIPS 的整合關係；是否安裝由使用者決定。同名 AIPS canonical Skill 會直接使用 AIPS 版本。&lt;/p&gt;
+-&lt;div class=&quot;stats&quot;&gt;&lt;div class=&quot;stat&quot;&gt;&lt;strong&gt;{active_count}&lt;/strong&gt;AIPS 可用 Skills&lt;/div&gt;&lt;div class=&quot;stat&quot;&gt;&lt;strong&gt;{installable_count}&lt;/strong&gt;可安裝上游 Skills&lt;/div&gt;&lt;div class=&quot;stat&quot;&gt;&lt;strong&gt;{canonical_count}&lt;/strong&gt;使用 AIPS canonical&lt;/div&gt;&lt;div class=&quot;stat&quot;&gt;&lt;strong&gt;{active_count + 38}&lt;/strong&gt;可搜尋卡片&lt;/div&gt;&lt;/div&gt;
++&lt;p class=&quot;lede&quot;&gt;搜尋 AIPS Skills 與 Matt Pocock 上游來源。上游處置說明 AIPS 的整合關係；是否安裝由使用者決定。同名 AIPS canonical Skill 會直接使用 AIPS 版本。&lt;/p&gt;
++&lt;div class=&quot;stats&quot;&gt;&lt;div class=&quot;stat&quot;&gt;&lt;strong&gt;{active_count}&lt;/strong&gt;AIPS 可用 Skills&lt;/div&gt;&lt;div class=&quot;stat&quot;&gt;&lt;strong&gt;{installable_count}&lt;/strong&gt;可安裝上游 Skills&lt;/div&gt;&lt;div class=&quot;stat&quot;&gt;&lt;strong&gt;{canonical_count}&lt;/strong&gt;使用 AIPS canonical&lt;/div&gt;&lt;div class=&quot;stat&quot;&gt;&lt;strong&gt;{active_count + len(records)}&lt;/strong&gt;可搜尋卡片&lt;/div&gt;&lt;/div&gt;
+ &lt;div class=&quot;controls&quot;&gt;
+ &lt;label&gt;&lt;span class=&quot;muted&quot;&gt;搜尋名稱、用途、情境&lt;/span&gt;&lt;input id=&quot;search&quot; type=&quot;search&quot; placeholder=&quot;例如：debug、測試、writing&quot; autocomplete=&quot;off&quot;&gt;&lt;/label&gt;
+ &lt;label&gt;&lt;span class=&quot;muted&quot;&gt;分類&lt;/span&gt;&lt;select id=&quot;category&quot;&gt;&lt;option value=&quot;&quot;&gt;全部分類&lt;/option&gt;{category_options}&lt;/select&gt;&lt;/label&gt;
+@@ -237,18 +279,33 @@
+ &quot;&quot;&quot;
+
+
++def render_catalog() -&gt; str:
++    registry = yaml.safe_load(REGISTRY.read_text(encoding=&quot;utf-8&quot;))
++    source = json.loads(SOURCE.read_text(encoding=&quot;utf-8&quot;))
++    _, _, catalog = build_cards(registry, source)
++    localized = json.loads((ROOT / &quot;skills/locale/zh-TW.json&quot;).read_text(encoding=&quot;utf-8&quot;))
++    for skill in catalog:
++        if skill[&quot;source&quot;] == &quot;aips&quot;:
++            skill[&quot;description_zh&quot;] = str(localized.get(skill[&quot;id&quot;], skill[&quot;description_en&quot;]))
++    return json.dumps({&quot;source_commit&quot;: source[&quot;source&quot;][&quot;commit&quot;], &quot;skills&quot;: catalog}, ensure_ascii=False, indent=2) + &quot;\n&quot;
++
++
+ def main() -&gt; int:
+     parser = argparse.ArgumentParser(description=__doc__)
+     parser.add_argument(&quot;--check&quot;, action=&quot;store_true&quot;, help=&quot;check generated HTML without writing&quot;)
+     args = parser.parse_args()
+     try:
+         expected = render()
++        expected_json = render_catalog()
+         if args.check:
+             if not OUTPUT.is_file() or OUTPUT.read_text(encoding=&quot;utf-8&quot;) != expected:
+                 raise ValueError(&quot;Skill Explorer drift; run python scripts/skill_catalog.py&quot;)
++            if not JSON_OUTPUT.is_file() or JSON_OUTPUT.read_text(encoding=&quot;utf-8&quot;) != expected_json:
++                raise ValueError(&quot;Skill Explorer JSON drift; run python scripts/skill_catalog.py&quot;)
+         else:
+             OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+             OUTPUT.write_text(expected, encoding=&quot;utf-8&quot;)
++            JSON_OUTPUT.write_text(expected_json, encoding=&quot;utf-8&quot;)
+     except (OSError, ValueError, TypeError, json.JSONDecodeError, yaml.YAMLError) as exc:
+         print(f&quot;FAIL: {exc}&quot;)
+         return 1
+</code></pre></details></article><article class="file-card" data-path="tests/scenarios/259-matt-pocock-skill-integration.md" data-group="驗收與 Agent 文件規則"><details><summary><span class="file-index">22</span><span class="file-path">tests/scenarios/259-matt-pocock-skill-integration.md</span><span class="file-group">驗收與 Agent 文件規則</span></summary><pre><code>--- a/tests/scenarios/259-matt-pocock-skill-integration.md
++++ b/tests/scenarios/259-matt-pocock-skill-integration.md
+@@ -21,6 +21,7 @@
+ 10. Run `aips skills install --upstream --all` in an isolated home and confirm all 31 unique source Skills are installed; seven same-ID source entries resolve to canonical AIPS Skills, disposition remains visible without blocking installation, repeat installation is idempotent, and status can filter upstream ownership.
+ 11. Remove one upstream Skill and then all upstream Skills for selected Hosts; confirm AIPS catalog and Portable Command Skills remain, shared Codex/Gemini projections remain until their final Host reference is removed, and modified source files plus user resources are preserved.
+ 12. Install one upstream Skill into Claude workspace scope and confirm status and uninstall are restricted to that project; confirm scripts and hooks are not executed or configured by installation.
++13. Open the Skill Explorer from VitePress navigation and directly at /SKILL_EXPLORER; confirm current catalog data, Chinese/English/ID search, combined filters, empty results, and copy failure fallback. Open /skill-catalog.html and confirm the standalone static catalog remains available.
+
+ ## Expected result
+
+@@ -35,6 +36,8 @@
+ - Upstream native install selects every non-canonical ID regardless of disposition, rejects unsafe source paths/digests, skips canonical duplicate IDs, requires explicit invocation in Codex and Claude projections, and uses the existing per-file ownership manifest for safe status/uninstall.
+ - `--upstream` install/uninstall never modifies AIPS catalog or Portable Command ownership; modified Skills and user-added resources remain available after removal.
+ - The Explorer distinguishes active Skills from deferred, excluded, reference-only and unadopted source items.
++- The VitePress route and legacy static URL both show catalog content; failed JSON loading offers retry and a link to the static page.
++- Filtering and display remain read-only and do not install or activate Skills.
+
+ ## Coverage
+
+</code></pre></details></article><article class="file-card" data-path="tests/test_skill_catalog_render.py" data-group="驗收與 Agent 文件規則"><details><summary><span class="file-index">23</span><span class="file-path">tests/test_skill_catalog_render.py</span><span class="file-group">驗收與 Agent 文件規則</span></summary><pre><code>--- /dev/null
++++ b/tests/test_skill_catalog_render.py
+@@ -0,0 +1,53 @@
++&quot;&quot;&quot;Behavior contracts for the registry-derived Skill Explorer output.&quot;&quot;&quot;
++
++from __future__ import annotations
++
++import json
++import sys
++import unittest
++from pathlib import Path
++
++ROOT = Path(__file__).resolve().parents[1]
++sys.path.insert(0, str(ROOT / &quot;scripts&quot;))
++
++import skill_catalog  # noqa: E402
++
++
++class SkillCatalogRenderTests(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        import yaml
++
++        cls.registry = yaml.safe_load(skill_catalog.REGISTRY.read_text(encoding=&quot;utf-8&quot;))
++        cls.source = json.loads(skill_catalog.SOURCE.read_text(encoding=&quot;utf-8&quot;))
++        cls.cards, cls.categories, cls.catalog = skill_catalog.build_cards(cls.registry, cls.source)
++
++    def test_catalog_preserves_source_status_and_installability_separately(self):
++        by_id = {item[&quot;id&quot;]: item for item in self.catalog}
++        canonical = next(iter(self.registry[&quot;skills&quot;]))
++        self.assertEqual(by_id[canonical][&quot;source&quot;], &quot;aips&quot;)
++        self.assertFalse(by_id[canonical][&quot;installable&quot;])
++        self.assertEqual(by_id[canonical][&quot;status&quot;], &quot;enabled&quot;)
++
++        distinct_upstream = next(item for item in self.catalog if item[&quot;source&quot;] == &quot;upstream&quot; and item[&quot;installable&quot;])
++        self.assertTrue(distinct_upstream[&quot;upstream_commit&quot;])
++        self.assertTrue(distinct_upstream[&quot;source_path&quot;])
++        self.assertNotEqual(distinct_upstream[&quot;status&quot;], &quot;enabled&quot;)
++
++    def test_static_compatibility_page_and_machine_data_are_generated(self):
++        self.assertIn(&#x27;&lt;article class=&quot;card&quot;&#x27;, self.cards)
++        self.assertIn(&#x27;id=&quot;cards&quot;&#x27;, skill_catalog.render())
++        self.assertIn(&quot;AIPS canonical Skill&quot;, self.cards)
++        self.assertEqual(len(self.catalog), len(self.registry[&quot;skills&quot;]) + len(self.source[&quot;skills&quot;]))
++        data = json.loads(skill_catalog.render_catalog())
++        self.assertEqual(data[&quot;source_commit&quot;], self.source[&quot;source&quot;][&quot;commit&quot;])
++        self.assertEqual(len(data[&quot;skills&quot;]), len(self.catalog))
++
++    def test_generated_output_contains_no_fixed_inventory_total(self):
++        output = skill_catalog.render()
++        self.assertIn(f&quot;&gt;{len(self.catalog)}&lt;&quot;, output)
++        self.assertIn(&#x27;data-status=&quot;enabled&quot;&#x27;, output)
++
++
++if __name__ == &quot;__main__&quot;:
++    unittest.main()
+</code></pre></details></article><div class="foot">此頁是工作樹快照，不包含 demo 自身的生成內容。文件網站尚未發布；檢查結果與發布決策分開處理。</div></main><script>
+const cards=[...document.querySelectorAll('.file-card')], search=document.querySelector('#search'), count=document.querySelector('#count');let active='all';function update(){const q=search.value.trim().toLowerCase();let visible=0;for(const card of cards){const show=(active==='all'||card.dataset.group===active)&&card.dataset.path.includes(q);card.hidden=!show;if(show)visible++}count.textContent=`顯示 ${visible} / ${cards.length} 個異動檔案`}document.querySelectorAll('[data-filter]').forEach(button=>button.addEventListener('click',()=>{active=button.dataset.filter;document.querySelectorAll('[data-filter]').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));update()}));search.addEventListener('input',update);document.querySelector('#expand').addEventListener('click',()=>{const opening=cards.some(card=>!card.hidden&&!card.querySelector('details').open);cards.filter(card=>!card.hidden).forEach(card=>card.querySelector('details').open=opening);document.querySelector('#expand').textContent=opening?'全部收合':'全部展開'});update();
+</script></body></html>

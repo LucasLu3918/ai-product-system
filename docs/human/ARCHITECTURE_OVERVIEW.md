@@ -1,11 +1,15 @@
 # 系統架構總覽
 
+AIPS 把工作分成 Runtime 接入、專案脈絡、任務路由與驗證。Runtime 提供 Host 能力；Project Intelligence 提供可追溯的專案資訊；Role、Skill 與 Protocol 僅按本次需求載入。檢查結果是審查證據，合併、發布與上線仍由人決定。
+
+初次閱讀可先看[快速上手](GETTING_STARTED.md)，再依工作需要查看[使用指南](USER_GUIDE.md)、[Harness 與 MCP](HARNESS.md)或[安全保證](SECURITY_ASSURANCE.md)。
+
 CLI 安裝與 Runtime adapter 啟用分開：`aips harness install` 是明確啟用入口；更新與 preflight 只刷新可驗證的既有啟用紀錄。不明紀錄會保留並警示；狀態觀察與 adapter 刷新尚無共同跨程序鎖，並行停用仍未驗證。per-repository 治理模式仍未由此切片實作。
 
 
 AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前架構**；版本歷史放 CHANGELOG，Scenario 證據歷史放 Conformance。
 
-![AI Product System 架構總覽](assets/system-overview.svg)
+![AI Product System 架構總覽](./assets/system-overview.svg)
 
 ## Runtime 與接入層
 
@@ -757,6 +761,8 @@ Standalone HTML 不再是新增功能的 canonical target。Current behavior 必
 Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
 ## Official Docs Site
+
+VitePress 以 Markdown 圖片引用載入架構與流程圖，讓建置後的資產路徑保留 GitHub Pages 的 `/ai-product-system/` base；本機正式預覽也使用同一 base。
 
 官方文件首頁以繁體中文依讀者任務導覽安裝、使用、Agent 整合與維護。首頁提供中文系統架構圖與工作流程圖（`assets/architecture-zh.svg`、`assets/workflow-zh.svg`）；兩圖需對照目前 Runtime、Project Intelligence、變更影響、驗證及人類授權邊界維護。各 Host 的實際攔截能力仍須依版本綁定的驗收證據判讀。
 

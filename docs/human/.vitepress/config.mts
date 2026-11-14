@@ -16,8 +16,9 @@ export default defineConfig({
       { text: '使用指南', link: '/USER_GUIDE' },
       { text: '系統架構', link: '/ARCHITECTURE_OVERVIEW' },
       { text: '更多', items: [
-        { text: 'Skill 探索器', link: '/skill-catalog.html' },
+        { text: 'Skill 探索器', link: '/SKILL_EXPLORER' },
         { text: '專案脈絡', link: '/PROJECT_INTELLIGENCE' },
+        { text: '名詞表', link: '/GLOSSARY' },
         { text: '系統參考', link: '/SYSTEM_REFERENCE' },
         { text: '技術指南', link: '/TECHNOLOGY_GUIDE' }
       ] }
@@ -27,7 +28,7 @@ export default defineConfig({
         { text: '總覽', link: '/' }, { text: '快速上手', link: '/GETTING_STARTED' }, { text: '安裝／更新／解除', link: '/INSTALLATION' }
       ]},
       { text: '使用 AIPS', items: [
-        { text: '使用指南', link: '/USER_GUIDE' }, { text: 'Skill 探索器', link: '/skill-catalog.html' }, { text: 'Agent 整合與 MCP', link: '/HARNESS' }, { text: '專案脈絡', link: '/PROJECT_INTELLIGENCE' }, { text: '安全保證', link: '/SECURITY_ASSURANCE' }
+        { text: '使用指南', link: '/USER_GUIDE' }, { text: 'Skill 探索器', link: '/SKILL_EXPLORER' }, { text: 'Agent 整合與 MCP', link: '/HARNESS' }, { text: '專案脈絡', link: '/PROJECT_INTELLIGENCE' }, { text: '名詞表', link: '/GLOSSARY' }, { text: '安全保證', link: '/SECURITY_ASSURANCE' }
       ]},
       { text: '架構與技術', items: [
         { text: '系統架構', link: '/ARCHITECTURE_OVERVIEW' }, { text: '系統參考', link: '/SYSTEM_REFERENCE' }, { text: '技術指南', link: '/TECHNOLOGY_GUIDE' }, { text: '演進雷達', link: '/EVOLUTION_RADAR' }, { text: '演進流程圖', link: '/EVOLUTION_RADAR_OVERVIEW' }

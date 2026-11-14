@@ -246,6 +246,8 @@ Scenario 269 places task-scoped refresh and Retrieval index policy in existing c
 
 ## Official Docs Site
 
+Skill Explorer website changes keep `SKILL_EXPLORER.md`, the `/SKILL_EXPLORER` VitePress route, `scripts/skill_catalog.py`, generated JSON and legacy static HTML aligned. The display data is derived from `skills/INDEX.yaml`, `skills/locale/zh-TW.json`, and the pinned upstream manifest. Keep upstream source identity and installability distinct from disposition; the Explorer is read-only and never installs a Skill. Preserve the `/ai-product-system/` base for the project Pages site and serve previews over the local VitePress preview server.
+
 網站的使用者說明以繁體中文為主，第一次出現的專有名詞以中文解釋並補充英文；命令、API／欄位名稱、路徑與機器狀態維持 canonical 拼法。首頁應按讀者任務導覽，不得以變更備忘錄取代操作說明。架構圖與流程圖需指向目前實際邊界，並附上文字替代說明與圖說。
 
 文件工具鏈安全修補需同步 `package.json` 的限定 Vite 覆寫與 npm lockfile。保留 VitePress 穩定版時，跨 Vite 主要版本的覆寫必須驗證乾淨安裝、audit、build、開發／預覽及熱更新；本機存取設定與操作限制維護在 Technology Guide 的 Documentation Platform。
