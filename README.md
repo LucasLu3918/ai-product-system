@@ -98,6 +98,8 @@ aips uninstall
 
 正式 Human Documentation source 位於 docs/human/，並由 VitePress 建置為 Official Docs Site。
 
+本機預覽文件站：執行 `npm run docs:build` 後，再執行 `npm run docs:preview`，並開啟 `http://127.0.0.1:4173/ai-product-system/`。不要直接以 `file://` 開啟建置目錄中的 HTML；此站使用 GitHub Pages 子路徑。要即時檢查文件與互動，執行 `npm run docs:dev`。
+
 - [開始使用](docs/human/GETTING_STARTED.md)
 - [安裝與解除](docs/human/INSTALLATION.md)
 - [使用指南](docs/human/USER_GUIDE.md)

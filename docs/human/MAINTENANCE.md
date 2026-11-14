@@ -14,7 +14,6 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 Behavior-bearing observer and docs-only helper scripts require explicit canonical placement mappings. Reconcile the full documentation closure before marking a Core Change matrix READY.
 
-
 Runtime Policy diagnostics are documented in the canonical Resource Authorization, Claude adapter and Scenario 177 sections; global Change Impact coverage remains partial.
 
 Creative artwork documentation remains a separate placement surface; metadata scanning does not establish visual or provenance acceptance.
@@ -607,6 +606,12 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
 ## Validation architecture consistency
+
+文件網站由 `docs/human/` 的 Markdown、VitePress 設定與主題組成。技能目錄由 `skills/INDEX.yaml`、zh-TW locale 與釘選的 upstream manifest 產生。修改 registry 或目錄展示時，執行 `python scripts/skill_catalog.py` 更新 JSON 與舊版 HTML，再以 `python scripts/skill_catalog.py --check` 檢查生成差異，並執行 `npm run docs:build`。
+
+本機使用正式建置預覽時，先執行 `npm run docs:build` 再執行 `npm run docs:preview`，並開啟 `http://127.0.0.1:4173/ai-product-system/`。此預覽沿用 GitHub Pages 的 `/ai-product-system/` base；不要直接用 `file://` 開啟 `dist/index.html`。即時文件與互動檢查使用 `npm run docs:dev`。
+
+檢查 `/SKILL_EXPLORER` 的站內導覽、搜尋、複合篩選、錯誤備援，以及仍可開啟的 `/skill-catalog.html`。文件 build 不會發布網站；GitHub Pages 發布仍由既有 workflow 和人工 Git 決策處理。
 
 Docs-only classification is review-only and never asserts tests are inapplicable; the exact candidate still runs its required Core Change matrix.
 

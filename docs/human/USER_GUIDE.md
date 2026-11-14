@@ -1,6 +1,6 @@
 # AI Product System 使用指南
 
-Local validation 會依共用 Runtime Context 選擇符合 Gate 需求的 Python；涉及核心執行環境時，Integration Gate 另驗證 runtime invariant matrix。
+Local validation 會依共用 Runtime Context 選擇符合 Gate 需求的 Python；涉及核心執行環境時，Integration Gate 另驗證 runtime invariant matrix.
 Evolution pre-analysis continues to use `evolution_analysis.py` as its existing command entry point; the internal implementation split requires no new user command.
 
 本文件描述 **目前如何使用 AIPS**。版本演進放在 `CHANGELOG.md`，Scenario / validation 歷史放在 [Scenario Conformance](CONFORMANCE.md)；current-behavior 文件不再以 `vX.Y` 章節追加新功能。
@@ -343,6 +343,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 Turn Context 只列出這一回合真正需要的準備步驟：READY+STALE 的 Intelligence 在任務相關主題未受影響時只是提示，不要求 refresh；唯讀或未選到主題的回合不會要求建立 Retrieval 索引。修改既有專案時仍須處理 Change Impact。
 
 ## Roles、Skills 與重用
+
+使用者可在[Skill 探索器](SKILL_EXPLORER.md)搜尋 AIPS 與上游 Skill；清單只供探索，不代表已安裝或授權執行。
 
 The Claude-only PermissionDenied observer is installed through the managed runtime adapter; other runtimes do not inherit Claude event semantics.
 

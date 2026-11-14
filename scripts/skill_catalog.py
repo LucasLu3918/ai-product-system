@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 REGISTRY = ROOT / "skills/INDEX.yaml"
 SOURCE = ROOT / "skills/integrations/matt-pocock-skills.json"
 OUTPUT = ROOT / "docs/human/public/skill-catalog.html"
+JSON_OUTPUT = ROOT / "docs/human/public/skill-catalog.json"
 
 DISPOSITION = {
     "merged": ("已合併至 AIPS", "integrated"),
@@ -45,8 +46,9 @@ def prompt_for_active(identifier: str, triggers: list[str]) -> str:
     )
 
 
-def build_cards(registry: dict[str, Any], source: dict[str, Any]) -> tuple[str, list[str]]:
+def build_cards(registry: dict[str, Any], source: dict[str, Any]) -> tuple[str, list[str], list[dict[str, Any]]]:
     cards: list[str] = []
+    catalog: list[dict[str, Any]] = []
     categories: set[str] = set()
     active = registry.get("skills")
     if not isinstance(active, dict):
@@ -57,6 +59,23 @@ def build_cards(registry: dict[str, Any], source: dict[str, Any]) -> tuple[str, 
         category = str(skill.get("capability", "other"))
         categories.add(category)
         prompt = prompt_for_active(identifier, skill.get("triggers") or [])
+        catalog.append({
+            "id": identifier,
+            "title_en": title(identifier),
+            "title_zh": "",
+            "description_en": str(skill.get("description", "")),
+            "description_zh": str((registry.get("locale_descriptions") or {}).get(identifier, "")),
+            "category": category,
+            "source": "aips",
+            "source_path": str(skill.get("path", "")),
+            "upstream_commit": None,
+            "status": "enabled",
+            "installable": False,
+            "disposition": "canonical",
+            "reason": "",
+            "targets": [],
+            "example": prompt,
+        })
         search = " ".join(
             [identifier, skill.get("description", ""), category, prompt, "AIPS 啟用"]
         )
@@ -114,6 +133,24 @@ def build_cards(registry: dict[str, Any], source: dict[str, Any]) -> tuple[str, 
             prompt += f" 若我明確要求，使用 `aips skills install --upstream {record['id']} --host <host>` 安裝；只在我明確呼叫時使用此技能。"
         target_text = "、".join(targets) if targets else "無；目前沒有啟用對應 AIPS Skill"
         local_path = record.get("local_path") or record.get("path", "")
+        catalog.append({
+            "id": str(record.get("id", "")),
+            "title_en": title(str(record.get("id", ""))),
+            "title_zh": "",
+            "description_en": str(record.get("description", "")),
+            "description_zh": "",
+            "category": category,
+            "source": "upstream",
+            "source_path": str(local_path),
+            "upstream_path": str(record.get("path", "")),
+            "upstream_commit": str(source.get("source", {}).get("commit", "")),
+            "status": status,
+            "installable": installable,
+            "disposition": str(disposition),
+            "reason": str(record.get("reason", "")),
+            "targets": list(targets),
+            "example": prompt,
+        })
         search = " ".join(
             [record.get("id", ""), record.get("description", ""), category, label, target_text, record.get("reason", ""), prompt]
         )
@@ -144,7 +181,8 @@ def build_cards(registry: dict[str, Any], source: dict[str, Any]) -> tuple[str, 
                 prompt=esc(prompt),
             )
         )
-    return "\n".join(cards), sorted(categories)
+    catalog.sort(key=lambda item: (item["source"] != "aips", item["id"]))
+    return "\n".join(cards), sorted(categories), catalog
 
 
 def render() -> str:
@@ -154,8 +192,8 @@ def render() -> str:
     if source.get("source", {}).get("commit") != "49dd158d1076134a641b33efb035946536778336":
         raise ValueError("upstream source commit is not pinned to the reviewed SHA")
     records = source.get("skills")
-    if not isinstance(records, list) or len(records) != 38:
-        raise ValueError("the upstream inventory must classify exactly 38 Skills")
+    if not isinstance(records, list):
+        raise TypeError("the upstream inventory must contain a skills list")
     counts: dict[str, int] = {}
     for record in records:
         category = record.get("category")
@@ -166,7 +204,11 @@ def render() -> str:
     installable_count = sum(record.get("id") not in canonical_ids for record in records)
     canonical_count = len(records) - installable_count
 
-    cards, categories = build_cards(registry, source)
+    cards, categories, catalog = build_cards(registry, source)
+    localized = json.loads((ROOT / "skills/locale/zh-TW.json").read_text(encoding="utf-8"))
+    for skill in catalog:
+        if skill["source"] == "aips":
+            skill["description_zh"] = str(localized.get(skill["id"], skill["description_en"]))
     active_count = len(registry["skills"])
     category_options = "\n".join(
         f'<option value="{esc(category)}">{esc(category)}</option>' for category in categories
@@ -190,8 +232,8 @@ header,main,footer{{max-width:1180px;margin:auto;padding:24px}}header{{padding-t
 <header>
 <p class="muted">AI Product System · 技能圖鑑</p>
 <h1>找到適合這項工作的 Skill</h1>
-<p class="lede">搜尋 AIPS Skills 與 Matt Pocock 上游 38 項來源。上游處置說明 AIPS 的整合關係；是否安裝由使用者決定。同名 AIPS canonical Skill 會直接使用 AIPS 版本。</p>
-<div class="stats"><div class="stat"><strong>{active_count}</strong>AIPS 可用 Skills</div><div class="stat"><strong>{installable_count}</strong>可安裝上游 Skills</div><div class="stat"><strong>{canonical_count}</strong>使用 AIPS canonical</div><div class="stat"><strong>{active_count + 38}</strong>可搜尋卡片</div></div>
+<p class="lede">搜尋 AIPS Skills 與 Matt Pocock 上游來源。上游處置說明 AIPS 的整合關係；是否安裝由使用者決定。同名 AIPS canonical Skill 會直接使用 AIPS 版本。</p>
+<div class="stats"><div class="stat"><strong>{active_count}</strong>AIPS 可用 Skills</div><div class="stat"><strong>{installable_count}</strong>可安裝上游 Skills</div><div class="stat"><strong>{canonical_count}</strong>使用 AIPS canonical</div><div class="stat"><strong>{active_count + len(records)}</strong>可搜尋卡片</div></div>
 <div class="controls">
 <label><span class="muted">搜尋名稱、用途、情境</span><input id="search" type="search" placeholder="例如：debug、測試、writing" autocomplete="off"></label>
 <label><span class="muted">分類</span><select id="category"><option value="">全部分類</option>{category_options}</select></label>
@@ -237,18 +279,33 @@ filterCards();
 """
 
 
+def render_catalog() -> str:
+    registry = yaml.safe_load(REGISTRY.read_text(encoding="utf-8"))
+    source = json.loads(SOURCE.read_text(encoding="utf-8"))
+    _, _, catalog = build_cards(registry, source)
+    localized = json.loads((ROOT / "skills/locale/zh-TW.json").read_text(encoding="utf-8"))
+    for skill in catalog:
+        if skill["source"] == "aips":
+            skill["description_zh"] = str(localized.get(skill["id"], skill["description_en"]))
+    return json.dumps({"source_commit": source["source"]["commit"], "skills": catalog}, ensure_ascii=False, indent=2) + "\n"
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check", action="store_true", help="check generated HTML without writing")
     args = parser.parse_args()
     try:
         expected = render()
+        expected_json = render_catalog()
         if args.check:
             if not OUTPUT.is_file() or OUTPUT.read_text(encoding="utf-8") != expected:
                 raise ValueError("Skill Explorer drift; run python scripts/skill_catalog.py")
+            if not JSON_OUTPUT.is_file() or JSON_OUTPUT.read_text(encoding="utf-8") != expected_json:
+                raise ValueError("Skill Explorer JSON drift; run python scripts/skill_catalog.py")
         else:
             OUTPUT.parent.mkdir(parents=True, exist_ok=True)
             OUTPUT.write_text(expected, encoding="utf-8")
+            JSON_OUTPUT.write_text(expected_json, encoding="utf-8")
     except (OSError, ValueError, TypeError, json.JSONDecodeError, yaml.YAMLError) as exc:
         print(f"FAIL: {exc}")
         return 1

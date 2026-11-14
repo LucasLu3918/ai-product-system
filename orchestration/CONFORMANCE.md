@@ -1138,6 +1138,8 @@ The branch lifecycle report classifies remote branches using current exact-SHA P
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+Website presentation evidence is scoped to the Human Explorer route: VitePress navigation and direct route must load generated catalog data, combined search/filters must provide clear empty/loading/error states, and the legacy static HTML URL must remain usable. These checks do not attest to Skill routing, installation, native Host invocation, or semantic method quality; those remain separate Scenario 259 exercises.
+
 Skill Explorer evidence does not establish Claude Auto Mode hook semantics.
 
 

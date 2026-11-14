@@ -34,22 +34,27 @@ features:
 ## 依你的目標開始
 
 <div class="docs-path-grid">
-  <a class="docs-path-card" href="./GETTING_STARTED">
+  <a class="docs-path-card" href="./SKILL_EXPLORER.html">
+    <span class="docs-path-kicker">找到工作方法</span>
+    <strong>瀏覽 Skills</strong>
+    <span>依用途、分類與來源尋找可用方法，並確認上游 Skill 的安裝資格。</span>
+  </a>
+  <a class="docs-path-card" href="./GETTING_STARTED.html">
     <span class="docs-path-kicker">第一次使用</span>
     <strong>安裝並開始一項工作</strong>
     <span>確認環境、安裝 AIPS，再用自然語言描述目標。</span>
   </a>
-  <a class="docs-path-card" href="./USER_GUIDE#existing-project">
+  <a class="docs-path-card" href="./USER_GUIDE.html#existing-project">
     <span class="docs-path-kicker">已有程式專案</span>
     <strong>讓 Agent 先理解專案</strong>
     <span>檢視既有指示與變更影響；`.ai/` 專案工作區預設不建立，可選擇 attach。</span>
   </a>
-  <a class="docs-path-card" href="./HARNESS">
+  <a class="docs-path-card" href="./HARNESS.html">
     <span class="docs-path-kicker">整合 Agent</span>
     <strong>設定 Runtime 或 MCP</strong>
     <span>了解各 Agent 的整合方式、能力證據與限制。</span>
   </a>
-  <a class="docs-path-card" href="./MAINTENANCE">
+  <a class="docs-path-card" href="./MAINTENANCE.html">
     <span class="docs-path-kicker">維護 AIPS</span>
     <strong>檢查文件、驗證與發布</strong>
     <span>從維護指南查找一致性、版本與驗收流程。</span>
@@ -60,19 +65,17 @@ features:
 
 下圖呈現 AIPS 的主要邊界：Runtime 接收工作，脈絡層提供專案事實，執行與驗證層產生證據；發布和治理等重要決策保留在人手中。
 
-<figure class="docs-figure">
-  <img src="./assets/architecture-zh.svg" alt="AIPS 系統架構圖：Runtime 與 MCP、專案脈絡、工作路由、執行驗證及人類決策之間的關係" />
-  <figcaption>系統架構：共用工作脈絡與驗證方式，不代表每個 Runtime 都有相同的防護能力。</figcaption>
-</figure>
+![AIPS 系統架構圖：Runtime 與 MCP、專案脈絡、工作路由、執行驗證及人類決策之間的關係](./assets/architecture-zh.svg)
+
+_系統架構：共用工作脈絡與驗證方式，不代表每個 Runtime 都有相同的防護能力。圖表會隨閱讀欄寬縮放。_
 
 ## 一項變更如何完成？
 
 既有專案會先整理變更邊界，再依影響與風險安排執行和驗證。完成證據後，合併、發布或上線仍走各自的授權流程。
 
-<figure class="docs-figure">
-  <img src="./assets/workflow-zh.svg" alt="AIPS 工作流程圖：從需求與脈絡解析，經影響分析、執行、驗證到人類授權的交付流程" />
-  <figcaption>工作流程：檢查結果是決策證據；它本身不會授予發布或上線權限。</figcaption>
-</figure>
+![AIPS 工作流程圖：從需求與脈絡解析，經影響分析、執行、驗證到人類授權的交付流程](./assets/workflow-zh.svg)
+
+_工作流程：檢查結果是決策證據；它本身不會授予發布或上線權限。圖表會隨閱讀欄寬縮放。_
 
 ## 文件如何組織
 

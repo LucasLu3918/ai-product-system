@@ -20,6 +20,12 @@
 .vp-doc h3 {
   letter-spacing: 0.01em;
   line-height: 1.4;
+  scroll-margin-top: calc(var(--vp-nav-height) + 1rem);
+}
+
+.vp-doc h1 {
+  font-size: clamp(1.8rem, 3vw, 2.25rem);
+  line-height: 1.25;
 }
 
 .vp-doc h2 {
@@ -37,13 +43,27 @@
 }
 
 .vp-doc table {
-  display: table;
-  width: 100%;
+  max-width: 100%;
+  min-width: 100%;
+  width: max-content;
   font-size: 0.94em;
 }
 
 .vp-doc th {
   white-space: nowrap;
+}
+
+.vp-doc td {
+  vertical-align: top;
+}
+
+.vp-doc :not(pre) > code {
+  overflow-wrap: anywhere;
+}
+
+.vp-doc pre {
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 .vp-doc figure.docs-figure {
@@ -63,6 +83,28 @@
 
 .vp-doc figure.docs-figure figcaption {
   margin-top: 1rem;
+  color: var(--vp-c-text-2);
+  font-size: 0.88rem;
+  text-align: center;
+}
+
+.vp-doc p:has(> img) {
+  margin: 1.5rem 0 2.25rem;
+  padding: clamp(1rem, 3vw, 2rem);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 16px;
+  background: var(--vp-c-bg-soft);
+}
+
+.vp-doc p > img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+
+.vp-doc p:has(+ p > em) + p {
+  margin-top: -1.75rem;
   color: var(--vp-c-text-2);
   font-size: 0.88rem;
   text-align: center;
@@ -168,19 +210,43 @@
   }
 
   .vp-doc figure.docs-figure {
-    overflow-x: auto;
-    overscroll-behavior-inline: contain;
+    padding: 0.8rem;
   }
 
   .vp-doc figure.docs-figure img,
-  .vp-doc figure.docs-figure figcaption {
-    min-width: 960px;
-  }
+  .vp-doc figure.docs-figure figcaption { min-width: 0; }
 
   .docs-path-card {
     min-height: 0;
   }
 }
+
+.skill-explorer { max-width: 100%; margin: 1.5rem 0 3rem; }
+.explorer-intro, .explorer-count { color: var(--vp-c-text-2); }
+.explorer-controls { display: grid; grid-template-columns: minmax(220px, 2fr) repeat(4, minmax(125px, 1fr)) auto; gap: 0.75rem; align-items: end; }
+.explorer-controls label { display: grid; gap: 0.35rem; font-size: 0.86rem; font-weight: 600; }
+.explorer-controls input, .explorer-controls select { width: 100%; min-height: 42px; padding: 0.55rem 0.7rem; border: 1px solid var(--vp-c-divider); border-radius: 8px; background: var(--vp-c-bg); color: var(--vp-c-text-1); font: inherit; }
+.explorer-controls :focus-visible, .skill-explorer button:focus-visible, .skill-explorer summary:focus-visible { outline: 3px solid var(--vp-c-brand-1); outline-offset: 2px; }
+.explorer-clear, .skill-explorer button { min-height: 40px; padding: 0.5rem 0.8rem; border: 1px solid var(--vp-c-brand-1); border-radius: 8px; background: var(--vp-c-brand-1); color: white; font: inherit; cursor: pointer; }
+.skill-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); gap: 1rem; }
+.skill-card { min-width: 0; padding: 1rem; border: 1px solid var(--vp-c-divider); border-radius: 12px; background: var(--vp-c-bg-soft); }
+.skill-badges { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.skill-badge { padding: 0.18rem 0.6rem; border-radius: 999px; background: var(--vp-c-brand-soft); color: var(--vp-c-brand-1); font-size: 0.78rem; }
+.skill-card h2 { margin: 0.8rem 0 0.2rem !important; padding: 0 !important; font-size: 1.1rem; }
+.skill-card h2 small, .skill-card p small { display: block; color: var(--vp-c-text-2); font-size: 0.82rem; font-weight: 400; }
+.skill-card code { overflow-wrap: anywhere; }
+.skill-card dl { display: grid; grid-template-columns: minmax(5rem, auto) minmax(0, 1fr); gap: 0.25rem 0.65rem; font-size: 0.85rem; }
+.skill-card dt { color: var(--vp-c-text-2); }
+.skill-card dd { margin: 0; overflow-wrap: anywhere; }
+.skill-card pre { max-height: 15rem; overflow: auto; padding: 0.7rem; border-radius: 8px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.skill-card details { border-top: 1px solid var(--vp-c-divider); padding-top: 0.7rem; }
+.skill-card summary { color: var(--vp-c-brand-1); cursor: pointer; }
+.explorer-state { padding: 1.2rem; border: 1px solid var(--vp-c-divider); border-radius: 10px; background: var(--vp-c-bg-soft); }
+.explorer-error, .copy-error { color: var(--vp-c-danger-1); }
+.translation-note { color: var(--vp-c-text-2); }
+
+@media (max-width: 1100px) { .explorer-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); } .explorer-search { grid-column: 1 / -1; } }
+@media (max-width: 520px) { .explorer-controls { grid-template-columns: 1fr; } .explorer-search { grid-column: auto; } }
 
 @media (prefers-reduced-motion: reduce) {
   *,
