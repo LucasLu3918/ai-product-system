@@ -14,11 +14,11 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 import check_secret_leakage as scanner
 import governance_guard as guard
+import project_governance_mode
 import publication_authority as auth
 import publication_planning as planning
 import publication_scan_evidence as evidence
 import publication_ship as ship
-import project_governance_mode
 from publication_authority import PublicationError
 from publication_commands import CommandError
 
