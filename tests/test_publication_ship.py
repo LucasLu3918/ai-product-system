@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 import check_secret_leakage as scanner
 import governance_guard as guard
+import project_governance_mode
 import publication_authority as auth
 import publication_planning as planning
 import publication_scan_evidence as evidence
@@ -41,6 +42,7 @@ class PublicationFixture(unittest.TestCase):
         self.addCleanup(temp.cleanup)
         self.root = Path(temp.name).resolve()
         os.environ['XDG_CACHE_HOME'] = str(self.root / 'cache')
+        os.environ['XDG_CONFIG_HOME'] = str(self.root / 'config')
         self.repo, self.remote = self.root / 'repo', self.root / 'remote.git'
         self.repo.mkdir()
         self.git(self.repo, 'init', '-b', 'main')
@@ -57,6 +59,9 @@ class PublicationFixture(unittest.TestCase):
         (self.repo / 'file.txt').write_text('candidate\n')
         self.git(self.repo, 'commit', '-am', 'candidate')
         self.head = self.git(self.repo, 'rev-parse', 'HEAD')
+        project_governance_mode.set_mode(
+            self.repo, 'enforce', ['gh_pr_create', 'gh_pr_merge', 'git_push', 'publish_ship'],
+        )
         self.body = self.root / 'body.md'
         self.body.write_text('Candidate validation evidence.\n')
         self.rows = []
