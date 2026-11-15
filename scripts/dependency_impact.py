@@ -435,7 +435,7 @@ def verified_dependency_paths(report: dict[str, Any] | None, files: list[str] | 
     """Return verified dependency paths only when evidence is bound to this candidate set."""
     if not isinstance(report, dict):
         return []
-    candidate = sorted(set(str(path) for path in files))
+    candidate = sorted({str(path) for path in files})
     bound, verified = report.get("candidate_files"), report.get("verified_files")
     if isinstance(bound, list) and isinstance(verified, list):
         normalized_bound = [str(path) for path in bound]

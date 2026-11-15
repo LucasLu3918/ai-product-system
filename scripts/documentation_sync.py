@@ -1,9 +1,16 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import argparse, fnmatch, json, os, subprocess
+
+import argparse
+import fnmatch
+import json
+import os
+import subprocess
 from pathlib import Path
 from typing import Any
+
 import yaml
+
 ROOT=Path(__file__).resolve().parents[1]; DEFAULT=ROOT/"config/documentation-sync.yaml"; ZERO="0"*40
 def pats(v:Any)->list[str]: return [str(x).strip() for x in v or [] if str(x).strip()] if isinstance(v,list) else []
 def anymatch(paths,patterns): return any(any(fnmatch.fnmatchcase(p,q) for q in patterns) for p in paths)
@@ -46,7 +53,7 @@ def evaluate_candidate(base,head,config,root=ROOT):
  if not files:return [],None
  import sys
  if str(root/"scripts") not in sys.path:sys.path.insert(0,str(root/"scripts"))
- from dependency_impact import pure_dependency_update,verified_dependency_paths
+ from dependency_impact import pure_dependency_update, verified_dependency_paths
  scope=pure_dependency_update(base,head,root)
  exempt=verified_dependency_paths(scope,files)
  remaining=sorted(set(files)-set(exempt))

@@ -52,7 +52,11 @@ assert invalid.returncode != 0 and invalid_report["status"] == "BLOCKED"
 
 # Pure dependency update documentation exemption (deterministic diff shape).
 sys.path.insert(0, str(ROOT / "scripts"))
-from dependency_impact import pure_dependency_update, validate_policy, verified_dependency_paths
+from dependency_impact import (
+    pure_dependency_update,
+    validate_policy,
+    verified_dependency_paths,
+)
 from publish_preflight_policy import documentation_impact
 
 OLD_SHA, NEW_SHA = "a" * 40, "b" * 40
@@ -292,8 +296,10 @@ assert mixed_impact["dependency_update_exemption"]["applied"] is True, mixed_imp
 assert mixed_impact["required_additions"] and mixed_impact["placement_rules"], mixed_impact
 
 # Placement filters only the exact verified subset and still requires a test path's canonical owner.
-import documentation_placement
 from unittest.mock import patch
+
+import documentation_placement
+
 placement_config = {"policy": {}, "placement_rules": []}
 with patch("dependency_impact.pure_dependency_update", return_value=mixed_report), \
      patch.object(documentation_placement, "working_tree_changed_files", return_value=mixed_report["candidate_files"]), \
