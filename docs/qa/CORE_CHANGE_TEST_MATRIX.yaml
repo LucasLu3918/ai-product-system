@@ -1,116 +1,116 @@
 version: 1
+
 candidate:
-  base_sha: 115aa03de059fbbce6463c714a58c239e26631fa
-  changed_files_hash: 79c61c5a291b8dd239cf01538f93f97ae6081861814d7d815490a3a6eb7cd866
+  base_sha: 88b0841c168ee6e270a17d334d5a6f6ade25baae
+  changed_files_hash: 1b92568bd22d5c7ff21733cec191a0dafb1d8b3d328a3adddcb73d4ab3fae083
 
 change:
-  id: claude-code-block-diagnostics-2026-11-01
-  summary: Add redacted Claude Auto Mode PermissionDenied observation, safe literal repo-local cd parsing for commit scanning, parser refusal evidence, and opt-in diff-derived docs-only review without changing authorization outcomes.
+  id: dependency-doc-impact-classifier-2026-11-15
+  summary: Filter only exact per-file verified dependency pin updates from documentation triggers in mixed candidates while retaining full candidate bindings and all publication checks.
   boundary:
-    - bashlex-backed commit command parsing and staged-content scanning
-    - Claude PermissionDenied passive observer lifecycle and private bounded JSONL retention
-    - read-only docs-only classification derived from Git status and canonical paths
-    - AIPS-managed Claude hook composition and preserved user settings
-    - Scenario 261 contracts, validation registry and documentation
+    - Whole-file content-sensitive verification of immutable action pins and exact pinned package versions.
+    - Shared verified-path evidence consumed by Documentation Impact, Placement and Sync.
+    - Full changed-path/hash, Secret Scan, Content Safety, matrix, Integration Gate, Required Checks, human dependency review and merge authority remain unchanged.
+    - Scenario 221 and the approved 14-document closure.
 
 review_evidence:
   required: false
 
 matrix:
-  - boundary: Commit parser and content scanning
-    reason: Accept only documented literal forms, support one canonical repo-local cd prefix, reject dynamic or unsafe AST forms, and keep the scan rooted at the actual repository.
+  - boundary: Per-file dependency pin verification
+    reason: Only entire exact diffs proven to be eligible pin updates may enter the verified subset; mixed or ambiguous files remain semantic paths.
     checks:
       static_lint:
         applicable: true
-        evidence: "bin/aips validate PASS; targeted parser and contract tests rerun after the final T12/T17 fixtures."
+        evidence: "tests/validate_repository.py — VALIDATION PASSED (275 scenarios)"
       unit:
         applicable: true
-        evidence: ".venv/bin/python -m unittest tests.test_publication_authority PASS (58 tests); final T17 absolute-path and symlink cases PASS."
+        evidence: "tests/evidence/dependency_impact_lifecycle.py — PASS"
       integration:
         applicable: true
-        evidence: "tests.test_publication_diagnostics PASS (23 tests); tests.test_protected_path_guard PASS (29 tests including managed-hook composition); docs-only CLI smoke keeps code changes NOT_DOCS_ONLY."
+        evidence: "Per-file mixed pin/semantic-hunk lifecycle — PASS"
       contract:
         applicable: true
-        evidence: "Scenario 261 T01-T09/T15-T17 unit fixtures and tests.validation.claude_block_diagnostics_contracts PASS."
+        evidence: "tests/validation/dependency_impact_contracts.py — PASS"
       e2e:
         applicable: false
-        na_reason: No product UI or end-user execution flow changed; command parser and Hook lifecycle are exercised with isolated Git repositories.
+        na_reason: No product UI or runtime flow changes; classifier behavior is exercised through exact Git fixtures and consumer lifecycles.
       security:
         applicable: true
-        evidence: "PASS: dynamic forms, hook bypass, path traversal, symlink escape, absolute outside-repository paths and trailing operations fail closed; refusal evidence excludes the raw command."
+        evidence: "Classifier fail-closed cases: malformed, unpinned, downgrade, path/mode, planned and policy errors — PASS"
       migration_recovery:
         applicable: false
-        na_reason: No persisted project state or data migration is introduced.
+        na_reason: No persisted product state or schema migration.
       cli_harness:
         applicable: true
-        evidence: "tests.test_protected_path_guard PASS (29 tests); Claude PreToolUse and PostToolUseFailure regressions PASS in publication diagnostics."
+        evidence: "aips publish matrix-sync and publish preview — PASS; full candidate path hash bound"
       docs_schema:
         applicable: true
-        evidence: "Full repository validation PASS; final docs-impact --require-complete PASS (58 direct paths, 58 closure paths, 0 missing additions)."
+        evidence: "Scenario 221 and dependency classification documentation contracts — PASS"
 
-  - boundary: Claude Auto Mode PermissionDenied observer
-    reason: Record only fixed allowlisted fields and hashes for the native PermissionDenied event; preserve the original refusal and keep PreToolUse and PostToolUseFailure distinct.
+  - boundary: Documentation Impact, Placement, Sync and repository preflight parity
+    reason: Three direct consumers must omit only verified paths while preserving all triggers from the remaining full candidate.
     checks:
       static_lint:
         applicable: true
-        evidence: "bin/aips validate PASS; final targeted tests and contract validator PASS."
+        evidence: "tests/validate_repository.py — VALIDATION PASSED (275 scenarios)"
       unit:
         applicable: true
-        evidence: "tests.test_claude_permission_denied PASS (4 tests): fixed fields/hash-only output, retention, 0700/0600, ignored event class and symlink refusal."
+        evidence: "tests/evidence/dependency_impact_lifecycle.py — PASS"
       integration:
         applicable: true
-        evidence: "tests.test_protected_path_guard PASS (29 tests): PermissionDenied hook install/update/uninstall preserves unrelated user settings."
+        evidence: "tests/evidence/publish_preflight_lifecycle.py and mixed-consumer parity — PASS"
       contract:
         applicable: true
-        evidence: "Scenario 261 T13-T14/T18; publication diagnostics (23 tests) and Claude block diagnostics contract validator PASS."
+        evidence: "dependency impact, documentation placement, documentation sync contracts — PASS"
       e2e:
         applicable: false
-        na_reason: Native Auto Mode denial is host-owned; local synthetic Hook protocol tests verify observer behavior without modifying host permission decisions.
+        na_reason: No end-user product flow; repository preflight and CLI lifecycles cover these deterministic gate surfaces.
       security:
         applicable: true
-        evidence: "PASS: fixed fields and hashes only, 30-day/1,000-record retention, 0700/0600 permissions, no raw values, and symlink refusal."
+        evidence: "Strict secret scan of all 25 candidate changed paths — PASS; exact committed-tree Gate scan remains required"
       migration_recovery:
         applicable: false
-        na_reason: The observer writes only its new private diagnostic log and does not migrate or alter policy state.
+        na_reason: No persisted product state or migration.
       cli_harness:
         applicable: true
-        evidence: "Managed Claude settings lifecycle PASS; PreToolUse/PostToolUseFailure regressions PASS (23 publication diagnostic tests)."
+        evidence: "aips publish preview — Placement PASS; documentation closure complete"
       docs_schema:
         applicable: true
-        evidence: "Full repository validation PASS; final docs-impact --require-complete PASS (58 direct paths, 58 closure paths, 0 missing additions)."
+        evidence: "14-document closure reviewed; working-tree placement audit and sync contracts — PASS"
 
-  - boundary: Diff-derived docs-only review
-    reason: Classification is opt-in and read-only, derived from Git status and canonical paths, and never asserts tests are inapplicable or skips required checks.
+  - boundary: Exact-candidate publication invariant preservation
+    reason: The filter must not change candidate identity, scans, matrix requirements, Required Checks, human review or merge authority.
     checks:
       static_lint:
         applicable: true
-        evidence: "bin/aips validate PASS; final docs-only tests and contract validator PASS."
+        evidence: "tests/validate_repository.py — VALIDATION PASSED (275 scenarios)"
       unit:
         applicable: true
-        evidence: "tests.test_docs_only_review PASS (4 tests): explicit opt-in, Git-derived changed/ignored paths, protected paths, symlink escape and empty diff."
+        evidence: "tests/evidence/publish_preflight_lifecycle.py — PASS"
       integration:
         applicable: true
-        evidence: "aips project docs-only review --opt-in --format json reaches the helper and classifies current code/test/config changes NOT_DOCS_ONLY."
+        evidence: "Exact path/hash binding, mismatch fallback and no-auto-merge lifecycle assertions — PASS"
       contract:
         applicable: true
-        evidence: "Scenario 261 T10-T12; tests.validation.claude_block_diagnostics_contracts PASS; status remains DOCS_ONLY_REVIEW_ONLY with approval_and_reconciliation required."
+        evidence: "tests/validation/publish_preflight_contracts.py — PASS"
       e2e:
-        applicable: false
-        na_reason: This is a local read-only CLI classification, not a product UI flow.
+        applicable: true
+        evidence: "tests/validation/publish_preflight_contracts.py — PASS"
       security:
         applicable: true
-        evidence: "PASS: code/config/security paths, .claude/settings.json, unknown paths and symlink escapes cannot be classified DOCS_ONLY."
+        evidence: "Strict secret scan of all 25 candidate changed paths — PASS; Gate repeats scan over exact commit range"
       migration_recovery:
         applicable: false
-        na_reason: No persistent state or migration is performed.
+        na_reason: No persisted state or data migration.
       cli_harness:
         applicable: true
-        evidence: "CLI dispatch, status-derived classification and required diff/Markdown/path/secret-scan/approval/reconciliation checks verified locally."
+        evidence: "aips publish matrix-sync and publish preview — PASS"
       docs_schema:
         applicable: true
-        evidence: "Full repository validation PASS; final docs-impact --require-complete PASS (58 direct paths, 58 closure paths, 0 missing additions)."
+        evidence: "14-document closure and Scenario 221 consistency — PASS"
 
 scope_recomputed_after_expansion: true
-blockers: []
 actual_diff_reconciled: true
+blockers: []
 status: READY

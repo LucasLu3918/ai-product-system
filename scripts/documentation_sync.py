@@ -1,9 +1,16 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import argparse, fnmatch, json, os, subprocess
+
+import argparse
+import fnmatch
+import json
+import os
+import subprocess
 from pathlib import Path
 from typing import Any
+
 import yaml
+
 ROOT=Path(__file__).resolve().parents[1]; DEFAULT=ROOT/"config/documentation-sync.yaml"; ZERO="0"*40
 def pats(v:Any)->list[str]: return [str(x).strip() for x in v or [] if str(x).strip()] if isinstance(v,list) else []
 def anymatch(paths,patterns): return any(any(fnmatch.fnmatchcase(p,q) for q in patterns) for p in paths)
@@ -41,15 +48,17 @@ def changed_files_from_git(base,head="HEAD",root=ROOT):
  if r.returncode:raise RuntimeError(r.stderr.strip() or "git diff failed")
  return [x.strip() for x in r.stdout.splitlines() if x.strip()]
 def evaluate_candidate(base,head,config,root=ROOT):
- """Single diff-based sync entry point; verified pure dependency updates are exempt (Scenario 221)."""
+ """Evaluate sync rules against a candidate while preserving full-scope evidence."""
  files=changed_files_from_git(base,head,root)
- if files:
-  import sys
-  if str(root/"scripts") not in sys.path:sys.path.insert(0,str(root/"scripts"))
-  from dependency_impact import pure_dependency_update
-  scope=pure_dependency_update(base,head,root)
-  if scope["status"]=="PURE_DEPENDENCY_UPDATE" and sorted(set(files))==scope["files"]:return [],scope
- return evaluate_changes(files,config),None
+ if not files:return [],None
+ import sys
+ if str(root/"scripts") not in sys.path:sys.path.insert(0,str(root/"scripts"))
+ from dependency_impact import pure_dependency_update, verified_dependency_paths
+ scope=pure_dependency_update(base,head,root)
+ exempt=verified_dependency_paths(scope,files)
+ remaining=sorted(set(files)-set(exempt))
+ return evaluate_changes(remaining,config),scope
+
 def main():
  p=argparse.ArgumentParser(); p.add_argument("--config",default=str(DEFAULT)); p.add_argument("--base-ref",default=os.environ.get("AIPS_DOCS_DIFF_BASE","")); p.add_argument("--head-ref",default="HEAD"); p.add_argument("--files",nargs="*"); a=p.parse_args(); c=yaml.safe_load(Path(a.config).read_text()) or {}; ce=validate_config(c)
  if ce: print(json.dumps({"valid":False,"errors":ce},indent=2)); return 1

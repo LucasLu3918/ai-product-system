@@ -1348,7 +1348,6 @@ Lifecycle evidence 同時驗證 Git-ignored metadata、遞迴文件影響、安�
 - uncovered：0
 - automated：**165 / 165**
 
-純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
 
 ## Scenario 166 — Temporal Project Intelligence
 
@@ -1697,17 +1696,17 @@ The installation-entrypoint workflow keeps its Unix, Linux lifecycle and Windows
 Related security and observation contracts are covered by Scenarios 211 and 217: Dependency Review shadow results do not alter the required aggregate, and a completed `NOT_READY` cohort is distinct from an operational collection failure.
 
 ## Scenario 221 — Dependency Update Risk Classification
+混合候選的逐檔文件豁免（Scenario 221）：pure_dependency_update 逐檔檢查完整差異，回報完整 candidate_files 與 verified_files；Documentation Impact、Placement、Sync 只在候選路徑集合完全相符時，才從文件觸發匹配排除 verified pin 檔。整體 PURE_DEPENDENCY_UPDATE 仍要求所有候選檔都通過驗證。混合 semantic hunk、未辨識路徑、路徑或模式變更、未釘選／降版／格式錯誤、規劃路徑及分類或 Git 錯誤均維持原文件規則。完整路徑與 hash、依賴人工審查、secret/content scans、matrix、Integration Gate、Required Checks 與人工合併核准均不變，automatic_merge_authorized 仍為 false。
+
 
 Dependency inventory remains evidence for Human review and does not merge unrelated PRs.
 
 
 Dependency updates receive an explicit class, risk and recommended validation plan. Unknown dependencies are high risk and require human review; semantic runtime updates include retrieval regression evaluation and a semantic trial. Classification never authorizes automatic merges or policy changes.
 
-純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
 
 文件同步路徑正規化（Scenario 221）：Documentation Sync 只移除開頭一個 `./`，不再用 `lstrip("./")` 逐字元剝除，使 `config/documentation-sync.yaml` 中的 `.github/**` 觸發條件真正生效；純依賴升級仍由 `evaluate_candidate` 先行豁免。
 
-Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
 ## Scenario 222 — Large Document Measurement Only
 
@@ -2057,6 +2056,8 @@ Current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md)
 
 ## Scenario 260 — Publication diagnostics and Doctor
 
+Scenario 221 dependency filtering changes Documentation Impact, Placement and Sync trigger matching only for exact-candidate verified pin paths; Scenario 260 publication diagnostics still bind every result, scan and authorization decision to the complete candidate diff.
+
 文件網站 build 通過只表示 VitePress 產物可建立，不代表 GitHub Pages 已部署、PR 檢查通過或取得 merge 授權。
 
 PreToolUse, PermissionDenied, and PostToolUseFailure remain distinct sources in publication diagnostics.
@@ -2114,13 +2115,11 @@ Scenario 099 also covers the publication guard read-only allow list and stable c
 
 Publication diagnostics keep reporting `CONTENT_PII_BLOCKED` for real addresses; Git remote `git` userinfo no longer produces that code under `pii.email.v2` (Scenario 266).
 
-純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
 
 Dependabot commits: the GitHub App bot noreply author and Dependabot's exact final `Signed-off-by` trailer are Git identity metadata decided by `config/git-publication.yaml`, not PII exceptions; `pii.email.v2` and every other address stay blocking, and the bot identity grants no authority.
 
 文件同步路徑正規化（Scenario 221）：Documentation Sync 只移除開頭一個 `./`，不再用 `lstrip("./")` 逐字元剝除，使 `config/documentation-sync.yaml` 中的 `.github/**` 觸發條件真正生效；純依賴升級仍由 `evaluate_candidate` 先行豁免。
 
-Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
 ## Scenario 262 — ComfyUI Resource Authorization and Diagnostics
 
@@ -2205,7 +2204,6 @@ Scenario 169 covers commit-form scanning of not-yet-staged content and unchanged
 
 The `pii.email.v2` corpus proves Git remote `git` userinfo (scp-like, `ssh://`, quoted prefixes and template paths) passes while true addresses, personal remote users, confusables and adjacent addresses block, with redaction parity and rejected `pii.*` exceptions.
 
-純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
 
 Dependabot commits: the GitHub App bot noreply author and Dependabot's exact final `Signed-off-by` trailer are Git identity metadata decided by `config/git-publication.yaml`, not PII exceptions; `pii.email.v2` and every other address stay blocking, and the bot identity grants no authority.
 

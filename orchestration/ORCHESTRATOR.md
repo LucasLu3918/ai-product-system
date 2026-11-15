@@ -139,7 +139,6 @@ SAL 3–4 activates independent Security Engineer review as applicable. SAL 4 un
 
 Do not run full-product SAL 4 review for a cosmetic change that does not touch a protected boundary.
 
-Dependabot repository preflight and action pin sync (Scenario 221): `scripts/repository_preflight.py`, the documentation sync contracts and the `scripts/documentation_sync.py` CLI all evaluate sync through `documentation_sync.evaluate_candidate`, which shares `pure_dependency_update` with docs-impact and placement; every non-matching candidate keeps the full rules. Validation contracts no longer copy action commit SHAs: `dependency_impact.require_pinned_action` requires the exact action identity, a full 40-hex commit SHA, a version comment at or above the reviewed floor, and one shared SHA across paired workflows; the evolution configs name `action: openai/codex-action`. Human review still confirms that a new SHA is the upstream tag commit.
 
 ## Existing-project instruction discovery
 
@@ -271,6 +270,8 @@ When extracting an internal retrieval module, preserve the existing facade and l
 Large/core changes are proposal-first. Use `templates/core-change-proposal.md`. Semantic impact matters more than the number of changed files. No implementation begins until the user approves the proposed boundary. Material scope drift requires re-approval.
 
 ## Git Publish Approval
+Mixed-candidate documentation filtering (Scenario 221): pure_dependency_update verifies each file's complete diff and reports the full candidate_files set plus its verified_files subset. Documentation Impact, Placement and Sync exclude verified pin-only paths from trigger matching only when the complete candidate path set matches the report. PURE_DEPENDENCY_UPDATE still requires every candidate path to pass. Mixed semantic hunks, unknown paths, path or mode changes, malformed or unpinned references, downgrades, planned paths, and classifier or Git errors retain the existing documentation rules. Full paths and hashes, Human dependency review, secret/content scans, the matrix, Integration Gate, Required Checks and Human merge approval remain required; automatic_merge_authorized stays false.
+
 
 AIPS core changes resolve canonical documentation placement and full documentation closure before the candidate can be marked READY.
 
@@ -522,7 +523,6 @@ Validation observations never authorize selective execution: `NOT_READY` is an e
 
 When publication is blocked, use `aips publish doctor --worktree <candidate-root> --worktree-details` to classify policy evidence, worktree state, and PR state by phase. Preserve unknown files; use the named safe recovery step and retain Human/host authority.
 
-Pure dependency update documentation exemption (Scenario 221): `pure_dependency_update` in `scripts/dependency_impact.py` returns `PURE_DEPENDENCY_UPDATE` only when every changed file is an allowlisted dependency manifest (`.github/workflows/*.yml`, root `requirements*.txt`, `constraints/*.txt`) modified in place and every changed line pair is either a full-SHA pinned `uses:` reference for the same action with a non-decreasing version comment, or an exact `name==version` pin with a strictly higher version. Documentation Impact, Documentation Placement and Documentation Sync then suppress documentation requirements only and report each dependency's classification, risk and `human_review_required`; any other line or file, downgrade, unpinned reference, planned path, size-limit overflow or predicate failure keeps the full rules. Secret scanning, content safety, the Core Change Test Matrix, the Integration Gate, required checks and Human merge approval are unchanged, and `automatic_merge_authorized` stays false.
 
 ## Runtime Content Safety Boundary
 

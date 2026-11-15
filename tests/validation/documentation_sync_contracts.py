@@ -38,6 +38,8 @@ for path in required:
         errors.append(f'Missing documentation consistency artifact: {path.relative_to(ROOT)}')
 
 script = ROOT / 'scripts/documentation_sync.py'
+if script.exists() and 'verified_dependency_paths' not in script.read_text(encoding='utf-8'):
+    errors.append('Documentation Sync must use the candidate-bound verified dependency subset')
 if script.exists():
     compiled = subprocess.run([sys.executable, '-m', 'py_compile', str(script)], capture_output=True, text=True)
     if compiled.returncode:

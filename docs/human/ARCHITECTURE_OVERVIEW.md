@@ -454,7 +454,6 @@ Plan36 publication diagnostics preserve this topic's existing behavior and autho
 
 Dependabot commit 的機器人 noreply author 與最後一行精確的 `Signed-off-by` trailer 屬於 Git 身分 metadata，由 `config/git-publication.yaml` 決定，不是 PII 例外；`pii.email.v2` 與其他位址仍會擋下，機器人身分不授予權限。
 
-Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
 ## Security 與 Governance
 
@@ -712,6 +711,8 @@ Publication diagnostics extend the existing read-only Git publication flow with 
 The synthetic scanner fixture in `tests/test_publication_authority.py` places each hex digit exactly twice in a per-run shuffle, so its Shannon entropy is always 4.0 and clears the `generic-secret-assignment` floor of 3.25; the earlier raw uuid4 hex fell below that floor in about 0.7% of runs and made the guard test flaky. Scanner rules and thresholds are unchanged.
 
 ## Documentation Architecture
+混合候選的逐檔文件豁免（Scenario 221）：pure_dependency_update 逐檔檢查完整差異，回報完整 candidate_files 與 verified_files；Documentation Impact、Placement、Sync 只在候選路徑集合完全相符時，才從文件觸發匹配排除 verified pin 檔。整體 PURE_DEPENDENCY_UPDATE 仍要求所有候選檔都通過驗證。混合 semantic hunk、未辨識路徑、路徑或模式變更、未釘選／降版／格式錯誤、規劃路徑及分類或 Git 錯誤均維持原文件規則。完整路徑與 hash、依賴人工審查、secret/content scans、matrix、Integration Gate、Required Checks 與人工合併核准均不變，automatic_merge_authorized 仍為 false。
+
 
 The Runtime Content Safety and Scenario 265 documentation crosswalk tracks the AVIF limits and unsupported-feature recovery path.
 
@@ -754,11 +755,9 @@ Standalone HTML 不再是新增功能的 canonical target。Current behavior 必
 
 新增的 publication transfer guard 由 `config/documentation-placement.yaml` 指向既有 Git Publication、Maintenance 與 Technology Guide topic；發佈流程變更不建立平行的 Human 文件來源。
 
-純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
 
 文件同步路徑正規化（Scenario 221）：Documentation Sync 只移除開頭一個 `./`，不再用 `lstrip("./")` 逐字元剝除，使 `config/documentation-sync.yaml` 中的 `.github/**` 觸發條件真正生效；純依賴升級仍由 `evaluate_candidate` 先行豁免。
 
-Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
 ## Official Docs Site
 
@@ -807,6 +806,5 @@ The commit guard accepts quoted-delimiter heredoc messages, literal `git add` co
 
 Email rule `pii.email.v2` treats the `git` service user of an scp-like or `ssh://` Git remote as a host address, not an email; detection and redaction share that predicate and every other address still blocks.
 
-純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
 
 Scenario 269 refreshes only the CLI help golden vectors for `aips intelligence gc`; content-safety detection, sink policy and commit scanning are unchanged.

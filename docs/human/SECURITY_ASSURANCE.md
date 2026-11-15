@@ -222,6 +222,8 @@ Review actual:
 - tests and failure paths.
 
 ## Release Security Gate
+混合候選的逐檔文件豁免（Scenario 221）：pure_dependency_update 逐檔檢查完整差異，回報完整 candidate_files 與 verified_files；Documentation Impact、Placement、Sync 只在候選路徑集合完全相符時，才從文件觸發匹配排除 verified pin 檔。整體 PURE_DEPENDENCY_UPDATE 仍要求所有候選檔都通過驗證。混合 semantic hunk、未辨識路徑、路徑或模式變更、未釘選／降版／格式錯誤、規劃路徑及分類或 Git 錯誤均維持原文件規則。完整路徑與 hash、依賴人工審查、secret/content scans、matrix、Integration Gate、Required Checks 與人工合併核准均不變，automatic_merge_authorized 仍為 false。
+
 
 A docs-only report is advisory classification; publication still requires candidate scanning, Human authority, reconciliation, and required checks.
 
@@ -355,11 +357,9 @@ At SAL 4, unresolved High/Critical findings are **BLOCK**. They may not be downg
 
 Publication diagnostic evidence is read-only and redacted. HTTP 403 remains an access/evidence failure; a classic-protection 404 is interpreted only after branch existence is confirmed, and effective active rules determine the reported state. UNKNOWN never grants publication authority.
 
-純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
 
 Dependabot commits: the GitHub App bot noreply author and Dependabot's exact final `Signed-off-by` trailer are Git identity metadata decided by `config/git-publication.yaml`, not PII exceptions; `pii.email.v2` and every other address stay blocking, and the bot identity grants no authority.
 
-Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
 發布守門測試的合成掃描 fixture（`tests/test_publication_authority.py::scanner_fixture_assignment`）每次執行都把 16 個十六進位數字各放兩次後隨機排列，Shannon 熵固定為 4.0、高於 `generic-secret-assignment` 的 3.25 門檻，因此偵測結果不再隨機；原本直接使用 uuid4 hex 約有 0.7% 機率低於門檻而造成偶發失敗。掃描器規則與門檻不變。
 
@@ -535,7 +535,6 @@ The commit guard accepts quoted-delimiter heredoc messages, literal `git add` co
 
 Email rule `pii.email.v2` reads only the exact ASCII `git` userinfo of an scp-like or `ssh://` Git remote as a host address. Personal remote users, `https` userinfo, case variants, confusables and any address next to or inside a remote stay blocked; secret scanning is unchanged and PII still has no exception path.
 
-純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
 
 Publication preflight `git_identity` accepts the GitHub App bot noreply form (`<numeric id>+<slug>[bot]` on `users.noreply.github.com`, `identity.allowed_bot_author_patterns`) only in the candidate commit author field; committer and local `user.email` keep the human noreply formats. Before the `commit_messages` PII scan, exact `identity.trailer_identities` entries (currently Dependabot's `Signed-off-by: dependabot[bot]` with GitHub's support address) are replaced by `git-identity-metadata` only in the final trailer block of a commit authored by the same bot. `pii.email.v2` is unchanged, every other address still blocks, a malformed policy fails closed, and a bot identity grants no authority.
 

@@ -298,12 +298,10 @@ def placement_errors(config: dict[str, Any], base: str, *, working_tree: bool = 
     if base in migration_bases:
         return []
     files = working_tree_changed_files(base) if working_tree else changed_files(base)
-    from dependency_impact import pure_dependency_update
+    from dependency_impact import pure_dependency_update, verified_dependency_paths
 
     scope = pure_dependency_update(base, None if working_tree else "HEAD", ROOT)
-    if scope["status"] == "PURE_DEPENDENCY_UPDATE" and sorted(files) == scope["files"]:
-        # Pinned version bumps only: no canonical topic describes them (Scenario 221).
-        return []
+    files = sorted(set(files) - set(verified_dependency_paths(scope, files)))
     errors: list[str] = []
     rules = config.get("placement_rules") or []
 

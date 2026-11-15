@@ -45,64 +45,73 @@ def documentation_impact(
 ) -> dict[str, Any]:
     sync = yaml.safe_load((root / "config/documentation-sync.yaml").read_text(encoding="utf-8")) or {}
     placement = yaml.safe_load((root / "config/documentation-placement.yaml").read_text(encoding="utf-8")) or {}
-    closure = set(files)
-    triggered: dict[str, dict[str, Any]] = {}
-    required_by: dict[str, set[str]] = {}
-    placement_hits = []
-    placement_seen: set[str] = set()
-    changed = True
-    while changed:
-        changed = False
-        current = sorted(closure)
-        for rule in placement.get("placement_rules") or []:
-            if not matches(current, [str(item) for item in rule.get("triggers") or []]):
-                continue
-            rule_id = str(rule.get("id"))
-            placements = rule.get("placements") or {}
-            if rule_id not in placement_seen:
-                placement_hits.append({"id": rule_id, "placements": placements})
-                placement_seen.add(rule_id)
-            for path in placements:
-                target = str(path)
-                required_by.setdefault(target, set()).add(f"placement:{rule_id}")
-                if target not in closure:
-                    closure.add(target)
-                    changed = True
-        technology = sync.get("technology_guide") or {}
-        if matches(current, [str(item) for item in technology.get("triggers") or []]):
-            target = str(technology.get("path") or "")
-            if target:
-                required_by.setdefault(target, set()).add("technology-guide")
-                if target not in closure:
-                    closure.add(target)
-                    changed = True
-        for rule in sync.get("rules") or []:
-            patterns = [str(item) for item in rule.get("triggers") or []]
-            if not matches(current, patterns):
-                continue
-            required = [str(item) for item in (rule.get("human_docs") or []) + (rule.get("agent_docs") or [])]
-            triggered.setdefault(str(rule.get("id")), {"required": required})
-            for path in required:
-                required_by.setdefault(path, set()).add(f"sync:{rule.get('id')}")
-            before = len(closure)
-            closure.update(required)
-            changed = changed or len(closure) != before
-    required = sorted(closure - set(files))
-    direct_path_count = len(set(files))
-    required_by_counts = [len(sources) for sources in required_by.values()]
+    full_files = sorted(set(files))
+    from dependency_impact import verified_dependency_paths
+
+    verified = verified_dependency_paths(dependency_update, full_files)
+
+    def closure_for(excluded: set[str]):
+        closure = set(full_files)
+        triggered: dict[str, dict[str, Any]] = {}
+        required_by: dict[str, set[str]] = {}
+        placement_hits = []
+        placement_seen: set[str] = set()
+        changed = True
+        while changed:
+            changed = False
+            current = sorted(closure)
+            trigger_files = [path for path in current if path not in excluded]
+            for rule in placement.get("placement_rules") or []:
+                if not matches(trigger_files, [str(item) for item in rule.get("triggers") or []]):
+                    continue
+                rule_id = str(rule.get("id"))
+                placements = rule.get("placements") or {}
+                if rule_id not in placement_seen:
+                    placement_hits.append({"id": rule_id, "placements": placements})
+                    placement_seen.add(rule_id)
+                for path in placements:
+                    target = str(path)
+                    required_by.setdefault(target, set()).add(f"placement:{rule_id}")
+                    if target not in closure:
+                        closure.add(target)
+                        changed = True
+            technology = sync.get("technology_guide") or {}
+            if matches(trigger_files, [str(item) for item in technology.get("triggers") or []]):
+                target = str(technology.get("path") or "")
+                if target:
+                    required_by.setdefault(target, set()).add("technology-guide")
+                    if target not in closure:
+                        closure.add(target)
+                        changed = True
+            for rule in sync.get("rules") or []:
+                patterns = [str(item) for item in rule.get("triggers") or []]
+                if not matches(trigger_files, patterns):
+                    continue
+                required = [str(item) for item in (rule.get("human_docs") or []) + (rule.get("agent_docs") or [])]
+                triggered.setdefault(str(rule.get("id")), {"required": required})
+                for path in required:
+                    required_by.setdefault(path, set()).add(f"sync:{rule.get('id')}")
+                before = len(closure)
+                closure.update(required)
+                changed = changed or len(closure) != before
+        return closure, triggered, required_by, placement_hits
+
+    closure, triggered, required_by, placement_hits = closure_for(set(verified))
+    required = sorted(closure - set(full_files))
+    suppressed: list[str] = []
+    if verified:
+        unfiltered_closure, _, _, _ = closure_for(set())
+        suppressed = sorted(set(unfiltered_closure) - set(full_files) - set(required))
+    required_by_counts = [len(required_by.get(path, set())) for path in required]
+    direct_path_count = len(full_files)
     exemption = None
     if dependency_update is not None:
-        exempt = (
-            dependency_update.get("status") == "PURE_DEPENDENCY_UPDATE"
-            and sorted(set(files)) == sorted(dependency_update.get("files") or [])
-        )
-        exemption = {**dependency_update, "applied": exempt, "suppressed_required_additions": required if exempt else []}
-        if exempt:
-            # Pure version bumps carry no documented behavior; only documentation
-            # requirements are suppressed, every other gate still applies.
-            required = []
-            required_by = {}
-            required_by_counts = []
+        exemption = {
+            **dependency_update,
+            "applied": bool(verified),
+            "verified_files": verified,
+            "suppressed_required_additions": suppressed,
+        }
     result = {
         "changed_files": files,
         "closure": sorted(closure),
