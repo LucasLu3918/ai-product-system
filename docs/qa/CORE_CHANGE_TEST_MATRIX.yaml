@@ -1,116 +1,86 @@
 version: 1
-
 candidate:
   base_sha: 88b0841c168ee6e270a17d334d5a6f6ade25baae
-  changed_files_hash: 1b92568bd22d5c7ff21733cec191a0dafb1d8b3d328a3adddcb73d4ab3fae083
+  changed_files_hash: c9514c43999ef3047428cdd7b94fcf607c4ec041050839566a0352d967dfaaa1
 
 change:
-  id: dependency-doc-impact-classifier-2026-11-15
-  summary: Filter only exact per-file verified dependency pin updates from documentation triggers in mixed candidates while retaining full candidate bindings and all publication checks.
+  id: dependabot-pr-consolidation-2026-11-14
+  summary: Consolidate five Python validation dependency updates and two GitHub Actions pin updates from Dependabot PRs #399–#404 and #412.
   boundary:
-    - Whole-file content-sensitive verification of immutable action pins and exact pinned package versions.
-    - Shared verified-path evidence consumed by Documentation Impact, Placement and Sync.
-    - Full changed-path/hash, Secret Scan, Content Safety, matrix, Integration Gate, Required Checks, human dependency review and merge authority remain unchanged.
-    - Scenario 221 and the approved 14-document closure.
+    - Python 3.12 validation dependency resolution for pydantic, pydantic-core, pydantic-settings, ruff, and truststore
+    - actions/setup-python v7.1.0 pinned by full SHA in 14 GitHub workflows
+    - github/codeql-action/upload-sarif v4.39.3 pinned by full SHA in scorecard workflow
+    - Exact-candidate security scan, validation workflow, and protected-main merge checks
 
 review_evidence:
-  required: false
+  required: true
 
 matrix:
-  - boundary: Per-file dependency pin verification
-    reason: Only entire exact diffs proven to be eligible pin updates may enter the verified subset; mixed or ambiguous files remain semantic paths.
+  - boundary: Python validation dependency set
+    reason: Keep the exact tested Python 3.12 dependency set installable and internally consistent after the pinned upgrades.
     checks:
       static_lint:
         applicable: true
-        evidence: "tests/validate_repository.py — VALIDATION PASSED (275 scenarios)"
+        evidence: "Ruff critical check and quality ratchet passed. Full Ruff scan reports 651 findings against a 685-finding baseline; this candidate changes no Python files."
       unit:
         applicable: true
-        evidence: "tests/evidence/dependency_impact_lifecycle.py — PASS"
+        evidence: "Full pytest on this candidate: 403 passed, 10 failed, 334 subtests passed. The same 10 publication_ship failures reproduced on origin/main with old and new dependency environments; this is a baseline failure, not an all-green suite."
       integration:
         applicable: true
-        evidence: "Per-file mixed pin/semantic-hunk lifecycle — PASS"
+        evidence: "Python 3.12.14 installed the exact constraints/tested.txt set and pip check passed. Integration Gate did not run because this matrix is DRAFT."
       contract:
         applicable: true
-        evidence: "tests/validation/dependency_impact_contracts.py — PASS"
+        evidence: "Dependency impact classified the change as PURE_DEPENDENCY_UPDATE; pydantic, pydantic-settings, pydantic-core, and truststore remain marked for human dependency review."
       e2e:
         applicable: false
-        na_reason: No product UI or runtime flow changes; classifier behavior is exercised through exact Git fixtures and consumer lifecycles.
+        na_reason: No product UI or end-user workflow changed.
       security:
         applicable: true
-        evidence: "Classifier fail-closed cases: malformed, unpinned, downgrade, path/mode, planned and policy errors — PASS"
+        evidence: "Strict secret scan passed for the pre-matrix source candidate; rerun the exact-candidate scan after this matrix commit before publication."
       migration_recovery:
         applicable: false
-        na_reason: No persisted product state or schema migration.
+        na_reason: No persisted data or migration behavior changed.
       cli_harness:
-        applicable: true
-        evidence: "aips publish matrix-sync and publish preview — PASS; full candidate path hash bound"
+        applicable: false
+        na_reason: No CLI or runtime harness implementation changed.
       docs_schema:
         applicable: true
-        evidence: "Scenario 221 and dependency classification documentation contracts — PASS"
+        evidence: "15 changed workflow YAML files parsed successfully; git diff --check passed."
 
-  - boundary: Documentation Impact, Placement, Sync and repository preflight parity
-    reason: Three direct consumers must omit only verified paths while preserving all triggers from the remaining full candidate.
+  - boundary: GitHub Actions version pins
+    reason: Preserve workflow syntax and bind actions/setup-python and CodeQL upload-sarif to the intended versioned upstream commits.
     checks:
       static_lint:
         applicable: true
-        evidence: "tests/validate_repository.py — VALIDATION PASSED (275 scenarios)"
+        evidence: "All 15 changed workflow YAML files parsed successfully; action references remain full-SHA pinned with version comments."
       unit:
-        applicable: true
-        evidence: "tests/evidence/dependency_impact_lifecycle.py — PASS"
+        applicable: false
+        na_reason: The changes only update pinned third-party action references; local unit tests cannot execute GitHub-hosted action implementations.
       integration:
         applicable: true
-        evidence: "tests/evidence/publish_preflight_lifecycle.py and mixed-consumer parity — PASS"
+        evidence: "Exact-candidate GitHub workflow checks are pending; no PR exists, so Required Checks state is UNKNOWN."
       contract:
         applicable: true
-        evidence: "dependency impact, documentation placement, documentation sync contracts — PASS"
+        evidence: "The diff updates actions/setup-python from v7.0.0 to v7.1.0 in 14 workflows and upload-sarif from v4.39.1 to v4.39.3 in scorecard.yml."
       e2e:
         applicable: false
-        na_reason: No end-user product flow; repository preflight and CLI lifecycles cover these deterministic gate surfaces.
+        na_reason: No product UI or end-user execution flow changed.
       security:
         applicable: true
-        evidence: "Strict secret scan of all 25 candidate changed paths — PASS; exact committed-tree Gate scan remains required"
+        evidence: "Strict exact-candidate secret scan passed; both updated action references remain pinned to full commit SHAs."
       migration_recovery:
         applicable: false
-        na_reason: No persisted product state or migration.
+        na_reason: No persisted data or migration behavior changed.
       cli_harness:
-        applicable: true
-        evidence: "aips publish preview — Placement PASS; documentation closure complete"
-      docs_schema:
-        applicable: true
-        evidence: "14-document closure reviewed; working-tree placement audit and sync contracts — PASS"
-
-  - boundary: Exact-candidate publication invariant preservation
-    reason: The filter must not change candidate identity, scans, matrix requirements, Required Checks, human review or merge authority.
-    checks:
-      static_lint:
-        applicable: true
-        evidence: "tests/validate_repository.py — VALIDATION PASSED (275 scenarios)"
-      unit:
-        applicable: true
-        evidence: "tests/evidence/publish_preflight_lifecycle.py — PASS"
-      integration:
-        applicable: true
-        evidence: "Exact path/hash binding, mismatch fallback and no-auto-merge lifecycle assertions — PASS"
-      contract:
-        applicable: true
-        evidence: "tests/validation/publish_preflight_contracts.py — PASS"
-      e2e:
-        applicable: true
-        evidence: "tests/validation/publish_preflight_contracts.py — PASS"
-      security:
-        applicable: true
-        evidence: "Strict secret scan of all 25 candidate changed paths — PASS; Gate repeats scan over exact commit range"
-      migration_recovery:
         applicable: false
-        na_reason: No persisted state or data migration.
-      cli_harness:
-        applicable: true
-        evidence: "aips publish matrix-sync and publish preview — PASS"
+        na_reason: No CLI or runtime harness implementation changed.
       docs_schema:
         applicable: true
-        evidence: "14-document closure and Scenario 221 consistency — PASS"
+        evidence: "All changed workflow YAML parsed successfully and the exact changed-file list is bound above."
 
 scope_recomputed_after_expansion: true
-actual_diff_reconciled: true
-blockers: []
-status: READY
+blockers:
+  - Full pytest remains non-green with 10 baseline failures; exact-candidate Integration Gate and GitHub Required Checks have not passed.
+  - Matrix evidence and dependency-risk review are incomplete; keep status DRAFT until reviewed and revalidated.
+actual_diff_reconciled: false
+status: DRAFT
