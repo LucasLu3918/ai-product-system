@@ -1,6 +1,6 @@
 version: 1
 candidate:
-  base_sha: 88b0841c168ee6e270a17d334d5a6f6ade25baae
+  base_sha: cf24b26c1716a4efe25c8e25bcbc5e0b089770d0
   changed_files_hash: 50acaa3b439b10a8b941dd20cc2afeca38ff8b8263ef6e2bb5760079e1f42689
 
 change:
@@ -22,16 +22,16 @@ matrix:
     checks:
       static_lint:
         applicable: true
-        evidence: "Ruff critical check and quality ratchet passed. Full Ruff scan reports 651 findings against a 685-finding baseline; this candidate changes no Python files."
+        evidence: "Ruff 0.17.4 check passed on the changed publication_ship fixture; the exact-candidate Integration Gate runs the repository quality ratchet."
       unit:
         applicable: true
-        evidence: "Full pytest on the bound code candidate: 409 passed and 338 subtests passed. The 10 publication_ship failures were fixed by isolating XDG_CONFIG_HOME and explicitly setting the fixture's enforce scope; the focused file passed 22 tests and 11 subtests."
+        evidence: "With the exact tested dependency constraints installed in an isolated Python 3.12.14 environment, tests/test_publication_ship.py passed: 22 tests and 11 subtests. The exact-candidate Integration Gate runs full repository validation."
       integration:
         applicable: true
-        evidence: "Python 3.12.14 installed the exact constraints/tested.txt set and pip check passed. Run the exact-candidate Integration Gate before publication; GitHub Required Checks remain unobserved until a PR exists."
+        evidence: "Python 3.12.14 installed requirements.txt, requirements-validation.txt, requirements-visual.txt and requirements-openapi.txt under constraints/tested.txt in an isolated environment; pip check passed. The exact-candidate Integration Gate is required before publication."
       contract:
         applicable: true
-        evidence: "Reviewed Dependabot release notes for all seven source PRs. Pydantic 2.14.3 and pydantic-core 2.50.4 are paired; pydantic-settings 2.16.2, Ruff 0.17.4, and truststore 0.10.5 install and pass the full suite."
+        evidence: "Reviewed Dependabot release notes for all seven source PRs. Pydantic 2.14.3 and pydantic-core 2.50.4 are paired; pydantic-settings 2.16.2, Ruff 0.17.4, and truststore 0.10.5 installed under the tested constraints. Focused publication_ship tests pass."
       e2e:
         applicable: false
         na_reason: No product UI or end-user workflow changed.
@@ -59,7 +59,7 @@ matrix:
         na_reason: The changes only update pinned third-party action references; local unit tests cannot execute GitHub-hosted action implementations.
       integration:
         applicable: true
-        evidence: "Exact-candidate GitHub workflow checks are pending; no PR exists, so Required Checks state is UNKNOWN."
+        evidence: "Exact-candidate GitHub workflow checks will run after this candidate PR is opened; Required Checks are currently unconfigured on main."
       contract:
         applicable: true
         evidence: "The diff updates actions/setup-python from v7.0.0 to v7.1.0 in 14 workflows and upload-sarif from v4.39.1 to v4.39.3 in scorecard.yml. Dependabot release notes were reviewed; existing immutable full-SHA pins remain in place."
@@ -80,6 +80,7 @@ matrix:
         evidence: "All changed workflow YAML parsed successfully and the exact changed-file list is bound above."
 
 scope_recomputed_after_expansion: true
-blockers: []
+blockers:
+  []
 actual_diff_reconciled: true
 status: READY
