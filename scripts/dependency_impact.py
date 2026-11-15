@@ -149,12 +149,16 @@ class _NotPure(Exception):
         self.detail = detail[:200]
 
 
-def _git(root: Path, *args: str) -> str:
-    # Bytes, not text mode: universal-newline decoding would hide CR characters.
+def _git_bytes(root: Path, *args: str) -> bytes:
     proc = subprocess.run(["git", *args], cwd=root, capture_output=True, check=False)
     if proc.returncode:
         raise _NotPure("GIT_ERROR", f"git {args[0]} failed")
-    return proc.stdout.decode("utf-8")
+    return proc.stdout
+
+
+def _git(root: Path, *args: str) -> str:
+    # Bytes, not text mode: universal-newline decoding would hide CR characters.
+    return _git_bytes(root, *args).decode("utf-8")
 
 
 def _pair_action(path: str, old: str, new: str) -> dict[str, Any]:
@@ -325,6 +329,8 @@ def pure_dependency_update(
         "reason": "",
         "detail": "",
         "files": [],
+        "candidate_files": [],
+        "verified_files": [],
         "items": [],
         "automatic_merge_authorized": False,
         "human_decision_required": True,
@@ -343,59 +349,110 @@ def pure_dependency_update(
         rev = [f"{base}...{head}"] if head is not None else [base]
         if head is None and _git(root, "ls-files", "--others", "--exclude-standard").strip():
             raise _NotPure("UNTRACKED_PRESENT", "working tree has untracked files")
-        common = ["diff", "--no-renames", "--no-ext-diff", "--no-textconv", "--full-index", *rev]
-        raw = [line for line in _git(root, *common, "--raw", "--").splitlines() if line]
+        common = ["-c", "core.quotePath=false", "diff", "--no-renames", "--no-ext-diff", "--no-textconv", "--full-index", *rev]
+        raw = [entry for entry in _git_bytes(root, *common, "--raw", "-z", "--").split(b"\0") if entry]
         if not raw:
             raise _NotPure("NO_CHANGES", "candidate has no changed files")
-        if len(raw) > int(exemption["max_files"]):
-            raise _NotPure("SIZE_LIMIT", f"{len(raw)} files exceed max_files")
+        if len(raw) % 2:
+            raise _NotPure("GIT_ERROR", "raw diff did not contain complete file entries")
+        candidate_files = sorted(raw[index + 1].decode("utf-8", errors="surrogateescape") for index in range(0, len(raw), 2))
+        result["candidate_files"] = candidate_files
+        full_patch = _git_bytes(root, *common, "-U0", "--")
+        result["diff_sha256"] = hashlib.sha256(full_patch).hexdigest()
+        result["policy_sha256"] = hashlib.sha256(
+            json.dumps(policy, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+        ).hexdigest()
+        result["exempted_scope"] = "documentation_requirements_only"
+        if len(raw) // 2 > int(exemption["max_files"]):
+            raise _NotPure("SIZE_LIMIT", f"{len(raw) // 2} files exceed max_files")
         shapes: dict[str, str] = {}
-        for entry in raw:
-            meta, _, path = entry.partition("\t")
-            fields = meta.split()
+        errors: dict[str, tuple[str, str]] = {}
+        for index in range(0, len(raw), 2):
+            meta, raw_path = raw[index], raw[index + 1]
+            path = raw_path.decode("utf-8", errors="surrogateescape")
+            fields = meta.decode("ascii", errors="replace").split()
             if len(fields) != 5 or fields[4] != "M" or fields[0] != ":100644" or fields[1] != "100644":
-                raise _NotPure("FILE_ENTRY_NOT_ALLOWED", f"{path}: not a plain in-place modification")
+                errors[path] = ("FILE_ENTRY_NOT_ALLOWED", f"{path}: not a plain in-place modification")
+                continue
             shape = _exemption_path_shape(path, list(exemption["paths"]))
             if shape is None:
-                raise _NotPure("PATH_NOT_ALLOWED", f"{path}: not an allowlisted dependency manifest")
+                errors[path] = ("PATH_NOT_ALLOWED", f"{path}: not an allowlisted dependency manifest")
+                continue
             shapes[path] = shape
-        for entry in _git(root, *common, "--numstat", "--").splitlines():
-            if entry.startswith("-\t"):
-                raise _NotPure("FILE_ENTRY_NOT_ALLOWED", "binary change")
-        patch = _git(root, *common, "-U0", "--")
-        if not patch.isascii() or "\r" in patch or "\t" in "".join(
-            line for line in patch.split("\n") if line[:1] in {"+", "-"} and not line.startswith(("+++ ", "--- "))
-        ):
-            raise _NotPure("OUT_OF_SHAPE", "changed lines must be ASCII without CR or tab characters")
-        items = _parse_patch(patch, shapes)
+        verified: list[str] = []
+        items: list[dict[str, Any]] = []
+        first_error: tuple[str, str] | None = next(iter(errors.values()), None)
+        for path, shape in shapes.items():
+            try:
+                numstat = _git(root, *common, "--numstat", "--", path)
+                if any(line.startswith("-\t") for line in numstat.splitlines()):
+                    raise _NotPure("FILE_ENTRY_NOT_ALLOWED", f"{path}: binary change")
+                patch = _git(root, *common, "-U0", "--", path)
+                if not patch.isascii() or "\r" in patch or "\t" in "".join(
+                    line for line in patch.split("\n") if line[:1] in {"+", "-"} and not line.startswith(("+++ ", "--- "))
+                ):
+                    raise _NotPure("OUT_OF_SHAPE", "changed lines must be ASCII without CR or tab characters")
+                file_items = _parse_patch(patch, {path: shape})
+                if not file_items or {item["path"] for item in file_items} != {path}:
+                    raise _NotPure("OUT_OF_SHAPE", "file does not contain only recognized dependency updates")
+                for item in file_items:
+                    classification = classify_dependency(item, policy, include_plan=False)
+                    if classification.get("status") != "READY":
+                        raise _NotPure("CLASSIFIER_BLOCKED", f"{path}: dependency classification blocked")
+                    item.update({key: classification[key] for key in ("classification", "risk", "required_evidence", "human_review_required")})
+                    if classification["risk"] == "HIGH" and exemption["high_risk_classes_exempt"] is not True:
+                        raise _NotPure("HIGH_RISK_NOT_EXEMPT", f"{item['name']} is {item['classification']}")
+                verified.append(path)
+                items.extend(file_items)
+            except _NotPure as exc:
+                if exc.reason == "GIT_ERROR":
+                    raise
+                if first_error is None:
+                    first_error = (exc.reason, exc.detail)
         if len(items) > int(exemption["max_line_pairs"]):
             raise _NotPure("SIZE_LIMIT", f"{len(items)} line pairs exceed max_line_pairs")
-        if not items or {item["path"] for item in items} != set(shapes):
-            raise _NotPure("OUT_OF_SHAPE", "every changed file must contain a recognized update")
-        for item in items:
-            classification = classify_dependency(item, policy, include_plan=False)
-            if classification.get("status") != "READY":
-                raise _NotPure("CLASSIFIER_BLOCKED", f"{item['path']}: dependency classification blocked")
-            item.update({key: classification[key] for key in ("classification", "risk", "required_evidence", "human_review_required")})
-            if classification["risk"] == "HIGH" and exemption["high_risk_classes_exempt"] is not True:
-                raise _NotPure("HIGH_RISK_NOT_EXEMPT", f"{item['name']} is {classification['classification']}")
+        result["verified_files"] = sorted(verified)
+        result["items"] = items
+        if len(verified) != len(candidate_files):
+            reason, detail = first_error or ("OUT_OF_SHAPE", "not every candidate path is a verified dependency update")
+            result.update({"reason": reason, "detail": detail})
+            return result
         result.update({
             "status": PURE,
             "reason": PURE,
-            "files": sorted(shapes),
+            "files": sorted(verified),
             "items": items,
             "human_review_required": any(item["human_review_required"] for item in items),
-            "policy_sha256": hashlib.sha256(
-                json.dumps(policy, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
-            ).hexdigest(),
-            "diff_sha256": hashlib.sha256(patch.encode("utf-8")).hexdigest(),
-            "exempted_scope": "documentation_requirements_only",
         })
     except _NotPure as exc:
         result.update({"reason": exc.reason, "detail": exc.detail})
     except (OSError, TypeError, ValueError, KeyError, yaml.YAMLError) as exc:
         result.update({"reason": "INTERNAL_ERROR", "detail": type(exc).__name__})
     return result
+
+
+def verified_dependency_paths(report: dict[str, Any] | None, files: list[str] | tuple[str, ...]) -> list[str]:
+    """Return verified dependency paths only when evidence is bound to this candidate set."""
+    if not isinstance(report, dict):
+        return []
+    candidate = sorted(set(str(path) for path in files))
+    bound, verified = report.get("candidate_files"), report.get("verified_files")
+    if isinstance(bound, list) and isinstance(verified, list):
+        normalized_bound = [str(path) for path in bound]
+        normalized_verified = [str(path) for path in verified]
+        if report.get("status") not in {PURE, NOT_PURE}:
+            return []
+        if normalized_bound != sorted(set(normalized_bound)):
+            return []
+        if normalized_verified != sorted(set(normalized_verified)) or not set(normalized_verified) <= set(normalized_bound):
+            return []
+        if candidate != normalized_bound:
+            return []
+        return normalized_verified
+    # Keep compatibility for older synthetic reports that assert a fully pure candidate.
+    if report.get("status") == PURE and candidate == sorted(set(report.get("files") or [])):
+        return candidate
+    return []
 
 
 def classify_dependency(

@@ -52,7 +52,7 @@ assert invalid.returncode != 0 and invalid_report["status"] == "BLOCKED"
 
 # Pure dependency update documentation exemption (deterministic diff shape).
 sys.path.insert(0, str(ROOT / "scripts"))
-from dependency_impact import pure_dependency_update, validate_policy
+from dependency_impact import pure_dependency_update, validate_policy, verified_dependency_paths
 from publish_preflight_policy import documentation_impact
 
 OLD_SHA, NEW_SHA = "a" * 40, "b" * 40
@@ -230,8 +230,12 @@ import documentation_sync
 SYNC_CONFIG = {
     "version": 1,
     "technology_guide": {"enabled": True, "path": "docs/human/TECHNOLOGY_GUIDE.md", "triggers": ["requirements*.txt"]},
-    "rules": [{"id": "deterministic-execution", "triggers": ["requirements-validation.txt"],
-               "human_docs": ["docs/human/USER_GUIDE.md"], "agent_docs": ["orchestration/ORCHESTRATOR.md"]}],
+    "rules": [
+        {"id": "deterministic-execution", "triggers": ["requirements-validation.txt"],
+         "human_docs": ["docs/human/USER_GUIDE.md"], "agent_docs": ["orchestration/ORCHESTRATOR.md"]},
+        {"id": "test-verification", "triggers": ["tests/**", "docs/qa/CORE_CHANGE_TEST_MATRIX.yaml"],
+         "human_docs": ["docs/human/CONFORMANCE.md"], "agent_docs": ["orchestration/CONFORMANCE.md"]},
+    ],
 }
 
 
@@ -257,14 +261,53 @@ sync_errors, sync_scope = sync_for(coverage_bump)
 assert sync_errors == [] and sync_scope["status"] == "PURE_DEPENDENCY_UPDATE", (sync_errors, sync_scope)
 full_rules = documentation_sync.evaluate_changes(["constraints/tested.txt", "requirements-validation.txt"], SYNC_CONFIG)
 assert len(full_rules) == 3, full_rules
+mixed_edit = combine(coverage_bump, add_file("tests/evidence/dependency_impact_lifecycle.py", "def test_candidate_publication():\n    assert True\n"),
+                     add_file("docs/qa/CORE_CHANGE_TEST_MATRIX.yaml", "status: DRAFT\n"))
+mixed_errors, mixed_scope = sync_for(mixed_edit)
+assert mixed_scope["status"] == "NOT_PURE", mixed_scope
+assert mixed_scope["verified_files"] == ["constraints/tested.txt", "requirements-validation.txt"], mixed_scope
+assert len(mixed_errors) == 2 and any("CONFORMANCE.md" in error for error in mixed_errors), mixed_errors
+mixed_report = scope_for(mixed_edit)
+assert mixed_report["status"] == "NOT_PURE" and mixed_report["verified_files"] == ["constraints/tested.txt", "requirements-validation.txt"]
+assert mixed_report["automatic_merge_authorized"] is False and len(mixed_report["diff_sha256"]) == 64
+semantic_mix = scope_for(combine(
+    coverage_bump,
+    sarif_bump,
+    replace(WF, "run: echo done", "run: make build"),
+))
+assert semantic_mix["status"] == "NOT_PURE", semantic_mix
+assert semantic_mix["verified_files"] == ["constraints/tested.txt", "requirements-validation.txt"], semantic_mix
+assert WF in semantic_mix["candidate_files"] and WF not in semantic_mix["verified_files"]
+assert set(mixed_report["candidate_files"]) >= {"tests/evidence/dependency_impact_lifecycle.py", "docs/qa/CORE_CHANGE_TEST_MATRIX.yaml"}
+assert verified_dependency_paths(mixed_report, mixed_report["candidate_files"]) == mixed_report["verified_files"]
+assert verified_dependency_paths(mixed_report, mixed_report["candidate_files"][:-1]) == []
+for malformed in (
+    {**mixed_report, "verified_files": ["not-in-candidate.txt"]},
+    {**mixed_report, "verified_files": list(reversed(mixed_report["verified_files"]))},
+    {**mixed_report, "status": "BLOCKED"},
+):
+    assert verified_dependency_paths(malformed, mixed_report["candidate_files"]) == [], malformed
+mixed_impact = documentation_impact(mixed_report["candidate_files"], ROOT, mixed_report)
+assert mixed_impact["dependency_update_exemption"]["applied"] is True, mixed_impact
+assert mixed_impact["required_additions"] and mixed_impact["placement_rules"], mixed_impact
+
+# Placement filters only the exact verified subset and still requires a test path's canonical owner.
+import documentation_placement
+from unittest.mock import patch
+placement_config = {"policy": {}, "placement_rules": []}
+with patch("dependency_impact.pure_dependency_update", return_value=mixed_report), \
+     patch.object(documentation_placement, "working_tree_changed_files", return_value=mixed_report["candidate_files"]), \
+     patch.object(documentation_placement, "behavior_trigger_patterns", return_value=["tests/**"]):
+    placement_result = documentation_placement.placement_errors(placement_config, "HEAD", working_tree=True)
+assert any("tests/evidence/dependency_impact_lifecycle.py" in error and "no canonical documentation placement" in error
+           for error in placement_result), placement_result
 for edit, label in (
-    (combine(coverage_bump, replace("docs/notes.md", "notes", "changed")), "dependency bump plus doc edit"),
     (replace("requirements.txt", "PyYAML>=6.0.3,<7", "PyYAML>=6.0.4,<7"), "range edit"),
 ):
     observed, observed_scope = sync_for(edit)
-    assert observed and observed_scope is None, (label, observed)
+    assert observed and observed_scope["status"] == "NOT_PURE", (label, observed, observed_scope)
 disabled, disabled_scope = sync_for(coverage_bump, exemption={"enabled": False})
-assert disabled == full_rules and disabled_scope is None, disabled
+assert disabled == full_rules and disabled_scope["status"] == "NOT_PURE", disabled
 assert documentation_sync.evaluate_candidate("0" * 40, "HEAD", SYNC_CONFIG, ROOT) == ([], None)
 
 # Action pins are validated by identity, immutable SHA and reviewed floor instead of copied

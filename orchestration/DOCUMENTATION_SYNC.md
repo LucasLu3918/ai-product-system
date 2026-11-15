@@ -4,7 +4,7 @@ Runtime Context and Scenario 198 add a placement/synchronization rule; changes t
 
 When Retrieval relation extraction moves behind an internal module, preserve the established facade and document the candidate-only evidence boundary in Human and Agent Project Intelligence guidance.
 
-Action-only dependency updates still require documentation closure. setup-node v7 and Pages artifact v5 use the supported Ubuntu 24.04 hosted runner with Node 24 / artifact v7, respectively; PR deployment remains skipped and main Pages configuration remains checked.
+Verified pin-only paths in mixed dependency candidates may be filtered from documentation triggers; every other changed path still requires its mapped documentation. setup-node v7 and Pages artifact v5 use the supported Ubuntu 24.04 hosted runner with Node 24 / artifact v7, respectively; PR deployment remains skipped and main Pages configuration remains checked.
 
 Change Impact traversal 的使用與限制應在 Human Project Intelligence 指南、Technology Guide、架構概覽及本 orchestration 契約同步；Scenario 175 的 evidence 與 Conformance inventory 也必須保持一致。
 
@@ -199,6 +199,8 @@ The `maintenance-reliability` sync rule binds the monthly collector, policy, wor
 Generated Conformance views must retain a deterministic path from the canonical scenario registry to current Human counts and section-level Human/Agent history anchors. Regenerate them after inventory or heading changes; do not rewrite historical sections without an explicit content-mapping review.
 
 ## Evolution Effectiveness mapping
+Mixed-candidate Documentation Sync (Scenario 221): Repository Preflight, sync contracts and the sync CLI share the same per-file classifier and full-candidate path binding with Documentation Impact and Placement. Only verified pin-only paths are removed from trigger matching; every other changed path keeps the full rules. Action pins still require exact identity, a full 40-hex SHA, the reviewed version floor and Human confirmation of the upstream tag commit.
+
 
 Sampling reports expose deduplicated and community candidate counts plus target shortfall. Reflect these as collection-quality evidence, not adoption authorization or engineering effectiveness.
 
@@ -214,14 +216,14 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 `scripts/evolution_preanalysis.py` is an internal implementation behind the unchanged `scripts/evolution_analysis.py` facade. Its source inventory and module-identity lifecycle belong to the `evolution-radar` documentation closure; user command and authority behavior remain unchanged.
 
-Pure dependency update documentation exemption (Scenario 221): `pure_dependency_update` in `scripts/dependency_impact.py` returns `PURE_DEPENDENCY_UPDATE` only when every changed file is an allowlisted dependency manifest (`.github/workflows/*.yml`, root `requirements*.txt`, `constraints/*.txt`) modified in place and every changed line pair is either a full-SHA pinned `uses:` reference for the same action with a non-decreasing version comment, or an exact `name==version` pin with a strictly higher version. Documentation Impact, Documentation Placement and Documentation Sync then suppress documentation requirements only and report each dependency's classification, risk and `human_review_required`; any other line or file, downgrade, unpinned reference, planned path, size-limit overflow or predicate failure keeps the full rules. Secret scanning, content safety, the Core Change Test Matrix, the Integration Gate, required checks and Human merge approval are unchanged, and `automatic_merge_authorized` stays false.
 
-Dependabot repository preflight and action pin sync (Scenario 221): `scripts/repository_preflight.py`, the documentation sync contracts and the `scripts/documentation_sync.py` CLI all evaluate sync through `documentation_sync.evaluate_candidate`, which shares `pure_dependency_update` with docs-impact and placement; every non-matching candidate keeps the full rules. Validation contracts no longer copy action commit SHAs: `dependency_impact.require_pinned_action` requires the exact action identity, a full 40-hex commit SHA, a version comment at or above the reviewed floor, and one shared SHA across paired workflows; the evolution configs name `action: openai/codex-action`. Human review still confirms that a new SHA is the upstream tag commit.
 
 Documentation sync path normalization (Scenario 221): `documentation_sync.evaluate_changes` removes only a single leading `./` (`removeprefix`). The previous `lstrip("./")` stripped characters, turning `.github/workflows/x.yml` into `github/workflows/x.yml` and disabling every `.github/**` trigger in `config/documentation-sync.yaml` (Technology Guide, evolution-radar, publication-preflight, documentation-platform, execution-isolation and others). Human workflow changes now require the mapped documentation; pure dependency updates stay exempt because `evaluate_candidate` applies the exemption first.
 
 
 ## Human documentation placement
+
+For mixed dependency candidates, the documentation closure retains the full changed-path set. Only exact-candidate verified pin paths are excluded from trigger matching; all other changed paths still require their mapped Human and Agent topics.
 
 The Skill Explorer route, generated JSON and static HTML fallback are a Human documentation presentation contract. Keep the route, search/filter/error fallback, source attribution and explicit-only install wording aligned across Scenario 259 and the Human canonical topics. This presentation contract does not change canonical Skill routing or installation policy.
 
@@ -361,7 +363,6 @@ The new `scripts/retrieval_storage.py` helper belongs to the existing Project In
 
 Scenario 260 publication diagnostics synchronize with the Human Git Publication/Security Assurance sections, Architecture Overview, Claude Code adapter, CLI help, and the source-controlled diagnostic contracts.
 
-Pure dependency update documentation exemption (Scenario 221): `pure_dependency_update` in `scripts/dependency_impact.py` returns `PURE_DEPENDENCY_UPDATE` only when every changed file is an allowlisted dependency manifest (`.github/workflows/*.yml`, root `requirements*.txt`, `constraints/*.txt`) modified in place and every changed line pair is either a full-SHA pinned `uses:` reference for the same action with a non-decreasing version comment, or an exact `name==version` pin with a strictly higher version. Documentation Impact, Documentation Placement and Documentation Sync then suppress documentation requirements only and report each dependency's classification, risk and `human_review_required`; any other line or file, downgrade, unpinned reference, planned path, size-limit overflow or predicate failure keeps the full rules. Secret scanning, content safety, the Core Change Test Matrix, the Integration Gate, required checks and Human merge approval are unchanged, and `automatic_merge_authorized` stays false.
 
 Scenario 269 documentation closure places task-scoped Turn Context preparation and `aips intelligence gc` in existing canonical sections only.
 

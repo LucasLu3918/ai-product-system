@@ -310,7 +310,6 @@ The Retrieval Intelligence SQLite persistence boundary is `scripts/retrieval_sto
 
 Plan36 publication diagnostics preserve this topic's existing behavior and authority boundaries.
 
-純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
 
 Dependabot commit 的機器人 noreply author 與最後一行精確的 `Signed-off-by` trailer 屬於 Git 身分 metadata，由 `config/git-publication.yaml` 決定，不是 PII 例外；`pii.email.v2` 與其他位址仍會擋下，機器人身分不授予權限。
 
@@ -381,6 +380,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 Content-safety detector changes are versioned (for example `pii.email.v2`) and bound to Scenario 266 with a fixed corpus; they never add a PII exception path.
 
 ## Quality & Verification
+混合候選的逐檔文件豁免（Scenario 221）：pure_dependency_update 逐檔檢查完整差異，回報完整 candidate_files 與 verified_files；Documentation Impact、Placement、Sync 只在候選路徑集合完全相符時，才從文件觸發匹配排除 verified pin 檔。整體 PURE_DEPENDENCY_UPDATE 仍要求所有候選檔都通過驗證。混合 semantic hunk、未辨識路徑、路徑或模式變更、未釘選／降版／格式錯誤、規劃路徑及分類或 Git 錯誤均維持原文件規則。完整路徑與 hash、依賴人工審查、secret/content scans、matrix、Integration Gate、Required Checks 與人工合併核准均不變，automatic_merge_authorized 仍為 false。
+
 
 Skill Explorer 是文件網站上的唯讀目錄；搜尋與篩選不會安裝或啟用 Skills。網站展示驗收只確認資料載入、篩選、空結果和錯誤備援，不能替代 Skill 路由、安裝或 Runtime 權限驗證。
 
@@ -639,9 +640,7 @@ The observation collector reports readiness separately from collection health: `
 
 The publication doctor normalizes branch existence, effective GitHub rules, classic protection, ruleset, and worktree evidence into phase-specific diagnostics. Its JSON remains observational and keeps Human and native-host authority outside the diagnostic result.
 
-純依賴升級文件豁免（Scenario 221）：`scripts/dependency_impact.py` 的 `pure_dependency_update` 只在候選 diff 的每個檔案都是允許清單內的依賴清單（`.github/workflows/*.yml`、根目錄 `requirements*.txt`、`constraints/*.txt`）、且每一組變更行都只是同一個 action 的完整 SHA 釘選更新（版本註解不得降版），或 `name==version` 的嚴格升版時，判定為 `PURE_DEPENDENCY_UPDATE`。此時 Documentation Impact、Documentation Placement 與 Documentation Sync 只豁免文件要求，並在報告列出每個依賴的分類、風險與 `human_review_required`；混入任何其他行或檔案、降版、未釘選參照、規劃路徑、超過大小上限或判定失敗，一律回到完整規則。秘密掃描、內容安全、Core Change Test Matrix、Integration Gate、必要檢查與人工合併核准都不變，`automatic_merge_authorized` 仍為 false。
 
-Dependabot repository preflight 與 action 釘選同步（Scenario 221）：`scripts/repository_preflight.py`、文件同步 contracts 與 `scripts/documentation_sync.py` CLI 一律經由 `documentation_sync.evaluate_candidate` 判斷文件同步，與 docs-impact、placement 共用同一個 `pure_dependency_update`；不符合時完整規則照舊。驗證 contracts 不再複製 action commit SHA，改由 `dependency_impact.require_pinned_action` 檢查 action 名稱完全相符、40 碼完整 commit SHA、版本註解不低於已審查下限，以及成對 workflow 使用同一 SHA；evolution 設定改記 `action: openai/codex-action`。新 SHA 是否等於上游 tag 對應的 commit，仍由人工審查確認。
 
 文件同步路徑正規化（Scenario 221）：`documentation_sync.evaluate_changes` 只移除開頭一個 `./`（`removeprefix`），不再用 `lstrip("./")` 逐字元剝除；先前 `.github/workflows/x.yml` 會被改成 `github/workflows/x.yml`，使 `config/documentation-sync.yaml` 中所有 `.github/**` 觸發條件（Technology Guide、evolution-radar、publication-preflight、documentation-platform、execution-isolation 等）失效。修正後，人工修改 workflow 需同步對應文件；純依賴升級仍由 `evaluate_candidate` 先行豁免。
 發布守門測試的合成掃描 fixture（`tests/test_publication_authority.py::scanner_fixture_assignment`）每次執行都把 16 個十六進位數字各放兩次後隨機排列，Shannon 熵固定為 4.0、高於 `generic-secret-assignment` 的 3.25 門檻，因此偵測結果不再隨機；原本直接使用 uuid4 hex 約有 0.7% 機率低於門檻而造成偶發失敗。掃描器規則與門檻不變。

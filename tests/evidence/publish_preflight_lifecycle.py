@@ -255,6 +255,22 @@ def main() -> int:
             assert publish.main() == 1
         assert "Documentation impact: FAIL" in summary_path.read_text()
         assert "docs/human/USER_GUIDE.md" in summary_path.read_text()
+        mixed_files = [".github/workflows/scorecard.yml", "tests/evidence/dependency_impact_lifecycle.py",
+                       "docs/qa/CORE_CHANGE_TEST_MATRIX.yaml"]
+        mixed_scope = {
+            "status": "NOT_PURE", "files": [], "candidate_files": sorted(mixed_files),
+            "verified_files": [".github/workflows/scorecard.yml"], "items": [],
+            "diff_sha256": "a" * 64, "automatic_merge_authorized": False,
+        }
+        mixed_impact = publish.documentation_impact(mixed_files, ROOT, mixed_scope)
+        assert mixed_impact["dependency_update_exemption"]["applied"] is True
+        assert set(mixed_impact["closure"]) >= set(mixed_files)
+        assert mixed_impact["required_additions"] and not mixed_impact["complete"], mixed_impact
+        mismatched_impact = publish.documentation_impact(mixed_files[:-1], ROOT, mixed_scope)
+        assert mismatched_impact["dependency_update_exemption"]["applied"] is False
+        assert set(mismatched_impact["required_additions"]) >= set(mixed_impact["required_additions"])
+        assert len(mismatched_impact["required_additions"]) > len(mixed_impact["required_additions"])
+
         pure_scope = {
             "status": "PURE_DEPENDENCY_UPDATE", "files": [".github/workflows/scorecard.yml"],
             "items": [{"name": "github/codeql-action", "current_version": "v4.37.4", "target_version": "v4.38.3",

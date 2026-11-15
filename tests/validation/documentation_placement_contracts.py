@@ -10,6 +10,9 @@ from .static_contracts import ROOT, errors
 
 sys.path.insert(0, str(ROOT / "scripts"))
 placement_helper = importlib.import_module("documentation_placement")
+placement_source = (ROOT / "scripts/documentation_placement.py").read_text(encoding="utf-8")
+if "verified_dependency_paths" not in placement_source:
+    errors.append("Documentation Placement must use the candidate-bound verified dependency subset")
 
 
 def verify_batched_added_lines() -> None:

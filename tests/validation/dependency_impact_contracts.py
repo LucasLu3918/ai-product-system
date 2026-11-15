@@ -28,6 +28,12 @@ if policy_path.is_file():
     if rules.get(("pip", "sentence-transformers")) != "SEMANTIC_RUNTIME":
         errors.append("sentence-transformers must classify as SEMANTIC_RUNTIME")
 
+if script_path.is_file():
+    source = script_path.read_text(encoding="utf-8")
+    for marker in ("candidate_files", "verified_files", "diff_sha256", "verified_dependency_paths", "planned_paths"):
+        if marker not in source:
+            errors.append(f"Dependency impact classifier missing candidate-bound evidence: {marker}")
+
 if script_path.is_file() and lifecycle_path.is_file():
     result = subprocess.run([sys.executable, str(lifecycle_path)], cwd=ROOT, capture_output=True, text=True, check=False)
     if result.returncode:

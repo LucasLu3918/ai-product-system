@@ -989,17 +989,17 @@ The pull-request workflow runs the bounded repository preflight in a separate jo
 Scenarios 211 and 217 also verify that dependency-review shadow evidence cannot change the required repository outcome and that completed `NOT_READY` observation evidence remains distinct from operational errors.
 
 ## Scenario 221 — Dependency Update Risk Classification
+Mixed-candidate documentation filtering (Scenario 221): pure_dependency_update verifies each file's complete diff and reports the full candidate_files set plus its verified_files subset. Documentation Impact, Placement and Sync exclude verified pin-only paths from trigger matching only when the complete candidate path set matches the report. PURE_DEPENDENCY_UPDATE still requires every candidate path to pass. Mixed semantic hunks, unknown paths, path or mode changes, malformed or unpinned references, downgrades, planned paths, and classifier or Git errors retain the existing documentation rules. Full paths and hashes, Human dependency review, secret/content scans, the matrix, Integration Gate, Required Checks and Human merge approval remain required; automatic_merge_authorized stays false.
+
 
 Dependency reports preserve Human review and do not merge unrelated pull requests.
 
 
 `scripts/dependency_impact.py` classifies dependency updates from `config/dependency-policy.yaml` and recommends evidence by class. Unknown packages are `UNCLASSIFIED` / `HIGH`; semantic runtime changes require retrieval regression and semantic trial evidence. The CLI is advisory, requires a human decision, and never authorizes automatic merges or policy edits.
 
-Pure dependency update documentation exemption (Scenario 221): `pure_dependency_update` in `scripts/dependency_impact.py` returns `PURE_DEPENDENCY_UPDATE` only when every changed file is an allowlisted dependency manifest (`.github/workflows/*.yml`, root `requirements*.txt`, `constraints/*.txt`) modified in place and every changed line pair is either a full-SHA pinned `uses:` reference for the same action with a non-decreasing version comment, or an exact `name==version` pin with a strictly higher version. Documentation Impact, Documentation Placement and Documentation Sync then suppress documentation requirements only and report each dependency's classification, risk and `human_review_required`; any other line or file, downgrade, unpinned reference, planned path, size-limit overflow or predicate failure keeps the full rules. Secret scanning, content safety, the Core Change Test Matrix, the Integration Gate, required checks and Human merge approval are unchanged, and `automatic_merge_authorized` stays false.
 
 Documentation Sync path normalization (Scenario 221): only a single leading `./` is removed, so `.github/**` triggers in `config/documentation-sync.yaml` are enforced; pure dependency updates remain exempt through `evaluate_candidate`.
 
-Dependabot repository preflight and action pin sync (Scenario 221): `scripts/repository_preflight.py`, the documentation sync contracts and the `scripts/documentation_sync.py` CLI all evaluate sync through `documentation_sync.evaluate_candidate`, which shares `pure_dependency_update` with docs-impact and placement; every non-matching candidate keeps the full rules. Validation contracts no longer copy action commit SHAs: `dependency_impact.require_pinned_action` requires the exact action identity, a full 40-hex commit SHA, a version comment at or above the reviewed floor, and one shared SHA across paired workflows; the evolution configs name `action: openai/codex-action`. Human review still confirms that a new SHA is the upstream tag commit.
 
 ## Scenario 222 — Large Document Measurement Only
 
@@ -1304,7 +1304,6 @@ Scenarios 099 and 169 bind the guard read-only allow list, commit-form scanning 
 
 Scenario 266 also binds `pii.email.v2`: only the exact ASCII `git` userinfo of an scp-like or `ssh://` Git remote is not an email finding; all other address-shaped matches block independently, redaction uses the same predicate, and `pii.*` exception records are invalid.
 
-Pure dependency update documentation exemption (Scenario 221): `pure_dependency_update` in `scripts/dependency_impact.py` returns `PURE_DEPENDENCY_UPDATE` only when every changed file is an allowlisted dependency manifest (`.github/workflows/*.yml`, root `requirements*.txt`, `constraints/*.txt`) modified in place and every changed line pair is either a full-SHA pinned `uses:` reference for the same action with a non-decreasing version comment, or an exact `name==version` pin with a strictly higher version. Documentation Impact, Documentation Placement and Documentation Sync then suppress documentation requirements only and report each dependency's classification, risk and `human_review_required`; any other line or file, downgrade, unpinned reference, planned path, size-limit overflow or predicate failure keeps the full rules. Secret scanning, content safety, the Core Change Test Matrix, the Integration Gate, required checks and Human merge approval are unchanged, and `automatic_merge_authorized` stays false.
 
 Dependabot commits: the GitHub App bot noreply author and Dependabot's exact final `Signed-off-by` trailer are Git identity metadata decided by `config/git-publication.yaml`, not PII exceptions; `pii.email.v2` and every other address stay blocking, and the bot identity grants no authority.
 
